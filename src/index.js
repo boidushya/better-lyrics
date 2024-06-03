@@ -17,9 +17,20 @@ const createLyrics = () => {
 
   fetch(url)
     .then((response) => response.json())
+    .catch((err) => {
+      console.log("[BLyrics] Server error, skipping injection");
+      console.log(err);
+      return;
+    })
     .then((data) => {
       const lyrics = data.lyrics;
       clearInterval(window.lyricsCheckInterval);
+
+      if (lyrics === undefined || lyrics.length === 0) {
+        console.log("[BLyrics] No lyrics found, skipping injection");
+        return;
+      }
+
       injectLyrics(lyrics);
     });
 };
@@ -56,7 +67,9 @@ const injectLyrics = (lyrics) => {
     lyricsContainer.className = "lyrics";
     lyricsWrapper.appendChild(lyricsContainer);
 
-    lyricsWrapper.style = `--background-img: url('${albumArt}')`;
+    document.getElementById(
+      "layout"
+    ).style = `--blyrics-background-img: url('${albumArt}')`;
 
     lyricsWrapper.removeAttribute("is-empty");
   } catch (err) {

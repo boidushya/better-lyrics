@@ -10,44 +10,6 @@
   z-index: 1;
 }
 
-.lyrics:before {
-  content: "";
-  background: linear-gradient(
-      to right,
-      rgba(3, 3, 3, 1) 4rem,
-      rgba(3, 3, 3, 0.5),
-      rgba(3, 3, 3, 1) 96%
-    ),
-    var(--background-img) !important;
-  position: absolute;
-  background-position: center !important;
-  /* background-repeat: repeat !important; */
-  background-size: cover !important;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: -1;
-  filter: blur(80px) saturate(2.5);
-  border-radius: 1rem;
-}
-
-.lyrics:after {
-  transform: translateX(0) translateY(0) !important;
-  content: "";
-  position: absolute;
-  top: -2rem;
-  left: 0;
-  bottom: -8rem;
-  right: 0;
-  z-index: -1;
-  background: radial-gradient(
-    circle at center,
-    rgba(3, 3, 3, 0.1),
-    rgba(3, 3, 3, 0.5)
-  ) !important;
-}
-
 .lyrics > div {
   opacity: 0.33;
   transition: opacity 0.33s, transform 0.166s;
@@ -101,4 +63,62 @@ yt-formatted-string[is-empty] {
   yt-formatted-string.non-expandable.description.style-scope.ytmusic-description-shelf-renderer {
     margin-inline: -1.5rem;
   }
+}
+
+@media (max-width: 615px) {
+  .lyrics:before {
+    content: "";
+    background: linear-gradient(
+        to right,
+        rgba(3, 3, 3, 1) 4rem,
+        rgba(3, 3, 3, 0.5),
+        rgba(3, 3, 3, 1) 96%
+      ),
+      var(--blyrics-background-img) !important;
+    position: absolute;
+    background-position: center !important;
+    background-size: cover !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: -1;
+    filter: blur(80px) saturate(2.5);
+    border-radius: 1rem;
+  }
+
+  .lyrics:after {
+    transform: translateX(0) translateY(0) !important;
+    content: "";
+    position: absolute;
+    top: -2rem;
+    left: 0;
+    bottom: -8rem;
+    right: 0;
+    z-index: -1;
+    background: radial-gradient(
+      circle at center,
+      rgba(3, 3, 3, 0.1),
+      rgba(3, 3, 3, 0.5)
+    ) !important;
+  }
+}
+
+ytmusic-player-page:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.75),
+      rgba(0, 0, 0, 0.75)
+    ),
+    var(--blyrics-background-img);
+  filter: blur(100px);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center !important;
 }
