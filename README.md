@@ -2,6 +2,10 @@
 
 [![License](https://img.shields.io/badge/license-GNU_GPL_v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 ![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
+![Status](https://img.shields.io/badge/status-active-brightgreen.svg)
+[![volkswagen status](https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1)](https://github.com/boidushya/better-lyrics)
+
+![Banner](./images/banner/screenshot.png)
 
 ## Description
 
