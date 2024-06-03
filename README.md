@@ -7,15 +7,13 @@
 
 ![Banner](./images/banner/screenshot.png)
 
-## Download
-
-[Chrome Web Store](https://chrome.google.com/webstore/detail/better-lyrics-for-youtube/)
-
-## Description
-
 Better Lyrics for Youtube Music upgrades your Youtube Music experience
 by providing beautiful time synced lyrics for the currently playing
 song.
+
+## Download
+
+[Chrome Web Store](https://chrome.google.com/webstore/detail/better-lyrics-for-youtube/)
 
 ## Features
 
@@ -24,7 +22,7 @@ song.
 ⏩ Seek to a specific part of the song by clicking on the lyrics\
 🪶 Lightweight and easy to use\
 
-## Installation
+## Manual Installation
 
 1. Clone this repository or download the ZIP file.
 2. Open Google Chrome and go to `chrome://extensions`.
@@ -34,7 +32,7 @@ song.
 
 ## Usage
 
-1. Open YouTube Music and start playing a song.
+1. Open [YouTube Music](https://music.youtube.com) and start playing a song.
 2. Click on the lyrics tab to view the time-synced lyrics. (This might take a few seconds to load)
 3. Click on a specific line to seek to that part of the song.
 
@@ -45,7 +43,3 @@ Contributions are welcome! If you have any ideas, suggestions, or bug reports, p
 ## License
 
 This project is licensed under the [GNU GPLv3 License](LICENSE).
-
-## Contact
-
-For any questions or inquiries, please contact [your-email@example.com](mailto:your-email@example.com).
