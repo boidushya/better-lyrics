@@ -5,12 +5,7 @@
 ![Status](https://img.shields.io/badge/status-active-brightgreen.svg)
 [![volkswagen status](https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1)](https://github.com/boidushya/better-lyrics)
 
-<center>
-	<figure>
-		<img src="./images/banner/screenshot.png" alt="Banner">
-		<figcaption><em>Better Lyrics for Youtube Music</em></figcaption>
-	</figure>
-</center>
+![Banner](./images/banner/screenshot.png)
 
 ## Description
 
