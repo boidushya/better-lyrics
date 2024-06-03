@@ -5,7 +5,7 @@
 ![Status](https://img.shields.io/badge/status-active-brightgreen.svg)
 [![volkswagen status](https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1)](https://github.com/boidushya/better-lyrics)
 
-![Banner](https://i.ibb.co/mTbsJkc/screenshot.png)
+![Banner](https://i.ibb.co/c3k5J0r/screenshot.png)
 
 ## Description
 
