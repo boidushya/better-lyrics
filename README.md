@@ -19,10 +19,10 @@ song.
 
 ## Features
 
-- 🎵 Beautiful time-synced lyrics on Youtube Music
-- 📦 No external dependencies or API key
-- ⏩ Seek to a specific part of the song by clicking on the lyrics
-- 🪶 Lightweight and easy to use
+🎵 Beautiful time-synced lyrics on Youtube Music
+📦 No external dependencies or API key
+⏩ Seek to a specific part of the song by clicking on the lyrics
+🪶 Lightweight and easy to use
 
 ## Installation
 
