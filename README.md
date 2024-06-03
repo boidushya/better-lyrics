@@ -30,7 +30,7 @@ song.
 2. Open Google Chrome and go to `chrome://extensions`.
 3. Enable "Developer mode" by toggling the switch in the top right corner.
 4. Click on "Load unpacked" and select the folder where you cloned/downloaded this repository.
-5. The Better YT Lyrics extension should now be installed and ready to use!
+5. The Better Lyrics extension should now be installed and ready to use!
 
 ## Usage
 
