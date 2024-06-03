@@ -72,7 +72,7 @@ ytmusic-player-page:before {
       rgba(0, 0, 0, 0.75)
     ),
     var(--blyrics-background-img);
-  filter: blur(100px);
+  filter: blur(100px) saturate(2);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center !important;
@@ -122,7 +122,7 @@ ytmusic-player-page:before {
     bottom: 0;
     right: 0;
     z-index: -1;
-    filter: blur(80px) saturate(2.5);
+    filter: blur(80px) saturate(2);
     border-radius: 1rem;
   }
 
