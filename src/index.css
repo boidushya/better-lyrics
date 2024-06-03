@@ -121,4 +121,5 @@ ytmusic-player-page:before {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center !important;
+  z-index: -100;
 }
