@@ -5,7 +5,11 @@
 ![Status](https://img.shields.io/badge/status-active-brightgreen.svg)
 [![volkswagen status](https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1)](https://github.com/boidushya/better-lyrics)
 
-![Banner](./images/banner/screenshot.png)
+| ![Banner](./images/banner/screenshot.png) |
+| :---------------------------------------: |
+| _Better Lyrics for Youtube Music_ |
+
+## Description
 
 Better Lyrics for Youtube Music upgrades your Youtube Music experience
 by providing beautiful time synced lyrics for the currently playing
