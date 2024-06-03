@@ -1,0 +1,104 @@
+.lyrics {
+  font-size: 3rem;
+  font-weight: 700;
+  font-family: "Satoshi", "Avenir", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+    sans-serif;
+  line-height: 1;
+  position: relative !important;
+  isolation: isolate;
+  z-index: 1;
+}
+
+.lyrics:before {
+  content: "";
+  background: linear-gradient(
+      to right,
+      rgba(3, 3, 3, 1) 4rem,
+      rgba(3, 3, 3, 0.5),
+      rgba(3, 3, 3, 1) 96%
+    ),
+    var(--background-img) !important;
+  position: absolute;
+  background-position: center !important;
+  /* background-repeat: repeat !important; */
+  background-size: cover !important;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: -1;
+  filter: blur(80px) saturate(2.5);
+  border-radius: 1rem;
+}
+
+.lyrics:after {
+  transform: translateX(0) translateY(0) !important;
+  content: "";
+  position: absolute;
+  top: -2rem;
+  left: 0;
+  bottom: -8rem;
+  right: 0;
+  z-index: -1;
+  background: radial-gradient(
+    circle at center,
+    rgba(3, 3, 3, 0.1),
+    rgba(3, 3, 3, 0.5)
+  ) !important;
+}
+
+.lyrics > div {
+  opacity: 0.33;
+  transition: opacity 0.33s, transform 0.166s;
+  padding-top: 3.5rem !important;
+  padding-bottom: 0.5rem !important;
+  word-break: break-word;
+  padding-inline: 4rem !important;
+  transform: scale(0.975);
+  transform-origin: left;
+  cursor: pointer;
+}
+
+.lyrics > div.current {
+  opacity: 1;
+  transform: scale(1);
+  cursor: default;
+}
+
+#side-panel {
+  min-width: calc(50vw + 4rem);
+}
+
+.footer.style-scope.ytmusic-description-shelf-renderer {
+  margin-inline: 4rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: fit-content;
+  padding: 0.5rem 1.25rem;
+  border-radius: 1000rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin-bottom: 4rem !important;
+  margin-top: 0 !important;
+  z-index: 2;
+  position: relative;
+}
+
+.footer.style-scope.ytmusic-description-shelf-renderer > a {
+  color: #fff;
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+.footer.style-scope.ytmusic-description-shelf-renderer:hover > a {
+  text-decoration: underline;
+}
+
+yt-formatted-string[is-empty] {
+  display: inherit !important;
+}
+
+@media (max-width: 936px) {
+  yt-formatted-string.non-expandable.description.style-scope.ytmusic-description-shelf-renderer {
+    margin-inline: -1.5rem;
+  }
+}
