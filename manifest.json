@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
-  "version": "0.3.2",
+  "version": "0.3.3",
   "name": "Better Lyrics",
   "description": "Better lyrics for YouTube Music",
   "icons": {
-    "16": "images/icons/icon_16.png",
-    "48": "images/icons/icon_48.png"
+    "16": "images/icons/icon-16.png",
+    "48": "images/icons/icon-48.png",
+    "512": "images/icons/icon-512.png"
   },
   "update_url": "https://clients2.google.com/service/update2/crx",
   "host_permissions": ["*://music.youtube.com/*"],
