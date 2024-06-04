@@ -14,7 +14,7 @@
 	</a>
 </p>
 
-![Banner](https://i.ibb.co/c3k5J0r/screenshot.png)
+![Banner](https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png)
 
 ## Description
 
