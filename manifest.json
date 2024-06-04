@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "version": "0.2.2",
+  "version": "0.3.2",
   "name": "Better Lyrics",
-  "description": "Better lyrics for YouTube Music | boidu.dev",
+  "description": "Better lyrics for YouTube Music",
   "icons": {
     "16": "images/icons/icon_16.png",
     "48": "images/icons/icon_48.png"
