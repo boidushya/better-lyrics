@@ -104,6 +104,15 @@ ytmusic-player-page:before {
   scrollbar-color: transparent transparent;
 }
 
+yt-formatted-string.text.style-scope.ytmusic-message-renderer {
+  margin-top: 34px !important;
+}
+
+.text.ytmusic-message-renderer,
+.subtext.ytmusic-message-renderer {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
 @media (max-width: 936px) {
   yt-formatted-string.non-expandable.description.style-scope.ytmusic-description-shelf-renderer {
     margin-inline: -1.5rem;

@@ -28,10 +28,36 @@ const createLyrics = () => {
 
       if (lyrics === undefined || lyrics.length === 0) {
         console.log("[BLyrics] No lyrics found, skipping injection");
+
+        try {
+          const lyricsContainer = document.getElementsByClassName("lyrics")[0];
+          const errorContainer = document.createElement("div");
+          errorContainer.className = "error";
+          errorContainer.innerHTML = "No lyrics found for this song.";
+          lyricsContainer.appendChild(errorContainer);
+        } catch (err) {
+          console.log("[BLyrics] Lyrics wrapper not visible, safe to ignore.");
+        }
+
         return;
       }
-
-      injectLyrics(lyrics);
+      console.log("[BLyrics] Lyrics found, injecting");
+      let wrapper = null;
+      try {
+        const tabSelector = document.getElementsByClassName(
+          "tab-header style-scope ytmusic-player-page"
+        )[1];
+        tabSelector.removeAttribute("disabled");
+        tabSelector.setAttribute("aria-disabled", "false");
+        wrapper = document.querySelector(
+          "#tab-renderer > ytmusic-message-renderer"
+        );
+        const lyrics = document.getElementsByClassName("lyrics")[0];
+        lyrics.innerHTML = "";
+      } catch (err) {
+        console.log("[BLyrics] Lyrics tab not disabled, safe to ignore.");
+      }
+      injectLyrics(lyrics, wrapper);
     });
 };
 
@@ -41,12 +67,16 @@ const timeToInt = (time) => {
   return time;
 };
 
-const injectLyrics = (lyrics) => {
+const injectLyrics = (lyrics, wrapper) => {
   // Inject Lyrics into DOM
-
-  const lyricsWrapper = document.getElementsByClassName(
-    "description style-scope ytmusic-description-shelf-renderer"
-  )[1];
+  let lyricsWrapper;
+  if (wrapper !== null) {
+    lyricsWrapper = wrapper;
+  } else {
+    lyricsWrapper = document.getElementsByClassName(
+      "description style-scope ytmusic-description-shelf-renderer"
+    )[1];
+  }
 
   try {
     const footer = (document.getElementsByClassName(
@@ -59,17 +89,11 @@ const injectLyrics = (lyrics) => {
     );
   }
 
-  const albumArt = document.querySelector("#song-image>#thumbnail>#img").src;
-
   try {
     lyricsWrapper.innerHTML = "";
     const lyricsContainer = document.createElement("div");
     lyricsContainer.className = "lyrics";
     lyricsWrapper.appendChild(lyricsContainer);
-
-    document.getElementById(
-      "layout"
-    ).style = `--blyrics-background-img: url('${albumArt}')`;
 
     lyricsWrapper.removeAttribute("is-empty");
   } catch (err) {
@@ -139,14 +163,6 @@ const injectLyrics = (lyrics) => {
               inline: "center",
             });
             current.setAttribute("data-scrolled", true);
-
-            // if (current.previousElementSibling !== null) {
-            //   current.previousElementSibling.setAttribute("class", "");
-            //   current.previousElementSibling.setAttribute(
-            //     "data-scrolled",
-            //     false
-            //   );
-            // }
           }
           return true;
         } else {
@@ -157,8 +173,16 @@ const injectLyrics = (lyrics) => {
       });
     } catch (err) {
       console.log(err);
+      return true;
     }
   }, 50);
+};
+
+const addAlbumArtToLayout = () => {
+  const albumArt = document.querySelector("#song-image>#thumbnail>#img").src;
+  document.getElementById(
+    "layout"
+  ).style = `--blyrics-background-img: url('${albumArt}')`;
 };
 
 const modify = () => {
@@ -192,7 +216,18 @@ const modify = () => {
         ) {
           console.log("[Blyrics] Song switched", targetNode.innerHTML);
           song.title = targetNode.innerHTML;
-          setTimeout(() => createLyrics(), 1000);
+          addAlbumArtToLayout();
+
+          // Check if lyrics tab is visible
+          const tabSelector = document.getElementsByClassName(
+            "tab-header style-scope ytmusic-player-page"
+          )[1];
+          if (tabSelector.getAttribute("aria-selected") === "true") {
+            console.log("[Blyrics] Lyrics Tab Visible, Fetching Lyrics");
+            setTimeout(() => createLyrics(), 1000);
+          } else {
+            console.log("[Blyrics] Lyrics Tab Hidden, Skipping Lyrics Fetch");
+          }
         }
       }
     }
@@ -211,7 +246,7 @@ const modify = () => {
 
     if (tab1 !== undefined && tab2 !== undefined && tab3 !== undefined) {
       tab2.addEventListener("click", function () {
-        console.log("[Blyrics] Lyrics Tab Clicked");
+        console.log("[Blyrics] Lyrics Tab Clicked, Fetching Lyrics");
         setTimeout(() => createLyrics(), 1000);
       });
     } else {
