@@ -111,6 +111,12 @@ ytmusic-player-page:before {
 }
 
 @media (max-width: 615px) {
+  .lyrics > div {
+    margin-inline: 4rem !important;
+  }
+  .footer.style-scope.ytmusic-description-shelf-renderer {
+    margin-inline: 2.5rem !important;
+  }
   .lyrics:before {
     content: "";
     background: linear-gradient(
