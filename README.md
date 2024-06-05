@@ -31,7 +31,8 @@ song.
 🎵 Beautiful time-synced lyrics on Youtube Music\
 📦 No external dependencies or API key\
 ⏩ Seek to a specific part of the song by clicking on the lyrics\
-🪶 Lightweight and easy to use\
+🌏 Supports multiple languages\
+🪶 Lightweight and easy to use
 
 ## Manual Installation
 
