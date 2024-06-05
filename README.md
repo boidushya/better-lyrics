@@ -35,7 +35,7 @@ song.
 
 ## Manual Installation
 
-1. Clone this repository or download the ZIP file.
+1. Clone this repository or download the ZIP file from the [releases](https://github.com/boidushya/better-lyrics/releases) page.
 2. Open Google Chrome and go to `chrome://extensions`.
 3. Enable "Developer mode" by toggling the switch in the top right corner.
 4. Click on "Load unpacked" and select the folder where you cloned/downloaded this repository.
