@@ -24,7 +24,7 @@ song.
 
 ## Download
 
-[Chrome Web Store](https://chrome.google.com/webstore/detail/better-lyrics-for-youtube/)
+[Chrome Web Store](https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg)
 
 ## Features
 
