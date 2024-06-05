@@ -13,13 +13,20 @@
 .lyrics > div {
   opacity: 0.33;
   transition: opacity 0.33s, transform 0.166s;
-  padding-top: 3.5rem !important;
-  padding-bottom: 0.5rem !important;
+  padding-top: 2rem !important;
+  padding-bottom: 2rem !important;
   word-break: break-word;
-  padding-inline: 4rem !important;
-  transform: scale(0.975);
-  transform-origin: left;
+  transform: scale(0.95);
+  transform-origin: left center;
   cursor: pointer;
+}
+
+.lyrics > div:first-child {
+  padding-top: 3rem !important;
+}
+
+.lyrics > div:last-child {
+  padding-bottom: 0rem !important;
 }
 
 .lyrics > div.current {
@@ -33,7 +40,6 @@
 }
 
 .footer.style-scope.ytmusic-description-shelf-renderer {
-  margin-inline: 4rem !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
   width: fit-content;
   padding: 0.5rem 1.25rem;
