@@ -90,7 +90,11 @@ const injectLyrics = (lyrics) => {
 
     line.innerHTML = item.words;
 
-    document.getElementsByClassName("lyrics")[0].appendChild(line);
+    try {
+      document.getElementsByClassName("lyrics")[0].appendChild(line);
+    } catch (err) {
+      console.log("[BLyrics] Lyrics wrapper not visible, safe to ignore.");
+    }
   });
 
   window.lyricsCheckInterval = setInterval(function () {
