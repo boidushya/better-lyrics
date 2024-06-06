@@ -18,6 +18,7 @@ const FONT_LINK = "https://api.fontshare.com/v2/css?f[]=satoshi@1&display=swap";
 
 const LOG_PREFIX = "[BetterLyrics]";
 const IGNORE_PREFIX = "(Safe to ignore)";
+const INITIALIZE_LOG = `%c${LOG_PREFIX} Loaded Successfully. Logs are enabled by default. You can disable them in the extension options.`;
 const FETCH_LYRICS_LOG = `${LOG_PREFIX} Attempting to fetch lyrics for`;
 const SERVER_ERROR_LOG = `${LOG_PREFIX} Unable to fetch lyrics due to server error`;
 const NO_LYRICS_FOUND_LOG = `${LOG_PREFIX} No lyrics found for the current song`;
@@ -31,6 +32,15 @@ const LYRICS_TAB_NOT_DISABLED_LOG = `${LOG_PREFIX} ${IGNORE_PREFIX} Lyrics tab i
 const SONG_SWITCHED_LOG = `${LOG_PREFIX} Song has been switched`;
 const ALBUM_ART_ADDED_LOG = `${LOG_PREFIX} Album art added to the layout`;
 const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
+
+// Logger function
+const log = (...message) => {
+  chrome.storage.sync.get({ isLogsEnabled: true }, (items) => {
+    if (items.isLogsEnabled) {
+      console.log(...message);
+    }
+  });
+};
 
 // Helper function to convert time string to integer
 const timeToInt = (time) => {
@@ -51,15 +61,15 @@ const createLyrics = () => {
     artist =
       document.getElementsByClassName(SUBTITLE_CLASS)[0].children[0].innerHTML; // Get the artist name (alternative way)
   }
-  console.log(FETCH_LYRICS_LOG, song, artist); // Log fetching lyrics
+  log(FETCH_LYRICS_LOG, song, artist); // Log fetching lyrics
 
   const url = `${LYRICS_API_URL}?s=${song}&a=${artist}`; // Construct the API URL with song and artist
 
   fetch(url)
     .then((response) => response.json())
     .catch((err) => {
-      console.log(SERVER_ERROR_LOG); // Log server error
-      console.log(err);
+      log(SERVER_ERROR_LOG); // Log server error
+      log(err);
       return;
     })
     .then((data) => {
@@ -67,7 +77,7 @@ const createLyrics = () => {
       clearInterval(window.lyricsCheckInterval); // Clear the lyrics interval
 
       if (lyrics === undefined || lyrics.length === 0) {
-        console.log(NO_LYRICS_FOUND_LOG); // Log no lyrics found
+        log(NO_LYRICS_FOUND_LOG); // Log no lyrics found
 
         try {
           const lyricsContainer =
@@ -78,12 +88,12 @@ const createLyrics = () => {
           errorContainer.innerHTML = "No lyrics found for this song.";
           lyricsContainer.appendChild(errorContainer); // Append error message to lyrics container
         } catch (err) {
-          console.log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
+          log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
         }
 
         return;
       }
-      console.log(LYRICS_FOUND_LOG); // Log lyrics found
+      log(LYRICS_FOUND_LOG); // Log lyrics found
       let wrapper = null;
       try {
         const tabSelector =
@@ -96,7 +106,7 @@ const createLyrics = () => {
         const lyrics = document.getElementsByClassName(LYRICS_CLASS)[0];
         lyrics.innerHTML = ""; // Clear the lyrics container
       } catch (err) {
-        console.log(LYRICS_TAB_NOT_DISABLED_LOG); // Log lyrics tab not disabled
+        log(LYRICS_TAB_NOT_DISABLED_LOG); // Log lyrics tab not disabled
       }
       injectLyrics(lyrics, wrapper); // Inject lyrics
     });
@@ -114,7 +124,7 @@ const injectLyrics = (lyrics, wrapper) => {
     )[0].innerHTML = `Source: <a href="https://boidu.dev" class="footer-link" target="_blank">boidu.dev</a>`); // Set the footer content
     footer.removeAttribute("is-empty");
   } catch (err) {
-    console.log(FOOTER_NOT_VISIBLE_LOG); // Log footer not visible
+    log(FOOTER_NOT_VISIBLE_LOG); // Log footer not visible
   }
 
   try {
@@ -128,7 +138,7 @@ const injectLyrics = (lyrics, wrapper) => {
 
     lyricsWrapper.removeAttribute("is-empty");
   } catch (err) {
-    console.log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
+    log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
   }
 
   lyrics.forEach((item) => {
@@ -148,7 +158,7 @@ const injectLyrics = (lyrics, wrapper) => {
     try {
       document.getElementsByClassName(LYRICS_CLASS)[0].appendChild(line); // Append the line to the lyrics container
     } catch (err) {
-      console.log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
+      log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
     }
   });
 
@@ -206,7 +216,7 @@ const injectLyrics = (lyrics, wrapper) => {
         }
       });
     } catch (err) {
-      console.log(err);
+      log(err);
       return true;
     }
   }, 50); // Check every 50ms
@@ -219,7 +229,7 @@ const addAlbumArtToLayout = () => {
     "layout"
   ).style = `--blyrics-background-img: url('${albumArt}')`; // Set the background image of the layout
 
-  console.log(ALBUM_ART_ADDED_LOG); // Log album art added
+  log(ALBUM_ART_ADDED_LOG); // Log album art added
 };
 
 // Main function to modify the page
@@ -228,6 +238,11 @@ const modify = () => {
   fontLink.href = FONT_LINK;
   fontLink.rel = "stylesheet";
   document.head.appendChild(fontLink); // Add the font link to the head
+
+  log(
+    INITIALIZE_LOG,
+    "background: rgba(10,11,12,1) ; color: rgba(214, 250, 214,1) ; padding: 0.5rem 0.75rem; border-radius: 0.5rem; font-size: 1rem; "
+  ); // Log initialization
 
   // Detect Song Changes
   let song = {
@@ -249,7 +264,7 @@ const modify = () => {
           !targetNode.innerHTML.startsWith("<!--") &&
           targetNode.innerHTML !== ""
         ) {
-          console.log(SONG_SWITCHED_LOG, targetNode.innerHTML); // Log song switch
+          log(SONG_SWITCHED_LOG, targetNode.innerHTML); // Log song switch
           song.title = targetNode.innerHTML;
           addAlbumArtToLayout(); // Add the album art to the layout
 
@@ -257,10 +272,10 @@ const modify = () => {
           const tabSelector =
             document.getElementsByClassName(TAB_HEADER_CLASS)[1];
           if (tabSelector.getAttribute("aria-selected") === "true") {
-            console.log(LYRICS_TAB_VISIBLE_LOG); // Log lyrics tab visible
+            log(LYRICS_TAB_VISIBLE_LOG); // Log lyrics tab visible
             setTimeout(() => createLyrics(), 1000); // Fetch lyrics after a short delay
           } else {
-            console.log(LYRICS_TAB_HIDDEN_LOG); // Log lyrics tab hidden
+            log(LYRICS_TAB_HIDDEN_LOG); // Log lyrics tab hidden
           }
         }
       }
@@ -278,7 +293,7 @@ const modify = () => {
 
     if (tab1 !== undefined && tab2 !== undefined && tab3 !== undefined) {
       tab2.addEventListener("click", function () {
-        console.log(LYRICS_TAB_CLICKED_LOG); // Log lyrics tab clicked
+        log(LYRICS_TAB_CLICKED_LOG); // Log lyrics tab clicked
         setTimeout(() => createLyrics(), 1000); // Fetch lyrics after a short delay
       });
     } else {
@@ -295,5 +310,5 @@ try {
     document.addEventListener("DOMContentLoaded", modify); // Call the modify function when the page is loaded
   }
 } catch (err) {
-  console.log(GENERAL_ERROR_LOG, err); // Log any errors
+  log(GENERAL_ERROR_LOG, err); // Log any errors
 }

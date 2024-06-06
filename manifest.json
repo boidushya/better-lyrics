@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "version": "1.1.4",
+  "version": "1.1.5",
   "name": "Better Lyrics",
   "description": "Better lyrics for YouTube Music",
   "icons": {
@@ -10,6 +10,11 @@
   },
   "update_url": "https://clients2.google.com/service/update2/crx",
   "host_permissions": ["*://music.youtube.com/*"],
+  "permissions": ["storage"],
+  "options_ui": {
+    "page": "src/options.html",
+    "open_in_tab": false
+  },
   "content_scripts": [
     {
       "matches": ["*://music.youtube.com/*"],

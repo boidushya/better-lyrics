@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Better Youtube Settings</title>
+    <style>
+      * {
+        font-family: "Avenir", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+          sans-serif;
+        font-weight: 400;
+      }
+      body {
+        background: #28292c;
+        color: #fff;
+        padding: 1.25rem 2rem;
+        overflow: hidden;
+      }
+      .container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        margin-top: 1rem;
+        width: 100%;
+        justify-content: space-between;
+      }
+      button {
+        background-color: hsla(0, 0%, 100%, 0.1);
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        font-size: 1.125rem;
+        border-radius: 1000rem;
+      }
+      button:hover {
+        background-color: hsla(0, 0%, 100%, 0.2);
+      }
+      label {
+        position: relative;
+        cursor: pointer;
+        font-size: 22px;
+        user-select: none;
+        height: 24px;
+        width: 24px;
+      }
+
+      /* Hide the browser's default checkbox */
+      label input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+
+      /* Create a custom checkbox */
+      .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        background-color: hsla(0, 0%, 100%, 0.1);
+        border: 2px hsla(0, 0%, 100%, 0.1) solid;
+      }
+
+      /* On mouse-over, add a grey background color */
+      label:hover input ~ .checkmark {
+        background-color: hsla(0, 0%, 100%, 0.2);
+      }
+
+      /* When the checkbox is checked, add a blue background */
+      label input:checked ~ .checkmark {
+        background-color: hsla(0, 0%, 100%, 0.1);
+      }
+
+      /* Create the checkmark/indicator (hidden when not checked) */
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+
+      /* Show the checkmark when checked */
+      label input:checked ~ .checkmark:after {
+        display: block;
+      }
+
+      /* Style the checkmark/indicator */
+      label .checkmark:after {
+        left: 6px;
+        top: 3px;
+        width: 5px;
+        height: 8px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        -webkit-transform: rotate(35deg);
+        -ms-transform: rotate(35deg);
+        transform: rotate(35deg);
+      }
+
+      #status {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%) translateY(-100%);
+        opacity: 0;
+        background: #3e3e41;
+        border: 1px hsla(0, 0%, 100%, 0.1) solid;
+        padding: 0.5rem 1.25rem;
+        border-radius: 0.5rem;
+        font-size: 1.125rem;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, opacity 0.2s;
+      }
+      #status.active {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <span>Show Logs</span>
+      <label>
+        <input type="checkbox" id="logs" />
+        <span class="checkmark"></span>
+      </label>
+    </div>
+
+    <div id="status"></div>
+    <button id="save">Save</button>
+
+    <script src="options.js"></script>
+  </body>
+</html>
