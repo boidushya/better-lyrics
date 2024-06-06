@@ -72,8 +72,9 @@ const createLyrics = () => {
         try {
           const lyricsContainer =
             document.getElementsByClassName(LYRICS_CLASS)[0];
+          lyricsContainer.innerHTML = ""; // Clear the lyrics container
           const errorContainer = document.createElement("div");
-          errorContainer.className = "error";
+          errorContainer.className = "blyrics-error";
           errorContainer.innerHTML = "No lyrics found for this song.";
           lyricsContainer.appendChild(errorContainer); // Append error message to lyrics container
         } catch (err) {

@@ -113,6 +113,11 @@ yt-formatted-string.text.style-scope.ytmusic-message-renderer {
   color: rgba(255, 255, 255, 0.5) !important;
 }
 
+.blyrics-error {
+  color: rgba(254, 226, 226);
+  margin-bottom: 4rem !important;
+}
+
 @media (max-width: 936px) {
   yt-formatted-string.non-expandable.description.style-scope.ytmusic-description-shelf-renderer {
     margin-inline: -1.5rem;
