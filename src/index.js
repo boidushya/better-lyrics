@@ -106,11 +106,7 @@ const createLyrics = () => {
 const injectLyrics = (lyrics, wrapper) => {
   // Inject Lyrics into DOM
   let lyricsWrapper;
-  if (wrapper !== null) {
-    lyricsWrapper = wrapper;
-  } else {
-    lyricsWrapper = document.getElementsByClassName(DESCRIPTION_CLASS)[1]; // Get the lyrics wrapper
-  }
+  lyricsWrapper = document.getElementsByClassName(DESCRIPTION_CLASS)[1]; // Get the lyrics wrapper
 
   try {
     const footer = (document.getElementsByClassName(
@@ -122,6 +118,9 @@ const injectLyrics = (lyrics, wrapper) => {
   }
 
   try {
+    if (wrapper) {
+      wrapper.innerHTML = ""; // Safety check to clear another wrapper if it exists
+    }
     lyricsWrapper.innerHTML = "";
     const lyricsContainer = document.createElement("div");
     lyricsContainer.className = LYRICS_CLASS;
