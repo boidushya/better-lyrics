@@ -35,11 +35,15 @@ const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
 // Logger function
 const log = (...message) => {
-  chrome.storage.sync.get({ isLogsEnabled: true }, (items) => {
-    if (items.isLogsEnabled) {
-      console.log(...message);
-    }
-  });
+  if (chrome.runtime?.id) {
+    chrome.storage.sync.get({ isLogsEnabled: true }, (items) => {
+      if (items.isLogsEnabled) {
+        console.log(...message);
+      }
+    });
+  } else {
+    console.log(...message);
+  }
 };
 
 // Helper function to convert time string to integer
