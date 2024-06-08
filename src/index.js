@@ -44,12 +44,12 @@ const getStorage = (key, callback) => {
     if (chrome.runtime?.id) {
       chrome.storage.sync.get(key, callback);
     } else {
-      callback();
+      callback(key);
     }
   } else if (inFirefox) {
     browser.storage.sync.get(key, callback);
   } else {
-    callback();
+    callback(key);
   }
 };
 
