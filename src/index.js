@@ -35,8 +35,21 @@ const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
 // Logger function
 const log = (...message) => {
-  if (chrome.runtime?.id) {
-    chrome.storage.sync.get({ isLogsEnabled: true }, (items) => {
+  const inChrome =
+    typeof chrome !== "undefined" && typeof browser === "undefined";
+  const inFirefox = typeof browser !== "undefined";
+  if (inChrome) {
+    if (chrome.runtime?.id) {
+      chrome.storage.sync.get({ isLogsEnabled: true }, (items) => {
+        if (items.isLogsEnabled) {
+          console.log(...message);
+        }
+      });
+    } else {
+      console.log(...message);
+    }
+  } else if (inFirefox) {
+    browser.storage.sync.get({ isLogsEnabled: true }, (items) => {
       if (items.isLogsEnabled) {
         console.log(...message);
       }

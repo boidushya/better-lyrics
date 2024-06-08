@@ -1,5 +1,5 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "version": "1.1.8",
   "name": "Better Lyrics (Lyrics for Youtube Music)",
   "description": "Better lyrics for YouTube Music",
@@ -8,12 +8,10 @@
     "48": "images/icons/icon-48.png",
     "512": "images/icons/icon-512.png"
   },
-  "update_url": "https://clients2.google.com/service/update2/crx",
-  "host_permissions": [
-    "*://music.youtube.com/*"
-  ],
   "permissions": [
-    "storage"
+    "storage",
+    "*://music.youtube.com/*",
+    "*://lyrics-api.boidu.dev/*"
   ],
   "options_ui": {
     "page": "src/options.html",
@@ -31,5 +29,11 @@
         "src/index.css"
       ]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "betterlyrics@boidu.dev",
+      "strict_min_version": "109.0"
+    }
+  }
 }

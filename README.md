@@ -32,10 +32,20 @@ song.
 
 ## Manual Installation
 
+### Chrome
+
 1. Clone this repository or download the ZIP file from the [releases](https://github.com/boidushya/better-lyrics/releases) page.
 2. Open Google Chrome and go to `chrome://extensions`.
 3. Enable "Developer mode" by toggling the switch in the top right corner.
 4. Click on "Load unpacked" and select the folder where you cloned/downloaded this repository.
+5. The Better Lyrics extension should now be installed and ready to use!
+
+### Firefox
+
+1. Clone this repository or download the ZIP file from the [releases](https://github.com/boidushya/better-lyrics/releases) page.
+2. Open Firefox and go to `about:debugging#/runtime/this-firefox`.
+3. Copy the contents of `manifest.firefox.json` and paste it in `manifest.json`.
+4. Click on "Load Temporary Add-on" and select the `manifest.json` file inside the cloned/downloaded folder.
 5. The Better Lyrics extension should now be installed and ready to use!
 
 ## Usage
