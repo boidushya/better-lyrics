@@ -53,7 +53,7 @@ const getStorage = (key, callback) => {
   }
 };
 
-// Logger function
+// Utility functions
 const log = (...message) => {
   getStorage({ isLogsEnabled: true }, (items) => {
     if (items.isLogsEnabled) {
@@ -65,6 +65,14 @@ const log = (...message) => {
 const onAutoSwitchEnabled = (callback) => {
   getStorage({ isAutoSwitchEnabled: false }, (items) => {
     if (items.isAutoSwitchEnabled) {
+      callback();
+    }
+  });
+};
+
+const onAlbumArtEnabled = (callback) => {
+  getStorage({ isAlbumArtEnabled: true }, (items) => {
+    if (items.isAlbumArtEnabled) {
       callback();
     }
   });
@@ -296,7 +304,7 @@ const modify = () => {
         ) {
           log(SONG_SWITCHED_LOG, targetNode.innerHTML); // Log song switch
           song.title = targetNode.innerHTML;
-          addAlbumArtToLayout(); // Add the album art to the layout
+          onAlbumArtEnabled(addAlbumArtToLayout);
 
           // Check if lyrics tab is visible
           const tabSelector =
