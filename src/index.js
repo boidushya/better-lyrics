@@ -91,7 +91,9 @@ const createLyrics = () => {
   }
   log(FETCH_LYRICS_LOG, song, artist); // Log fetching lyrics
 
-  const url = `${LYRICS_API_URL}?s=${song}&a=${artist}`; // Construct the API URL with song and artist
+  const url = `${LYRICS_API_URL}?s=${encodeURIComponent(
+    song
+  )}&a=${encodeURIComponent(artist)}`; // Construct the API URL with song and artist
 
   fetch(url)
     .then((response) => response.json())
