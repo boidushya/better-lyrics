@@ -31,32 +31,43 @@ const FOOTER_NOT_VISIBLE_LOG = `${LOG_PREFIX} ${IGNORE_PREFIX} Footer is not vis
 const LYRICS_TAB_NOT_DISABLED_LOG = `${LOG_PREFIX} ${IGNORE_PREFIX} Lyrics tab is not disabled, unable to enable it`;
 const SONG_SWITCHED_LOG = `${LOG_PREFIX} Song has been switched`;
 const ALBUM_ART_ADDED_LOG = `${LOG_PREFIX} Album art added to the layout`;
+const AUTO_SWITCH_ENABLED_LOG = `${LOG_PREFIX} Auto switch enabled, switching to lyrics tab`;
 const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
-// Logger function
-const log = (...message) => {
+// Storage get function
+
+const getStorage = (key, callback) => {
   const inChrome =
     typeof chrome !== "undefined" && typeof browser === "undefined";
   const inFirefox = typeof browser !== "undefined";
   if (inChrome) {
     if (chrome.runtime?.id) {
-      chrome.storage.sync.get({ isLogsEnabled: true }, (items) => {
-        if (items.isLogsEnabled) {
-          console.log(...message);
-        }
-      });
+      chrome.storage.sync.get(key, callback);
     } else {
-      console.log(...message);
+      callback();
     }
   } else if (inFirefox) {
-    browser.storage.sync.get({ isLogsEnabled: true }, (items) => {
-      if (items.isLogsEnabled) {
-        console.log(...message);
-      }
-    });
+    browser.storage.sync.get(key, callback);
   } else {
-    console.log(...message);
+    callback();
   }
+};
+
+// Logger function
+const log = (...message) => {
+  getStorage({ isLogsEnabled: true }, (items) => {
+    if (items.isLogsEnabled) {
+      console.log(...message);
+    }
+  });
+};
+
+const onAutoSwitchEnabled = (callback) => {
+  getStorage({ isAutoSwitchEnabled: false }, (items) => {
+    if (items.isAutoSwitchEnabled) {
+      callback();
+    }
+  });
 };
 
 // Helper function to convert time string to integer
@@ -292,6 +303,12 @@ const modify = () => {
             log(LYRICS_TAB_VISIBLE_LOG); // Log lyrics tab visible
             setTimeout(() => createLyrics(), 1000); // Fetch lyrics after a short delay
           } else {
+            onAutoSwitchEnabled(() => {
+              tabSelector.click();
+              log(AUTO_SWITCH_ENABLED_LOG);
+              setTimeout(() => createLyrics(), 1000); // Fetch lyrics after a short delay
+            });
+
             log(LYRICS_TAB_HIDDEN_LOG); // Log lyrics tab hidden
           }
         }
