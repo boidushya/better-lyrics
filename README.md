@@ -60,10 +60,9 @@ song.
 2. Click on the lyrics tab to view the time-synced lyrics. (This might take a few seconds to load)
 3. Click on a specific line to seek to that part of the song.
 
-> [!TIP]
-> Logs are enabled by default. To disable logs, right-click the extension icon and select "Options" or go to `chrome://extensions` and click on "Details" > "Extension options" under the Better Lyrics extension.\
+> [!TIP] > **Logs are enabled by default.** To disable logs, right-click the extension icon and select "Options" or go to `chrome://extensions` and click on "Details" > "Extension options" under the Better Lyrics extension.
 >
-> Auto switch to Lyrics tab is disabled by default. To enable it, right-click the extension icon and select "Options" or go to `chrome://extensions` and click on "Details" > "Extension options" under the Better Lyrics extension.\
+> **Auto switch to Lyrics tab is disabled by default.** To enable it, right-click the extension icon and select "Options" or go to `chrome://extensions` and click on "Details" > "Extension options" under the Better Lyrics extension.
 >
 > If you're using Firefox, you can access the options by right-clicking the extension icon and selecting "Manage Extension".
 
