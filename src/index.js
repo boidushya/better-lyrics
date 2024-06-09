@@ -240,7 +240,7 @@ const injectLyrics = (lyrics, wrapper) => {
               // If the translation was successful, set the translated text as the content for translatedLine
               translatedLine.textContent = "\n" + result.translatedText;
               line.appendChild(translatedLine);
-            }
+           
           } else {
             // If an error occurred during translation, we display an error message
             translatedLine.textContent = "Translation error";
