@@ -244,7 +244,7 @@ const injectLyrics = (lyrics, wrapper) => {
             }
           } else {
             // If an error occurred during translation, we display an error message
-            translatedLine.textContent = "Translation error";
+            translatedLine.textContent = "\n" + "Translation error";
             line.appendChild(translatedLine); // Add span to the line
           }
         });
