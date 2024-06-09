@@ -13,6 +13,10 @@ const SONG_IMAGE_SELECTOR = "#song-image>#thumbnail>#img"; // Selector for the s
 // Constants
 const LYRICS_API_URL = "https://lyrics-api.boidu.dev/getLyrics"; // URL for the lyrics API
 const FONT_LINK = "https://api.fontshare.com/v2/css?f[]=satoshi@1&display=swap"; // URL for the font
+const TRANSLATE_LYRICS_URL = (lang, text) =>
+  `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(
+    text
+  )}`;
 
 // Console log constants
 
@@ -32,6 +36,8 @@ const LYRICS_TAB_NOT_DISABLED_LOG = `${LOG_PREFIX} ${IGNORE_PREFIX} Lyrics tab i
 const SONG_SWITCHED_LOG = `${LOG_PREFIX} Song has been switched`;
 const ALBUM_ART_ADDED_LOG = `${LOG_PREFIX} Album art added to the layout`;
 const AUTO_SWITCH_ENABLED_LOG = `${LOG_PREFIX} Auto switch enabled, switching to lyrics tab`;
+const TRANSLATION_ENABLED_LOG = `${LOG_PREFIX} Translation enabled, translating lyrics. Language: `;
+const TRANSLATION_ERROR_LOG = `${LOG_PREFIX} Unable to translate lyrics due to error`;
 const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
 // Storage get function
@@ -74,6 +80,14 @@ const onAlbumArtEnabled = (callback) => {
   getStorage({ isAlbumArtEnabled: true }, (items) => {
     if (items.isAlbumArtEnabled) {
       callback();
+    }
+  });
+};
+
+const onTranslationEnabled = (callback) => {
+  getStorage(["isTranslateEnabled", "translationLanguage"], (items) => {
+    if (items.isTranslateEnabled) {
+      callback(items);
     }
   });
 };
@@ -152,23 +166,21 @@ const createLyrics = () => {
 
 // Function for translate lyrics
 function translateText(text, targetLanguage) {
-  let url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLanguage}&dt=t&q=${encodeURIComponent(text)}`;
+  let url = TRANSLATE_LYRICS_URL(targetLanguage, text);
 
   return fetch(url)
-      .then(response => response.json())
-      .then(data => {
-          // let translatedText = data[0][0][0];
-          // return translatedText;
-          let translatedText = '';
-          data[0].forEach(part => {
-              translatedText += part[0];
-          });
-          return translatedText;
-      })
-      .catch(error => {
-          console.error('Error:', error);
-          return null;
+    .then((response) => response.json())
+    .then((data) => {
+      let translatedText = "";
+      data[0].forEach((part) => {
+        translatedText += part[0];
       });
+      return translatedText;
+    })
+    .catch((error) => {
+      log(TRANSLATION_ERROR_LOG, error);
+      return null;
+    });
 }
 
 // Function to inject lyrics into the DOM
@@ -214,29 +226,28 @@ const injectLyrics = (lyrics, wrapper) => {
 
     line.innerHTML = item.words; // Set the line text
 
-    chrome.storage.sync.get(['isTranslateEnabled', 'translationLanguage'], (items) => {
-      if (items.isTranslateEnabled) {
-        let translatedLine = document.createElement("span"); // Create a span element
-        translatedLine.style.fontSize = "large"; // Set the font size for span
-        
-        let target_language = items.translationLanguage || 'en'; // Use the saved language or the default 'en'
-    
-        if (item.words.trim() !== '♪' && item.words.trim() !== '') {
-          translateText(item.words, target_language).then(translatedText => {
-            if (translatedText) {
-              // If the translation was successful, set the translated text as the content for translatedLine
-              translatedLine.textContent = '\n' + translatedText;
-            } else {
-              // If an error occurred during translation, we display an error message
-              translatedLine.textContent = 'Translation error';
-            }
-          });
-        }
-    
-        line.appendChild(translatedLine); // Add span to the line
+    onTranslationEnabled((items) => {
+      log(TRANSLATION_ENABLED_LOG, items.translationLanguage);
+      let translatedLine = document.createElement("span"); // Create a span element
+      translatedLine.classList.add("lyrics--translated");
+
+      let target_language = items.translationLanguage || "en"; // Use the saved language or the default 'en'
+
+      if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+        translateText(item.words, target_language).then((translatedText) => {
+          if (translatedText) {
+            // If the translation was successful, set the translated text as the content for translatedLine
+            translatedLine.textContent = "\n" + translatedText;
+          } else {
+            // If an error occurred during translation, we display an error message
+            translatedLine.textContent = "Translation error";
+          }
+        });
       }
+
+      line.appendChild(translatedLine); // Add span to the line
     });
-    
+
     try {
       document.getElementsByClassName(LYRICS_CLASS)[0].appendChild(line); // Append the line to the lyrics container
     } catch (err) {

@@ -3,7 +3,149 @@
   <head>
     <title>Better Youtube Settings</title>
     <style>
-      button,label,label input{cursor:pointer}#status,label input{position:absolute;opacity:0}#status,button{font-size:1.125rem}*{font-family:Avenir,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;font-weight:400}body{background:#28292c;color:#fff;padding:1.25rem 2rem;overflow:hidden}.container{display:flex;align-items:center;gap:1rem;font-size:1.25rem;margin-bottom:2rem;margin-top:1rem;width:100%;justify-content:space-between}button{background-color:hsla(0,0%,100%,.1);color:#fff;padding:14px 20px;margin:8px 0;border:none;width:100%;border-radius:1000rem}button:hover,label:hover input~.checkmark{background-color:hsla(0,0%,100%,.2)}.checkmark,label input:checked~.checkmark{background-color:hsla(0,0%,100%,.1)}label{position:relative;font-size:22px;user-select:none;height:24px;width:24px}label input{height:0;width:0}.checkmark{position:absolute;top:0;left:0;height:20px;width:20px;border:2px solid hsla(0,0%,100%,.1)}.checkmark:after{content:"";position:absolute;display:none}label input:checked~.checkmark:after{display:block}label .checkmark:after{left:6px;top:3px;width:5px;height:8px;border:solid #fff;border-width:0 2px 2px 0;-webkit-transform:rotate(35deg);-ms-transform:rotate(35deg);transform:rotate(35deg)}#status{top:0;left:50%;transform:translateX(-50%) translateY(-100%);background:#3e3e41;border:1px solid hsla(0,0%,100%,.1);padding:.5rem 1.25rem;border-radius:.5rem;box-shadow:0 0 10px 0 rgba(0,0,0,.1);transition:transform .2s,opacity .2s}#status.active{transform:translateX(-50%) translateY(0);opacity:1}
+      button,
+      label,
+      label input {
+        cursor: pointer;
+      }
+      #status,
+      label input {
+        position: absolute;
+        opacity: 0;
+      }
+      #status,
+      button {
+        font-size: 1.125rem;
+      }
+      * {
+        font-family: Avenir, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+          sans-serif;
+        font-weight: 400;
+      }
+      body {
+        background: #28292c;
+        color: #fff;
+        padding: 1.25rem 2rem;
+        overflow: hidden;
+      }
+      .container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        margin-top: 1rem;
+        width: 100%;
+        justify-content: space-between;
+      }
+      button {
+        background-color: hsla(0, 0%, 100%, 0.1);
+        color: #fff;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        width: 100%;
+        border-radius: 1000rem;
+      }
+      button:hover,
+      label:hover input ~ .checkmark {
+        background-color: hsla(0, 0%, 100%, 0.2);
+      }
+      .checkmark,
+      label input:checked ~ .checkmark {
+        background-color: hsla(0, 0%, 100%, 0.1);
+      }
+      label {
+        position: relative;
+        font-size: 22px;
+        user-select: none;
+        height: 24px;
+        width: 24px;
+      }
+      label input {
+        height: 0;
+        width: 0;
+      }
+      .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        border: 2px solid hsla(0, 0%, 100%, 0.1);
+      }
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+      label input:checked ~ .checkmark:after {
+        display: block;
+      }
+      label .checkmark:after {
+        left: 6px;
+        top: 3px;
+        width: 5px;
+        height: 8px;
+        border: solid #fff;
+        border-width: 0 2px 2px 0;
+        -webkit-transform: rotate(35deg);
+        -ms-transform: rotate(35deg);
+        transform: rotate(35deg);
+      }
+      #status {
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%) translateY(-100%);
+        background: #3e3e41;
+        border: 1px solid hsla(0, 0%, 100%, 0.1);
+        padding: 0.5rem 1.25rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, opacity 0.2s;
+      }
+      #status.active {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+      select {
+        appearance: none;
+        background-color: transparent;
+        border: none;
+        padding: 0 1em 0 0;
+        margin: 0;
+        width: 100%;
+        font-family: inherit;
+        font-size: inherit;
+        cursor: inherit;
+        line-height: inherit;
+        outline: none;
+        color: white;
+      }
+      .select {
+        position: relative;
+        min-width: 10ch;
+        max-width: 30ch;
+        border: 2px solid hsla(0, 0%, 100%, 0.1);
+        padding: 0.25em 0.5em;
+        cursor: pointer;
+        font-size: 0.875rem;
+        background-color: hsla(0, 0%, 100%, 0.1);
+      }
+      .select:after {
+        content: "";
+        position: absolute;
+        right: 0.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 1rem;
+        width: 1rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.875' stroke='%23ffffff8a' height='20' width='20'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9' /%3E%3C/svg%3E%0A");
+        background-repeat: no-repeat no-repeat;
+        background-position: center center;
+        background-size: cover;
+      }
     </style>
   </head>
   <body>
@@ -14,14 +156,14 @@
         <span class="checkmark"></span>
       </label>
     </div>
-	<div class="container">
+    <div class="container">
       <span>Auto switch to Lyrics tab</span>
       <label>
         <input type="checkbox" id="autoSwitch" />
         <span class="checkmark"></span>
       </label>
     </div>
-	<div class="container">
+    <div class="container">
       <span>Show blurred album art background</span>
       <label>
         <input type="checkbox" id="albumArt" />
@@ -37,51 +179,53 @@
     </div>
     <div class="container">
       <span>Translation language</span>
-      <select id="translationLanguage">
-        <option value="en">English</option>
-        <option value="uk">Ukrainian</option>
+      <div class="select">
+        <select id="translationLanguage">
+          <option value="en">English</option>
+          <option value="uk">Ukrainian</option>
 
-        <option value="es">Spanish</option>
-        <option value="fr">French</option>
-        <option value="de">German</option>
-        <option value="it">Italian</option>
-        <option value="ru">Russian</option>
-        <option value="zh">Chinese</option>
-        <option value="ja">Japanese</option>
-        <option value="ko">Korean</option>
-        <option value="pt">Portuguese</option>
-        <option value="ar">Arabic</option>
-        <option value="hi">Hindi</option>
-        <option value="bn">Bengali</option>
-        <option value="pa">Punjabi</option>
-        <option value="jv">Javanese</option>
-        <option value="mr">Marathi</option>
-        <option value="te">Telugu</option>
-        <option value="vi">Vietnamese</option>
-        <option value="ta">Tamil</option>
-        <option value="fa">Persian</option>
-        <option value="ur">Urdu</option>
-        <option value="tr">Turkish</option>
-        <option value="pl">Polish</option>
-        <option value="nl">Dutch</option>
-        <option value="el">Greek</option>
-        <option value="sv">Swedish</option>
-        <option value="fi">Finnish</option>
-        <option value="da">Danish</option>
-        <option value="no">Norwegian</option>
-        <option value="he">Hebrew</option>
-        <option value="hu">Hungarian</option>
-        <option value="cs">Czech</option>
-        <option value="sk">Slovak</option>
-        <option value="ro">Romanian</option>
-        <option value="bg">Bulgarian</option>
-        <option value="sr">Serbian</option>
-        <option value="hr">Croatian</option>
-        <option value="lt">Lithuanian</option>
-        <option value="lv">Latvian</option>
-        <option value="et">Estonian</option>
-        <!-- Add more language options as needed -->
-      </select>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="it">Italian</option>
+          <option value="ru">Russian</option>
+          <option value="zh">Chinese</option>
+          <option value="ja">Japanese</option>
+          <option value="ko">Korean</option>
+          <option value="pt">Portuguese</option>
+          <option value="ar">Arabic</option>
+          <option value="hi">Hindi</option>
+          <option value="bn">Bengali</option>
+          <option value="pa">Punjabi</option>
+          <option value="jv">Javanese</option>
+          <option value="mr">Marathi</option>
+          <option value="te">Telugu</option>
+          <option value="vi">Vietnamese</option>
+          <option value="ta">Tamil</option>
+          <option value="fa">Persian</option>
+          <option value="ur">Urdu</option>
+          <option value="tr">Turkish</option>
+          <option value="pl">Polish</option>
+          <option value="nl">Dutch</option>
+          <option value="el">Greek</option>
+          <option value="sv">Swedish</option>
+          <option value="fi">Finnish</option>
+          <option value="da">Danish</option>
+          <option value="no">Norwegian</option>
+          <option value="he">Hebrew</option>
+          <option value="hu">Hungarian</option>
+          <option value="cs">Czech</option>
+          <option value="sk">Slovak</option>
+          <option value="ro">Romanian</option>
+          <option value="bg">Bulgarian</option>
+          <option value="sr">Serbian</option>
+          <option value="hr">Croatian</option>
+          <option value="lt">Lithuanian</option>
+          <option value="lv">Latvian</option>
+          <option value="et">Estonian</option>
+          <!-- Add more language options as needed -->
+        </select>
+      </div>
     </div>
     <div id="status"></div>
     <button id="save">Save</button>

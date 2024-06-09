@@ -35,6 +35,12 @@
   cursor: default;
 }
 
+.lyrics--translated {
+  opacity: 0.5;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
 #side-panel {
   min-width: calc(50vw + 4rem);
 }
