@@ -171,11 +171,12 @@ function translateText(text, targetLanguage) {
   return fetch(url)
     .then((response) => response.json())
     .then((data) => {
+      let originalLanguage = data[2];
       let translatedText = "";
       data[0].forEach((part) => {
         translatedText += part[0];
       });
-      return translatedText;
+      return { originalLanguage, translatedText };
     })
     .catch((error) => {
       log(TRANSLATION_ERROR_LOG, error);
@@ -234,18 +235,20 @@ const injectLyrics = (lyrics, wrapper) => {
       let target_language = items.translationLanguage || "en"; // Use the saved language or the default 'en'
 
       if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-        translateText(item.words, target_language).then((translatedText) => {
-          if (translatedText) {
-            // If the translation was successful, set the translated text as the content for translatedLine
-            translatedLine.textContent = "\n" + translatedText;
+        translateText(item.words, target_language).then((result) => {
+          if (result) {
+            if (result.originalLanguage !== target_language) {
+              // If the translation was successful, set the translated text as the content for translatedLine
+              translatedLine.textContent = "\n" + result.translatedText;
+              line.appendChild(translatedLine);
+            }
           } else {
             // If an error occurred during translation, we display an error message
             translatedLine.textContent = "Translation error";
+            line.appendChild(translatedLine); // Add span to the line
           }
         });
       }
-
-      line.appendChild(translatedLine); // Add span to the line
     });
 
     try {
