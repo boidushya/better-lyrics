@@ -236,8 +236,7 @@ const injectLyrics = (lyrics, wrapper) => {
 
       if (item.words.trim() !== "♪" && item.words.trim() !== "") {
         translateText(item.words, target_language).then((result) => {
-          if (result) {
-            if (result.originalLanguage !== target_language) {
+          if (result && result.originalLanguage !== target_language) {
               // If the translation was successful, set the translated text as the content for translatedLine
               translatedLine.textContent = "\n" + result.translatedText;
               line.appendChild(translatedLine);
