@@ -150,6 +150,27 @@ const createLyrics = () => {
     });
 };
 
+// Function for translate lyrics
+function translateText(text, targetLanguage) {
+  let url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLanguage}&dt=t&q=${encodeURIComponent(text)}`;
+
+  return fetch(url)
+      .then(response => response.json())
+      .then(data => {
+          // let translatedText = data[0][0][0];
+          // return translatedText;
+          let translatedText = '';
+          data[0].forEach(part => {
+              translatedText += part[0];
+          });
+          return translatedText;
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          return null;
+      });
+}
+
 // Function to inject lyrics into the DOM
 const injectLyrics = (lyrics, wrapper) => {
   // Inject Lyrics into DOM
@@ -193,6 +214,29 @@ const injectLyrics = (lyrics, wrapper) => {
 
     line.innerHTML = item.words; // Set the line text
 
+    chrome.storage.sync.get(['isTranslateEnabled', 'translationLanguage'], (items) => {
+      if (items.isTranslateEnabled) {
+        let translatedLine = document.createElement("span"); // Create a span element
+        translatedLine.style.fontSize = "large"; // Set the font size for span
+        
+        let target_language = items.translationLanguage || 'en'; // Use the saved language or the default 'en'
+    
+        if (item.words.trim() !== '♪' && item.words.trim() !== '') {
+          translateText(item.words, target_language).then(translatedText => {
+            if (translatedText) {
+              // If the translation was successful, set the translated text as the content for translatedLine
+              translatedLine.textContent = '\n' + translatedText;
+            } else {
+              // If an error occurred during translation, we display an error message
+              translatedLine.textContent = 'Translation error';
+            }
+          });
+        }
+    
+        line.appendChild(translatedLine); // Add span to the line
+      }
+    });
+    
     try {
       document.getElementsByClassName(LYRICS_CLASS)[0].appendChild(line); // Append the line to the lyrics container
     } catch (err) {
