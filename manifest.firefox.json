@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "version": "1.2.2",
+  "version": "1.2.4",
   "name": "Better Lyrics (Lyrics for Youtube Music)",
   "description": "Better lyrics for YouTube Music",
   "icons": {
@@ -11,7 +11,8 @@
   "permissions": [
     "storage",
     "*://music.youtube.com/*",
-    "*://lyrics-api.boidu.dev/*"
+    "*://lyrics-api.boidu.dev/*",
+    "*://translate.googleapis.com/*"
   ],
   "options_ui": {
     "page": "src/options.html",
