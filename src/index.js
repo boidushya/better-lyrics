@@ -102,6 +102,11 @@ const timeToInt = (time) => {
   return time;
 };
 
+// Function to convert &amp; to &
+function unEntity(str) {
+  return str.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+}
+
 // Function to create and inject lyrics
 const createLyrics = () => {
   const song = document.getElementsByClassName(TITLE_CLASS)[0].innerHTML; // Get the song title
@@ -117,8 +122,8 @@ const createLyrics = () => {
   log(FETCH_LYRICS_LOG, song, artist); // Log fetching lyrics
 
   const url = `${LYRICS_API_URL}?s=${encodeURIComponent(
-    song
-  )}&a=${encodeURIComponent(artist)}`; // Construct the API URL with song and artist
+    unEntity(song)
+  )}&a=${encodeURIComponent(unEntity(artist))}`; // Construct the API URL with song and artist
 
   fetch(url)
     .then((response) => response.json())
