@@ -3,7 +3,10 @@ const TITLE_CLASS = "title ytmusic-player-bar"; // Class for the song title
 const SUBTITLE_CLASS = "subtitle style-scope ytmusic-player-bar"; // Class for the artist name
 const TAB_HEADER_CLASS = "tab-header style-scope ytmusic-player-page"; // Class for the tab headers
 const TAB_CONTENT_CLASS = "tab-content style-scope tp-yt-paper-tab"; // Class for the tab content
-const LYRICS_CLASS = "lyrics"; // Class for the lyrics container
+const LYRICS_CLASS = "blyrics-container"; // Class for the lyrics container
+const CURRENT_LYRICS_CLASS = "blyrics--active"; // Class for the current lyrics line
+const TRANSLATED_LYRICS_CLASS = "blyrics--translated"; // Class for the translated lyrics line
+const ERROR_LYRICS_CLASS = "blyrics--error"; // Class for the error message
 const DESCRIPTION_CLASS =
   "description style-scope ytmusic-description-shelf-renderer"; // Class for the description container
 const FOOTER_CLASS = "footer style-scope ytmusic-description-shelf-renderer"; // Class for the footer
@@ -136,7 +139,7 @@ const createLyrics = () => {
             document.getElementsByClassName(LYRICS_CLASS)[0];
           lyricsContainer.innerHTML = ""; // Clear the lyrics container
           const errorContainer = document.createElement("div");
-          errorContainer.className = "blyrics-error";
+          errorContainer.className = ERROR_LYRICS_CLASS;
           errorContainer.innerHTML = "No lyrics found for this song.";
           lyricsContainer.appendChild(errorContainer); // Append error message to lyrics container
         } catch (err) {
@@ -230,7 +233,7 @@ const injectLyrics = (lyrics, wrapper) => {
     onTranslationEnabled((items) => {
       log(TRANSLATION_ENABLED_LOG, items.translationLanguage);
       let translatedLine = document.createElement("span"); // Create a span element
-      translatedLine.classList.add("lyrics--translated");
+      translatedLine.classList.add(TRANSLATED_LYRICS_CLASS);
 
       let target_language = items.translationLanguage || "en"; // Use the saved language or the default 'en'
 
@@ -243,8 +246,8 @@ const injectLyrics = (lyrics, wrapper) => {
               line.appendChild(translatedLine);
             }
           } else {
-            // If an error occurred during translation, we display an error message
-            translatedLine.textContent = "\n" + "Translation error";
+            // If an error occurred during translation, we show the line as "—" since we don't want to take away from the UX
+            translatedLine.textContent = "\n" + "—";
             line.appendChild(translatedLine); // Add span to the line
           }
         });
@@ -277,8 +280,8 @@ const injectLyrics = (lyrics, wrapper) => {
         const time = parseFloat(elem.getAttribute("data-time")); // Get the start time of the line
         if (currentTime >= time && index + 1 === lyrics.length) {
           // If it's the last line
-          elem.setAttribute("class", "current"); // Set it as the current line
-          const current = document.getElementsByClassName("current");
+          elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
+          const current = document.getElementsByClassName(CURRENT_LYRICS_CLASS);
           current[0].scrollIntoView({
             behavior: "smooth",
             block: "center",
@@ -290,9 +293,10 @@ const injectLyrics = (lyrics, wrapper) => {
           currentTime < parseFloat(lyrics[index + 1].getAttribute("data-time"))
         ) {
           // If it's between the current and next line
-          const current = document.getElementsByClassName("current")[0];
+          const current =
+            document.getElementsByClassName(CURRENT_LYRICS_CLASS)[0];
 
-          elem.setAttribute("class", "current"); // Set it as the current line
+          elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
           if (
             current !== undefined &&
             current.getAttribute("data-scrolled") !== "true"

@@ -1,4 +1,4 @@
-.lyrics {
+.blyrics-container {
   font-size: 3rem;
   font-weight: 700;
   font-family: "Satoshi", "Avenir", -apple-system, BlinkMacSystemFont,
@@ -10,7 +10,7 @@
   z-index: 1;
 }
 
-.lyrics > div {
+.blyrics-container > div {
   opacity: 0.33;
   transition: opacity 0.33s, transform 0.166s;
   padding-top: 2rem !important;
@@ -21,21 +21,21 @@
   cursor: pointer;
 }
 
-.lyrics > div:first-child {
+.blyrics-container > div:first-child {
   padding-top: 3rem !important;
 }
 
-.lyrics > div:last-child {
+.blyrics-container > div:last-child {
   padding-bottom: 0rem !important;
 }
 
-.lyrics > div.current {
+.blyrics-container > div.blyrics--active {
   opacity: 1;
   transform: scale(1);
   cursor: default;
 }
 
-.lyrics--translated {
+.blyrics--translated {
   opacity: 0.6;
   font-size: 2rem;
   font-weight: 600;
@@ -119,7 +119,7 @@ yt-formatted-string.text.style-scope.ytmusic-message-renderer {
   color: rgba(255, 255, 255, 0.5) !important;
 }
 
-.blyrics-error {
+.blyrics--error {
   color: rgba(254, 226, 226);
   margin-bottom: 4rem !important;
 }
@@ -131,13 +131,13 @@ yt-formatted-string.text.style-scope.ytmusic-message-renderer {
 }
 
 @media (max-width: 615px) {
-  .lyrics > div {
+  .blyrics-container > div {
     margin-inline: 4rem !important;
   }
   .footer.style-scope.ytmusic-description-shelf-renderer {
     margin-inline: 2.5rem !important;
   }
-  .lyrics:before {
+  .blyrics-container:before {
     content: "";
     background: linear-gradient(
         to right,
@@ -158,7 +158,7 @@ yt-formatted-string.text.style-scope.ytmusic-message-renderer {
     border-radius: 1rem;
   }
 
-  .lyrics:after {
+  .blyrics-container:after {
     transform: translateX(0) translateY(0) !important;
     content: "";
     position: absolute;
