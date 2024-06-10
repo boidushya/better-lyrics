@@ -196,7 +196,7 @@ const injectLyrics = (lyrics, wrapper) => {
   try {
     const footer = (document.getElementsByClassName(
       FOOTER_CLASS
-    )[0].innerHTML = `Source: <a href="https://boidu.dev" class="footer-link" target="_blank">boidu.dev</a>`); // Set the footer content
+    )[0].innerHTML = `Source: <a href="https://better-lyrics.boidu.dev" class="footer-link" target="_blank">boidu.dev</a>`); // Set the footer content
     footer.removeAttribute("is-empty");
   } catch (err) {
     log(FOOTER_NOT_VISIBLE_LOG); // Log footer not visible
