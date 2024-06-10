@@ -12,14 +12,6 @@
 
 ![Banner](https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png)
 
-> [!IMPORTANT]
->
-> The author is self-hosting the backend for Better Lyrics to ensure a smooth and reliable experience for all users. This involves maintaining servers, handling updates, and ensuring uptime. If you find Better Lyrics useful and would like to support the project, please consider making a donation.
->
-> Your support helps cover the costs of hosting and development, and ensures continued improvements and stability.
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q2VA1E)
-
 ## Description
 
 Better Lyrics for Youtube Music upgrades your Youtube Music experience
@@ -82,6 +74,15 @@ song.
 > [!TIP]
 >
 > To change defaults, right-click the extension icon and select "Options" or go to `chrome://extensions` and click on "Details" > "Extension options" under the Better Lyrics extension. If you're using Firefox, you can access the options by right-clicking the extension icon and selecting "Manage Extension".
+
+## Funding
+
+> [!IMPORTANT]
+>
+> The author is self-hosting the backend for Better Lyrics to ensure a smooth and reliable experience for all users. This involves maintaining servers, handling updates, and ensuring uptime. If you find Better Lyrics useful and would like to support the project, please consider making a donation.
+>
+> Your support helps cover the costs of hosting and development, and ensures continued improvements and stability.
+> [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q2VA1E)
 
 ## Contributing
 
