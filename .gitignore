@@ -2,3 +2,23 @@ dist/
 .DS_Store
 build*.sh
 bump-ver.sh
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore .next directory which contains build output
+.next/
+
+# Ignore .env files which may contain sensitive information
+.env*
+
+# Ignore build artifacts and cache
+/.next/
+/out/
+
+# Ignore logs
+*.log
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
