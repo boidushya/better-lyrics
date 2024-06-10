@@ -61,15 +61,19 @@ song.
 2. Click on the lyrics tab to view the time-synced lyrics. (This might take a few seconds to load)
 3. Click on a specific line to seek to that part of the song.
 
+## Options
+
+| **Option**                   | **Default Status** |
+| ---------------------------- | ------------------ |
+| Logs                         | Enabled            |
+| Auto switch to Lyrics tab    | Disabled           |
+| Blurred album art background | Enabled            |
+| Translations                 | Disabled           |
+| Translation Language         | English            |
+
 > [!TIP]
 >
-> **Logs are enabled by default.**\
-> **Auto switch to Lyrics tab is disabled by default.**\
-> **Blurred album art background is enabled by default.**\
-> **Translations are disabled by default**
->
-> To change defaults, right-click the extension icon and select "Options" or go to `chrome://extensions` and click on "Details" > "Extension options" under the Better Lyrics extension.
-> If you're using Firefox, you can access the options by right-clicking the extension icon and selecting "Manage Extension".
+> To change defaults, right-click the extension icon and select "Options" or go to `chrome://extensions` and click on "Details" > "Extension options" under the Better Lyrics extension. If you're using Firefox, you can access the options by right-clicking the extension icon and selecting "Manage Extension".
 
 ## Contributing
 
