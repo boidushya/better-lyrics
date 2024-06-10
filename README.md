@@ -77,9 +77,11 @@ song.
 
 ## Funding
 
-The author is self-hosting the backend for Better Lyrics to ensure a smooth and reliable experience for all users. This involves maintaining servers, handling updates, and ensuring uptime. If you find Better Lyrics useful and would like to support the project, please consider making a donation.
-
-Your support helps cover the costs of hosting and development, and ensures continued improvements and stability.
+> [!IMPORTANT]
+>
+> The author is self-hosting the backend for Better Lyrics to ensure a smooth and reliable experience for all users. This involves maintaining servers, handling updates, and ensuring uptime. If you find Better Lyrics useful and would like to support the project, please consider making a donation.
+>
+> Your support helps cover the costs of hosting and development, and ensures continued improvements and stability.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q2VA1E)
 
