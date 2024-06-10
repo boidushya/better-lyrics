@@ -216,6 +216,10 @@ const injectLyrics = (lyrics, wrapper) => {
     log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
   }
 
+  onTranslationEnabled((items) => {
+    log(TRANSLATION_ENABLED_LOG, items.translationLanguage);
+  });
+
   lyrics.forEach((item) => {
     let line = document.createElement("div");
     line.dataset.time = item.startTimeMs / 1000; // Set the start time of the line
@@ -231,7 +235,6 @@ const injectLyrics = (lyrics, wrapper) => {
     line.innerHTML = item.words; // Set the line text
 
     onTranslationEnabled((items) => {
-      log(TRANSLATION_ENABLED_LOG, items.translationLanguage);
       let translatedLine = document.createElement("span"); // Create a span element
       translatedLine.classList.add(TRANSLATED_LYRICS_CLASS);
 
