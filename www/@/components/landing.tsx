@@ -1,0 +1,562 @@
+import Link from "next/link";
+import { Button } from "./ui/button";
+import { Card } from "./ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+
+export function Landing() {
+  return (
+    <div className="flex flex-col min-h-[100dvh]">
+      <header className="flex items-center px-4 lg:px-6 h-14">
+        <Link className="flex items-center justify-center" href="#">
+          <img alt="Logo" className="mr-2 size-6" src="/icon-512.png" />
+          <span className="text-xl font-bold">Better Lyrics</span>
+        </Link>
+        <nav className="flex items-center gap-4 ml-auto sm:gap-6">
+          <Link
+            className="hidden text-sm font-medium hover:underline underline-offset-4 sm:block"
+            href="#features"
+          >
+            Features
+          </Link>
+          <Link
+            className="hidden text-sm font-medium hover:underline underline-offset-4 sm:block"
+            href="#demo"
+          >
+            Demo
+          </Link>
+          <Link
+            className="hidden text-sm font-medium hover:underline underline-offset-4 sm:block"
+            href="#testimonials"
+          >
+            Testimonials
+          </Link>
+          <Link
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors bg-gray-900 rounded-md shadow h-9 text-gray-50 hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+            href="https://github.com/boidushya/better-lyrics"
+          >
+            <svg
+              viewBox="0 0 256 250"
+              className="w-4 h-4 mr-2"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+              preserveAspectRatio="xMidYMid"
+            >
+              <path d="M128.001 0C57.317 0 0 57.307 0 128.001c0 56.554 36.676 104.535 87.535 121.46 6.397 1.185 8.746-2.777 8.746-6.158 0-3.052-.12-13.135-.174-23.83-35.61 7.742-43.124-15.103-43.124-15.103-5.823-14.795-14.213-18.73-14.213-18.73-11.613-7.944.876-7.78.876-7.78 12.853.902 19.621 13.19 19.621 13.19 11.417 19.568 29.945 13.911 37.249 10.64 1.149-8.272 4.466-13.92 8.127-17.116-28.431-3.236-58.318-14.212-58.318-63.258 0-13.975 5-25.394 13.188-34.358-1.329-3.224-5.71-16.242 1.24-33.874 0 0 10.749-3.44 35.21 13.121 10.21-2.836 21.16-4.258 32.038-4.307 10.878.049 21.837 1.47 32.066 4.307 24.431-16.56 35.165-13.12 35.165-13.12 6.967 17.63 2.584 30.65 1.255 33.873 8.207 8.964 13.173 20.383 13.173 34.358 0 49.163-29.944 59.988-58.447 63.157 4.591 3.972 8.682 11.762 8.682 23.704 0 17.126-.148 30.91-.148 35.126 0 3.407 2.304 7.398 8.792 6.14C219.37 232.5 256 184.537 256 128.002 256 57.307 198.691 0 128.001 0Zm-80.06 182.34c-.282.636-1.283.827-2.194.39-.929-.417-1.45-1.284-1.15-1.922.276-.655 1.279-.838 2.205-.399.93.418 1.46 1.293 1.139 1.931Zm6.296 5.618c-.61.566-1.804.303-2.614-.591-.837-.892-.994-2.086-.375-2.66.63-.566 1.787-.301 2.626.591.838.903 1 2.088.363 2.66Zm4.32 7.188c-.785.545-2.067.034-2.86-1.104-.784-1.138-.784-2.503.017-3.05.795-.547 2.058-.055 2.861 1.075.782 1.157.782 2.522-.019 3.08Zm7.304 8.325c-.701.774-2.196.566-3.29-.49-1.119-1.032-1.43-2.496-.726-3.27.71-.776 2.213-.558 3.315.49 1.11 1.03 1.45 2.505.701 3.27Zm9.442 2.81c-.31 1.003-1.75 1.459-3.199 1.033-1.448-.439-2.395-1.613-2.103-2.626.301-1.01 1.747-1.484 3.207-1.028 1.446.436 2.396 1.602 2.095 2.622Zm10.744 1.193c.036 1.055-1.193 1.93-2.715 1.95-1.53.034-2.769-.82-2.786-1.86 0-1.065 1.202-1.932 2.733-1.958 1.522-.03 2.768.818 2.768 1.868Zm10.555-.405c.182 1.03-.875 2.088-2.387 2.37-1.485.271-2.861-.365-3.05-1.386-.184-1.056.893-2.114 2.376-2.387 1.514-.263 2.868.356 3.061 1.403Z" />
+            </svg>
+            Source Code
+          </Link>
+        </nav>
+      </header>
+      <main className="flex-1">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-36 hero-bg">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="space-y-6">
+                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+                    Elevate Your Lyrical Experience
+                  </h1>
+                  <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
+                    Better Lyrics is the ultimate extension to step up your
+                    Youtube Music experience. Get beautiful time-synced lyrics,
+                    real-time translations, and more.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                  <Link
+                    className="h-10 px-4 overflow-hidden bg-white border border-gray-200 rounded-md shadow-sm"
+                    href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg"
+                    target="_blank"
+                  >
+                    <img
+                      src="https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/YT2Grfi9vEBa2wAPzhWa.png"
+                      alt="Chrome Web Store"
+                      className="w-full h-full"
+                    />
+                  </Link>
+                  <Link
+                    href="https://github.com/boidushya/better-lyrics"
+                    target="_blank"
+                    className="inline-flex items-center justify-center h-10 px-8 text-sm font-medium transition-colors rounded-md shadow bg-gray-900/80 text-gray-50 hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                    prefetch={false}
+                  >
+                    Learn More
+                  </Link>
+                </div>
+              </div>
+              <img
+                alt="Hero"
+                className="object-cover mx-auto overflow-hidden rounded-xl sm:w-full lg:order-last"
+                src="https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png"
+              />
+            </div>
+          </div>
+        </section>
+        <section
+          className="w-full py-12 bg-gray-100 md:py-24 lg:py-32 dark:bg-gray-800 "
+          id="features"
+        >
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="mb-12 space-y-2 ">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  Features
+                </h2>
+                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Better Lyrics offers a suite of powerful features to enhance
+                  your Youtube Music experience.
+                </p>
+              </div>
+            </div>
+            <div className="grid items-start max-w-5xl gap-8 mx-auto sm:grid-cols-2 md:grid-cols-3 lg:gap-12">
+              <div className="grid gap-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-8 h-8 text-gray-500 dark:text-gray-400"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z"
+                  />
+                </svg>
+
+                <h3 className="text-lg font-bold">Zero Config</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No configuration required. Just install the extension and
+                  enjoy the benefits.
+                </p>
+              </div>
+              <div className="grid gap-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-8 h-8 text-gray-500 dark:text-gray-400"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                  />
+                </svg>
+                <h3 className="text-lg font-bold">Time-synced Lyrics</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Get beautiful time-synced lyrics for your favorite songs.
+                </p>
+              </div>
+              <div className="grid gap-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-8 h-8 text-gray-500 dark:text-gray-400"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 8.689c0-.864.933-1.406 1.683-.977l7.108 4.061a1.125 1.125 0 0 1 0 1.954l-7.108 4.061A1.125 1.125 0 0 1 3 16.811V8.69ZM12.75 8.689c0-.864.933-1.406 1.683-.977l7.108 4.061a1.125 1.125 0 0 1 0 1.954l-7.108 4.061a1.125 1.125 0 0 1-1.683-.977V8.69Z"
+                  />
+                </svg>
+
+                <h3 className="text-lg font-bold">Seek</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Seamlessly seek through sections of the song by clicking on
+                  the lines of the lyrics.
+                </p>
+              </div>
+              <div className="grid gap-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-8 h-8 text-gray-500 dark:text-gray-400"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 0 1-1.161.886l-.143.048a1.107 1.107 0 0 0-.57 1.664c.369.555.169 1.307-.427 1.605L9 13.125l.423 1.059a.956.956 0 0 1-1.652.928l-.679-.906a1.125 1.125 0 0 0-1.906.172L4.5 15.75l-.612.153M12.75 3.031a9 9 0 0 0-8.862 12.872M12.75 3.031a9 9 0 0 1 6.69 14.036m0 0-.177-.529A2.25 2.25 0 0 0 17.128 15H16.5l-.324-.324a1.453 1.453 0 0 0-2.328.377l-.036.073a1.586 1.586 0 0 1-.982.816l-.99.282c-.55.157-.894.702-.8 1.267l.073.438c.08.474.49.821.97.821.846 0 1.598.542 1.865 1.345l.215.643m5.276-3.67a9.012 9.012 0 0 1-5.276 3.67m0 0a9 9 0 0 1-10.275-4.835M15.75 9c0 .896-.393 1.7-1.016 2.25"
+                  />
+                </svg>
+
+                <h3 className="text-lg font-bold">Multiple Languages</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Get gorgeous lyrics irrespective of the language of the song.
+                </p>
+              </div>
+              <div className="grid gap-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-8 h-8 text-gray-500 dark:text-gray-400"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m9 9 10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553Z"
+                  />
+                </svg>
+
+                <h3 className="text-lg font-bold">Lightweight</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Better Lyrics is lightweight and won't slow down your browser.
+                </p>
+              </div>
+              <div className="grid gap-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-8 h-8 text-gray-500 dark:text-gray-400"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m10.5 21 5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 0 1-3.827-5.802"
+                  />
+                </svg>
+
+                <h3 className="text-lg font-bold">Translations</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Get real-time translations for lyrics in languages you don't
+                  understand.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="demo" className="w-full py-12 md:py-24 lg:py-32 ">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="mb-12 space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  Watch Better Lyrics in Action
+                </h2>
+                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  See how the Better Lyrics Extension can enhance your Youtube
+                  Music experience.
+                </p>
+              </div>
+              <div className="w-full max-w-2xl overflow-hidden rounded-lg aspect-video">
+                <iframe
+                  src="https://www.youtube.com/embed/56Z_31Sl9w4"
+                  title="Better Lyrics Extension Demo"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full "
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+        <section
+          id="testimonials"
+          className="w-full py-12 bg-gray-100 md:py-24 lg:py-32 dark:bg-gray-800"
+        >
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  What Our Users Say
+                </h2>
+                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Hear from our users about how Better Lyrics has transformed
+                  their Youtube Music experience.
+                </p>
+              </div>
+              <div className="grid max-w-5xl grid-cols-1 gap-6 pt-12 mx-auto sm:grid-cols-2 md:grid-cols-3 lg:gap-8">
+                <Card className="flex flex-col p-6 space-y-4 transition-colors bg-white border border-gray-200 rounded-lg shadow-sm hover:border-gray-300 dark:border-gray-800 dark:bg-gray-950 dark:hover:border-gray-700">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="w-8 h-8">
+                        <img
+                          src="https://styles.redditmedia.com/t5_4245r2/styles/profileIcon_thorr38dpvj91.jpg?width=256&height=256&frame=1&auto=webp&crop=256:256,smart&s=47712e9bb5030c41b249691a1194b0d84ee1898e"
+                          alt="User Avatar"
+                        />
+                        <AvatarFallback>JD</AvatarFallback>
+                      </Avatar>
+                      <div className="font-medium">MisterMew151</div>
+                    </div>
+                    <p className="py-2 text-left text-gray-500 dark:text-gray-400">
+                      Love this! 10/10 works even better than I expected. I've
+                      wanted this for ages!
+                    </p>
+                  </div>
+                </Card>
+                <Card className="flex flex-col p-6 space-y-4 transition-colors bg-white border border-gray-200 rounded-lg shadow-sm hover:border-gray-300 dark:border-gray-800 dark:bg-gray-950 dark:hover:border-gray-700">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="w-8 h-8">
+                        <img
+                          src="https://i.redd.it/snoovatar/avatars/a71b88a3-9086-40a9-b926-8e16bac43bd5.png"
+                          alt="User Avatar"
+                        />
+                      </Avatar>
+                      <div className="font-medium">NetherCookiez</div>
+                    </div>
+                    <p className="py-2 text-left text-gray-500 dark:text-gray-400">
+                      This is really great! Love the little animation where the
+                      lyrics get bigger. Already works as well (or even better)
+                      than YTM's lyrics.
+                    </p>
+                  </div>
+                </Card>
+                <Card className="flex flex-col p-6 space-y-4 transition-colors bg-white border border-gray-200 rounded-lg shadow-sm hover:border-gray-300 dark:border-gray-800 dark:bg-gray-950 dark:hover:border-gray-700">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="w-8 h-8">
+                        <img
+                          src="https://lh3.googleusercontent.com/a-/ALV-UjVrYLipC28NxGa2S190dbX1DvUEnJbt7TUT64u4VFx9pYqG5ovj4A=s96-w96-h96"
+                          alt="User Avatar"
+                        />
+                        <AvatarFallback>KP</AvatarFallback>
+                      </Avatar>
+                      <div className="font-medium">Kevin Patel</div>
+                    </div>
+                    <p className="py-2 text-left text-gray-500 dark:text-gray-400">
+                      A much needed extension for YouTube Music. It just
+                      works!!! Highly recommended.
+                    </p>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer className="flex flex-col items-center w-full gap-2 px-4 py-6 border-t sm:flex-row shrink-0 md:px-6">
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          &copy; 2024 Better Lyrics. All rights reserved.
+        </p>
+        <nav className="flex gap-4 sm:ml-auto sm:gap-6">
+          <Link
+            href="#"
+            className="text-xs hover:underline underline-offset-4"
+            prefetch={false}
+          >
+            Terms of Service
+          </Link>
+          <Link
+            href="#"
+            className="text-xs hover:underline underline-offset-4"
+            prefetch={false}
+          >
+            Privacy
+          </Link>
+          <Link
+            href="https://boidu.dev"
+            className="text-xs hover:underline underline-offset-4"
+            prefetch={false}
+          >
+            Contact
+          </Link>
+        </nav>
+      </footer>
+    </div>
+  );
+}
+
+function AirplayIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1" />
+      <path d="m12 15 5 6H7Z" />
+    </svg>
+  );
+}
+
+function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+function CombineIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="8" height="8" x="2" y="2" rx="2" />
+      <path d="M14 2c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2" />
+      <path d="M20 2c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2" />
+      <path d="M10 18H5c-1.7 0-3-1.3-3-3v-1" />
+      <polyline points="7 21 10 18 7 15" />
+      <rect width="8" height="8" x="14" y="14" rx="2" />
+    </svg>
+  );
+}
+
+function Music2Icon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="8" cy="18" r="4" />
+      <path d="M12 18V2l7 4" />
+    </svg>
+  );
+}
+
+function SearchIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
+}
+
+function ServerOffIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M7 2h13a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-5" />
+      <path d="M10 10 2.5 2.5C2 2 2 2.5 2 5v3a2 2 0 0 0 2 2h6z" />
+      <path d="M22 17v-1a2 2 0 0 0-2-2h-1" />
+      <path d="M4 14a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16.5l1-.5.5.5-8-8H4z" />
+      <path d="M6 18h.01" />
+      <path d="m2 2 20 20" />
+    </svg>
+  );
+}
+
+function TagsIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19" />
+      <path d="M9.586 5.586A2 2 0 0 0 8.172 5H3a1 1 0 0 0-1 1v5.172a2 2 0 0 0 .586 1.414L8.29 18.29a2.426 2.426 0 0 0 3.42 0l3.58-3.58a2.426 2.426 0 0 0 0-3.42z" />
+      <circle cx="6.5" cy="9.5" r=".5" fill="currentColor" />
+    </svg>
+  );
+}
+
+function UserPlusIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <line x1="19" x2="19" y1="8" y2="14" />
+      <line x1="22" x2="16" y1="11" y2="11" />
+    </svg>
+  );
+}
+
+function XIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
+  );
+}
