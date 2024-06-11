@@ -5,6 +5,35 @@ import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 export function Landing() {
   return (
     <div className="flex flex-col min-h-[100dvh]">
+      <div className="flex items-center justify-center w-full h-8 text-sm text-yellow-800 whitespace-pre bg-yellow-200">
+        <span className="hidden lg:block">
+          Better Lyric's backend was offline for a couple hours on June 11, 2024
+          from 0830 GMT to 1230 GMT due to a service incident from Railway.{" "}
+        </span>
+        <span className="block lg:hidden">Service incident report </span>
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://status.railway.app/clxa4z5c81345703e2oe5y8bmsy9"
+          className="flex items-center gap-1 font-medium text-yellow-900 hover:underline"
+        >
+          Learn More
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="inline size-3"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+            />
+          </svg>
+        </a>
+      </div>
       <header className="flex items-center px-4 lg:px-6 h-14">
         <Link className="flex items-center justify-center" href="#">
           <img alt="Logo" className="mr-2 size-6" src="/icon-512.png" />
@@ -344,6 +373,13 @@ export function Landing() {
         </p>
         <nav className="flex gap-4 sm:ml-auto sm:gap-6">
           <Link
+            href="https://better-lyrics.openstatus.dev/"
+            className="text-xs hover:underline underline-offset-4"
+            prefetch={false}
+          >
+            Status
+          </Link>
+          <Link
             href="#"
             className="text-xs hover:underline underline-offset-4"
             prefetch={false}
@@ -367,195 +403,5 @@ export function Landing() {
         </nav>
       </footer>
     </div>
-  );
-}
-
-function AirplayIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1" />
-      <path d="m12 15 5 6H7Z" />
-    </svg>
-  );
-}
-
-function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
-  );
-}
-
-function CombineIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="8" height="8" x="2" y="2" rx="2" />
-      <path d="M14 2c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2" />
-      <path d="M20 2c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2" />
-      <path d="M10 18H5c-1.7 0-3-1.3-3-3v-1" />
-      <polyline points="7 21 10 18 7 15" />
-      <rect width="8" height="8" x="14" y="14" rx="2" />
-    </svg>
-  );
-}
-
-function Music2Icon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="8" cy="18" r="4" />
-      <path d="M12 18V2l7 4" />
-    </svg>
-  );
-}
-
-function SearchIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
-  );
-}
-
-function ServerOffIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M7 2h13a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-5" />
-      <path d="M10 10 2.5 2.5C2 2 2 2.5 2 5v3a2 2 0 0 0 2 2h6z" />
-      <path d="M22 17v-1a2 2 0 0 0-2-2h-1" />
-      <path d="M4 14a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16.5l1-.5.5.5-8-8H4z" />
-      <path d="M6 18h.01" />
-      <path d="m2 2 20 20" />
-    </svg>
-  );
-}
-
-function TagsIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19" />
-      <path d="M9.586 5.586A2 2 0 0 0 8.172 5H3a1 1 0 0 0-1 1v5.172a2 2 0 0 0 .586 1.414L8.29 18.29a2.426 2.426 0 0 0 3.42 0l3.58-3.58a2.426 2.426 0 0 0 0-3.42z" />
-      <circle cx="6.5" cy="9.5" r=".5" fill="currentColor" />
-    </svg>
-  );
-}
-
-function UserPlusIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <line x1="19" x2="19" y1="8" y2="14" />
-      <line x1="22" x2="16" y1="11" y2="11" />
-    </svg>
-  );
-}
-
-function XIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
   );
 }

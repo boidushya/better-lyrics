@@ -19,7 +19,7 @@ const FONT_LINK = "https://api.fontshare.com/v2/css?f[]=satoshi@1&display=swap";
 const TRANSLATE_LYRICS_URL = (lang, text) =>
   `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(
     text
-  )}`;
+  )}`; // URL for the translation API
 
 // Console log constants
 
