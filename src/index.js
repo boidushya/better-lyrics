@@ -95,6 +95,14 @@ const onTranslationEnabled = (callback) => {
   });
 };
 
+const onScriptSendSongInfo = (event, callback, timeoutId, cleanup) => {
+  clearTimeout(timeoutId);
+  const data = event.detail;
+  callback(data);
+
+  cleanup && cleanup();
+};
+
 // Helper function to convert time string to integer
 const timeToInt = (time) => {
   time = time.split(":");
@@ -129,8 +137,9 @@ function translateText(text, targetLanguage) {
 
 // Function to inject the script to get song info
 const injectGetSongInfo = () => {
-  var s = document.createElement("script");
+  let s = document.createElement("script");
   s.src = chrome.runtime.getURL("src/script.js");
+  s.id = "blyrics-script";
   s.onload = function () {
     this.remove();
   };
@@ -146,15 +155,20 @@ const requestSongInfo = (callback) => {
   timeoutId = setTimeout(() => {
     const legacyData = legacySongInfo();
     callback(legacyData);
-  }, 500);
+  }, 1000);
 
-  document.addEventListener("blyrics-send-song-info", function (e) {
-    clearTimeout(timeoutId); // Clear the timeout since the event triggered
-    const data = e.detail;
-    callback(data);
-  });
+  const handleSongInfo = (event) => {
+    onScriptSendSongInfo(event, callback, timeoutId);
+  };
+
+  document.addEventListener("blyrics-send-song-info", handleSongInfo);
 
   document.dispatchEvent(new Event("blyrics-get-song-info"));
+
+  // Cleanup the event listener and timeout
+  document.removeEventListener("blyrics-send-song-info", handleSongInfo);
+  clearTimeout(timeoutId);
+  return;
 };
 
 // Legacy function to fetch song info. Replaced in favor of injected script or used as a fallback
