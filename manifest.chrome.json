@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "version": "1.3.0",
+  "version": "1.4.0",
   "name": "Better Lyrics (Lyrics for Youtube Music)",
   "description": "Better lyrics for YouTube Music",
   "icons": {
@@ -19,6 +19,16 @@
     "page": "src/options.html",
     "open_in_tab": false
   },
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "*://music.youtube.com/*"
+      ],
+      "resources": [
+        "src/script.js"
+      ]
+    }
+  ],
   "content_scripts": [
     {
       "matches": [
@@ -29,7 +39,8 @@
       ],
       "css": [
         "src/index.css"
-      ]
+      ],
+      "run_at": "document_end"
     }
   ]
 }

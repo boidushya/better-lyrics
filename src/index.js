@@ -29,6 +29,7 @@ const INITIALIZE_LOG = `%c${LOG_PREFIX} Loaded Successfully. Logs are enabled by
 const FETCH_LYRICS_LOG = `${LOG_PREFIX} Attempting to fetch lyrics for`;
 const SERVER_ERROR_LOG = `${LOG_PREFIX} Unable to fetch lyrics due to server error`;
 const NO_LYRICS_FOUND_LOG = `${LOG_PREFIX} No lyrics found for the current song`;
+const LYRICS_LEGACY_LOG = `${LOG_PREFIX} Using legacy method to fetch song info`;
 const LYRICS_FOUND_LOG = `${LOG_PREFIX} Lyrics found, injecting into the page`;
 const LYRICS_TAB_HIDDEN_LOG = `${LOG_PREFIX} ${IGNORE_PREFIX} Lyrics tab is hidden, skipping lyrics fetch`;
 const LYRICS_TAB_VISIBLE_LOG = `${LOG_PREFIX} Lyrics tab is visible, fetching lyrics`;
@@ -44,7 +45,6 @@ const TRANSLATION_ERROR_LOG = `${LOG_PREFIX} Unable to translate lyrics due to e
 const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
 // Storage get function
-
 const getStorage = (key, callback) => {
   const inChrome =
     typeof chrome !== "undefined" && typeof browser === "undefined";
@@ -107,71 +107,6 @@ function unEntity(str) {
   return str.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 }
 
-// Function to create and inject lyrics
-const createLyrics = () => {
-  const song = document.getElementsByClassName(TITLE_CLASS)[0].innerHTML; // Get the song title
-  let artist;
-  try {
-    artist =
-      document.getElementsByClassName(SUBTITLE_CLASS)[0].children[0].children[0]
-        .innerHTML; // Get the artist name
-  } catch (err) {
-    artist =
-      document.getElementsByClassName(SUBTITLE_CLASS)[0].children[0].innerHTML; // Get the artist name (alternative way)
-  }
-  log(FETCH_LYRICS_LOG, song, artist); // Log fetching lyrics
-
-  const url = `${LYRICS_API_URL}?s=${encodeURIComponent(
-    unEntity(song)
-  )}&a=${encodeURIComponent(unEntity(artist))}`; // Construct the API URL with song and artist
-
-  fetch(url)
-    .then((response) => response.json())
-    .catch((err) => {
-      log(SERVER_ERROR_LOG); // Log server error
-      log(err);
-      return;
-    })
-    .then((data) => {
-      const lyrics = data.lyrics;
-      clearInterval(window.lyricsCheckInterval); // Clear the lyrics interval
-
-      if (lyrics === undefined || lyrics.length === 0) {
-        log(NO_LYRICS_FOUND_LOG); // Log no lyrics found
-
-        try {
-          const lyricsContainer =
-            document.getElementsByClassName(LYRICS_CLASS)[0];
-          lyricsContainer.innerHTML = ""; // Clear the lyrics container
-          const errorContainer = document.createElement("div");
-          errorContainer.className = ERROR_LYRICS_CLASS;
-          errorContainer.innerHTML = "No lyrics found for this song.";
-          lyricsContainer.appendChild(errorContainer); // Append error message to lyrics container
-        } catch (err) {
-          log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
-        }
-
-        return;
-      }
-      log(LYRICS_FOUND_LOG); // Log lyrics found
-      let wrapper = null;
-      try {
-        const tabSelector =
-          document.getElementsByClassName(TAB_HEADER_CLASS)[1];
-        tabSelector.removeAttribute("disabled");
-        tabSelector.setAttribute("aria-disabled", "false"); // Enable the lyrics tab
-        wrapper = document.querySelector(
-          "#tab-renderer > ytmusic-message-renderer"
-        );
-        const lyrics = document.getElementsByClassName(LYRICS_CLASS)[0];
-        lyrics.innerHTML = ""; // Clear the lyrics container
-      } catch (err) {
-        log(LYRICS_TAB_NOT_DISABLED_LOG); // Log lyrics tab not disabled
-      }
-      injectLyrics(lyrics, wrapper); // Inject lyrics
-    });
-};
-
 // Function for translate lyrics
 function translateText(text, targetLanguage) {
   let url = TRANSLATE_LYRICS_URL(targetLanguage, text);
@@ -191,6 +126,116 @@ function translateText(text, targetLanguage) {
       return null;
     });
 }
+
+// Function to inject the script to get song info
+const injectGetSongInfo = () => {
+  var s = document.createElement("script");
+  s.src = chrome.runtime.getURL("src/script.js");
+  s.onload = function () {
+    this.remove();
+  };
+  (document.head || document.documentElement).appendChild(s);
+};
+
+// Function to request song info from the injected script
+// This fixes the issue with localization of song title and artist name
+const requestSongInfo = (callback) => {
+  let timeoutId;
+
+  // Set a timeout to invoke the callback with legacySongInfo if event doesn't trigger within 1 second
+  timeoutId = setTimeout(() => {
+    const legacyData = legacySongInfo();
+    callback(legacyData);
+  }, 500);
+
+  document.addEventListener("blyrics-send-song-info", function (e) {
+    clearTimeout(timeoutId); // Clear the timeout since the event triggered
+    const data = e.detail;
+    callback(data);
+  });
+
+  document.dispatchEvent(new Event("blyrics-get-song-info"));
+};
+
+// Legacy function to fetch song info. Replaced in favor of injected script or used as a fallback
+const legacySongInfo = () => {
+  log(LYRICS_LEGACY_LOG);
+  const song = document.getElementsByClassName(TITLE_CLASS)[0].innerHTML; // Get the song title
+  let artist;
+  try {
+    artist =
+      document.getElementsByClassName(SUBTITLE_CLASS)[0].children[0].children[0]
+        .innerHTML; // Get the artist name
+  } catch (err) {
+    artist =
+      document.getElementsByClassName(SUBTITLE_CLASS)[0].children[0].innerHTML; // Get the artist name (alternative way)
+  }
+
+  return {
+    song,
+    artist,
+  };
+};
+
+// Function to create and inject lyrics
+const createLyrics = () => {
+  requestSongInfo((e) => {
+    const song = e.song;
+    const artist = e.artist;
+
+    log(FETCH_LYRICS_LOG, song, artist); // Log fetching lyrics
+
+    const url = `${LYRICS_API_URL}?s=${encodeURIComponent(
+      unEntity(song)
+    )}&a=${encodeURIComponent(unEntity(artist))}`; // Construct the API URL with song and artist
+
+    fetch(url)
+      .then((response) => response.json())
+      .catch((err) => {
+        log(SERVER_ERROR_LOG); // Log server error
+        log(err);
+        return;
+      })
+      .then((data) => {
+        const lyrics = data.lyrics;
+        clearInterval(window.lyricsCheckInterval); // Clear the lyrics interval
+
+        if (lyrics === undefined || lyrics.length === 0) {
+          log(NO_LYRICS_FOUND_LOG); // Log no lyrics found
+
+          try {
+            const lyricsContainer =
+              document.getElementsByClassName(LYRICS_CLASS)[0];
+            lyricsContainer.innerHTML = ""; // Clear the lyrics container
+            const errorContainer = document.createElement("div");
+            errorContainer.className = ERROR_LYRICS_CLASS;
+            errorContainer.innerHTML = "No lyrics found for this song.";
+            lyricsContainer.appendChild(errorContainer); // Append error message to lyrics container
+          } catch (err) {
+            log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
+          }
+
+          return;
+        }
+        log(LYRICS_FOUND_LOG); // Log lyrics found
+        let wrapper = null;
+        try {
+          const tabSelector =
+            document.getElementsByClassName(TAB_HEADER_CLASS)[1];
+          tabSelector.removeAttribute("disabled");
+          tabSelector.setAttribute("aria-disabled", "false"); // Enable the lyrics tab
+          wrapper = document.querySelector(
+            "#tab-renderer > ytmusic-message-renderer"
+          );
+          const lyrics = document.getElementsByClassName(LYRICS_CLASS)[0];
+          lyrics.innerHTML = ""; // Clear the lyrics container
+        } catch (err) {
+          log(LYRICS_TAB_NOT_DISABLED_LOG); // Log lyrics tab not disabled
+        }
+        injectLyrics(lyrics, wrapper); // Inject lyrics
+      });
+  });
+};
 
 // Function to inject lyrics into the DOM
 const injectLyrics = (lyrics, wrapper) => {
@@ -342,6 +387,7 @@ const addAlbumArtToLayout = () => {
 
 // Main function to modify the page
 const modify = () => {
+  injectGetSongInfo();
   const fontLink = document.createElement("link");
   fontLink.href = FONT_LINK;
   fontLink.rel = "stylesheet";
