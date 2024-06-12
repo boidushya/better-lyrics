@@ -20,20 +20,12 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "*://music.youtube.com/*"
-      ],
-      "js": [
-        "src/index.js"
-      ],
-      "css": [
-        "src/index.css"
-      ]
+      "matches": ["*://music.youtube.com/*"],
+      "js": ["src/index.js"],
+      "css": ["src/index.css"]
     }
   ],
-  "web_accessible_resources": [
-    "src/script.js"
-  ],
+  "web_accessible_resources": ["src/script.js"],
   "browser_specific_settings": {
     "gecko": {
       "id": "betterlyrics@boidu.dev",
