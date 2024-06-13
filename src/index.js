@@ -12,6 +12,8 @@ const DESCRIPTION_CLASS =
 const FOOTER_CLASS = "footer style-scope ytmusic-description-shelf-renderer"; // Class for the footer
 const TIME_INFO_CLASS = "time-info style-scope ytmusic-player-bar"; // Class for the time info
 const SONG_IMAGE_SELECTOR = "#song-image>#thumbnail>#img"; // Selector for the song image
+const NO_LYRICS_TEXT_SELECTOR =
+  "#tab-renderer>ytmusic-message-renderer.style-scope.ytmusic-tab-renderer"; // Selector for the no lyrics text
 
 // Constants
 const LYRICS_API_URL = "https://lyrics-api.boidu.dev/getLyrics"; // URL for the lyrics API
@@ -42,6 +44,7 @@ const ALBUM_ART_ADDED_LOG = `${LOG_PREFIX} Album art added to the layout`;
 const AUTO_SWITCH_ENABLED_LOG = `${LOG_PREFIX} Auto switch enabled, switching to lyrics tab`;
 const TRANSLATION_ENABLED_LOG = `${LOG_PREFIX} Translation enabled, translating lyrics. Language: `;
 const TRANSLATION_ERROR_LOG = `${LOG_PREFIX} Unable to translate lyrics due to error`;
+const SYNC_DISABLED_LOG = `${LOG_PREFIX} Syncing lyrics disabled due to all lyrics having a start time of 0`;
 const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
 // Storage get function
@@ -191,6 +194,33 @@ const legacySongInfo = () => {
   };
 };
 
+// Function to inject error message
+const injectError = (replaceErrorMessage = false) => {
+  const message = "No lyrics found for this song.";
+  try {
+    const errorContainer = document.createElement("div");
+    errorContainer.className = ERROR_LYRICS_CLASS;
+    errorContainer.innerText = message;
+
+    const lyricsContainer = document.getElementsByClassName(LYRICS_CLASS)[0];
+    if (lyricsContainer) {
+      lyricsContainer.innerHTML = "";
+    } // Clear the lyrics container
+
+    if (replaceErrorMessage) {
+      const noLyricsContainer = document.querySelector(NO_LYRICS_TEXT_SELECTOR);
+      noLyricsContainer.classList.add(LYRICS_CLASS);
+      noLyricsContainer.innerHTML = ""; // Clear the lyrics container
+      noLyricsContainer.appendChild(errorContainer); // Append error message to lyrics container
+      return;
+    }
+    lyricsContainer.appendChild(errorContainer); // Append error message to lyrics container
+  } catch (err) {
+    log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
+    log(err);
+  }
+};
+
 // Function to create and inject lyrics
 const createLyrics = () => {
   requestSongInfo((e) => {
@@ -211,48 +241,31 @@ const createLyrics = () => {
 
         if (!lyrics || lyrics.length === 0) {
           log(NO_LYRICS_FOUND_LOG); // Log no lyrics found
-
-          try {
-            const lyricsContainer =
-              document.getElementsByClassName(LYRICS_CLASS)[0];
-            lyricsContainer.innerHTML = ""; // Clear the lyrics container
-            const errorContainer = document.createElement("div");
-            errorContainer.className = ERROR_LYRICS_CLASS;
-            errorContainer.innerHTML = "No lyrics found for this song.";
-            lyricsContainer.appendChild(errorContainer); // Append error message to lyrics container
-          } catch (err) {
-            log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
-          }
+          setTimeout(injectError, 500);
 
           return;
         }
         log(LYRICS_FOUND_LOG); // Log lyrics found
-        let wrapper = null;
         try {
-          const tabSelector =
-            document.getElementsByClassName(TAB_HEADER_CLASS)[1];
-          tabSelector.removeAttribute("disabled");
-          tabSelector.setAttribute("aria-disabled", "false"); // Enable the lyrics tab
-          wrapper = document.querySelector(
-            "#tab-renderer > ytmusic-message-renderer"
-          );
           const lyrics = document.getElementsByClassName(LYRICS_CLASS)[0];
           lyrics.innerHTML = ""; // Clear the lyrics container
         } catch (err) {
           log(LYRICS_TAB_NOT_DISABLED_LOG); // Log lyrics tab not disabled
         }
-        injectLyrics(lyrics, wrapper); // Inject lyrics
+        injectLyrics(lyrics); // Inject lyrics
       })
       .catch((err) => {
         log(SERVER_ERROR_LOG); // Log server error
         log(err);
+        setTimeout(() => injectError(true), 500);
+
         return;
       });
   });
 };
 
 // Function to inject lyrics into the DOM
-const injectLyrics = (lyrics, wrapper) => {
+const injectLyrics = (lyrics) => {
   // Inject Lyrics into DOM
   let lyricsWrapper;
   lyricsWrapper = document.getElementsByClassName(DESCRIPTION_CLASS)[1]; // Get the lyrics wrapper
@@ -267,9 +280,6 @@ const injectLyrics = (lyrics, wrapper) => {
   }
 
   try {
-    if (wrapper) {
-      wrapper.innerHTML = ""; // Safety check to clear another wrapper if it exists
-    }
     lyricsWrapper.innerHTML = "";
     const lyricsContainer = document.createElement("div");
     lyricsContainer.className = LYRICS_CLASS;
@@ -329,64 +339,71 @@ const injectLyrics = (lyrics, wrapper) => {
   });
 
   // Set an interval to sync the lyrics with the video playback
-  window.lyricsCheckInterval = setInterval(function () {
-    try {
-      let currentTime =
-        timeToInt(
-          document
-            .getElementsByClassName(TIME_INFO_CLASS)[0]
-            .innerHTML.replaceAll(" ", "")
-            .replaceAll("\n", "")
-            .split("/")[0]
-        ) + 0.75; // Get the current time of the video
-      const lyrics = [
-        ...document.getElementsByClassName(LYRICS_CLASS)[0].children,
-      ]; // Get all the lyrics lines
+  const allZero = lyrics.every((item) => item.startTimeMs === "0");
+  if (!allZero) {
+    window.lyricsCheckInterval = setInterval(function () {
+      try {
+        let currentTime =
+          timeToInt(
+            document
+              .getElementsByClassName(TIME_INFO_CLASS)[0]
+              .innerHTML.replaceAll(" ", "")
+              .replaceAll("\n", "")
+              .split("/")[0]
+          ) + 0.75; // Get the current time of the video
+        const lyrics = [
+          ...document.getElementsByClassName(LYRICS_CLASS)[0].children,
+        ]; // Get all the lyrics lines
 
-      lyrics.every((elem, index) => {
-        const time = parseFloat(elem.getAttribute("data-time")); // Get the start time of the line
-        if (currentTime >= time && index + 1 === lyrics.length) {
-          // If it's the last line
-          elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
-          const current = document.getElementsByClassName(CURRENT_LYRICS_CLASS);
-          current[0].scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-            inline: "center",
-          }); // Scroll to the current line
-          return true;
-        } else if (
-          currentTime > time &&
-          currentTime < parseFloat(lyrics[index + 1].getAttribute("data-time"))
-        ) {
-          // If it's between the current and next line
-          const current =
-            document.getElementsByClassName(CURRENT_LYRICS_CLASS)[0];
-
-          elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
-          if (
-            current !== undefined &&
-            current.getAttribute("data-scrolled") !== "true"
-          ) {
-            current.scrollIntoView({
+        lyrics.every((elem, index) => {
+          const time = parseFloat(elem.getAttribute("data-time")); // Get the start time of the line
+          if (currentTime >= time && index + 1 === lyrics.length) {
+            // If it's the last line
+            elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
+            const current =
+              document.getElementsByClassName(CURRENT_LYRICS_CLASS);
+            current[0].scrollIntoView({
               behavior: "smooth",
               block: "center",
               inline: "center",
             }); // Scroll to the current line
-            current.setAttribute("data-scrolled", true); // Mark as scrolled
+            return true;
+          } else if (
+            currentTime > time &&
+            currentTime <
+              parseFloat(lyrics[index + 1].getAttribute("data-time"))
+          ) {
+            // If it's between the current and next line
+            const current =
+              document.getElementsByClassName(CURRENT_LYRICS_CLASS)[0];
+
+            elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
+            if (
+              current !== undefined &&
+              current.getAttribute("data-scrolled") !== "true"
+            ) {
+              current.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+                inline: "center",
+              }); // Scroll to the current line
+              current.setAttribute("data-scrolled", true); // Mark as scrolled
+            }
+            return true;
+          } else {
+            elem.setAttribute("data-scrolled", false); // Reset the scrolled flag
+            elem.setAttribute("class", ""); // Remove the current class
+            return true;
           }
-          return true;
-        } else {
-          elem.setAttribute("data-scrolled", false); // Reset the scrolled flag
-          elem.setAttribute("class", ""); // Remove the current class
-          return true;
-        }
-      });
-    } catch (err) {
-      log(err);
-      return true;
-    }
-  }, 50); // Check every 50ms
+        });
+      } catch (err) {
+        log(err);
+        return true;
+      }
+    }, 50); // Check every 50ms
+  } else {
+    log(SYNC_DISABLED_LOG);
+  }
 };
 
 // Function to add the album art to the layout
@@ -399,9 +416,38 @@ const addAlbumArtToLayout = () => {
   log(ALBUM_ART_ADDED_LOG); // Log album art added
 };
 
+// Mutation Observer to check if lyrics tab button is disabled and remove the disabled attribute
+const enableLyricsTab = () => {
+  const tabSelector = document.getElementsByClassName(TAB_HEADER_CLASS)[1];
+  if (!tabSelector) {
+    setTimeout(() => {
+      enableLyricsTab();
+    }, 1000);
+    return;
+  }
+  if (tabSelector.hasAttribute("disabled")) {
+    tabSelector.removeAttribute("disabled");
+    tabSelector.setAttribute("aria-disabled", "false");
+    onAutoSwitchEnabled(() => {
+      tabSelector.click();
+      log(AUTO_SWITCH_ENABLED_LOG);
+    });
+  }
+  let observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      if (mutation.attributeName === "disabled") {
+        tabSelector.removeAttribute("disabled");
+        tabSelector.setAttribute("aria-disabled", "false");
+      }
+    });
+  });
+  observer.observe(tabSelector, { attributes: true });
+};
+
 // Main function to modify the page
 const modify = () => {
   injectGetSongInfo();
+  enableLyricsTab();
   const fontLink = document.createElement("link");
   fontLink.href = FONT_LINK;
   fontLink.rel = "stylesheet";

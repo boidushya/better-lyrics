@@ -122,6 +122,13 @@ yt-formatted-string.text.style-scope.ytmusic-message-renderer {
 .blyrics--error {
   color: rgba(254, 226, 226);
   margin-bottom: 4rem !important;
+  cursor: default;
+  align-self: flex-start !important;
+}
+
+#tabsContent > tp-yt-paper-tab:nth-child(3) {
+  pointer-events: initial !important;
+  cursor: pointer !important;
 }
 
 @media (max-width: 936px) {
