@@ -5,7 +5,7 @@
 
 <p align="center">
 	<a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
-	<img src="https://img.shields.io/badge/version-1.4.3-blue.svg" alt=""/>
+	<img src="https://img.shields.io/badge/version-1.4.4-blue.svg" alt=""/>
 	<img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt=""/>
 	<a aria-label="Volkswagen CI" href="https://github.com/boidushya/better-lyrics"><img src="https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1" alt=""/></a>
 	<a aria-label="Better Lyrics Status" href="https://better-lyrics.openstatus.dev"><img height="20" src="https://better-lyrics.openstatus.dev/badge" /></a>
@@ -20,9 +20,6 @@ by providing beautiful time synced lyrics for the currently playing
 song.
 
 ## Download
-
-> [!WARNING]
-> Better Lyrics is pending review on Firefox Add-ons. If you want to install the extension on Firefox, please follow the manual installation instructions below.
 
 <p float="left">
 <a href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg" target="_blank"><img src="https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/HRs9MPufa1J1h5glNhut.png" alt="Chrome Web Store" height="60"/></a>

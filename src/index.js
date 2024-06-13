@@ -219,7 +219,9 @@ const injectError = (replaceErrorMessage = false) => {
     errorContainer.innerText = message;
 
     let tempLyrics;
-    tempLyrics = lyricsWrapper.innerHTML;
+    if (lyricsWrapper) {
+      tempLyrics = lyricsWrapper.innerHTML;
+    }
 
     if (lyricsContainer) {
       lyricsContainer.innerHTML = "";

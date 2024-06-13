@@ -104,7 +104,7 @@ export function Landing() {
                     <img
                       src="https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/YT2Grfi9vEBa2wAPzhWa.png"
                       alt="Chrome Web Store"
-                      className="w-full h-full"
+                      className="h-full mx-auto"
                     />
                   </Link>
                   <Link
@@ -115,16 +115,31 @@ export function Landing() {
                     <img
                       src="https://blog.mozilla.org/addons/files/2020/04/get-the-addon-fx-apr-2020.svg"
                       alt="Firefox Add-On Store"
-                      className="w-full h-full"
+                      className="h-full mx-auto"
                     />
                   </Link>
                 </div>
               </div>
-              <img
-                alt="Hero"
-                className="object-cover mx-auto overflow-hidden rounded-xl sm:w-full lg:order-last"
-                src="https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png"
-              />
+              <div className="relative flex flex-col items-center mb-8 md:mb-0">
+                <img
+                  alt="Hero"
+                  className="object-cover mx-auto overflow-hidden rounded-xl sm:w-full"
+                  src="https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png"
+                />
+                <Link
+                  href="https://www.producthunt.com/posts/better-lyrics?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-better&#0045;lyrics"
+                  target="_blank"
+                  className="transition-transform hover:scale-105"
+                >
+                  <img
+                    src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=463141&theme=neutral"
+                    alt="Better&#0032;Lyrics - Upgrade&#0032;YouTube&#0032;music&#0032;with&#0032;stunning&#0044;&#0032;synced&#0032;lyrics | Product Hunt"
+                    width="250"
+                    height="54"
+                    className="shadow-2xl rounded-[0.675rem]"
+                  />
+                </Link>
+              </div>
             </div>
           </div>
         </section>
