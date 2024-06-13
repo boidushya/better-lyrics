@@ -205,16 +205,11 @@ const createLyrics = () => {
 
     fetch(url)
       .then((response) => response.json())
-      .catch((err) => {
-        log(SERVER_ERROR_LOG); // Log server error
-        log(err);
-        return;
-      })
       .then((data) => {
         const lyrics = data.lyrics;
         clearInterval(window.lyricsCheckInterval); // Clear the lyrics interval
 
-        if (lyrics === undefined || lyrics.length === 0) {
+        if (!lyrics || lyrics.length === 0) {
           log(NO_LYRICS_FOUND_LOG); // Log no lyrics found
 
           try {
@@ -247,6 +242,11 @@ const createLyrics = () => {
           log(LYRICS_TAB_NOT_DISABLED_LOG); // Log lyrics tab not disabled
         }
         injectLyrics(lyrics, wrapper); // Inject lyrics
+      })
+      .catch((err) => {
+        log(SERVER_ERROR_LOG); // Log server error
+        log(err);
+        return;
       });
   });
 };
@@ -296,7 +296,7 @@ const injectLyrics = (lyrics, wrapper) => {
       }, true);player.playVideo();` // Set the onClick event to seek to the start time and play the video
     );
 
-    line.innerHTML = item.words; // Set the line text
+    line.innerText = item.words; // Set the line text with innerText in order to avoid XSS
 
     onTranslationEnabled((items) => {
       let translatedLine = document.createElement("span"); // Create a span element
