@@ -2,38 +2,43 @@ import Link from "next/link";
 import { Card } from "./ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
+const TopBanner = () => {
+  return (
+    <div className="flex items-center justify-center w-full h-8 text-sm text-yellow-800 whitespace-pre bg-yellow-200">
+      <span className="hidden lg:block">
+        Better Lyric's backend was offline for a couple hours on June 11, 2024
+        from 0830 GMT to 1230 GMT due to a service incident from Railway.{" "}
+      </span>
+      <span className="block lg:hidden">Service incident report </span>
+      <a
+        target="_blank"
+        rel="noreferrer"
+        href="https://status.railway.app/clxa4z5c81345703e2oe5y8bmsy9"
+        className="flex items-center gap-1 font-medium text-yellow-900 hover:underline"
+      >
+        Learn More
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="inline size-3"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+          />
+        </svg>
+      </a>
+    </div>
+  );
+};
+
 export function Landing() {
   return (
     <div className="flex flex-col min-h-[100dvh]">
-      <div className="flex items-center justify-center w-full h-8 text-sm text-yellow-800 whitespace-pre bg-yellow-200">
-        <span className="hidden lg:block">
-          Better Lyric's backend was offline for a couple hours on June 11, 2024
-          from 0830 GMT to 1230 GMT due to a service incident from Railway.{" "}
-        </span>
-        <span className="block lg:hidden">Service incident report </span>
-        <a
-          target="_blank"
-          rel="noreferrer"
-          href="https://status.railway.app/clxa4z5c81345703e2oe5y8bmsy9"
-          className="flex items-center gap-1 font-medium text-yellow-900 hover:underline"
-        >
-          Learn More
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="inline size-3"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-            />
-          </svg>
-        </a>
-      </div>
       <header className="flex items-center px-4 lg:px-6 h-14">
         <Link className="flex items-center justify-center" href="#">
           <img alt="Logo" className="mr-2 size-6" src="/icon-512.png" />
@@ -92,7 +97,7 @@ export function Landing() {
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Link
-                    className="h-10 px-4 overflow-hidden bg-white border border-gray-200 rounded-md shadow-sm"
+                    className="h-12 px-4 overflow-hidden transition-all bg-white border rounded-md shadow-md border-black/15 hover:border-black/20 hover:shadow-lg"
                     href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg"
                     target="_blank"
                   >
@@ -103,12 +108,15 @@ export function Landing() {
                     />
                   </Link>
                   <Link
-                    href="https://github.com/boidushya/better-lyrics"
+                    className="h-12 overflow-hidden px-10 py-1 bg-[#0E9AD6] border border-black/5 rounded-md shadow-md hover:border-black/20 hover:shadow-lg transition-all"
+                    href="https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/"
                     target="_blank"
-                    className="inline-flex items-center justify-center h-10 px-8 text-sm font-medium transition-colors rounded-md shadow bg-gray-900/80 text-gray-50 hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                    prefetch={false}
                   >
-                    Learn More
+                    <img
+                      src="https://blog.mozilla.org/addons/files/2020/04/get-the-addon-fx-apr-2020.svg"
+                      alt="Firefox Add-On Store"
+                      className="w-full h-full"
+                    />
                   </Link>
                 </div>
               </div>
