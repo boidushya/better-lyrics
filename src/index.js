@@ -45,6 +45,7 @@ const AUTO_SWITCH_ENABLED_LOG = `${LOG_PREFIX} Auto switch enabled, switching to
 const TRANSLATION_ENABLED_LOG = `${LOG_PREFIX} Translation enabled, translating lyrics. Language: `;
 const TRANSLATION_ERROR_LOG = `${LOG_PREFIX} Unable to translate lyrics due to error`;
 const SYNC_DISABLED_LOG = `${LOG_PREFIX} Syncing lyrics disabled due to all lyrics having a start time of 0`;
+const YTMUSIC_LYRICS_AVAILABLE_LOG = `${LOG_PREFIX} Lyrics are available on the page & backend failed to fetch lyrics`;
 const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
 // Storage get function
@@ -116,6 +117,18 @@ const timeToInt = (time) => {
 // Function to convert &amp; to &
 function unEntity(str) {
   return str.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+}
+
+// Function to clean HTML from string
+function getTrimmedString(htmlString) {
+  // Regular expression to match HTML tags and their content
+  const regex = /<[^>]*>[^<]*<\/[^>]*>/g;
+
+  // Replace the matched HTML tags and their content with an empty string
+  const cleanedString = htmlString.replace(regex, "");
+
+  // Return the cleaned string with any remaining HTML tags removed
+  return cleanedString.replace(/<[^>]*>/g, "").trim();
 }
 
 // Function for translate lyrics
@@ -198,20 +211,45 @@ const legacySongInfo = () => {
 const injectError = (replaceErrorMessage = false) => {
   const message = "No lyrics found for this song.";
   try {
+    const lyricsContainer = document.getElementsByClassName(LYRICS_CLASS)[0];
+    const lyricsWrapper = document.getElementsByClassName(DESCRIPTION_CLASS)[1];
+
     const errorContainer = document.createElement("div");
     errorContainer.className = ERROR_LYRICS_CLASS;
     errorContainer.innerText = message;
 
-    const lyricsContainer = document.getElementsByClassName(LYRICS_CLASS)[0];
+    let tempLyrics;
+    tempLyrics = lyricsWrapper.innerHTML;
+
     if (lyricsContainer) {
       lyricsContainer.innerHTML = "";
     } // Clear the lyrics container
 
     if (replaceErrorMessage) {
-      const noLyricsContainer = document.querySelector(NO_LYRICS_TEXT_SELECTOR);
-      noLyricsContainer.classList.add(LYRICS_CLASS);
-      noLyricsContainer.innerHTML = ""; // Clear the lyrics container
-      noLyricsContainer.appendChild(errorContainer); // Append error message to lyrics container
+      try {
+        const noLyricsContainer = document.querySelector(
+          NO_LYRICS_TEXT_SELECTOR
+        );
+
+        noLyricsContainer.classList.add(LYRICS_CLASS);
+        noLyricsContainer.innerHTML = ""; // Clear the lyrics container
+
+        noLyricsContainer.appendChild(errorContainer); // Append error message to lyrics container
+      } catch (err) {
+        if (!lyricsWrapper.querySelector(`.${LYRICS_CLASS}`)) {
+          log(YTMUSIC_LYRICS_AVAILABLE_LOG); // Log lyrics available
+
+          lyricsWrapper.innerHTML = tempLyrics;
+        } else if (tempLyrics.startsWith("<div")) {
+          const trimmedLyrics = getTrimmedString(tempLyrics);
+
+          if (trimmedLyrics !== "") {
+            lyricsWrapper.innerHTML = trimmedLyrics;
+          } else {
+            lyricsContainer.appendChild(errorContainer); // Append error message to lyrics container
+          }
+        }
+      }
       return;
     }
     lyricsContainer.appendChild(errorContainer); // Append error message to lyrics container
@@ -255,6 +293,8 @@ const createLyrics = () => {
         injectLyrics(lyrics); // Inject lyrics
       })
       .catch((err) => {
+        clearInterval(window.lyricsCheckInterval); // Clear the lyrics interval
+
         log(SERVER_ERROR_LOG); // Log server error
         log(err);
         setTimeout(() => injectError(true), 500);
@@ -294,17 +334,24 @@ const injectLyrics = (lyrics) => {
     log(TRANSLATION_ENABLED_LOG, items.translationLanguage);
   });
 
+  // Set an interval to sync the lyrics with the video playback
+  const allZero = lyrics.every((item) => item.startTimeMs === "0");
+
   lyrics.forEach((item) => {
     let line = document.createElement("div");
     line.dataset.time = item.startTimeMs / 1000; // Set the start time of the line
-    line.setAttribute("data-scrolled", false);
+    if (!allZero) {
+      line.setAttribute("data-scrolled", false);
 
-    line.setAttribute(
-      "onClick",
-      `const player = document.getElementById("movie_player"); player.seekTo(${
-        item.startTimeMs / 1000
-      }, true);player.playVideo();` // Set the onClick event to seek to the start time and play the video
-    );
+      line.setAttribute(
+        "onClick",
+        `const player = document.getElementById("movie_player"); player.seekTo(${
+          item.startTimeMs / 1000
+        }, true);player.playVideo();` // Set the onClick event to seek to the start time and play the video
+      );
+    } else {
+      line.classList.add(CURRENT_LYRICS_CLASS);
+    }
 
     line.innerText = item.words; // Set the line text with innerText in order to avoid XSS
 
@@ -338,8 +385,6 @@ const injectLyrics = (lyrics) => {
     }
   });
 
-  // Set an interval to sync the lyrics with the video playback
-  const allZero = lyrics.every((item) => item.startTimeMs === "0");
   if (!allZero) {
     window.lyricsCheckInterval = setInterval(function () {
       try {
