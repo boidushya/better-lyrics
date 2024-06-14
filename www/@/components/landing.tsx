@@ -43,7 +43,7 @@ const TopBanner = () => {
           alt="Better&#0032;Lyrics - Upgrade&#0032;YouTube&#0032;music&#0032;with&#0032;stunning&#0044;&#0032;synced&#0032;lyrics | Product Hunt"
           width="166.67"
           height="36"
-          className="shadow-2xl rounded-[0.375rem]"
+          className=""
         />
       </Link>
     </div>
