@@ -4,8 +4,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 const TopBanner = () => {
   return (
-    <div className="flex items-center justify-center w-full h-8 text-sm text-yellow-800 whitespace-pre bg-yellow-200">
-      <span className="hidden lg:block">
+    <div className="absolute z-10 flex items-center justify-between w-full h-12 gap-4 px-6 py-4 text-sm text-yellow-800 whitespace-pre bg-yellow-200 top-14 border-y border-yellow-800/10">
+      {/* <span className="hidden lg:block">
         Better Lyric's backend was offline for a couple hours on June 11, 2024
         from 0830 GMT to 1230 GMT due to a service incident from Railway.{" "}
       </span>
@@ -31,7 +31,21 @@ const TopBanner = () => {
             d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
           />
         </svg>
-      </a>
+      </a> */}
+      Better Lyrics is on Product Hunt! 🚀
+      <Link
+        href="https://www.producthunt.com/posts/better-lyrics?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-better&#0045;lyrics"
+        target="_blank"
+        className="transition-transform hover:scale-105"
+      >
+        <img
+          src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=463141&theme=light"
+          alt="Better&#0032;Lyrics - Upgrade&#0032;YouTube&#0032;music&#0032;with&#0032;stunning&#0044;&#0032;synced&#0032;lyrics | Product Hunt"
+          width="166.67"
+          height="36"
+          className="shadow-2xl rounded-[0.375rem]"
+        />
+      </Link>
     </div>
   );
 };
@@ -39,7 +53,7 @@ const TopBanner = () => {
 export function Landing() {
   return (
     <div className="flex flex-col min-h-[100dvh]">
-      <header className="flex items-center px-4 lg:px-6 h-14">
+      <header className="fixed z-50 flex items-center w-full px-4 border-b bg-white/75 backdrop-blur lg:px-6 h-14 border-black/5">
         <Link className="flex items-center justify-center" href="#">
           <img alt="Logo" className="mr-2 size-6" src="/icon-512.png" />
           <span className="text-xl font-bold">Better Lyrics</span>
@@ -80,7 +94,9 @@ export function Landing() {
           </Link>
         </nav>
       </header>
-      <main className="flex-1">
+
+      <main className="flex-1 pt-14">
+        <TopBanner />
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-36 hero-bg">
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
@@ -126,19 +142,6 @@ export function Landing() {
                   className="object-cover mx-auto overflow-hidden rounded-xl sm:w-full"
                   src="https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png"
                 />
-                <Link
-                  href="https://www.producthunt.com/posts/better-lyrics?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-better&#0045;lyrics"
-                  target="_blank"
-                  className="transition-transform hover:scale-105"
-                >
-                  <img
-                    src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=463141&theme=neutral"
-                    alt="Better&#0032;Lyrics - Upgrade&#0032;YouTube&#0032;music&#0032;with&#0032;stunning&#0044;&#0032;synced&#0032;lyrics | Product Hunt"
-                    width="250"
-                    height="54"
-                    className="shadow-2xl rounded-[0.675rem]"
-                  />
-                </Link>
               </div>
             </div>
           </div>
