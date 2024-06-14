@@ -95,7 +95,7 @@ export function Landing() {
         </nav>
       </header>
 
-      <main className="flex-1 pt-14">
+      <main className="flex-1 pt-24">
         <TopBanner />
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-36 hero-bg">
           <div className="container px-4 md:px-6">
