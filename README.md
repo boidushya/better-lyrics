@@ -33,7 +33,8 @@ song.
 📦 No external dependencies or API key\
 ⏩ Seek to a specific part of the song by clicking on the lyrics\
 🌏 Supports multiple languages\
-🪶 Lightweight and easy to use
+🪶 Lightweight and easy to use\
+🖥️ Support for full-screen mode
 
 ## Manual Installation
 
