@@ -106,6 +106,12 @@
   opacity: 0;
 }
 
+#tab-renderer:not([page-type="MUSIC_PAGE_TYPE_TRACK_LYRICS"]) #blyrics-wrapper,
+#tab-renderer:not([page-type="MUSIC_PAGE_TYPE_TRACK_LYRICS"]) #blyrics-loader,
+#tab-renderer:not([page-type="MUSIC_PAGE_TYPE_TRACK_LYRICS"]) .blyrics-footer {
+  display: none !important;
+}
+
 @keyframes blyrics-spin {
   from {
     transform: translate(0%, -50%) rotate(0deg);
