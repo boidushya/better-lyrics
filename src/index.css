@@ -33,7 +33,7 @@
 }
 
 .blyrics-container > div:first-child {
-  padding-top: 3rem !important;
+  padding-top: 2rem !important;
 }
 
 .blyrics-container > div:last-child {
@@ -50,13 +50,93 @@
   opacity: 0.6;
   font-size: 2rem;
   font-weight: 600;
+  white-space: pre-wrap;
 }
 
 #side-panel {
   min-width: 50%;
 }
 
-.footer.style-scope.ytmusic-description-shelf-renderer {
+.loading-spinner.ytmusic-tab-renderer {
+  margin: 0 0 0 !important;
+}
+
+#blyrics-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  position: relative;
+  opacity: 1;
+  transition: height 0.2s, opacity 0.2s;
+}
+
+#blyrics-loader::before {
+  content: "";
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  position: absolute;
+  top: 50%;
+  left: 1.5rem;
+  background: url("https://better-lyrics.boidu.dev/icon-512.png");
+  background-size: cover;
+  background-position: center;
+
+  animation: spin 1s linear infinite;
+}
+
+#blyrics-loader::after {
+  content: "Better Lyrics is searching for lyrics...";
+  color: #fff;
+  font-size: 2rem;
+  margin-left: 1.5rem;
+  font-weight: 700;
+  font-family: "Satoshi", "Avenir", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+    sans-serif;
+  line-height: 1;
+  position: relative !important;
+  isolation: isolate;
+  z-index: 1;
+  opacity: 0.33;
+  animation: pulse 2s infinite;
+}
+
+#blyrics-loader:not([active]) {
+  height: 0;
+  opacity: 0;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg) translateY(-50%);
+  }
+  to {
+    transform: rotate(360deg) translateY(-50%);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.33;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.33;
+  }
+}
+
+.blyrics-footer {
+  font-family: Roboto, Noto Naskh Arabic UI, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: var(--ytmusic-body-line-height);
+  color: #aaa;
+  margin: 16px 0;
+  cursor: default;
   border: 1px solid rgba(255, 255, 255, 0.1);
   width: fit-content;
   padding: 0.5rem 1.25rem;
@@ -66,16 +146,32 @@
   margin-top: 0 !important;
   z-index: 2;
   position: relative;
+  display: flex;
+  align-items: center;
+  white-space: pre;
 }
 
-.footer.style-scope.ytmusic-description-shelf-renderer > a {
+.blyrics-footer > a {
   color: #fff;
   text-decoration: none;
   text-underline-offset: 2px;
 }
 
-.footer.style-scope.ytmusic-description-shelf-renderer:hover > a {
+.blyrics-footer:hover > a {
   text-decoration: underline;
+}
+
+.blyrics-footer > img {
+  margin-right: 1rem;
+  margin-left: -6px;
+}
+
+.footer.style-scope.ytmusic-description-shelf-renderer:not(.blyrics--fallback) {
+  display: none !important;
+}
+
+.footer.style-scope.ytmusic-description-shelf-renderer.blyrics--fallback {
+  margin-bottom: 4rem !important;
 }
 
 yt-formatted-string[is-empty] {
@@ -132,14 +228,51 @@ yt-formatted-string.text.style-scope.ytmusic-message-renderer {
 
 .blyrics--error {
   color: rgba(254, 226, 226);
-  margin-bottom: 4rem !important;
+  margin-bottom: 2rem !important;
   cursor: default;
   align-self: flex-start !important;
+  font-size: 3rem;
+  font-weight: 700;
+  font-family: "Satoshi", "Avenir", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+    sans-serif;
+  line-height: 1;
+  opacity: 0.33;
+  padding-top: 2rem !important;
+  padding-bottom: 2rem !important;
+  word-break: break-word;
 }
 
 #tabsContent > tp-yt-paper-tab:nth-child(3) {
   pointer-events: initial !important;
   cursor: pointer !important;
+}
+
+yt-formatted-string.non-expandable.description.style-scope.ytmusic-description-shelf-renderer:not(
+    .blyrics--fallback
+  ) {
+  display: none !important;
+}
+
+yt-formatted-string.non-expandable.description.style-scope.ytmusic-description-shelf-renderer.blyrics--fallback {
+  margin-block: 4rem !important;
+}
+
+#tab-renderer
+  > ytmusic-message-renderer
+  > yt-formatted-string.text.style-scope.ytmusic-message-renderer,
+#tab-renderer
+  > ytmusic-message-renderer
+  > yt-formatted-string.subtext.style-scope.ytmusic-message-renderer {
+  display: none !important;
+}
+
+ytmusic-message-renderer.ytmusic-tab-renderer {
+  margin: 0 !important;
+}
+
+#blyrics-wrapper {
+  margin-top: 16px;
 }
 
 @media (min-width: 615px) {
@@ -226,7 +359,7 @@ yt-formatted-string.text.style-scope.ytmusic-message-renderer {
 }
 
 @media (max-width: 936px) {
-  yt-formatted-string.non-expandable.description.style-scope.ytmusic-description-shelf-renderer {
+  #blyrics-wrapper {
     margin-inline: -1.5rem;
   }
 }
