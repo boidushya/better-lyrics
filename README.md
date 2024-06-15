@@ -1,7 +1,4 @@
 <p align="center">
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 	<img src="./images/icons/icon-512.png" height="128">
     <h1 align="center">Better Lyrics</h1>
 </p>
@@ -12,6 +9,9 @@
 	<img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt=""/>
 	<a aria-label="Volkswagen CI" href="https://github.com/boidushya/better-lyrics"><img src="https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1" alt=""/></a>
 	<a aria-label="Better Lyrics Status" href="https://better-lyrics.openstatus.dev"><img height="20" src="https://better-lyrics.openstatus.dev/badge" /></a>
+	<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+	<img src="https://img.shields.io/badge/all_contributors-1-orange.svg" alt=""/>
+	<!-- ALL-CONTRIBUTORS-BADGE:END -->
 </p>
 
 ![Banner](https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png)

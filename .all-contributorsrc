@@ -17,6 +17,7 @@
       ]
     }
   ],
+  "badgeTemplate": "<img src=\"https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg\" alt=\"\"/>",
   "contributorsPerLine": 7,
   "skipCi": true,
   "repoType": "github",
