@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card } from "./ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "./ui/avatar";
+import React from "react";
 
 const TopBanner = () => {
   return (
@@ -51,6 +52,19 @@ const TopBanner = () => {
 };
 
 export function Landing() {
+  const [imageLoaded, setImageLoaded] = React.useState<boolean>(false);
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  const src = "https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png";
+
+  React.useEffect(() => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => setImageLoaded(true);
+  }, [src]);
+
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <header className="fixed z-50 flex items-center w-full px-4 border-b bg-white/75 backdrop-blur lg:px-6 h-14 border-black/5">
@@ -139,8 +153,12 @@ export function Landing() {
               <div className="relative flex flex-col items-center mb-8 md:mb-0">
                 <img
                   alt="Hero"
-                  className="object-cover mx-auto overflow-hidden rounded-xl sm:w-full"
-                  src="https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png"
+                  onLoad={handleImageLoad}
+                  style={{
+                    opacity: imageLoaded ? 1 : 0,
+                  }}
+                  className="object-cover mx-auto overflow-hidden transition-opacity duration-300 rounded-xl sm:w-full"
+                  src={src}
                 />
               </div>
             </div>
