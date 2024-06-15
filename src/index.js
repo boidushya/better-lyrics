@@ -220,7 +220,6 @@ const scrollToTop = () => {
       behavior: "smooth",
       block: "start",
       inline: "start",
-      duration: 100,
     });
     lyricsContainer.scrollTop = 0;
   } catch (err) {
@@ -241,6 +240,12 @@ const renderLoader = () => {
     tabRenderer.prepend(loaderWrapper);
     loaderWrapper.style.display = "inline-block !important";
     loaderWrapper.setAttribute("active", "");
+    // scroll loader to top
+    loaderWrapper.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      inline: "start",
+    });
   } catch (err) {
     log(err);
   }
@@ -263,6 +268,7 @@ const clearLyrics = () => {
   try {
     const lyricsWrapper = getLyricsWrapper();
     lyricsWrapper.innerHTML = "";
+
     renderLoader();
   } catch (err) {
     log(err);
@@ -278,7 +284,10 @@ const injectError = () => {
     const hasYtMusicLyrics = document.querySelector(NO_LYRICS_TEXT_SELECTOR);
 
     if (hasYtMusicLyrics) {
-      if (hasYtMusicLyrics.innerText === "Lyrics not available") {
+      if (
+        hasYtMusicLyrics.innerText === "Lyrics not available" &&
+        hasYtMusicLyrics.parentElement.style.display !== "none"
+      ) {
         // Lyrics are not available on the page and the backend failed to fetch lyrics
         // Display no lyrics found message
         let lyricsWrapper = getLyricsWrapper();
@@ -370,6 +379,19 @@ const getLyricsWrapper = () => {
   return document.getElementById(LYRICS_WRAPPER_ID);
 };
 
+// Function to add footer
+const addFooter = () => {
+  if (document.getElementsByClassName(FOOTER_CLASS).length > 0) {
+    return;
+  }
+  const tabRenderer = document.querySelector("#tab-renderer");
+  const footer = document.createElement("div");
+
+  footer.classList.add(FOOTER_CLASS);
+  tabRenderer.appendChild(footer);
+  createFooter();
+};
+
 // Function to create lyrics wrapper
 const createLyricsWrapper = () => {
   // Append the section list renderer to the body or any desired parent element
@@ -386,15 +408,8 @@ const createLyricsWrapper = () => {
   const wrapper = document.createElement("div");
   wrapper.id = LYRICS_WRAPPER_ID;
 
-  // Create the footer
-  const footer = document.createElement("div");
-  footer.classList.add(FOOTER_CLASS);
-
-  // Append the wrapper and footer to the tab renderer
+  // Append the wrapper and add footer to the tab renderer
   tabRenderer.appendChild(wrapper);
-  tabRenderer.appendChild(footer);
-
-  createFooter();
 
   log(LYRICS_WRAPPER_CREATED_LOG); // Log lyrics wrapper created
   return getLyricsWrapper();
@@ -435,6 +450,8 @@ const injectLyrics = (lyrics) => {
   let lyricsWrapper;
 
   lyricsWrapper = createLyricsWrapper();
+
+  addFooter();
 
   try {
     lyricsWrapper.innerHTML = "";
@@ -520,6 +537,7 @@ const injectLyrics = (lyrics) => {
 
         lyrics.every((elem, index) => {
           const time = parseFloat(elem.getAttribute("data-time")); // Get the start time of the line
+
           if (currentTime >= time && index + 1 === lyrics.length) {
             // If it's the last line
             elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
@@ -607,9 +625,36 @@ const enableLyricsTab = () => {
   observer.observe(tabSelector, { attributes: true });
 };
 
+// Function to cleanup classnames and footer
+const cleanup = () => {
+  const existingFooter = document.getElementsByClassName(
+    YT_MUSIC_FOOTER_CLASS
+  )[0];
+
+  const existingLyrics = document.getElementsByClassName(DESCRIPTION_CLASS)[1];
+
+  const blyricsFooter = document.getElementsByClassName(FOOTER_CLASS)[0];
+  if (blyricsFooter) {
+    blyricsFooter.remove();
+  }
+  if (
+    existingLyrics &&
+    existingLyrics.classList.contains("blyrics--fallback")
+  ) {
+    existingLyrics.classList.remove("blyrics--fallback");
+  }
+  if (
+    existingFooter &&
+    existingFooter.classList.contains("blyrics--fallback")
+  ) {
+    existingFooter.classList.remove("blyrics--fallback");
+  }
+  clearLyrics();
+};
+
 // Function to handle the main modifications to the page
 const handleModifications = () => {
-  clearLyrics();
+  cleanup();
   scrollToTop();
   renderLoader();
   setTimeout(() => createLyrics(), 1000);
