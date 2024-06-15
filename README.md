@@ -8,6 +8,9 @@
 	<img src="https://img.shields.io/badge/version-1.4.5-blue.svg" alt=""/>
 	<img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt=""/>
 	<a aria-label="Volkswagen CI" href="https://github.com/boidushya/better-lyrics"><img src="https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1" alt=""/></a>
+	<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+	<img src="https://img.shields.io/badge/all_contributors-1-orange.svg" alt=""/>
+	<!-- ALL-CONTRIBUTORS-BADGE:END -->
 	<a aria-label="Better Lyrics Status" href="https://better-lyrics.openstatus.dev"><img height="20" src="https://better-lyrics.openstatus.dev/badge" /></a>
 </p>
 
@@ -91,3 +94,25 @@ Contributions are welcome! If you have any ideas, suggestions, or bug reports, p
 ## License
 
 This project is licensed under the [GNU GPLv3 License](LICENSE).
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ZeDarkAdam"><img src="https://avatars.githubusercontent.com/u/80891624?v=4?s=100" width="100px;" alt="Oleh"/><br /><sub><b>Oleh</b></sub></a><br /><a href="https://github.com/boidushya/better-lyrics/commits?author=ZeDarkAdam" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

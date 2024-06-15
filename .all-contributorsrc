@@ -1,0 +1,27 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "ZeDarkAdam",
+      "name": "Oleh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/80891624?v=4",
+      "profile": "https://github.com/ZeDarkAdam",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "badgeTemplate": "<img src=\"https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg\" alt=\"\"/>",
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "better-lyrics",
+  "projectOwner": "boidushya"
+}
