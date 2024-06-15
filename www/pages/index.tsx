@@ -9,6 +9,11 @@ export default function Home() {
         <meta name="description" content="Better Lyrics for Youtube Music" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="preload"
+          href="https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png"
+          as="image"
+        />
       </Head>
       <Landing />
     </>
