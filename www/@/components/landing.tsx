@@ -417,7 +417,7 @@ export function Landing() {
         </p>
         <nav className="flex gap-4 sm:ml-auto sm:gap-6">
           <Link
-            href="https://better-lyrics.openstatus.dev/"
+            href="https://better-lyrics-status.boidu.dev/"
             className="text-xs hover:underline underline-offset-4"
             prefetch={false}
           >
