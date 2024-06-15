@@ -151,10 +151,28 @@ yt-formatted-string.text.style-scope.ytmusic-message-renderer {
   }
   ytmusic-player-page:not(
       [is-video-truncation-fix-enabled]
-    )[player-fullscreened][has-av-switcher]
+    )[player-fullscreened]
     #player.ytmusic-player-page {
     max-width: 50%;
     mask-image: linear-gradient(to left, var(--blyrics-gradient-stops));
+  }
+
+  ytmusic-player-page:not(
+      [is-video-truncation-fix-enabled]
+    )[player-fullscreened]:not([video-mode])
+    #player.ytmusic-player-page:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--blyrics-background-img);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    mask-image: linear-gradient(to left, transparent, black, black);
+    backdrop-filter: blur(100px);
   }
 
   ytmusic-app-layout:not([is-mweb-modernization-enabled])[player-fullscreened]
