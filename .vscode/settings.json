@@ -1,0 +1,8 @@
+{
+  "markdownlint.config": {
+    "MD033": {
+      "allowed_elements": ["p", "img", "a", "h1"]
+    },
+    "MD041": false
+  }
+}

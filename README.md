@@ -1,17 +1,17 @@
 <p align="center">
-	<img src="./images/icons/icon-512.png" height="128">
-    <h1 align="center">Better Lyrics</h1>
+ <img src="./images/icons/icon-512.png" height="128" alt="Logo">
+ <h1 align="center">Better Lyrics</h1>
 </p>
 
 <p align="center">
-	<a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
-	<img src="https://img.shields.io/badge/version-1.5.3-blue.svg" alt=""/>
-	<img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt=""/>
-	<a aria-label="Volkswagen CI" href="https://github.com/boidushya/better-lyrics"><img src="https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1" alt=""/></a>
-	<a aria-label="Better Stack Badge" href="https://better-lyrics-status.boidu.dev"><img height="20" src="https://uptime.betterstack.com/status-badges/v2/monitor/1dqoz.svg" /></a>
-	<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-	<img src="https://img.shields.io/badge/all_contributors-1-orange.svg" alt=""/>
-	<!-- ALL-CONTRIBUTORS-BADGE:END -->
+ <a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
+ <img src="https://img.shields.io/badge/version-1.5.4-blue.svg" alt=""/>
+ <img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt=""/>
+ <a aria-label="Volkswagen CI" href="https://github.com/boidushya/better-lyrics"><img src="https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1" alt=""/></a>
+ <a aria-label="Better Stack Badge" href="https://better-lyrics-status.boidu.dev"><img height="20" src="https://uptime.betterstack.com/status-badges/v2/monitor/1dqoz.svg" alt="Better Stack Badge" /></a>
+ <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+ <img src="https://img.shields.io/badge/all_contributors-1-orange.svg" alt=""/>
+ <!-- ALL-CONTRIBUTORS-BADGE:END -->
 </p>
 
 ![Banner](https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png)
@@ -23,6 +23,9 @@ by providing beautiful time synced lyrics for the currently playing
 song.
 
 ## Download
+
+> [!WARNING]
+> Better Lyrics is currently not available on the Edge Add-ons store. We are working on getting it published as soon as possible. In the meantime, you can download the extension from the releases page and [sideload it](https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/getting-started/extension-sideloading) on Microsoft Edge.
 
 <p float="left">
 <a href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg" target="_blank"><img src="https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/HRs9MPufa1J1h5glNhut.png" alt="Chrome Web Store" height="60"/></a>
@@ -65,13 +68,14 @@ song.
 
 ## Options
 
-| **Option**                   | **Default Status** |
-| ---------------------------- | ------------------ |
-| Logs                         | Enabled            |
-| Auto switch to Lyrics tab    | Disabled           |
-| Blurred album art background | Enabled            |
-| Translations                 | Disabled           |
-| Translation Language         | English            |
+| **Option**                           | **Default Status** |
+| ------------------------------------ | ------------------ |
+| Logs                                 | Enabled            |
+| Auto switch to Lyrics tab            | Disabled           |
+| Blurred album art background         | Enabled            |
+| Auto-hide cursor in full screen mode | Enabled            |
+| Translations                         | Disabled           |
+| Translation Language                 | English            |
 
 > [!TIP]
 >

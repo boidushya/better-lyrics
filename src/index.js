@@ -3,7 +3,6 @@ const TITLE_CLASS = "title ytmusic-player-bar"; // Class for the song title
 const SUBTITLE_CLASS = "subtitle style-scope ytmusic-player-bar"; // Class for the artist name
 const TAB_HEADER_CLASS = "tab-header style-scope ytmusic-player-page"; // Class for the tab headers
 const TAB_CONTENT_CLASS = "tab-content style-scope tp-yt-paper-tab"; // Class for the tab content
-const LYRICS_WRAPPER_ID = "blyrics-wrapper"; // Class for the lyrics wrapper
 const LYRICS_CLASS = "blyrics-container"; // Class for the lyrics container
 const CURRENT_LYRICS_CLASS = "blyrics--active"; // Class for the current lyrics line
 const TRANSLATED_LYRICS_CLASS = "blyrics--translated"; // Class for the translated lyrics line
@@ -12,11 +11,14 @@ const DESCRIPTION_CLASS =
   "description style-scope ytmusic-description-shelf-renderer"; // Class for the description container
 const FOOTER_CLASS = "blyrics-footer"; // Class for the footer
 const TIME_INFO_CLASS = "time-info style-scope ytmusic-player-bar"; // Class for the time info
-const SONG_IMAGE_SELECTOR = "#song-image>#thumbnail>#img"; // Selector for the song image
-const NO_LYRICS_TEXT_SELECTOR =
-  "#tab-renderer > ytmusic-message-renderer > yt-formatted-string.text.style-scope.ytmusic-message-renderer"; // Selector for the no lyrics text
 const YT_MUSIC_FOOTER_CLASS =
   "footer style-scope ytmusic-description-shelf-renderer"; // Class for the default footer
+const SONG_IMAGE_SELECTOR = "#song-image>#thumbnail>#img"; // Selector for the song image
+const TAB_RENDERER_SELECTOR = "#tab-renderer"; // Class for the tab renderer
+const LYRICS_LOADER_SELECTOR = "#blyrics-loader"; // Selector for the lyrics loader
+const NO_LYRICS_TEXT_SELECTOR =
+  "#tab-renderer > ytmusic-message-renderer > yt-formatted-string.text.style-scope.ytmusic-message-renderer"; // Selector for the no lyrics text
+const LYRICS_WRAPPER_ID = "blyrics-wrapper"; // Class for the lyrics wrapper
 
 // Constants
 const LYRICS_API_URL = "https://lyrics-api.boidu.dev/getLyrics"; // URL for the lyrics API
@@ -241,11 +243,11 @@ const scrollToTop = () => {
 // Function to render loader
 const renderLoader = () => {
   try {
-    const tabRenderer = document.querySelector("#tab-renderer");
-    let loaderWrapper = document.querySelector("#blyrics-loader");
+    const tabRenderer = document.querySelector(TAB_RENDERER_SELECTOR);
+    let loaderWrapper = document.querySelector(LYRICS_LOADER_SELECTOR);
     if (!loaderWrapper) {
       loaderWrapper = document.createElement("div");
-      loaderWrapper.id = "blyrics-loader";
+      loaderWrapper.id = LYRICS_LOADER_SELECTOR.replace("#", "");
     }
 
     tabRenderer.prepend(loaderWrapper);
@@ -264,7 +266,7 @@ const renderLoader = () => {
 
 const flushLoader = () => {
   try {
-    const loaderWrapper = document.querySelector("#blyrics-loader");
+    const loaderWrapper = document.querySelector(LYRICS_LOADER_SELECTOR);
     if (loaderWrapper) {
       loaderWrapper.style.display = "none !important";
       loaderWrapper.removeAttribute("active");
@@ -397,7 +399,7 @@ const addFooter = () => {
   if (document.getElementsByClassName(FOOTER_CLASS).length > 0) {
     return;
   }
-  const tabRenderer = document.querySelector("#tab-renderer");
+  const tabRenderer = document.querySelector(TAB_RENDERER_SELECTOR);
   const footer = document.createElement("div");
 
   footer.classList.add(FOOTER_CLASS);
@@ -408,7 +410,7 @@ const addFooter = () => {
 // Function to create lyrics wrapper
 const createLyricsWrapper = () => {
   // Append the section list renderer to the body or any desired parent element
-  const tabRenderer = document.querySelector("#tab-renderer");
+  const tabRenderer = document.querySelector(TAB_RENDERER_SELECTOR);
 
   // Check if the wrapper already exists
   const existingWrapper = getLyricsWrapper();
