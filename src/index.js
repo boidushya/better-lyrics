@@ -52,6 +52,7 @@ const TRANSLATION_ENABLED_LOG = `${LOG_PREFIX} Translation enabled, translating 
 const TRANSLATION_ERROR_LOG = `${LOG_PREFIX} Unable to translate lyrics due to error`;
 const SYNC_DISABLED_LOG = `${LOG_PREFIX} Syncing lyrics disabled due to all lyrics having a start time of 0`;
 const YT_MUSIC_LYRICS_AVAILABLE_LOG = `${LOG_PREFIX} Lyrics are available on the page & backend failed to fetch lyrics`;
+const LOADER_ACTIVE_LOG = `${LOG_PREFIX} ${IGNORE_PREFIX} Loader is active, skipping lyrics sync`;
 const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
 // Storage get function
@@ -264,12 +265,25 @@ const renderLoader = () => {
   }
 };
 
+// Function to flush loader
 const flushLoader = () => {
   try {
     const loaderWrapper = document.getElementById(LYRICS_LOADER_ID);
     if (loaderWrapper) {
       loaderWrapper.style.display = "none !important";
       loaderWrapper.removeAttribute("active");
+    }
+  } catch (err) {
+    log(err);
+  }
+};
+
+// Function to check if loader is active
+const isLoaderActive = () => {
+  try {
+    const loaderWrapper = document.getElementById(LYRICS_LOADER_ID);
+    if (loaderWrapper) {
+      return loaderWrapper.hasAttribute("active");
     }
   } catch (err) {
     log(err);
@@ -537,6 +551,10 @@ const injectLyrics = (lyrics) => {
 
   if (!allZero) {
     window.lyricsCheckInterval = setInterval(function () {
+      if (isLoaderActive()) {
+        log(LOADER_ACTIVE_LOG);
+        return;
+      }
       try {
         let currentTime =
           timeToInt(
