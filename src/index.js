@@ -15,9 +15,9 @@ const YT_MUSIC_FOOTER_CLASS =
   "footer style-scope ytmusic-description-shelf-renderer"; // Class for the default footer
 const SONG_IMAGE_SELECTOR = "#song-image>#thumbnail>#img"; // Selector for the song image
 const TAB_RENDERER_SELECTOR = "#tab-renderer"; // Class for the tab renderer
-const LYRICS_LOADER_SELECTOR = "#blyrics-loader"; // Selector for the lyrics loader
 const NO_LYRICS_TEXT_SELECTOR =
   "#tab-renderer > ytmusic-message-renderer > yt-formatted-string.text.style-scope.ytmusic-message-renderer"; // Selector for the no lyrics text
+const LYRICS_LOADER_ID = "blyrics-loader"; // Selector for the lyrics loader
 const LYRICS_WRAPPER_ID = "blyrics-wrapper"; // Class for the lyrics wrapper
 
 // Constants
@@ -244,10 +244,10 @@ const scrollToTop = () => {
 const renderLoader = () => {
   try {
     const tabRenderer = document.querySelector(TAB_RENDERER_SELECTOR);
-    let loaderWrapper = document.querySelector(LYRICS_LOADER_SELECTOR);
+    let loaderWrapper = document.getElementById(LYRICS_LOADER_ID);
     if (!loaderWrapper) {
       loaderWrapper = document.createElement("div");
-      loaderWrapper.id = LYRICS_LOADER_SELECTOR.replace("#", "");
+      loaderWrapper.id = LYRICS_LOADER_ID;
     }
 
     tabRenderer.prepend(loaderWrapper);
@@ -266,7 +266,7 @@ const renderLoader = () => {
 
 const flushLoader = () => {
   try {
-    const loaderWrapper = document.querySelector(LYRICS_LOADER_SELECTOR);
+    const loaderWrapper = document.getElementById(LYRICS_LOADER_ID);
     if (loaderWrapper) {
       loaderWrapper.style.display = "none !important";
       loaderWrapper.removeAttribute("active");
