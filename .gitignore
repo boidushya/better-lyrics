@@ -1,7 +1,7 @@
 dist/
 .DS_Store
-build*.sh
-bump-ver.sh
+# build*.sh
+# bump-ver.sh
 
 # Ignore node_modules directory
 node_modules/

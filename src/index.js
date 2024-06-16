@@ -3,7 +3,6 @@ const TITLE_CLASS = "title ytmusic-player-bar"; // Class for the song title
 const SUBTITLE_CLASS = "subtitle style-scope ytmusic-player-bar"; // Class for the artist name
 const TAB_HEADER_CLASS = "tab-header style-scope ytmusic-player-page"; // Class for the tab headers
 const TAB_CONTENT_CLASS = "tab-content style-scope tp-yt-paper-tab"; // Class for the tab content
-const LYRICS_WRAPPER_ID = "blyrics-wrapper"; // Class for the lyrics wrapper
 const LYRICS_CLASS = "blyrics-container"; // Class for the lyrics container
 const CURRENT_LYRICS_CLASS = "blyrics--active"; // Class for the current lyrics line
 const TRANSLATED_LYRICS_CLASS = "blyrics--translated"; // Class for the translated lyrics line
@@ -12,11 +11,14 @@ const DESCRIPTION_CLASS =
   "description style-scope ytmusic-description-shelf-renderer"; // Class for the description container
 const FOOTER_CLASS = "blyrics-footer"; // Class for the footer
 const TIME_INFO_CLASS = "time-info style-scope ytmusic-player-bar"; // Class for the time info
-const SONG_IMAGE_SELECTOR = "#song-image>#thumbnail>#img"; // Selector for the song image
-const NO_LYRICS_TEXT_SELECTOR =
-  "#tab-renderer > ytmusic-message-renderer > yt-formatted-string.text.style-scope.ytmusic-message-renderer"; // Selector for the no lyrics text
 const YT_MUSIC_FOOTER_CLASS =
   "footer style-scope ytmusic-description-shelf-renderer"; // Class for the default footer
+const SONG_IMAGE_SELECTOR = "#song-image>#thumbnail>#img"; // Selector for the song image
+const TAB_RENDERER_SELECTOR = "#tab-renderer"; // Class for the tab renderer
+const NO_LYRICS_TEXT_SELECTOR =
+  "#tab-renderer > ytmusic-message-renderer > yt-formatted-string.text.style-scope.ytmusic-message-renderer"; // Selector for the no lyrics text
+const LYRICS_LOADER_ID = "blyrics-loader"; // Selector for the lyrics loader
+const LYRICS_WRAPPER_ID = "blyrics-wrapper"; // Class for the lyrics wrapper
 
 // Constants
 const LYRICS_API_URL = "https://lyrics-api.boidu.dev/getLyrics"; // URL for the lyrics API
@@ -50,6 +52,7 @@ const TRANSLATION_ENABLED_LOG = `${LOG_PREFIX} Translation enabled, translating 
 const TRANSLATION_ERROR_LOG = `${LOG_PREFIX} Unable to translate lyrics due to error`;
 const SYNC_DISABLED_LOG = `${LOG_PREFIX} Syncing lyrics disabled due to all lyrics having a start time of 0`;
 const YT_MUSIC_LYRICS_AVAILABLE_LOG = `${LOG_PREFIX} Lyrics are available on the page & backend failed to fetch lyrics`;
+const LOADER_ACTIVE_LOG = `${LOG_PREFIX} ${IGNORE_PREFIX} Loader is active, skipping lyrics sync`;
 const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
 // Storage get function
@@ -241,11 +244,11 @@ const scrollToTop = () => {
 // Function to render loader
 const renderLoader = () => {
   try {
-    const tabRenderer = document.querySelector("#tab-renderer");
-    let loaderWrapper = document.querySelector("#blyrics-loader");
+    const tabRenderer = document.querySelector(TAB_RENDERER_SELECTOR);
+    let loaderWrapper = document.getElementById(LYRICS_LOADER_ID);
     if (!loaderWrapper) {
       loaderWrapper = document.createElement("div");
-      loaderWrapper.id = "blyrics-loader";
+      loaderWrapper.id = LYRICS_LOADER_ID;
     }
 
     tabRenderer.prepend(loaderWrapper);
@@ -262,12 +265,25 @@ const renderLoader = () => {
   }
 };
 
+// Function to flush loader
 const flushLoader = () => {
   try {
-    const loaderWrapper = document.querySelector("#blyrics-loader");
+    const loaderWrapper = document.getElementById(LYRICS_LOADER_ID);
     if (loaderWrapper) {
       loaderWrapper.style.display = "none !important";
       loaderWrapper.removeAttribute("active");
+    }
+  } catch (err) {
+    log(err);
+  }
+};
+
+// Function to check if loader is active
+const isLoaderActive = () => {
+  try {
+    const loaderWrapper = document.getElementById(LYRICS_LOADER_ID);
+    if (loaderWrapper) {
+      return loaderWrapper.hasAttribute("active");
     }
   } catch (err) {
     log(err);
@@ -397,7 +413,7 @@ const addFooter = () => {
   if (document.getElementsByClassName(FOOTER_CLASS).length > 0) {
     return;
   }
-  const tabRenderer = document.querySelector("#tab-renderer");
+  const tabRenderer = document.querySelector(TAB_RENDERER_SELECTOR);
   const footer = document.createElement("div");
 
   footer.classList.add(FOOTER_CLASS);
@@ -408,7 +424,7 @@ const addFooter = () => {
 // Function to create lyrics wrapper
 const createLyricsWrapper = () => {
   // Append the section list renderer to the body or any desired parent element
-  const tabRenderer = document.querySelector("#tab-renderer");
+  const tabRenderer = document.querySelector(TAB_RENDERER_SELECTOR);
 
   // Check if the wrapper already exists
   const existingWrapper = getLyricsWrapper();
@@ -535,6 +551,10 @@ const injectLyrics = (lyrics) => {
 
   if (!allZero) {
     window.lyricsCheckInterval = setInterval(function () {
+      if (isLoaderActive()) {
+        log(LOADER_ACTIVE_LOG);
+        return;
+      }
       try {
         let currentTime =
           timeToInt(
