@@ -103,6 +103,14 @@ const onTranslationEnabled = (callback) => {
   });
 };
 
+const onAutoHideCursor = (callback) => {
+  getStorage({ isCursorAutoHideEnabled: true }, (items) => {
+    if (items.isCursorAutoHideEnabled) {
+      callback();
+    }
+  });
+};
+
 const onScriptSendSongInfo = (event, callback, timeoutId, cleanup) => {
   clearTimeout(timeoutId);
   const data = event.detail;
@@ -681,11 +689,37 @@ const injectHeadTags = () => {
   document.head.appendChild(fontLink); // Add the font link to the head
 };
 
+// Function to hide cursor on idle
+const hideCursorOnIdle = () => {
+  onAutoHideCursor(() => {
+    let mouseTimer = null,
+      cursorVisible = true;
+
+    function disappearCursor() {
+      mouseTimer = null;
+      document.getElementById("layout").setAttribute("cursor-hidden", "");
+      cursorVisible = false;
+    }
+
+    document.onmousemove = function () {
+      if (mouseTimer) {
+        window.clearTimeout(mouseTimer);
+      }
+      if (!cursorVisible) {
+        document.getElementById("layout").removeAttribute("cursor-hidden");
+        cursorVisible = true;
+      }
+      mouseTimer = window.setTimeout(disappearCursor, 3000);
+    };
+  });
+};
+
 // Main function to modify the page
 const modify = () => {
   injectGetSongInfo();
   enableLyricsTab();
   injectHeadTags();
+  hideCursorOnIdle();
 
   log(
     INITIALIZE_LOG,

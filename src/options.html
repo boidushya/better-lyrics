@@ -33,7 +33,7 @@
         display: flex;
         align-items: center;
         gap: 1rem;
-        font-size: 1.25rem;
+        font-size: 1rem;
         margin-bottom: 2rem;
         margin-top: 1rem;
         width: 100%;
@@ -47,6 +47,7 @@
         border: none;
         width: 100%;
         border-radius: 1000rem;
+		text-align: center;
       }
       button:hover,
       label:hover input ~ .checkmark {
@@ -170,6 +171,13 @@
       <span>Show blurred album art background</span>
       <label>
         <input type="checkbox" id="albumArt" />
+        <span class="checkmark"></span>
+      </label>
+    </div>
+	<div class="container">
+      <span>Auto-hide cursor in fullscreen mode</span>
+      <label>
+        <input type="checkbox" id="cursorAutoHide" />
         <span class="checkmark"></span>
       </label>
     </div>
