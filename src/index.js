@@ -215,6 +215,9 @@ const legacySongInfo = () => {
 const scrollToTop = () => {
   try {
     const lyricsContainer = document.getElementsByClassName(LYRICS_CLASS)[0];
+    if (!lyricsContainer) {
+      return;
+    }
     const lyrics = lyricsContainer.children;
     lyrics[0].scrollIntoView({
       behavior: "smooth",
@@ -267,7 +270,9 @@ const flushLoader = () => {
 const clearLyrics = () => {
   try {
     const lyricsWrapper = getLyricsWrapper();
-    lyricsWrapper.innerHTML = "";
+    if (lyricsWrapper) {
+      lyricsWrapper.innerHTML = "";
+    }
 
     renderLoader();
   } catch (err) {
