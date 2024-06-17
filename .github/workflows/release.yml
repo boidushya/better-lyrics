@@ -1,0 +1,28 @@
+name: Releases
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag"
+        required: true
+        default: "v0.0.0"
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.event.inputs.tag }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build the template zip
+        run: |
+          ./scripts/build.sh
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "./dist/better-lyrics-chrome.zip,./dist/better-lyrics-edge.zip,./dist/better-lyrics-firefox.zip"
+          tag: ${{ github.event.inputs.tag }}
+          generateReleaseNotes: true
