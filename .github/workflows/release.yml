@@ -1,28 +1,36 @@
 name: Releases
 
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "Tag"
-        required: true
-        default: "v0.0.0"
-        type: string
+  push:
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      VERSION: ${{ github.event.inputs.tag }}
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v3
-      - name: Build the template zip
+
+      - name: Read version from manifest.json
+        id: read_version
         run: |
+          VERSION=$(jq -r '.version' manifest.json)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "::set-output name=tag::v$VERSION"
+
+      - name: Run build script
+
+        run: |
+          npm install -g postcss postcss-cli autoprefixer cssnano
+          chmod +x ./scripts/build.sh
           ./scripts/build.sh
+        shell: bash
+
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "./dist/better-lyrics-chrome.zip,./dist/better-lyrics-edge.zip,./dist/better-lyrics-firefox.zip"
-          tag: ${{ github.event.inputs.tag }}
+          tag: ${{ steps.read_version.outputs.tag }}
           generateReleaseNotes: true
+          skipIfReleaseExists: true
