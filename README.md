@@ -97,7 +97,7 @@ Contributions are welcome! If you have any ideas, suggestions, or bug reports, p
 
 ## License
 
-This project is licensed under the [GNU GPLv3 License](LICENSE).
+This project is licensed under the [GNU GPLv3 License](LICENSE). As long as you attribute me or [Better Lyrics](https://better-lyrics.boidu.dev) as the original creator and you comply with the rest of the license terms, you can use this project for personal or commercial purposes.
 
 ## Contributors ✨
 
