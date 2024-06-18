@@ -326,11 +326,11 @@ export function Landing() {
               </div>
               <div className="w-full max-w-2xl overflow-hidden rounded-lg aspect-video">
                 <iframe
-                  src="https://www.youtube.com/embed/56Z_31Sl9w4"
-                  title="Better Lyrics Extension Demo"
+                  src="https://www.youtube.com/embed/GACsqMfhDVE"
+                  title="Better Lyrics for Youtube Music | Demo"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                  className="w-full h-full "
+                  className="w-full h-full"
                 />
               </div>
             </div>
