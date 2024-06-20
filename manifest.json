@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "version": "1.5.4",
+  "version": "1.5.5",
   "name": "Better Lyrics (Lyrics for Youtube Music)",
-  "description": "Better lyrics for YouTube Music",
+  "description": "Enhance YouTube Music with beautiful time-synced lyrics, multilingual support, real-time translations and more",
   "homepage_url": "https://better-lyrics.boidu.dev",
   "icons": {
     "16": "images/icons/icon-16.png",
