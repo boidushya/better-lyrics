@@ -21,21 +21,13 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "*://music.youtube.com/*"
-      ],
-      "js": [
-        "src/index.js"
-      ],
-      "css": [
-        "src/index.css"
-      ]
+      "matches": ["*://music.youtube.com/*"],
+      "js": ["src/index.js"],
+      "css": ["src/index.css"]
     }
   ],
-  "web_accessible_resources": [
-    "src/script.js"
-  ],
-  "action": {
+  "web_accessible_resources": ["src/script.js"],
+  "browser_action": {
     "default_popup": "src/options.html"
   },
   "browser_specific_settings": {
