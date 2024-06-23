@@ -19,6 +19,7 @@ const NO_LYRICS_TEXT_SELECTOR =
   "#tab-renderer > ytmusic-message-renderer > yt-formatted-string.text.style-scope.ytmusic-message-renderer"; // Selector for the no lyrics text
 const LYRICS_LOADER_ID = "blyrics-loader"; // Selector for the lyrics loader
 const LYRICS_WRAPPER_ID = "blyrics-wrapper"; // Class for the lyrics wrapper
+const LYRICS_DISABLED_ATTR = "blyrics-dfs"; // Attribute for the disabled full screen
 
 // Constants
 const LYRICS_API_URL = "https://lyrics-api.boidu.dev/getLyrics"; // URL for the lyrics API
@@ -85,6 +86,14 @@ const log = (...message) => {
 const onAutoSwitchEnabled = (callback) => {
   getStorage({ isAutoSwitchEnabled: false }, (items) => {
     if (items.isAutoSwitchEnabled) {
+      callback();
+    }
+  });
+};
+
+const onFullScreenDisabled = (callback) => {
+  getStorage({ isFullScreenDisabled: false }, (items) => {
+    if (items.isFullScreenDisabled) {
       callback();
     }
   });
@@ -734,12 +743,27 @@ const hideCursorOnIdle = () => {
   });
 };
 
+// Function to handle settings
+const handleSettings = () => {
+  // Handle full screen disabled
+  onFullScreenDisabled(() => {
+    const layout = document.getElementById("layout");
+    const playerPage = document.getElementById("player-page");
+
+    if (layout && playerPage) {
+      layout.setAttribute(LYRICS_DISABLED_ATTR, "");
+      playerPage.setAttribute(LYRICS_DISABLED_ATTR, "");
+    }
+  });
+};
+
 // Main function to modify the page
 const modify = () => {
   injectGetSongInfo();
   enableLyricsTab();
   injectHeadTags();
   hideCursorOnIdle();
+  handleSettings();
 
   log(
     INITIALIZE_LOG,

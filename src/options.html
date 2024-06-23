@@ -48,6 +48,7 @@
         width: 100%;
         border-radius: 1000rem;
 		text-align: center;
+		cursor: pointer;
       }
       button:hover,
       label:hover input ~ .checkmark {
@@ -102,8 +103,13 @@
         background: #3e3e41;
         border: 1px solid hsla(0, 0%, 100%, 0.1);
         padding: 0.5rem 1.25rem;
+		height: 3rem;
+		display: grid;
+		place-items: center;
         border-radius: 0.5rem;
-        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 100px 0 rgba(0, 0, 0, 0.5);
+		width: 100%;
+		text-align: center;
         transition: transform 0.2s, opacity 0.2s;
       }
       #status.active {
@@ -171,6 +177,13 @@
       <span>Show blurred album art background</span>
       <label>
         <input type="checkbox" id="albumArt" />
+        <span class="checkmark"></span>
+      </label>
+    </div>
+	<div class="container">
+      <span>Disable Fullscreen Mode</span>
+      <label>
+        <input type="checkbox" id="isFullScreenDisabled" />
         <span class="checkmark"></span>
       </label>
     </div>
