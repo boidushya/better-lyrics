@@ -71,12 +71,13 @@ song.
 | Auto switch to Lyrics tab            | Disabled           |
 | Blurred album art background         | Enabled            |
 | Auto-hide cursor in full screen mode | Enabled            |
+| Full screen mode                     | Enabled            |
 | Translations                         | Disabled           |
 | Translation Language                 | English            |
 
 > [!TIP]
 >
-> To change defaults, right-click the extension icon and select "Options" or go to `chrome://extensions` and click on "Details" > "Extension options" under the Better Lyrics extension. If you're using Firefox, you can access the options by right-clicking the extension icon and selecting "Manage Extension".
+> To change defaults, click on the Better Lyrics icon in the extensions toolbar. The changes require a page refresh to take effect.
 
 ## Funding
 
