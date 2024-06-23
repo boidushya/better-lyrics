@@ -5,7 +5,7 @@
 
 <p align="center">
  <a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
- <img src="https://img.shields.io/badge/version-1.5.6-blue.svg" alt=""/>
+ <img src="https://img.shields.io/badge/version-1.5.7-blue.svg" alt=""/>
  <img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt=""/>
  <a aria-label="Volkswagen CI" href="https://github.com/boidushya/better-lyrics"><img src="https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1" alt=""/></a>
  <a aria-label="Better Stack Badge" href="https://better-lyrics-status.boidu.dev"><img height="20" src="https://uptime.betterstack.com/status-badges/v2/monitor/1dqoz.svg" alt="Better Stack Badge" /></a>
@@ -71,12 +71,13 @@ song.
 | Auto switch to Lyrics tab            | Disabled           |
 | Blurred album art background         | Enabled            |
 | Auto-hide cursor in full screen mode | Enabled            |
+| Full screen mode                     | Enabled            |
 | Translations                         | Disabled           |
 | Translation Language                 | English            |
 
 > [!TIP]
 >
-> To change defaults, right-click the extension icon and select "Options" or go to `chrome://extensions` and click on "Details" > "Extension options" under the Better Lyrics extension. If you're using Firefox, you can access the options by right-clicking the extension icon and selecting "Manage Extension".
+> To change defaults, click on the Better Lyrics icon in the extensions toolbar. The changes require a page refresh to take effect.
 
 ## Funding
 
