@@ -4,22 +4,29 @@
 
 # Check if the first argument is empty
 if [[ -z "$1" ]]; then
-  echo "Please provide a version number."
-  exit 1
+	echo "Please provide a version number."
+	exit 1
 fi
 
 for manifest in $(find . -name "manifest*.json"); do
-  # Check if the file exists to avoid errors if no files match the pattern
-  if [[ -f "$manifest" ]]; then
-	jq --arg version "$1" '.version = $version' "$manifest" > "$manifest.tmp" && mv "$manifest.tmp" "$manifest"
-  else
-	echo "No manifest files found."
-  fi
+	# Check if the file exists to avoid errors if no files match the pattern
+	if [[ -f "$manifest" ]]; then
+		jq --arg version "$1" '.version = $version' "$manifest" >"$manifest.tmp" && mv "$manifest.tmp" "$manifest"
+	else
+		echo "No manifest files found."
+	fi
 done
 
 # Update the version in the README file
 if [[ -f "README.md" ]]; then
-  sed -i '' "s/version-[0-9]*\.[0-9]*\.[0-9]*/version-$1/" README.md
+	sed -i '' "s/version-[0-9]*\.[0-9]*\.[0-9]*/version-$1/" README.md
 else
-  echo "README.md file not found."
+	echo "README.md file not found."
+fi
+
+# Update the version in src/options.html
+if [[ -f "src/options.html" ]]; then
+	sed -i '' "s/v[0-9]*\.[0-9]*\.[0-9]*/v$1/" src/options.html
+else
+	echo "src/options.html file not found."
 fi

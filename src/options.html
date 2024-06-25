@@ -33,14 +33,29 @@
         align-items: center;
       }
       h1 {
-        font-size: 1.5rem;
-        font-weight: 600;
         margin: 0;
 
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.875rem;
       }
+	  h1 img{
+		align-self: center;
+	  }
+	  .heading{
+		font-size: 1.5rem;
+        font-weight: 600;
+		display: flex;
+		align-items: baseline;
+		gap: 0.5rem;
+		transform: translateY(1px);
+		line-height: 1;
+	  }
+	  .heading span{
+		font-size: 0.75rem;
+		font-weight: 400;
+		color: rgba(255, 255, 255, 0.5);
+	  }
       button,
       label,
       label input {
@@ -204,7 +219,10 @@
           width="24"
           height="24"
         />
-        Better Lyrics
+		<div class="heading">
+
+			Better Lyrics <span>v1.5.9</span>
+		</div>
       </h1>
       <div class="nav-container">
         <a href="https://github.com/boidushya/better-lyrics" target="_blank">
