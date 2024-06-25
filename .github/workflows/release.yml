@@ -28,11 +28,14 @@ jobs:
       - name: Check if release exists
         id: release_exists
         run: |
-          if gh release view ${{ steps.read_version.outputs.tag }} > /dev/null 2>&1; then
-            echo "RELEASE_EXISTS=true" >> $GITHUB_OUTPUT
+          TAG_NAME="${{ steps.read_version.outputs.tag }}"
+          API_URL="${{ github.api_url }}/repos/${{ github.repository }}/releases/tags/${TAG_NAME}"
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$API_URL")
+          if [[ $RESPONSE -eq 200 ]]; then
+            echo "::set-output name=RELEASE_EXISTS::true"
             echo "Release exists, skipping build and publish steps"
           else
-            echo "RELEASE_EXISTS=false" >> $GITHUB_OUTPUT
+            echo "::set-output name=RELEASE_EXISTS::false"
             echo "Release does not exist, continuing with build and publish steps"
           fi
 
