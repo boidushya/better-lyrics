@@ -42,4 +42,4 @@ body:
       description: "If you would like to work on this feature, please check the box below."
       options:
         - label: "I would like to work on this feature"
-          required: true
+          required: false
