@@ -1,0 +1,59 @@
+name: Publish Extension
+
+on:
+  push:
+    tags:
+      - v*.*.*
+
+jobs:
+  build-chrome:
+    name: Build Extension for All Browsers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run build script
+
+        run: |
+          npm install -g postcss postcss-cli autoprefixer cssnano
+          bash ./scripts/build.sh
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: better-lyrics
+          path: dist/
+
+  publish-chrome:
+    name: Publish to Chrome Web Store
+    runs-on: ubuntu-latest
+    env:
+      EXTENSION_ID: effdbpeggelllpfkjppbokhmmiinhlmg
+      CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+
+    steps:
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: "16.10"
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: better-lyrics
+
+      - name: Install webstore cli
+        run: |-
+          npm install -g chrome-webstore-upload-cli
+
+      - name: Upload step
+        run: |-
+          chrome-webstore-upload upload \\
+            --source ./dist/better-lyrics-chrome.zip \\
+            --extension-id ${{ env.EXTENSION_ID }} \\
+            --client-id ${{ env.CLIENT_ID }} \\
+            --client-secret ${{ env.CLIENT_SECRET }} \\
+            --refresh-token ${{ env.REFRESH_TOKEN }}
