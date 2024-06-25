@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      RELEASE_EXISTS: ${{ steps.release_exists.outputs.RELEASE_EXISTS }}
     steps:
       - uses: actions/checkout@v3
 
@@ -20,17 +22,116 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "::set-output name=tag::v$VERSION"
 
-      - name: Run build script
+      - name: Check if release exists
+        id: release_exists
+        run: |
+          if gh release view ${{ steps.read_version.outputs.tag }} > /dev/null 2>&1; then
+            echo "RELEASE_EXISTS=true" >> $GITHUB_OUTPUT
+            echo "Release exists, skipping build and publish steps"
+          else
+            echo "RELEASE_EXISTS=false" >> $GITHUB_OUTPUT
+            echo "Release does not exist, continuing with build and publish steps"
+          fi
 
+      - name: Run build script
+        if: steps.release_exists.outputs.RELEASE_EXISTS == 'false'
         run: |
           npm install -g postcss postcss-cli autoprefixer cssnano
           chmod +x ./scripts/build.sh
           ./scripts/build.sh
         shell: bash
 
-      - uses: ncipollo/release-action@v1
+      - name: Upload artifact
+        if: steps.release_exists.outputs.RELEASE_EXISTS == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: better-lyrics
+          path: dist/
+
+      - name: Create GitHub Release
+        if: steps.release_exists.outputs.RELEASE_EXISTS == 'false'
+        uses: ncipollo/release-action@v1
         with:
           artifacts: "./dist/better-lyrics-chrome.zip,./dist/better-lyrics-edge.zip,./dist/better-lyrics-firefox.zip"
           tag: ${{ steps.read_version.outputs.tag }}
           generateReleaseNotes: true
           skipIfReleaseExists: true
+
+  publish-chrome:
+    name: Publish to Chrome Web Store
+    runs-on: ubuntu-latest
+    needs: build
+    if: needs.build.outputs.RELEASE_EXISTS == 'false'
+    env:
+      EXTENSION_ID: effdbpeggelllpfkjppbokhmmiinhlmg
+      CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: better-lyrics
+
+      - name: Publish to Chrome Web Store
+        run: |
+          bash ./scripts/publish-chrome.sh
+
+  publish-firefox:
+    name: Publish to Firefox Add-ons
+    runs-on: ubuntu-latest
+    needs: build
+    if: needs.build.outputs.RELEASE_EXISTS == 'false'
+    env:
+      CLIENT_ID: ${{ secrets.FIREFOX_CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.FIREFOX_CLIENT_SECRET }}
+      GUID: ${{ secrets.FIREFOX_GUID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: better-lyrics
+
+      - name: Create zip file of source code
+        run: |
+          zip -r dist/better-lyrics-src.zip . -x "*www*" "*api*"
+
+      - name: Publish to Firefox
+        uses: yayuyokitano/firefox-addon@v0.0.6-alpha
+        with:
+          xpi_path: dist/better-lyrics-firefox.zip
+          src_path: dist/better-lyrics-src.zip
+          api_key: ${{ env.CLIENT_ID }}
+          api_secret: ${{ env.CLIENT_SECRET }}
+          guid: ${{ env.GUID }}
+
+  publish-edge:
+    name: Publish to Edge Add-ons
+    runs-on: ubuntu-latest
+    needs: build
+    if: needs.build.outputs.RELEASE_EXISTS == 'false'
+    env:
+      CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.EDGE_CLIENT_SECRET }}
+      PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: better-lyrics
+
+      - name: Publish to Edge
+        run: |
+          bash ./scripts/publish-edge.sh
