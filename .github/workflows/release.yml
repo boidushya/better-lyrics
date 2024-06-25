@@ -1,4 +1,4 @@
-name: Releases
+name: Release & Publish
 
 on:
   push:
@@ -76,6 +76,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: better-lyrics
+          path: dist/
 
       - name: Publish to Chrome Web Store
         run: |
@@ -99,6 +100,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: better-lyrics
+          path: dist/
 
       - name: Create zip file of source code
         run: |
@@ -131,6 +133,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: better-lyrics
+          path: dist/
 
       - name: Publish to Edge
         run: |
