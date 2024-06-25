@@ -4,6 +4,37 @@
 # Usage: bash scripts/publish-chrome.sh
 # Requires: npm install -g chrome-webstore-upload-cli
 
+npm install -g chrome-webstore-upload-cli
+
+# Check if all required environment variables are set
+
+if [ -z "$EXTENSION_ID" ]; then
+	echo "EXTENSION_ID is not set"
+	exit 1
+fi
+
+if [ -z "$CLIENT_ID" ]; then
+	echo "CLIENT_ID is not set"
+	exit 1
+fi
+
+if [ -z "$CLIENT_SECRET" ]; then
+	echo "CLIENT_SECRET is not set"
+	exit 1
+fi
+
+if [ -z "$REFRESH_TOKEN" ]; then
+	echo "REFRESH_TOKEN is not set"
+	exit 1
+fi
+
+# Check if the zip file exists
+
+if [ ! -f "./dist/better-lyrics-chrome.zip" ]; then
+	echo "Chrome zip file does not exist"
+	exit 1
+fi
+
 chrome-webstore-upload upload \
 	--source ./dist/better-lyrics-chrome.zip \
 	--extension-id $EXTENSION_ID \

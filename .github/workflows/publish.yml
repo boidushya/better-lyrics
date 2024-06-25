@@ -44,13 +44,38 @@ jobs:
         with:
           name: better-lyrics
 
-      - name: Install webstore-cli
-        run: |
-          npm install -g chrome-webstore-upload-cli
-
       - name: Publish to Chrome Web Store
         run: |
           bash ./scripts/publish-chrome.sh
+
+  publish-firefox:
+    name: Publish to Firefox Add-ons
+    runs-on: ubuntu-latest
+    env:
+      CLIENT_ID: ${{ secrets.FIREFOX_CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.FIREFOX_CLIENT_SECRET }}
+      GUID: ${{ secrets.FIREFOX_GUID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: better-lyrics
+      - name: Create zip file of source code
+        run: |
+          zip -r dist/better-lyrics-src.zip . -x "*www*" "*api*"
+      - name: Publish to Firefox
+        uses: yayuyokitano/firefox-addon@v0.0.6-alpha
+        with:
+          xpi_path: dist/better-lyrics-firefox.zip
+          src_path: dist/better-lyrics-src.zip
+          api_key: ${{ env.CLIENT_ID }}
+          api_secret: ${{ env.CLIENT_SECRET }}
+          guid: ${{ env.GUID }}
+
   publish-edge:
     name: Publish to Edge Add-ons
     runs-on: ubuntu-latest
