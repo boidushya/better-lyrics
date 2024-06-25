@@ -20,7 +20,7 @@ postcss src/index.css --use autoprefixer cssnano -r --no-map
 
 mv templates/manifest.firefox.json manifest.json
 
-jq '.content_scripts[0].js = ["src/index.min.js"]' manifest.json > manifest.json.tmp && mv manifest.json.tmp manifest.json
+jq '.content_scripts[0].js = ["src/index.min.js"]' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
 
 zip -r better-lyrics.zip ./* -x "./dist/*" "LICENSE" "README.md" "./templates/*" "${SCRIPT_DIR}/*"
 
