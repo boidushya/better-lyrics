@@ -349,13 +349,14 @@ const injectError = () => {
       }
     }
     log(YT_MUSIC_LYRICS_AVAILABLE_LOG);
-    const existingLyrics =
-      document.getElementsByClassName(DESCRIPTION_CLASS)[1];
+    const existingLyrics = document.getElementsByClassName(DESCRIPTION_CLASS);
     const existingFooter = document.getElementsByClassName(
       YT_MUSIC_FOOTER_CLASS
     )[0];
     if (existingLyrics && existingFooter) {
-      existingLyrics.classList.add("blyrics--fallback");
+      for (let lyrics of existingLyrics) {
+        lyrics.classList.add("blyrics--fallback");
+      }
       existingFooter.classList.add("blyrics--fallback");
     }
     flushLoader();
