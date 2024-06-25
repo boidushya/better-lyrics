@@ -14,7 +14,6 @@ if [ -f .env ]; then
 	export $(cat .env | xargs)
 else
 	echo -e "${COLOR_ERROR}Error: .env file not found.${COLOR_RESET}"
-	exit 1
 fi
 
 # Check if credentials are set

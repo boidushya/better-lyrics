@@ -37,8 +37,7 @@ jobs:
         if: steps.release_exists.outputs.RELEASE_EXISTS == 'false'
         run: |
           npm install -g postcss postcss-cli autoprefixer cssnano
-          chmod +x ./scripts/build.sh
-          ./scripts/build.sh
+          bash scripts/build.sh
         shell: bash
 
       - name: Upload artifact
@@ -52,7 +51,7 @@ jobs:
         if: steps.release_exists.outputs.RELEASE_EXISTS == 'false'
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "./dist/better-lyrics-chrome.zip,./dist/better-lyrics-edge.zip,./dist/better-lyrics-firefox.zip"
+          artifacts: "dist/better-lyrics-chrome.zip,dist/better-lyrics-edge.zip,dist/better-lyrics-firefox.zip"
           tag: ${{ steps.read_version.outputs.tag }}
           generateReleaseNotes: true
           skipIfReleaseExists: true
@@ -80,7 +79,7 @@ jobs:
 
       - name: Publish to Chrome Web Store
         run: |
-          bash ./scripts/publish-chrome.sh
+          bash scripts/publish-chrome.sh
 
   publish-firefox:
     name: Publish to Firefox Add-ons
@@ -88,9 +87,9 @@ jobs:
     needs: build
     if: needs.build.outputs.RELEASE_EXISTS == 'false'
     env:
-      CLIENT_ID: ${{ secrets.FIREFOX_CLIENT_ID }}
-      CLIENT_SECRET: ${{ secrets.FIREFOX_CLIENT_SECRET }}
-      GUID: ${{ secrets.FIREFOX_GUID }}
+      FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_CLIENT_ID }}
+      FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_CLIENT_SECRET }}
+      FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_GUID }}
 
     steps:
       - name: Checkout
@@ -107,13 +106,8 @@ jobs:
           zip -r dist/better-lyrics-src.zip . -x "*www*" "*api*"
 
       - name: Publish to Firefox
-        uses: yayuyokitano/firefox-addon@v0.0.6-alpha
-        with:
-          xpi_path: dist/better-lyrics-firefox.zip
-          src_path: dist/better-lyrics-src.zip
-          api_key: ${{ env.CLIENT_ID }}
-          api_secret: ${{ env.CLIENT_SECRET }}
-          guid: ${{ env.GUID }}
+        run: |
+          bash scripts/publish-firefox.sh
 
   publish-edge:
     name: Publish to Edge Add-ons
@@ -137,4 +131,4 @@ jobs:
 
       - name: Publish to Edge
         run: |
-          bash ./scripts/publish-edge.sh
+          bash scripts/publish-edge.sh
