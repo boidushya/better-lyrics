@@ -6,7 +6,7 @@ on:
       - v*.*.*
 
 jobs:
-  build-chrome:
+  build:
     name: Build Extension for All Browsers
     runs-on: ubuntu-latest
     steps:
@@ -36,24 +36,38 @@ jobs:
       REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
 
     steps:
-      - uses: actions/setup-node@v2-beta
-        with:
-          node-version: "16.10"
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           name: better-lyrics
 
-      - name: Install webstore cli
-        run: |-
+      - name: Install webstore-cli
+        run: |
           npm install -g chrome-webstore-upload-cli
 
-      - name: Upload step
-        run: |-
-          chrome-webstore-upload upload \\
-            --source ./dist/better-lyrics-chrome.zip \\
-            --extension-id ${{ env.EXTENSION_ID }} \\
-            --client-id ${{ env.CLIENT_ID }} \\
-            --client-secret ${{ env.CLIENT_SECRET }} \\
-            --refresh-token ${{ env.REFRESH_TOKEN }}
+      - name: Publish to Chrome Web Store
+        run: |
+          bash ./scripts/publish-chrome.sh
+  publish-edge:
+    name: Publish to Edge Add-ons
+    runs-on: ubuntu-latest
+    env:
+      CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.EDGE_CLIENT_SECRET }}
+      PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: better-lyrics
+
+      - name: Publish to Edge
+        run: |
+          bash ./scripts/publish-edge.sh
