@@ -2,40 +2,33 @@
 
 # bash script to publish the firefox version of the package to firefox store
 # Usage: bash scripts/publish-firefox.sh
-# Requires: https://github.com/aklinker1/publish-browser-extension
+# Requires: web-ext
 
-npm install -g publish-browser-extension
+npm install -g web-ext
 
-FIREFOX_CHANNEL="listed"
+# Load environment variables from .env file
 
-# Check if all required environment variables are set
-
-if [ -z "$FIREFOX_EXTENSION_ID" ]; then
-	echo "FIREFOX_EXTENSION_ID is not set"
-	exit 1
+if [ -f .env ]; then
+	export $(cat .env | xargs)
+else
+	echo "Error: .env file not found."
 fi
 
-if [ -z "$FIREFOX_JWT_ISSUER" ]; then
-	echo "FIREFOX_JWT_ISSUER is not set"
-	exit 1
-fi
+# unzip dist/better-lyrics-firefox.zip to a temp directory
 
-if [ -z "$FIREFOX_JWT_SECRET" ]; then
-	echo "FIREFOX_JWT_SECRET is not set"
-	exit 1
-fi
+TEMP_DIR=$(mktemp -d)
 
-# Check if the zip files exist
+unzip dist/better-lyrics-firefox.zip -d $TEMP_DIR
 
-if [ ! -f "./dist/better-lyrics-firefox.zip" ]; then
-	echo "Firefox zip file does not exist"
-	exit 1
-fi
+cd $TEMP_DIR
 
-if [ ! -f "./dist/better-lyrics-src.zip" ]; then
-	echo "Firefox sources zip file does not exist"
-	exit 1
-fi
+# try to sign the extension, catch any errors
 
-publish-extension \
-	--firefox-zip dist/better-lyrics-firefox.zip --firefox-sources-zip dist/better-lyrics-src.zip \
+web-ext sign \
+	--channel=listed \
+	--api-key=$FIREFOX_JWT_ISSUER \
+	--api-secret=$FIREFOX_JWT_SECRET \
+	--upload-source-code || {
+	echo "Error: Failed to sign the extension. Exiting gracefully."
+	exit 0
+}

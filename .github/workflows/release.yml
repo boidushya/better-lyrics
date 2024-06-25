@@ -89,7 +89,7 @@ jobs:
     env:
       FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_CLIENT_ID }}
       FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_CLIENT_SECRET }}
-      FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_GUID }}
+      FIREFOX_EXTENSION_ID: betterlyrics@boidu.dev
 
     steps:
       - name: Checkout

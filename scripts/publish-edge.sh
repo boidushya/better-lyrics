@@ -111,6 +111,9 @@ while true; do
 		REASON=$(echo "$STATUS_RESPONSE" | jq -r '.message')
 		echo -e "${COLOR_ERROR}Submission failed.${COLOR_RESET}"
 		echo -e "${COLOR_ERROR}Reason: $REASON${COLOR_RESET}"
+		if [ "$REASON" = "Can't publish extension as your extension submission is in progress. Please try again later." ]; then
+			exit 0
+		fi
 		exit 1
 	else
 		echo -e "${COLOR_LOG}Submission in progress. Status: $STATUS. Waiting...${COLOR_RESET}"
