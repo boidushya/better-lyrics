@@ -23,7 +23,7 @@ jobs:
         run: |
           VERSION=$(jq -r '.version' manifest.json)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "::set-output name=tag::v$VERSION"
+          echo "TAG=v$VERSION" >> $GITHUB_OUTPUT
 
       - name: Check if release exists
         id: release_exists
@@ -32,10 +32,10 @@ jobs:
           API_URL="${{ github.api_url }}/repos/${{ github.repository }}/releases/tags/${TAG_NAME}"
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$API_URL")
           if [[ $RESPONSE -eq 200 ]]; then
-            echo "::set-output name=RELEASE_EXISTS::true"
+            echo "RELEASE_EXISTS=true" >> $GITHUB_OUTPUT
             echo "Release exists, skipping build and publish steps"
           else
-            echo "::set-output name=RELEASE_EXISTS::false"
+            echo "RELEASE_EXISTS=false" >> $GITHUB_OUTPUT
             echo "Release does not exist, continuing with build and publish steps"
           fi
 
