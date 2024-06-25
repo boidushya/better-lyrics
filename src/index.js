@@ -674,17 +674,18 @@ const cleanup = () => {
     YT_MUSIC_FOOTER_CLASS
   )[0];
 
-  const existingLyrics = document.getElementsByClassName(DESCRIPTION_CLASS)[1];
+  const existingLyrics = document.getElementsByClassName(DESCRIPTION_CLASS);
 
   const blyricsFooter = document.getElementsByClassName(FOOTER_CLASS)[0];
   if (blyricsFooter) {
     blyricsFooter.remove();
   }
-  if (
-    existingLyrics &&
-    existingLyrics.classList.contains("blyrics--fallback")
-  ) {
-    existingLyrics.classList.remove("blyrics--fallback");
+  if (existingLyrics) {
+    for (let lyrics of existingLyrics) {
+      if (lyrics.classList.contains("blyrics--fallback")) {
+        lyrics.classList.remove("blyrics--fallback");
+      }
+    }
   }
   if (
     existingFooter &&
