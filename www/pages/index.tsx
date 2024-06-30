@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { Landing } from "../components/landing";
+import Script from "next/script";
 
 export default function Home() {
   return (
@@ -17,6 +18,11 @@ export default function Home() {
           rel="preload"
           href="https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png"
           as="image"
+        />
+        <Script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="f9fdefc7-b1fe-49fd-973f-c312f9c824b6"
         />
       </Head>
       <Landing />
