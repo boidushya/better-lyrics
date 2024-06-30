@@ -76,47 +76,47 @@ const getStorage = (key, callback) => {
 
 // Utility functions
 const log = (...message) => {
-  getStorage({ isLogsEnabled: true }, (items) => {
+  getStorage({ isLogsEnabled: true }, items => {
     if (items.isLogsEnabled) {
       console.log(...message);
     }
   });
 };
 
-const onAutoSwitchEnabled = (callback) => {
-  getStorage({ isAutoSwitchEnabled: false }, (items) => {
+const onAutoSwitchEnabled = callback => {
+  getStorage({ isAutoSwitchEnabled: false }, items => {
     if (items.isAutoSwitchEnabled) {
       callback();
     }
   });
 };
 
-const onFullScreenDisabled = (callback) => {
-  getStorage({ isFullScreenDisabled: false }, (items) => {
+const onFullScreenDisabled = callback => {
+  getStorage({ isFullScreenDisabled: false }, items => {
     if (items.isFullScreenDisabled) {
       callback();
     }
   });
 };
 
-const onAlbumArtEnabled = (callback) => {
-  getStorage({ isAlbumArtEnabled: true }, (items) => {
+const onAlbumArtEnabled = callback => {
+  getStorage({ isAlbumArtEnabled: true }, items => {
     if (items.isAlbumArtEnabled) {
       callback();
     }
   });
 };
 
-const onTranslationEnabled = (callback) => {
-  getStorage(["isTranslateEnabled", "translationLanguage"], (items) => {
+const onTranslationEnabled = callback => {
+  getStorage(["isTranslateEnabled", "translationLanguage"], items => {
     if (items.isTranslateEnabled) {
       callback(items);
     }
   });
 };
 
-const onAutoHideCursor = (callback) => {
-  getStorage({ isCursorAutoHideEnabled: true }, (items) => {
+const onAutoHideCursor = callback => {
+  getStorage({ isCursorAutoHideEnabled: true }, items => {
     if (items.isCursorAutoHideEnabled) {
       callback();
     }
@@ -132,7 +132,7 @@ const onScriptSendSongInfo = (event, callback, timeoutId, cleanup) => {
 };
 
 // Helper function to convert time string to integer
-const timeToInt = (time) => {
+const timeToInt = time => {
   time = time.split(":");
   time = parseFloat(time[0]) * 60 + parseFloat(time[1]);
   return time;
@@ -143,33 +143,21 @@ function unEntity(str) {
   return str.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 }
 
-// Function to clean HTML from string
-function getTrimmedString(htmlString) {
-  // Regular expression to match HTML tags and their content
-  const regex = /<[^>]*>[^<]*<\/[^>]*>/g;
-
-  // Replace the matched HTML tags and their content with an empty string
-  const cleanedString = htmlString.replace(regex, "");
-
-  // Return the cleaned string with any remaining HTML tags removed
-  return cleanedString.replace(/<[^>]*>/g, "").trim();
-}
-
 // Function for translate lyrics
 function translateText(text, targetLanguage) {
   let url = TRANSLATE_LYRICS_URL(targetLanguage, text);
 
   return fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
+    .then(response => response.json())
+    .then(data => {
       let originalLanguage = data[2];
       let translatedText = "";
-      data[0].forEach((part) => {
+      data[0].forEach(part => {
         translatedText += part[0];
       });
       return { originalLanguage, translatedText };
     })
-    .catch((error) => {
+    .catch(error => {
       log(TRANSLATION_ERROR_LOG, error);
       return null;
     });
@@ -188,7 +176,7 @@ const injectGetSongInfo = () => {
 
 // Function to request song info from the injected script
 // This fixes the issue with localization of song title and artist name
-const requestSongInfo = (callback) => {
+const requestSongInfo = callback => {
   let timeoutId;
 
   // Set a timeout to invoke the callback with legacySongInfo if event doesn't trigger within 1 second
@@ -197,7 +185,7 @@ const requestSongInfo = (callback) => {
     callback(legacyData);
   }, 1000);
 
-  const handleSongInfo = (event) => {
+  const handleSongInfo = event => {
     onScriptSendSongInfo(event, callback, timeoutId);
   };
 
@@ -220,7 +208,7 @@ const legacySongInfo = () => {
     artist =
       document.getElementsByClassName(SUBTITLE_CLASS)[0].children[0].children[0]
         .innerHTML; // Get the artist name
-  } catch (err) {
+  } catch (_err) {
     artist =
       document.getElementsByClassName(SUBTITLE_CLASS)[0].children[0].innerHTML; // Get the artist name (alternative way)
   }
@@ -370,7 +358,7 @@ const injectError = () => {
 
 // Function to create and inject lyrics
 const createLyrics = () => {
-  requestSongInfo((e) => {
+  requestSongInfo(e => {
     const song = e.song;
     const artist = e.artist;
 
@@ -381,8 +369,8 @@ const createLyrics = () => {
     )}&a=${encodeURIComponent(unEntity(artist))}`; // Construct the API URL with song and artist
 
     fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
+      .then(response => response.json())
+      .then(data => {
         const lyrics = data.lyrics;
         clearInterval(window.lyricsCheckInterval); // Clear the lyrics interval
 
@@ -396,12 +384,12 @@ const createLyrics = () => {
         try {
           const lyrics = document.getElementsByClassName(LYRICS_CLASS)[0];
           lyrics.innerHTML = ""; // Clear the lyrics container
-        } catch (err) {
+        } catch (_err) {
           log(LYRICS_TAB_NOT_DISABLED_LOG); // Log lyrics tab not disabled
         }
         injectLyrics(lyrics); // Inject lyrics
       })
-      .catch((err) => {
+      .catch(err => {
         clearInterval(window.lyricsCheckInterval); // Clear the lyrics interval
 
         log(SERVER_ERROR_LOG); // Log server error
@@ -478,13 +466,13 @@ const createFooter = () => {
     footer.appendChild(footerLink);
 
     footer.removeAttribute("is-empty");
-  } catch (err) {
+  } catch (_err) {
     log(FOOTER_NOT_VISIBLE_LOG); // Log footer not visible
   }
 };
 
 // Function to inject lyrics into the DOM
-const injectLyrics = (lyrics) => {
+const injectLyrics = lyrics => {
   // Inject Lyrics into DOM
   let lyricsWrapper;
 
@@ -500,18 +488,18 @@ const injectLyrics = (lyrics) => {
     flushLoader();
 
     lyricsWrapper.removeAttribute("is-empty");
-  } catch (err) {
+  } catch (_err) {
     log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
   }
 
-  onTranslationEnabled((items) => {
+  onTranslationEnabled(items => {
     log(TRANSLATION_ENABLED_LOG, items.translationLanguage);
   });
 
   // Set an interval to sync the lyrics with the video playback
-  const allZero = lyrics.every((item) => item.startTimeMs === "0");
+  const allZero = lyrics.every(item => item.startTimeMs === "0");
 
-  lyrics.forEach((item) => {
+  lyrics.forEach(item => {
     let line = document.createElement("div");
     line.dataset.time = item.startTimeMs / 1000; // Set the start time of the line
     if (!allZero) {
@@ -529,14 +517,14 @@ const injectLyrics = (lyrics) => {
 
     line.innerText = item.words; // Set the line text with innerText in order to avoid XSS
 
-    onTranslationEnabled((items) => {
+    onTranslationEnabled(items => {
       let translatedLine = document.createElement("span"); // Create a span element
       translatedLine.classList.add(TRANSLATED_LYRICS_CLASS);
 
       let target_language = items.translationLanguage || "en"; // Use the saved language or the default 'en'
 
       if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-        translateText(item.words, target_language).then((result) => {
+        translateText(item.words, target_language).then(result => {
           if (result) {
             if (result.originalLanguage !== target_language) {
               // If the translation was successful, set the translated text as the content for translatedLine
@@ -554,7 +542,7 @@ const injectLyrics = (lyrics) => {
 
     try {
       document.getElementsByClassName(LYRICS_CLASS)[0].appendChild(line); // Append the line to the lyrics container
-    } catch (err) {
+    } catch (_err) {
       log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
     }
   });
@@ -633,9 +621,8 @@ const injectLyrics = (lyrics) => {
 // Function to add the album art to the layout
 const addAlbumArtToLayout = () => {
   const albumArt = document.querySelector(SONG_IMAGE_SELECTOR).src; // Get the album art URL
-  document.getElementById(
-    "layout"
-  ).style = `--blyrics-background-img: url('${albumArt}')`; // Set the background image of the layout
+  document.getElementById("layout").style =
+    `--blyrics-background-img: url('${albumArt}')`; // Set the background image of the layout
 
   log(ALBUM_ART_ADDED_LOG); // Log album art added
 };
