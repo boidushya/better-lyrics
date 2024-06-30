@@ -104,7 +104,7 @@ while true; do
 
 	STATUS=$(echo "$STATUS_RESPONSE" | jq -r '.status')
 
-	if [ "$STATUS" = "Completed" ]; then
+	if [ "$STATUS" = "Succeeded" ]; then
 		echo -e "${COLOR_SUCCESS}Submission completed successfully.${COLOR_RESET}"
 		break
 	elif [ "$STATUS" = "Failed" ]; then
