@@ -6,7 +6,7 @@
 		"indentStyle": "space",
 		"indentWidth": 2,
 		"lineEnding": "lf",
-		"lineWidth": 80,
+		"lineWidth": 120,
 		"attributePosition": "auto",
 		"ignore": ["src/options.html", "src/options.min.js"]
 	},

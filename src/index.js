@@ -7,12 +7,10 @@ const LYRICS_CLASS = "blyrics-container"; // Class for the lyrics container
 const CURRENT_LYRICS_CLASS = "blyrics--active"; // Class for the current lyrics line
 const TRANSLATED_LYRICS_CLASS = "blyrics--translated"; // Class for the translated lyrics line
 const ERROR_LYRICS_CLASS = "blyrics--error"; // Class for the error message
-const DESCRIPTION_CLASS =
-  "description style-scope ytmusic-description-shelf-renderer"; // Class for the description container
+const DESCRIPTION_CLASS = "description style-scope ytmusic-description-shelf-renderer"; // Class for the description container
 const FOOTER_CLASS = "blyrics-footer"; // Class for the footer
 const TIME_INFO_CLASS = "time-info style-scope ytmusic-player-bar"; // Class for the time info
-const YT_MUSIC_FOOTER_CLASS =
-  "footer style-scope ytmusic-description-shelf-renderer"; // Class for the default footer
+const YT_MUSIC_FOOTER_CLASS = "footer style-scope ytmusic-description-shelf-renderer"; // Class for the default footer
 const SONG_IMAGE_SELECTOR = "#song-image>#thumbnail>#img"; // Selector for the song image
 const TAB_RENDERER_SELECTOR = "#tab-renderer"; // Class for the tab renderer
 const NO_LYRICS_TEXT_SELECTOR =
@@ -58,8 +56,7 @@ const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
 // Storage get function
 const getStorage = (key, callback) => {
-  const inChrome =
-    typeof chrome !== "undefined" && typeof browser === "undefined";
+  const inChrome = typeof chrome !== "undefined" && typeof browser === "undefined";
   const inFirefox = typeof browser !== "undefined";
   if (inChrome) {
     if (chrome.runtime?.id) {
@@ -205,12 +202,9 @@ const legacySongInfo = () => {
   const song = document.getElementsByClassName(TITLE_CLASS)[0].innerHTML; // Get the song title
   let artist;
   try {
-    artist =
-      document.getElementsByClassName(SUBTITLE_CLASS)[0].children[0].children[0]
-        .innerHTML; // Get the artist name
+    artist = document.getElementsByClassName(SUBTITLE_CLASS)[0].children[0].children[0].innerHTML; // Get the artist name
   } catch (_err) {
-    artist =
-      document.getElementsByClassName(SUBTITLE_CLASS)[0].children[0].innerHTML; // Get the artist name (alternative way)
+    artist = document.getElementsByClassName(SUBTITLE_CLASS)[0].children[0].innerHTML; // Get the artist name (alternative way)
   }
 
   return {
@@ -338,9 +332,7 @@ const injectError = () => {
     }
     log(YT_MUSIC_LYRICS_AVAILABLE_LOG);
     const existingLyrics = document.getElementsByClassName(DESCRIPTION_CLASS);
-    const existingFooter = document.getElementsByClassName(
-      YT_MUSIC_FOOTER_CLASS
-    )[0];
+    const existingFooter = document.getElementsByClassName(YT_MUSIC_FOOTER_CLASS)[0];
     if (existingLyrics && existingFooter) {
       for (let lyrics of existingLyrics) {
         lyrics.classList.add("blyrics--fallback");
@@ -364,9 +356,7 @@ const createLyrics = () => {
 
     log(FETCH_LYRICS_LOG, song, artist); // Log fetching lyrics
 
-    const url = `${LYRICS_API_URL}?s=${encodeURIComponent(
-      unEntity(song)
-    )}&a=${encodeURIComponent(unEntity(artist))}`; // Construct the API URL with song and artist
+    const url = `${LYRICS_API_URL}?s=${encodeURIComponent(unEntity(song))}&a=${encodeURIComponent(unEntity(artist))}`; // Construct the API URL with song and artist
 
     fetch(url)
       .then(response => response.json())
@@ -562,9 +552,7 @@ const injectLyrics = lyrics => {
               .replaceAll("\n", "")
               .split("/")[0]
           ) + 0.75; // Get the current time of the video
-        const lyrics = [
-          ...document.getElementsByClassName(LYRICS_CLASS)[0].children,
-        ]; // Get all the lyrics lines
+        const lyrics = [...document.getElementsByClassName(LYRICS_CLASS)[0].children]; // Get all the lyrics lines
 
         lyrics.every((elem, index) => {
           const time = parseFloat(elem.getAttribute("data-time")); // Get the start time of the line
@@ -572,28 +560,19 @@ const injectLyrics = lyrics => {
           if (currentTime >= time && index + 1 === lyrics.length) {
             // If it's the last line
             elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
-            const current =
-              document.getElementsByClassName(CURRENT_LYRICS_CLASS);
+            const current = document.getElementsByClassName(CURRENT_LYRICS_CLASS);
             current[0].scrollIntoView({
               behavior: "smooth",
               block: "center",
               inline: "center",
             }); // Scroll to the current line
             return true;
-          } else if (
-            currentTime > time &&
-            currentTime <
-              parseFloat(lyrics[index + 1].getAttribute("data-time"))
-          ) {
+          } else if (currentTime > time && currentTime < parseFloat(lyrics[index + 1].getAttribute("data-time"))) {
             // If it's between the current and next line
-            const current =
-              document.getElementsByClassName(CURRENT_LYRICS_CLASS)[0];
+            const current = document.getElementsByClassName(CURRENT_LYRICS_CLASS)[0];
 
             elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
-            if (
-              current !== undefined &&
-              current.getAttribute("data-scrolled") !== "true"
-            ) {
+            if (current !== undefined && current.getAttribute("data-scrolled") !== "true") {
               current.scrollIntoView({
                 behavior: "smooth",
                 block: "center",
@@ -621,8 +600,7 @@ const injectLyrics = lyrics => {
 // Function to add the album art to the layout
 const addAlbumArtToLayout = () => {
   const albumArt = document.querySelector(SONG_IMAGE_SELECTOR).src; // Get the album art URL
-  document.getElementById("layout").style =
-    `--blyrics-background-img: url('${albumArt}')`; // Set the background image of the layout
+  document.getElementById("layout").style = `--blyrics-background-img: url('${albumArt}')`; // Set the background image of the layout
 
   log(ALBUM_ART_ADDED_LOG); // Log album art added
 };
@@ -657,9 +635,7 @@ const enableLyricsTab = () => {
 
 // Function to cleanup classnames and footer
 const cleanup = () => {
-  const existingFooter = document.getElementsByClassName(
-    YT_MUSIC_FOOTER_CLASS
-  )[0];
+  const existingFooter = document.getElementsByClassName(YT_MUSIC_FOOTER_CLASS)[0];
 
   const existingLyrics = document.getElementsByClassName(DESCRIPTION_CLASS);
 
@@ -674,10 +650,7 @@ const cleanup = () => {
       }
     }
   }
-  if (
-    existingFooter &&
-    existingFooter.classList.contains("blyrics--fallback")
-  ) {
+  if (existingFooter && existingFooter.classList.contains("blyrics--fallback")) {
     existingFooter.classList.remove("blyrics--fallback");
   }
   clearLyrics();
@@ -784,8 +757,7 @@ const modify = () => {
           onAlbumArtEnabled(addAlbumArtToLayout);
 
           // Check if lyrics tab is visible
-          const tabSelector =
-            document.getElementsByClassName(TAB_HEADER_CLASS)[1];
+          const tabSelector = document.getElementsByClassName(TAB_HEADER_CLASS)[1];
           if (tabSelector.getAttribute("aria-selected") === "true") {
             log(LYRICS_TAB_VISIBLE_LOG); // Log lyrics tab visible
             handleModifications();
