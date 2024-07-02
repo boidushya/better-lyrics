@@ -157,7 +157,7 @@
 .footer.style-scope.ytmusic-description-shelf-renderer.blyrics--fallback {
   margin-bottom: 4rem !important;
 }
-yt-formatted-string[is-empty] {
+#player-page yt-formatted-string[is-empty] {
   display: inherit !important;
 }
 ytmusic-player-page:before {
