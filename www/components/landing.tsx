@@ -38,6 +38,7 @@ const TopBanner = () => {
         href="https://www.producthunt.com/posts/better-lyrics?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-better&#0045;lyrics"
         target="_blank"
         className="transition-transform hover:scale-105"
+        data-umami-event="ph-btn"
       >
         <img
           src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=463141&theme=light"
@@ -130,6 +131,7 @@ export function Landing() {
                     className="h-12 px-4 overflow-hidden transition-all bg-white border rounded-md shadow-md border-black/15 hover:border-black/20 hover:shadow-lg"
                     href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg"
                     target="_blank"
+                    data-umami-event="chrome-btn"
                   >
                     <img
                       src="https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/YT2Grfi9vEBa2wAPzhWa.png"
@@ -141,6 +143,7 @@ export function Landing() {
                     className="h-12 overflow-hidden px-10 py-1 bg-[#0E9AD6] border border-black/5 rounded-md shadow-md hover:border-black/20 hover:shadow-lg transition-all"
                     href="https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/"
                     target="_blank"
+                    data-umami-event="firefox-btn"
                   >
                     <img
                       src="https://blog.mozilla.org/addons/files/2020/04/get-the-addon-fx-apr-2020.svg"
@@ -420,6 +423,7 @@ export function Landing() {
             href="https://better-lyrics-status.boidu.dev/"
             className="text-xs hover:underline underline-offset-4"
             prefetch={false}
+            data-umami-event="status-link"
           >
             Status
           </Link>
