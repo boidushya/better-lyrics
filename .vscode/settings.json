@@ -4,5 +4,7 @@
       "allowed_elements": ["p", "img", "a", "h1"]
     },
     "MD041": false
-  }
+  },
+  "editor.defaultFormatter": "biomejs.biome",
+  "prettier.enable": false
 }
