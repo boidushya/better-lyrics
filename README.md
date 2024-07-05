@@ -6,12 +6,30 @@
 <p align="center">
  <a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
  <img src="https://img.shields.io/badge/version-1.5.13-blue.svg" alt=""/>
+
  <img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt=""/>
  <a aria-label="Volkswagen CI" href="https://github.com/boidushya/better-lyrics"><img src="https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1" alt=""/></a>
  <a aria-label="Better Stack Badge" href="https://better-lyrics-status.boidu.dev"><img height="20" src="https://uptime.betterstack.com/status-badges/v2/monitor/1dqoz.svg" alt="Better Stack Badge" /></a>
+
  <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
  <img src="https://img.shields.io/badge/all_contributors-1-orange.svg" alt=""/>
  <!-- ALL-CONTRIBUTORS-BADGE:END -->
+</p>
+
+<p align="center">
+  <a aria-label="Chrome Web Store" href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg"><img src="https://img.shields.io/chrome-web-store/v/effdbpeggelllpfkjppbokhmmiinhlmg?color=darkgreen" alt="Chrome Extension Version"/></a>
+  <a aria-label="Chrome Web Store" href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg"><img src="https://img.shields.io/chrome-web-store/rating/effdbpeggelllpfkjppbokhmmiinhlmg?color=darkgreen" alt="Chrome Extension Rating"/></a>
+  <a aria-label="Chrome Web Store" href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg"><img src="https://img.shields.io/chrome-web-store/users/effdbpeggelllpfkjppbokhmmiinhlmg?color=darkgreen&label=users" alt="Chrome Extension Users"/></a>
+</p>
+<p align="center">
+  <a aria-label="Firefox Add-on" href="https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/"><img src="https://img.shields.io/amo/v/betterlyrics%40boidu.dev.svg?color=orange" alt="Firefox Add-on Version"/></a>
+  <a aria-label="Firefox Add-on" href="https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/"><img src="https://img.shields.io/amo/rating/betterlyrics%40boidu.dev.svg?color=orange" alt="Firefox Add-on Rating"/></a>
+  <a aria-label="Firefox Add-on" href="https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/"><img src="https://img.shields.io/amo/users/betterlyrics%40boidu.dev?color=orange&label=users" alt="Firefox Add-on Users"/></a>
+</p>
+<p align="center">
+  <a aria-label="Edge Add-on" href="https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd"><img src="https://img.shields.io/badge/dynamic/json?label=edge%20add-on&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fmjfeaklppoegooljmjicjdbiccgjdlhd&color=212749" alt="Edge Add-on Version"/></a>
+  <a aria-label="Edge Add-on" href="https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd"><img src="https://img.shields.io/badge/dynamic/json?label=rating&suffix=/5&query=%24.averageRating&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fmjfeaklppoegooljmjicjdbiccgjdlhd&color=212749" alt="Edge Add-on Rating"/></a>
+  <a aria-label="Edge Add-on" href="https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd"><img src="https://img.shields.io/badge/dynamic/json?label=users&query=%24.activeInstallCount&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fmjfeaklppoegooljmjicjdbiccgjdlhd&color=212749" alt="Edge Add-on Users"/></a>
 </p>
 
 ![Banner](https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png)
