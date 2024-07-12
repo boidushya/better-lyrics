@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Card } from "./ui/card";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import React from "react";
+import { cn, getApiStatus, TStatus } from "../utils/functions";
 
 const TopBanner = () => {
   return (
@@ -54,6 +55,8 @@ const TopBanner = () => {
 
 export function Landing() {
   const [imageLoaded, setImageLoaded] = React.useState<boolean>(false);
+  const [status, setStatus] = React.useState<TStatus>("operational");
+
   const handleImageLoad = () => {
     setImageLoaded(true);
   };
@@ -66,6 +69,16 @@ export function Landing() {
     img.onload = () => setImageLoaded(true);
   }, [src]);
 
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch("/api/status");
+      const { status: apiStatus } = await response.json();
+
+      setStatus(apiStatus);
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <header className="fixed z-50 flex items-center w-full px-4 border-b bg-white/75 backdrop-blur lg:px-6 h-14 border-black/5">
@@ -74,23 +87,43 @@ export function Landing() {
           <span className="text-xl font-bold">Better Lyrics</span>
         </Link>
         <nav className="flex items-center gap-4 ml-auto sm:gap-6">
-          <Link
-            className="hidden text-sm font-medium hover:underline underline-offset-4 sm:block"
-            href="#features"
-          >
+          <Link className="hidden text-sm font-medium hover:underline underline-offset-4 sm:block" href="#features">
             Features
           </Link>
-          <Link
-            className="hidden text-sm font-medium hover:underline underline-offset-4 sm:block"
-            href="#demo"
-          >
+          <Link className="hidden text-sm font-medium hover:underline underline-offset-4 sm:block" href="#demo">
             Demo
           </Link>
-          <Link
-            className="hidden text-sm font-medium hover:underline underline-offset-4 sm:block"
-            href="#testimonials"
-          >
+          <Link className="hidden text-sm font-medium hover:underline underline-offset-4 sm:block" href="#testimonials">
             Testimonials
+          </Link>
+          <Link
+            className={cn(
+              "inline-flex items-center justify-center px-3 py-2 text-sm font-medium transition-colors border rounded-md shadow h-9 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50",
+              status === "operational" && "text-green-800 bg-green-50 border-green-600/40 hover:bg-green-100",
+              status === "degraded" && "text-yellow-800 bg-yellow-50 border-yellow-600/40 hover:bg-yellow-100",
+              status === "downtime" && "text-red-800 bg-red-50 border-red-600/40 hover:bg-red-100"
+            )}
+            href="https://better-lyrics-status.boidu.dev"
+          >
+            <span className="relative flex w-2 h-2 mr-2">
+              <span
+                className={cn(
+                  "absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping",
+                  status === "operational" && "bg-green-400",
+                  status === "degraded" && "bg-yellow-400",
+                  status === "downtime" && "bg-red-400"
+                )}
+              ></span>
+              <span
+                className={cn(
+                  "relative inline-flex w-2 h-2 rounded-full",
+                  status === "operational" && "bg-green-500",
+                  status === "degraded" && "bg-yellow-500",
+                  status === "downtime" && "bg-red-500"
+                )}
+              ></span>
+            </span>
+            Status
           </Link>
           <Link
             className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors bg-gray-900 rounded-md shadow h-9 text-gray-50 hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
@@ -121,9 +154,8 @@ export function Landing() {
                     Elevate Your Lyrical Experience
                   </h1>
                   <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
-                    Better Lyrics is the ultimate extension to step up your
-                    Youtube Music experience. Get beautiful time-synced lyrics,
-                    real-time translations, and more.
+                    Better Lyrics is the ultimate extension to step up your Youtube Music experience. Get beautiful
+                    time-synced lyrics, real-time translations, and more.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -167,19 +199,13 @@ export function Landing() {
             </div>
           </div>
         </section>
-        <section
-          className="w-full py-12 bg-gray-100 md:py-24 lg:py-32 dark:bg-gray-800 "
-          id="features"
-        >
+        <section className="w-full py-12 bg-gray-100 md:py-24 lg:py-32 dark:bg-gray-800 " id="features">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="mb-12 space-y-2 ">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Features
-                </h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Features</h2>
                 <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                  Better Lyrics offers a suite of powerful features to enhance
-                  your Youtube Music experience.
+                  Better Lyrics offers a suite of powerful features to enhance your Youtube Music experience.
                 </p>
               </div>
             </div>
@@ -202,8 +228,7 @@ export function Landing() {
 
                 <h3 className="text-lg font-bold">Zero Config</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  No configuration required. Just install the extension and
-                  enjoy the benefits.
+                  No configuration required. Just install the extension and enjoy the benefits.
                 </p>
               </div>
               <div className="grid gap-1">
@@ -244,8 +269,7 @@ export function Landing() {
 
                 <h3 className="text-lg font-bold">Seek</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Seamlessly seek through sections of the song by clicking on
-                  the lines of the lyrics.
+                  Seamlessly seek through sections of the song by clicking on the lines of the lyrics.
                 </p>
               </div>
               <div className="grid gap-1">
@@ -308,8 +332,7 @@ export function Landing() {
 
                 <h3 className="text-lg font-bold">Translations</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Get real-time translations for lyrics in languages you don't
-                  understand.
+                  Get real-time translations for lyrics in languages you don't understand.
                 </p>
               </div>
             </div>
@@ -319,12 +342,9 @@ export function Landing() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="mb-12 space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Watch Better Lyrics in Action
-                </h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Watch Better Lyrics in Action</h2>
                 <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                  See how the Better Lyrics Extension can enhance your Youtube
-                  Music experience.
+                  See how the Better Lyrics Extension can enhance your Youtube Music experience.
                 </p>
               </div>
               <div className="w-full max-w-2xl overflow-hidden rounded-lg aspect-video">
@@ -339,19 +359,13 @@ export function Landing() {
             </div>
           </div>
         </section>
-        <section
-          id="testimonials"
-          className="w-full py-12 bg-gray-100 md:py-24 lg:py-32 dark:bg-gray-800"
-        >
+        <section id="testimonials" className="w-full py-12 bg-gray-100 md:py-24 lg:py-32 dark:bg-gray-800">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  What Our Users Say
-                </h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">What Our Users Say</h2>
                 <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                  Hear from our users about how Better Lyrics has transformed
-                  their Youtube Music experience.
+                  Hear from our users about how Better Lyrics has transformed their Youtube Music experience.
                 </p>
               </div>
               <div className="grid max-w-5xl grid-cols-1 gap-6 pt-12 mx-auto sm:grid-cols-2 md:grid-cols-3 lg:gap-8">
@@ -368,8 +382,7 @@ export function Landing() {
                       <div className="font-medium">MisterMew151</div>
                     </div>
                     <p className="py-2 text-left text-gray-500 dark:text-gray-400">
-                      Love this! 10/10 works even better than I expected. I've
-                      wanted this for ages!
+                      Love this! 10/10 works even better than I expected. I've wanted this for ages!
                     </p>
                   </div>
                 </Card>
@@ -385,9 +398,8 @@ export function Landing() {
                       <div className="font-medium">NetherCookiez</div>
                     </div>
                     <p className="py-2 text-left text-gray-500 dark:text-gray-400">
-                      This is really great! Love the little animation where the
-                      lyrics get bigger. Already works as well (or even better)
-                      than YTM's lyrics.
+                      This is really great! Love the little animation where the lyrics get bigger. Already works as well
+                      (or even better) than YTM's lyrics.
                     </p>
                   </div>
                 </Card>
@@ -404,8 +416,7 @@ export function Landing() {
                       <div className="font-medium">Kevin Patel</div>
                     </div>
                     <p className="py-2 text-left text-gray-500 dark:text-gray-400">
-                      A much needed extension for YouTube Music. It just
-                      works!!! Highly recommended.
+                      A much needed extension for YouTube Music. It just works!!! Highly recommended.
                     </p>
                   </div>
                 </Card>
@@ -415,9 +426,7 @@ export function Landing() {
         </section>
       </main>
       <footer className="flex flex-col items-center w-full gap-2 px-4 py-6 border-t sm:flex-row shrink-0 md:px-6">
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          &copy; 2024 Better Lyrics. All rights reserved.
-        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">&copy; 2024 Better Lyrics. All rights reserved.</p>
         <nav className="flex gap-4 sm:ml-auto sm:gap-6">
           <Link
             href="https://better-lyrics-status.boidu.dev/"
@@ -427,25 +436,13 @@ export function Landing() {
           >
             Status
           </Link>
-          <Link
-            href="#"
-            className="text-xs hover:underline underline-offset-4"
-            prefetch={false}
-          >
+          <Link href="#" className="text-xs hover:underline underline-offset-4" prefetch={false}>
             Terms of Service
           </Link>
-          <Link
-            href="#"
-            className="text-xs hover:underline underline-offset-4"
-            prefetch={false}
-          >
+          <Link href="#" className="text-xs hover:underline underline-offset-4" prefetch={false}>
             Privacy
           </Link>
-          <Link
-            href="https://boidu.dev"
-            className="text-xs hover:underline underline-offset-4"
-            prefetch={false}
-          >
+          <Link href="https://boidu.dev" className="text-xs hover:underline underline-offset-4" prefetch={false}>
             Contact
           </Link>
         </nav>
