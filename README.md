@@ -40,6 +40,10 @@ Better Lyrics for Youtube Music upgrades your Youtube Music experience
 by providing beautiful time synced lyrics for the currently playing
 song.
 
+> [!TIP]
+>
+> [Dive deeper: Explore the story behind Better Lyrics](https://blog.boidu.dev/better-lyrics)
+
 ## Download
 
 <p float="left">
