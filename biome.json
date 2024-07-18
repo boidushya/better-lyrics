@@ -8,7 +8,7 @@
     "lineEnding": "lf",
     "lineWidth": 120,
     "attributePosition": "auto",
-    "ignore": ["www/.next/**/*", "node_modules", "src/options.html", "src/options.min.js"]
+    "ignore": ["www/.next/**/*", "node_modules", "src/options.html", "src/options.min.js", ".all-contributorsrc"]
   },
   "organizeImports": { "enabled": true },
   "linter": {
@@ -17,7 +17,7 @@
       "recommended": false,
       "correctness": { "noUnusedVariables": "error" }
     },
-    "ignore": ["www/.next/**/*", "node_modules", "src/options.html", "src/options.min.js"]
+    "ignore": ["www/.next/**/*", "node_modules", "src/options.html", "src/options.min.js", ".all-contributorsrc"]
   },
   "javascript": {
     "formatter": {
