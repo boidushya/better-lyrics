@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Card } from "./ui/card";
-import { Avatar, AvatarFallback } from "./ui/avatar";
 import React from "react";
-import { cn, getApiStatus, TStatus } from "../utils/functions";
+import { TStatus, cn, getApiStatus } from "../utils/functions";
+import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Card } from "./ui/card";
 
 const TopBanner = () => {
   return (

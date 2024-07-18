@@ -1,5 +1,5 @@
-import { getApiStatus } from "../../utils/functions";
 import { NextResponse } from "next/server";
+import { getApiStatus } from "../../utils/functions";
 
 export const runtime = "edge";
 
