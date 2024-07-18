@@ -16,4 +16,3 @@ jobs:
           version: latest
       - name: Run Biome
         run: biome ci .
-        continue-on-error: true
