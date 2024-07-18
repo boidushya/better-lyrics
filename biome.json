@@ -8,7 +8,7 @@
     "lineEnding": "lf",
     "lineWidth": 120,
     "attributePosition": "auto",
-    "ignore": ["src/options.html", "src/options.min.js"]
+    "ignore": [".next", "node_modules"]
   },
   "organizeImports": { "enabled": true },
   "linter": {
@@ -16,7 +16,8 @@
     "rules": {
       "recommended": false,
       "correctness": { "noUnusedVariables": "error" }
-    }
+    },
+    "ignore": [".next", "node_modules"]
   },
   "javascript": {
     "formatter": {
