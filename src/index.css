@@ -14,19 +14,25 @@
   font-size: 3rem;
   font-weight: 700;
   isolation: isolate;
-  line-height: 1;
+  line-height: 1.333;
   position: relative !important;
   z-index: 1;
 }
+
 .blyrics-container > div {
   cursor: pointer;
-  opacity: 0.33;
   padding-bottom: 2rem !important;
-  transform: scale(0.95);
   transform-origin: left center;
-  transition: opacity 0.33s, transform 0.166s;
   word-break: break-word;
+  transform: scale(0.95);
+  transition: transform 0.166s;
 }
+
+.blyrics-container > div > span {
+  opacity: 0.33;
+  transition: opacity 0.33s;
+}
+
 .blyrics-container > div,
 .blyrics-container > div:first-child {
   padding-top: 2rem !important;
@@ -35,10 +41,44 @@
   padding-bottom: 0 !important;
 }
 .blyrics-container > div.blyrics--active {
+	transform: scale(1);
+}
+.blyrics-container > div.blyrics--active > span:not(:empty) {
+  display: inline-block;
+  white-space: pre;
   cursor: default;
   opacity: 1;
-  transform: scale(1);
+  animation: blyrics-glow var(--blyrics-duration) forwards, blyrics-wobble calc(var(--blyrics-duration) / 2) forwards;
 }
+
+ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--active > span:not(:empty) {
+  animation: none;
+}
+
+@keyframes blyrics-wobble {
+  from{
+	transform: translateY(0px);
+  }
+  33.33%{
+	transform: translateY(1.75px);
+  }
+  66.66%{
+	transform: translateY(-1.75px);
+  }
+  to{
+	transform: translateY(0px);
+  }
+}
+
+@keyframes blyrics-glow {
+  0% {
+	text-shadow: 0 0 1rem rgba(255, 255, 255, 0.5);
+}
+to {
+	text-shadow: 0 0 0 rgba(255, 255, 255, 0.5);
+  }
+}
+
 .blyrics--translated {
   font-size: 2rem;
   font-weight: 600;

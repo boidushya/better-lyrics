@@ -18,6 +18,7 @@ const NO_LYRICS_TEXT_SELECTOR =
 const LYRICS_LOADER_ID = "blyrics-loader"; // Selector for the lyrics loader
 const LYRICS_WRAPPER_ID = "blyrics-wrapper"; // Class for the lyrics wrapper
 const LYRICS_DISABLED_ATTR = "blyrics-dfs"; // Attribute for the disabled full screen
+const LYRICS_STYLIZED_ATTR = "blyrics-stylized"; // Attribute for the stylized animations
 
 // Constants
 const LYRICS_API_URL = "https://lyrics-api.boidu.dev/getLyrics"; // URL for the lyrics API
@@ -99,6 +100,14 @@ const onFullScreenDisabled = callback => {
 const onAlbumArtEnabled = callback => {
   getStorage({ isAlbumArtEnabled: true }, items => {
     if (items.isAlbumArtEnabled) {
+      callback();
+    }
+  });
+};
+
+const onStylizedAnimationsEnabled = callback => {
+  getStorage({ isStylizedAnimationsEnabled: true }, items => {
+    if (items.isStylizedAnimationsEnabled) {
       callback();
     }
   });
@@ -492,6 +501,10 @@ const injectLyrics = lyrics => {
   lyrics.forEach(item => {
     let line = document.createElement("div");
     line.dataset.time = item.startTimeMs / 1000; // Set the start time of the line
+    line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s;"; // Set the duration of the line
+
+    const words = item.words.split(" ");
+
     if (!allZero) {
       line.setAttribute("data-scrolled", false);
 
@@ -505,7 +518,13 @@ const injectLyrics = lyrics => {
       line.classList.add(CURRENT_LYRICS_CLASS);
     }
 
-    line.innerText = item.words; // Set the line text with innerText in order to avoid XSS
+    words.forEach((word, index) => {
+      let span = document.createElement("span");
+      span.style.transitionDelay = `${index * 0.05}s`;
+      span.style.animationDelay = `${index * 0.05}s`;
+      span.textContent = words.length <= 1 ? word : word + " ";
+      line.appendChild(span);
+    });
 
     onTranslationEnabled(items => {
       let translatedLine = document.createElement("span"); // Create a span element
@@ -715,6 +734,16 @@ const handleSettings = () => {
     if (layout && playerPage) {
       layout.setAttribute(LYRICS_DISABLED_ATTR, "");
       playerPage.setAttribute(LYRICS_DISABLED_ATTR, "");
+    }
+  });
+
+  onStylizedAnimationsEnabled(() => {
+    const layout = document.getElementById("layout");
+    const playerPage = document.getElementById("player-page");
+
+    if (layout && playerPage) {
+      layout.setAttribute(LYRICS_STYLIZED_ATTR, "");
+      playerPage.setAttribute(LYRICS_STYLIZED_ATTR, "");
     }
   });
 };
