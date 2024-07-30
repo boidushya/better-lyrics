@@ -25,6 +25,7 @@
   transform-origin: left center;
   word-break: break-word;
   transform: scale(0.95);
+
   transition: transform 0.166s;
 }
 
@@ -41,14 +42,21 @@
   padding-bottom: 0 !important;
 }
 .blyrics-container > div.blyrics--active {
-	transform: scale(1);
+  transform: scale(1);
 }
-.blyrics-container > div.blyrics--active > span:not(:empty) {
+.blyrics-container > div > span:not(:empty):not(.blyrics--translated) {
   display: inline-block;
-  white-space: pre;
+  white-space: pre-wrap;
+
+}
+.blyrics-container > div.blyrics--active > span:not(:empty):not(.blyrics--translated) {
   cursor: default;
   opacity: 1;
   animation: blyrics-glow var(--blyrics-duration) forwards, blyrics-wobble calc(var(--blyrics-duration) / 2) forwards;
+}
+
+.blyrics-container > div.blyrics--active > span.blyrics--translated {
+  opacity: 0.6;
 }
 
 ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--active > span:not(:empty) {
@@ -72,18 +80,19 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
 
 @keyframes blyrics-glow {
   0% {
-	text-shadow: 0 0 1rem rgba(255, 255, 255, 0.5);
-}
-to {
+	text-shadow: 0 0 1.5rem rgba(255, 255, 255, 0.5);
+  }
+  to {
 	text-shadow: 0 0 0 rgba(255, 255, 255, 0.5);
   }
 }
 
 .blyrics--translated {
+  display: block;
   font-size: 2rem;
   font-weight: 600;
-  opacity: 0.6;
   white-space: pre-wrap;
+  line-height: 1.1;
 }
 #side-panel {
   min-width: 50%;
