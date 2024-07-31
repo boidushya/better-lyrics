@@ -87,6 +87,25 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
   }
 }
 
+ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #mini-guide-background,
+ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #nav-bar-background,
+ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #guide-wrapper{
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+
+
+ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] ytmusic-player-bar,
+ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #player-bar-background{
+  background: linear-gradient(0deg, #00000000, #00000000) !important;
+  width: 100% !important;
+}
+
+ytmusic-player-page[blyrics-stylized] ytmusic-player-bar,
+ytmusic-player-page[blyrics-stylized] #player-bar-background{
+  backdrop-filter: blur(200px);
+}
+
 .blyrics--translated {
   display: block;
   font-size: 2rem;
