@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <img alt="Discord" src="https://img.shields.io/discord/1268184963266908220?label=Discord&logo=discord">
+  <a aria-label="Discord" href="https://discord.gg/UsHE3d5fWF"><img alt="Discord" src="https://img.shields.io/discord/1268184963266908220?label=Discord&logo=discord"></a>
  <a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
  <img src="https://img.shields.io/badge/version-1.6.0-blue.svg" alt=""/>
 
