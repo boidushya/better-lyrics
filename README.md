@@ -34,6 +34,22 @@
 
 ![Banner](https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png)
 
+## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Description](#description)
+- [Download](#download)
+- [Features](#features)
+- [Manual Installation](#manual-installation)
+  - [Chrome](#chrome)
+  - [Firefox](#firefox)
+- [Usage](#usage)
+- [Options](#options)
+- [Funding](#funding)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contributors ✨](#contributors-)
+
 ## Description
 
 Better Lyrics for Youtube Music upgrades your Youtube Music experience
@@ -87,15 +103,16 @@ song.
 
 ## Options
 
-| **Option**                           | **Default Status** |
-| ------------------------------------ | ------------------ |
-| Logs                                 | Enabled            |
-| Auto switch to Lyrics tab            | Disabled           |
-| Blurred album art background         | Enabled            |
-| Auto-hide cursor in full screen mode | Enabled            |
-| Full screen mode                     | Enabled            |
-| Translations                         | Disabled           |
-| Translation Language                 | English            |
+| **Option**                               | **Default Status** |
+| ---------------------------------------- | ------------------ |
+| Logs                                     | Enabled            |
+| Auto switch to Lyrics tab                | Disabled           |
+| Blurred album art background             | Enabled            |
+| Auto-hide cursor in full screen mode     | Enabled            |
+| Full screen mode                         | Enabled            |
+| Stylized Lyrics (Background/Wobble/Glow) | Enabled            |
+| Translations                             | Disabled           |
+| Translation Language                     | English            |
 
 > [!TIP]
 >
