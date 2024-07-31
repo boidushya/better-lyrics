@@ -98,12 +98,12 @@ ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"
 ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] ytmusic-player-bar,
 ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #player-bar-background{
   background: linear-gradient(0deg, #00000000, #00000000) !important;
-  width: 100% !important;
 }
 
 ytmusic-player-page[blyrics-stylized] ytmusic-player-bar,
 ytmusic-player-page[blyrics-stylized] #player-bar-background{
   backdrop-filter: blur(30px);
+  width: 100% !important;
 }
 
 .blyrics--translated {
