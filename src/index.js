@@ -19,6 +19,7 @@ const LYRICS_LOADER_ID = "blyrics-loader"; // Selector for the lyrics loader
 const LYRICS_WRAPPER_ID = "blyrics-wrapper"; // Class for the lyrics wrapper
 const LYRICS_DISABLED_ATTR = "blyrics-dfs"; // Attribute for the disabled full screen
 const LYRICS_STYLIZED_ATTR = "blyrics-stylized"; // Attribute for the stylized animations
+const EMPTY_THUMBNAIL_SRC = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 // Constants
 const LYRICS_API_URL = "https://lyrics-api.boidu.dev/getLyrics"; // URL for the lyrics API
@@ -616,9 +617,18 @@ const injectLyrics = lyrics => {
   }
 };
 
+// Function to generate album art from the youtube video's thumbnail
+const generateAlbumArt = () => {
+  const videoId = new URLSearchParams(window.location.search).get("v"); // Get the video ID from the URL
+  return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`; // Return the URL for the video thumbnail
+};
+
 // Function to add the album art to the layout
 const addAlbumArtToLayout = () => {
-  const albumArt = document.querySelector(SONG_IMAGE_SELECTOR).src; // Get the album art URL
+  let albumArt = document.querySelector(SONG_IMAGE_SELECTOR).src; // Get the album art URL
+  if (albumArt === EMPTY_THUMBNAIL_SRC) {
+    albumArt = generateAlbumArt();
+  }
   document.getElementById("layout").style = `--blyrics-background-img: url('${albumArt}')`; // Set the background image of the layout
 
   log(ALBUM_ART_ADDED_LOG); // Log album art added
