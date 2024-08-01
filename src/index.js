@@ -25,6 +25,7 @@ const EMPTY_THUMBNAIL_SRC = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5B
 
 // Constants
 const LYRICS_API_URL = "https://lyrics-api.boidu.dev/getLyrics"; // URL for the lyrics API
+const DISCORD_INVITE_URL = "https://discord.gg/UsHE3d5fWF"; // URL for the discord invite
 const FONT_LINK = "https://api.fontshare.com/v2/css?f[]=satoshi@1&display=swap"; // URL for the font
 const TRANSLATE_LYRICS_URL = (lang, text) =>
   `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(
@@ -480,7 +481,7 @@ const createFooter = () => {
 
     const discordLink = document.createElement("a");
     discordLink.className = `${FOOTER_CLASS}__discord`;
-    discordLink.href = "https://discord.gg/UsHE3d5fWF";
+    discordLink.href = DISCORD_INVITE_URL;
     discordLink.target = "_blank";
 
     discordLink.appendChild(discordImage);
