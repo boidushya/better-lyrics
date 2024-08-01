@@ -87,6 +87,43 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
   }
 }
 
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #mini-guide-background,
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #nav-bar-background,
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #guide-wrapper{
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+
+
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] ytmusic-player-bar,
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #player-bar-background{
+  background: linear-gradient(0deg, transparent, transparent) !important;
+}
+
+ytmusic-player-bar, #player-bar-background{
+  width: 100% !important;
+  backdrop-filter: blur(30px);
+}
+
+ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #mini-guide-background,
+ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #nav-bar-background,
+ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #guide-wrapper{
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+
+
+ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] ytmusic-player-bar,
+ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #player-bar-background{
+  background: linear-gradient(0deg, #00000000, #00000000) !important;
+}
+
+ytmusic-app[blyrics-stylized] ytmusic-player-bar,
+ytmusic-app[blyrics-stylized] #player-bar-background{
+  backdrop-filter: blur(30px);
+  width: 100% !important;
+}
+
 .blyrics--translated {
   display: block;
   font-size: 2rem;
@@ -166,7 +203,40 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
     opacity: 0.33;
   }
 }
-.blyrics-footer {
+
+.blyrics-footer{
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+  margin-bottom: 4rem !important;
+	margin: 16px 0;
+	margin-top: 0 !important;
+}
+
+.blyrics-footer__discord{
+  background-color: hsla(0, 0%, 100%, 0.1);
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
+	padding: 0.5rem;
+	border-radius: 1000rem;
+	display: grid;
+	place-items: center;
+	transition: background-color 0.2s;
+}
+
+.blyrics-footer__discord:hover{
+	background-color: #5865F2;
+}
+
+.blyrics-footer__discord > img{
+	filter: brightness(1);
+	transition: filter 0.2s;
+}
+
+.blyrics-footer__discord:hover > img{
+	filter: brightness(10);
+}
+
+.blyrics-footer__container {
   align-items: center;
   background-color: hsla(0, 0%, 100%, 0.1);
   border: 1px solid hsla(0, 0%, 100%, 0.1);
@@ -178,9 +248,6 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
   font-size: 14px;
   font-weight: 400;
   line-height: var(--ytmusic-body-line-height);
-  margin: 16px 0;
-  margin-bottom: 4rem !important;
-  margin-top: 0 !important;
   padding: 0.5rem 1.25rem;
   position: relative;
   white-space: pre;
@@ -188,15 +255,15 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
   width: fit-content;
   z-index: 2;
 }
-.blyrics-footer > a {
+.blyrics-footer__container > a {
   color: #fff;
   text-decoration: none;
   text-underline-offset: 2px;
 }
-.blyrics-footer:hover > a {
+.blyrics-footer__container:hover > a {
   text-decoration: underline;
 }
-.blyrics-footer > img {
+.blyrics-footer__container > img {
   margin-left: -6px;
   margin-right: 1rem;
 }

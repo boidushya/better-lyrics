@@ -5,7 +5,7 @@
 
 <p align="center">
  <a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
- <img src="https://img.shields.io/badge/version-1.5.16-blue.svg" alt=""/>
+ <img src="https://img.shields.io/badge/version-1.6.0-blue.svg" alt=""/>
 
  <img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt=""/>
  <a aria-label="Volkswagen CI" href="https://github.com/boidushya/better-lyrics"><img src="https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1" alt=""/></a>
@@ -31,8 +31,27 @@
   <a aria-label="Edge Add-on" href="https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd"><img src="https://img.shields.io/badge/dynamic/json?label=rating&suffix=/5&query=%24.averageRating&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fmjfeaklppoegooljmjicjdbiccgjdlhd&color=212749" alt="Edge Add-on Rating"/></a>
   <a aria-label="Edge Add-on" href="https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd"><img src="https://img.shields.io/badge/dynamic/json?label=users&query=%24.activeInstallCount&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fmjfeaklppoegooljmjicjdbiccgjdlhd&color=212749" alt="Edge Add-on Users"/></a>
 </p>
+<p align="center">
+  <a aria-label="Discord" href="https://discord.gg/UsHE3d5fWF"><img alt="Discord" src="https://img.shields.io/discord/1268184963266908220?label=Discord&logo=discord"></a>
+</p>
 
 ![Banner](https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png)
+
+## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Description](#description)
+- [Download](#download)
+- [Features](#features)
+- [Manual Installation](#manual-installation)
+	- [Chrome](#chrome)
+	- [Firefox](#firefox)
+- [Usage](#usage)
+- [Options](#options)
+- [Funding](#funding)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contributors ✨](#contributors-)
 
 ## Description
 
@@ -87,15 +106,16 @@ song.
 
 ## Options
 
-| **Option**                           | **Default Status** |
-| ------------------------------------ | ------------------ |
-| Logs                                 | Enabled            |
-| Auto switch to Lyrics tab            | Disabled           |
-| Blurred album art background         | Enabled            |
-| Auto-hide cursor in full screen mode | Enabled            |
-| Full screen mode                     | Enabled            |
-| Translations                         | Disabled           |
-| Translation Language                 | English            |
+| **Option**                               | **Default Status** |
+| ---------------------------------------- | ------------------ |
+| Logs                                     | Enabled            |
+| Auto switch to Lyrics tab                | Disabled           |
+| Blurred album art background             | Enabled            |
+| Auto-hide cursor in full screen mode     | Enabled            |
+| Full screen mode                         | Enabled            |
+| Stylized Lyrics (Background/Wobble/Glow) | Enabled            |
+| Translations                             | Disabled           |
+| Translation Language                     | English            |
 
 > [!TIP]
 >
