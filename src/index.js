@@ -19,6 +19,8 @@ const LYRICS_LOADER_ID = "blyrics-loader"; // Selector for the lyrics loader
 const LYRICS_WRAPPER_ID = "blyrics-wrapper"; // Class for the lyrics wrapper
 const LYRICS_DISABLED_ATTR = "blyrics-dfs"; // Attribute for the disabled full screen
 const LYRICS_STYLIZED_ATTR = "blyrics-stylized"; // Attribute for the stylized animations
+const DISCORD_LOGO_SRC =
+  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9IiNhYWEiIGQ9Ik0xOS4yNyA1LjMzQzE3Ljk0IDQuNzEgMTYuNSA0LjI2IDE1IDRhLjA5LjA5IDAgMCAwLS4wNy4wM2MtLjE4LjMzLS4zOS43Ni0uNTMgMS4wOWExNi4wOSAxNi4wOSAwIDAgMC00LjggMGMtLjE0LS4zNC0uMzUtLjc2LS41NC0xLjA5Yy0uMDEtLjAyLS4wNC0uMDMtLjA3LS4wM2MtMS41LjI2LTIuOTMuNzEtNC4yNyAxLjMzYy0uMDEgMC0uMDIuMDEtLjAzLjAyYy0yLjcyIDQuMDctMy40NyA4LjAzLTMuMSAxMS45NWMwIC4wMi4wMS4wNC4wMy4wNWMxLjggMS4zMiAzLjUzIDIuMTIgNS4yNCAyLjY1Yy4wMy4wMS4wNiAwIC4wNy0uMDJjLjQtLjU1Ljc2LTEuMTMgMS4wNy0xLjc0Yy4wMi0uMDQgMC0uMDgtLjA0LS4wOWMtLjU3LS4yMi0xLjExLS40OC0xLjY0LS43OGMtLjA0LS4wMi0uMDQtLjA4LS4wMS0uMTFjLjExLS4wOC4yMi0uMTcuMzMtLjI1Yy4wMi0uMDIuMDUtLjAyLjA3LS4wMWMzLjQ0IDEuNTcgNy4xNSAxLjU3IDEwLjU1IDBjLjAyLS4wMS4wNS0uMDEuMDcuMDFjLjExLjA5LjIyLjE3LjMzLjI2Yy4wNC4wMy4wNC4wOS0uMDEuMTFjLS41Mi4zMS0xLjA3LjU2LTEuNjQuNzhjLS4wNC4wMS0uMDUuMDYtLjA0LjA5Yy4zMi42MS42OCAxLjE5IDEuMDcgMS43NGMuMDMuMDEuMDYuMDIuMDkuMDFjMS43Mi0uNTMgMy40NS0xLjMzIDUuMjUtMi42NWMuMDItLjAxLjAzLS4wMy4wMy0uMDVjLjQ0LTQuNTMtLjczLTguNDYtMy4xLTExLjk1Yy0uMDEtLjAxLS4wMi0uMDItLjA0LS4wMk04LjUyIDE0LjkxYy0xLjAzIDAtMS44OS0uOTUtMS44OS0yLjEycy44NC0yLjEyIDEuODktMi4xMmMxLjA2IDAgMS45Ljk2IDEuODkgMi4xMmMwIDEuMTctLjg0IDIuMTItMS44OSAyLjEybTYuOTcgMGMtMS4wMyAwLTEuODktLjk1LTEuODktMi4xMnMuODQtMi4xMiAxLjg5LTIuMTJjMS4wNiAwIDEuOS45NiAxLjg5IDIuMTJjMCAxLjE3LS44MyAyLjEyLTEuODkgMi4xMiIvPjwvc3ZnPg=="; // Source for the discord logo
 const EMPTY_THUMBNAIL_SRC = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 // Constants
@@ -449,21 +451,45 @@ const createFooter = () => {
     const footer = document.getElementsByClassName(FOOTER_CLASS)[0];
     footer.innerHTML = "";
 
+    const footerContainer = document.createElement("div");
+    footerContainer.className = `${FOOTER_CLASS}__container`;
+
+    // Footer source pill
     const footerImage = document.createElement("img");
     footerImage.src = "https://better-lyrics.boidu.dev/icon-512.png";
     footerImage.alt = "Better Lyrics Logo";
     footerImage.width = "20";
     footerImage.height = "20";
 
-    footer.appendChild(footerImage);
-    footer.appendChild(document.createTextNode("Source: "));
+    footerContainer.appendChild(footerImage);
+    footerContainer.appendChild(document.createTextNode("Source: "));
 
     const footerLink = document.createElement("a");
     footerLink.href = "https://better-lyrics.boidu.dev";
     footerLink.target = "_blank";
     footerLink.textContent = "boidu.dev";
 
-    footer.appendChild(footerLink);
+    footerContainer.appendChild(footerLink);
+
+    // Footer discord link
+    const discordImage = document.createElement("img");
+    discordImage.src = DISCORD_LOGO_SRC;
+    discordImage.alt = "Better Lyrics Discord";
+    discordImage.width = "20";
+    discordImage.height = "20";
+
+    const discordLink = document.createElement("a");
+    discordLink.className = `${FOOTER_CLASS}__discord`;
+    discordLink.href = "https://discord.gg/UsHE3d5fWF";
+    discordLink.target = "_blank";
+
+    discordLink.appendChild(discordImage);
+
+    // Add the footer container to the footer
+    footer.appendChild(footerContainer);
+
+    // Add the discord link to the footer
+    footer.appendChild(discordLink);
 
     footer.removeAttribute("is-empty");
   } catch (_err) {
