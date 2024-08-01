@@ -777,10 +777,12 @@ const handleSettings = () => {
   onStylizedAnimationsEnabled(() => {
     const layout = document.getElementById("layout");
     const playerPage = document.getElementById("player-page");
+    const appBase = document.getElementsByTagName("ytmusic-app")[0];
 
     if (layout && playerPage) {
       layout.setAttribute(LYRICS_STYLIZED_ATTR, "");
       playerPage.setAttribute(LYRICS_STYLIZED_ATTR, "");
+      appBase.setAttribute(LYRICS_STYLIZED_ATTR, "");
     }
   });
 };

@@ -87,21 +87,39 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
   }
 }
 
-ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #mini-guide-background,
-ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #nav-bar-background,
-ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #guide-wrapper{
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #mini-guide-background,
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #nav-bar-background,
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #guide-wrapper{
   background-color: transparent !important;
   border-color: transparent !important;
 }
 
 
-ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] ytmusic-player-bar,
-ytmusic-player-page[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #player-bar-background{
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] ytmusic-player-bar,
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #player-bar-background{
+  background: linear-gradient(0deg, transparent, transparent) !important;
+}
+
+ytmusic-player-bar, #player-bar-background{
+  width: 100% !important;
+  backdrop-filter: blur(30px);
+}
+
+ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #mini-guide-background,
+ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #nav-bar-background,
+ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #guide-wrapper{
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+
+
+ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] ytmusic-player-bar,
+ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #player-bar-background{
   background: linear-gradient(0deg, #00000000, #00000000) !important;
 }
 
-ytmusic-player-page[blyrics-stylized] ytmusic-player-bar,
-ytmusic-player-page[blyrics-stylized] #player-bar-background{
+ytmusic-app[blyrics-stylized] ytmusic-player-bar,
+ytmusic-app[blyrics-stylized] #player-bar-background{
   backdrop-filter: blur(30px);
   width: 100% !important;
 }
