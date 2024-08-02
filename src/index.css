@@ -29,6 +29,10 @@
   transition: transform 0.166s;
 }
 
+#layout[blyrics-rtl-enabled] .blyrics-container > div {
+	transform-origin: right center;
+}
+
 .blyrics-container > div > span {
   opacity: 0.33;
   transition: opacity 0.33s;
@@ -361,6 +365,10 @@ ytmusic-message-renderer.ytmusic-tab-renderer {
 }
 #blyrics-wrapper {
   margin-top: 16px;
+}
+#layout[blyrics-rtl-enabled] .blyrics-container {
+	direction: rtl;
+
 }
 @media (min-width: 615px) {
   ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not(
