@@ -128,8 +128,9 @@ ytmusic-app[blyrics-stylized] #player-bar-background{
   display: block;
   font-size: 2rem;
   font-weight: 600;
-  white-space: pre-wrap;
-  line-height: 0.6;
+  white-space: normal;
+  line-height: 1.1;
+  margin-top: 8px;
 }
 #side-panel {
   min-width: 50%;
