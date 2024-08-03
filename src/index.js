@@ -63,6 +63,7 @@ const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 // Global variables
 
 let lang = "en"; // Default language
+let lyricsCheckInterval; // Interval for syncing lyrics with video playback
 
 // Storage get function
 const getStorage = (key, callback) => {
@@ -384,7 +385,7 @@ const createLyrics = () => {
         lang = data.language;
         setRtlAttributes(data.isRtlLanguage);
 
-        clearInterval(window.lyricsCheckInterval); // Clear the lyrics interval
+        clearInterval(lyricsCheckInterval); // Clear the lyrics interval
 
         if (!lyrics || lyrics.length === 0) {
           log(NO_LYRICS_FOUND_LOG); // Log no lyrics found
@@ -402,7 +403,7 @@ const createLyrics = () => {
         injectLyrics(lyrics); // Inject lyrics
       })
       .catch(err => {
-        clearInterval(window.lyricsCheckInterval); // Clear the lyrics interval
+        clearInterval(lyricsCheckInterval); // Clear the lyrics interval
 
         log(SERVER_ERROR_LOG); // Log server error
         log(err);
@@ -615,7 +616,7 @@ const injectLyrics = lyrics => {
   });
 
   if (!allZero) {
-    window.lyricsCheckInterval = setInterval(function () {
+    lyricsCheckInterval = setInterval(function () {
       if (isLoaderActive()) {
         log(LOADER_ACTIVE_LOG);
         return;
@@ -637,13 +638,12 @@ const injectLyrics = lyrics => {
           if (currentTime >= time && index + 1 === lyrics.length) {
             // If it's the last line
             elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
-            const current = document.getElementsByClassName(CURRENT_LYRICS_CLASS);
-            current[0].scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-              inline: "center",
-            }); // Scroll to the current line
-            return true;
+
+            // Since the last line is the end of the song, we don't need to scroll to it.
+            // In most cases, the last line is also an empty string so we don't have to worry about
+            // the user clicking on it to seek to the end of the song since it's not a clickable line
+
+            return false; // Stops the .every() loop
           } else if (currentTime > time && currentTime < parseFloat(lyrics[index + 1].getAttribute("data-time"))) {
             // If it's between the current and next line
             const current = document.getElementsByClassName(CURRENT_LYRICS_CLASS)[0];

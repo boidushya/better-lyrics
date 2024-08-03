@@ -30,3 +30,7 @@ if [[ -f "src/options.html" ]]; then
 else
 	echo "src/options.html file not found."
 fi
+
+# Run biome lint and format after bumping the version
+biome lint --fix
+biome format --fix
