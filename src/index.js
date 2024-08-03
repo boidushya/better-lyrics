@@ -63,6 +63,7 @@ const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 // Global variables
 
 let lang = "en"; // Default language
+let lyricsCheckInterval; // Interval for syncing lyrics with video playback
 
 // Storage get function
 const getStorage = (key, callback) => {
@@ -384,7 +385,7 @@ const createLyrics = () => {
         lang = data.language;
         setRtlAttributes(data.isRtlLanguage);
 
-        clearInterval(window.lyricsCheckInterval); // Clear the lyrics interval
+        clearInterval(lyricsCheckInterval); // Clear the lyrics interval
 
         if (!lyrics || lyrics.length === 0) {
           log(NO_LYRICS_FOUND_LOG); // Log no lyrics found
@@ -402,7 +403,7 @@ const createLyrics = () => {
         injectLyrics(lyrics); // Inject lyrics
       })
       .catch(err => {
-        clearInterval(window.lyricsCheckInterval); // Clear the lyrics interval
+        clearInterval(lyricsCheckInterval); // Clear the lyrics interval
 
         log(SERVER_ERROR_LOG); // Log server error
         log(err);
@@ -615,7 +616,7 @@ const injectLyrics = lyrics => {
   });
 
   if (!allZero) {
-    window.lyricsCheckInterval = setInterval(function () {
+    lyricsCheckInterval = setInterval(function () {
       if (isLoaderActive()) {
         log(LOADER_ACTIVE_LOG);
         return;
@@ -634,15 +635,18 @@ const injectLyrics = lyrics => {
         lyrics.every((elem, index) => {
           const time = parseFloat(elem.getAttribute("data-time")); // Get the start time of the line
 
-          if (currentTime >= time && index + 1 === lyrics.length) {
+          if (currentTime >= time && index + 1 === lyrics.length && elem.getAttribute("data-scrolled") !== "true") {
             // If it's the last line
             elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
-            const current = document.getElementsByClassName(CURRENT_LYRICS_CLASS);
-            current[0].scrollIntoView({
+
+            elem.scrollIntoView({
               behavior: "smooth",
               block: "center",
               inline: "center",
             }); // Scroll to the current line
+
+            elem.setAttribute("data-scrolled", true); // Mark as scrolled
+
             return true;
           } else if (currentTime > time && currentTime < parseFloat(lyrics[index + 1].getAttribute("data-time"))) {
             // If it's between the current and next line
