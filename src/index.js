@@ -635,13 +635,17 @@ const injectLyrics = lyrics => {
         lyrics.every((elem, index) => {
           const time = parseFloat(elem.getAttribute("data-time")); // Get the start time of the line
 
-          if (currentTime >= time && index + 1 === lyrics.length) {
+          if (currentTime >= time && index + 1 === lyrics.length && elem.getAttribute("data-scrolled") !== "true") {
             // If it's the last line
             elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
 
-            // Since the last line is the end of the song, we don't need to scroll to it.
-            // In most cases, the last line is also an empty string so we don't have to worry about
-            // the user clicking on it to seek to the end of the song since it's not a clickable line
+            elem.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+              inline: "center",
+            }); // Scroll to the current line
+
+            elem.setAttribute("data-scrolled", true); // Mark as scrolled
 
             return false; // Stops the .every() loop
           } else if (currentTime > time && currentTime < parseFloat(lyrics[index + 1].getAttribute("data-time"))) {
