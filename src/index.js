@@ -647,7 +647,7 @@ const injectLyrics = lyrics => {
 
             elem.setAttribute("data-scrolled", true); // Mark as scrolled
 
-            return false; // Stops the .every() loop
+            return true;
           } else if (currentTime > time && currentTime < parseFloat(lyrics[index + 1].getAttribute("data-time"))) {
             // If it's between the current and next line
             const current = document.getElementsByClassName(CURRENT_LYRICS_CLASS)[0];
