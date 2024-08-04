@@ -61,6 +61,7 @@ const LOADER_ACTIVE_LOG = `${LOG_PREFIX} ${IGNORE_PREFIX} Loader is active, skip
 const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
 // Global variables
+const SHIFT_INTERVAL_MS = 1000; // Interval for shifting lyrics
 
 let lang = "en"; // Default language
 let lyricsCheckInterval; // Interval for syncing lyrics with video playback
@@ -551,69 +552,88 @@ const injectLyrics = lyrics => {
     log(TRANSLATION_ENABLED_LOG, items.translationLanguage);
   });
 
+  renderLyrics(lyrics);
+
+  // Event listeners for shifting lyrics
+  document.getElementById('shift-forward').addEventListener('click', () => {
+    lyrics.forEach(item => {
+      item.startTimeMs += SHIFT_INTERVAL_MS;
+    });
+    renderLyrics(lyrics);
+  });
+
+  document.getElementById('shift-backward').addEventListener('click', () => {
+    lyrics.forEach(item => {
+      item.startTimeMs = Math.max(0, item.startTimeMs - SHIFT_INTERVAL_MS); // Prevent negative start times
+    });
+    renderLyrics(lyrics);
+  });
+
+
   // Set an interval to sync the lyrics with the video playback
   const allZero = lyrics.every(item => item.startTimeMs === "0");
 
-  lyrics.forEach(item => {
-    let line = document.createElement("div");
-    line.dataset.time = item.startTimeMs / 1000; // Set the start time of the line
-    line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s;"; // Set the duration of the line
+  // DONE: Refactor this to use the new renderLyrics function
+  // lyrics.forEach(item => {
+  //   let line = document.createElement("div");
+  //   line.dataset.time = item.startTimeMs / 1000; // Set the start time of the line
+  //   line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s;"; // Set the duration of the line
 
-    const words = item.words.split(" ");
+  //   const words = item.words.split(" ");
 
-    if (!allZero) {
-      line.setAttribute("data-scrolled", false);
+  //   if (!allZero) {
+  //     line.setAttribute("data-scrolled", false);
 
-      line.setAttribute(
-        "onClick",
-        `const player = document.getElementById("movie_player"); player.seekTo(${
-          item.startTimeMs / 1000
-        }, true);player.playVideo();` // Set the onClick event to seek to the start time and play the video
-      );
-    } else {
-      line.classList.add(CURRENT_LYRICS_CLASS);
-    }
+  //     line.setAttribute(
+  //       "onClick",
+  //       `const player = document.getElementById("movie_player"); player.seekTo(${
+  //         item.startTimeMs / 1000
+  //       }, true);player.playVideo();` // Set the onClick event to seek to the start time and play the video
+  //     );
+  //   } else {
+  //     line.classList.add(CURRENT_LYRICS_CLASS);
+  //   }
 
-    words.forEach((word, index) => {
-      let span = document.createElement("span");
-      span.style.transitionDelay = `${index * 0.05}s`;
-      span.style.animationDelay = `${index * 0.05}s`;
-      span.textContent = words.length <= 1 ? word : word + " ";
-      line.appendChild(span);
-    });
+  //   words.forEach((word, index) => {
+  //     let span = document.createElement("span");
+  //     span.style.transitionDelay = `${index * 0.05}s`;
+  //     span.style.animationDelay = `${index * 0.05}s`;
+  //     span.textContent = words.length <= 1 ? word : word + " ";
+  //     line.appendChild(span);
+  //   });
 
-    onTranslationEnabled(items => {
-      let translatedLine = document.createElement("span"); // Create a span element
-      translatedLine.classList.add(TRANSLATED_LYRICS_CLASS);
+  //   onTranslationEnabled(items => {
+  //     let translatedLine = document.createElement("span"); // Create a span element
+  //     translatedLine.classList.add(TRANSLATED_LYRICS_CLASS);
 
-      let source_language = lang ?? "en"; // Use the saved language or the default 'en'
-      let target_language = items.translationLanguage || "en"; // Use the saved language or the default 'en'
+  //     let source_language = lang ?? "en"; // Use the saved language or the default 'en'
+  //     let target_language = items.translationLanguage || "en"; // Use the saved language or the default 'en'
 
-      if (source_language !== target_language) {
-        if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-          translateText(item.words, target_language).then(result => {
-            if (result) {
-              if (result.originalLanguage !== target_language) {
-                // If the translation was successful, set the translated text as the content for translatedLine
-                translatedLine.textContent = "\n" + result.translatedText;
-                line.appendChild(translatedLine);
-              }
-            } else {
-              // If an error occurred during translation, we show the line as "—" since we don't want to take away from the UX
-              translatedLine.textContent = "\n" + "—";
-              line.appendChild(translatedLine); // Add span to the line
-            }
-          });
-        }
-      }
-    });
+  //     if (source_language !== target_language) {
+  //       if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+  //         translateText(item.words, target_language).then(result => {
+  //           if (result) {
+  //             if (result.originalLanguage !== target_language) {
+  //               // If the translation was successful, set the translated text as the content for translatedLine
+  //               translatedLine.textContent = "\n" + result.translatedText;
+  //               line.appendChild(translatedLine);
+  //             }
+  //           } else {
+  //             // If an error occurred during translation, we show the line as "—" since we don't want to take away from the UX
+  //             translatedLine.textContent = "\n" + "—";
+  //             line.appendChild(translatedLine); // Add span to the line
+  //           }
+  //         });
+  //       }
+  //     }
+  //   });
 
-    try {
-      document.getElementsByClassName(LYRICS_CLASS)[0].appendChild(line); // Append the line to the lyrics container
-    } catch (_err) {
-      log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
-    }
-  });
+  //   try {
+  //     document.getElementsByClassName(LYRICS_CLASS)[0].appendChild(line); // Append the line to the lyrics container
+  //   } catch (_err) {
+  //     log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
+  //   }
+  // });
 
   if (!allZero) {
     lyricsCheckInterval = setInterval(function () {
@@ -676,6 +696,75 @@ const injectLyrics = lyrics => {
   } else {
     log(SYNC_DISABLED_LOG);
   }
+};
+
+// Render lyrics
+const renderLyrics = (lyrics) => {
+  const lyricsContainer = document.getElementsByClassName(LYRICS_CLASS)[0];
+  lyricsContainer.innerHTML = ''; // Clear existing lyrics
+
+  const allZero = lyrics.every(item => item.startTimeMs === "0");
+
+  lyrics.forEach(item => {
+    let line = document.createElement("div");
+    line.dataset.time = item.startTimeMs / 1000; // Set the start time of the line
+    line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s;"; // Set the duration of the line
+
+    const words = item.words.split(" ");
+
+    if (!allZero) {
+      line.setAttribute("data-scrolled", false);
+
+      line.setAttribute(
+        "onClick",
+        `const player = document.getElementById("movie_player"); player.seekTo(${
+          item.startTimeMs / 1000
+        }, true);player.playVideo();` // Set the onClick event to seek to the start time and play the video
+      );
+    } else {
+      line.classList.add(CURRENT_LYRICS_CLASS);
+    }
+
+    words.forEach((word, index) => {
+      let span = document.createElement("span");
+      span.style.transitionDelay = `${index * 0.05}s`;
+      span.style.animationDelay = `${index * 0.05}s`;
+      span.textContent = words.length <= 1 ? word : word + " ";
+      line.appendChild(span);
+    });
+
+    onTranslationEnabled(items => {
+      let translatedLine = document.createElement("span"); // Create a span element
+      translatedLine.classList.add(TRANSLATED_LYRICS_CLASS);
+
+      let source_language = lang ?? "en"; // Use the saved language or the default 'en'
+      let target_language = items.translationLanguage || "en"; // Use the saved language or the default 'en'
+
+      if (source_language !== target_language) {
+        if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+          translateText(item.words, target_language).then(result => {
+            if (result) {
+              if (result.originalLanguage !== target_language) {
+                // If the translation was successful, set the translated text as the content for translatedLine
+                translatedLine.textContent = "\n" + result.translatedText;
+                line.appendChild(translatedLine);
+              }
+            } else {
+              // If an error occurred during translation, we show the line as "—" since we don't want to take away from the UX
+              translatedLine.textContent = "\n" + "—";
+              line.appendChild(translatedLine); // Add span to the line
+            }
+          });
+        }
+      }
+    });
+
+    try {
+      document.getElementsByClassName(LYRICS_CLASS)[0].appendChild(line); // Append the line to the lyrics container
+    } catch (_err) {
+      log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
+    }
+  });
 };
 
 // Function to generate album art from the youtube video's thumbnail
