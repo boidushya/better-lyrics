@@ -806,6 +806,17 @@ const cleanup = () => {
   if (existingFooter && existingFooter.classList.contains("blyrics--fallback")) {
     existingFooter.classList.remove("blyrics--fallback");
   }
+
+  const existingSongInfo = document.getElementById("blyrics-song-info");
+  const existingWatermark = document.getElementById("blyrics-watermark");
+
+  if (existingSongInfo) {
+    existingSongInfo.remove();
+  }
+  if (existingWatermark) {
+    existingWatermark.remove();
+  }
+
   clearLyrics();
 };
 
