@@ -368,8 +368,59 @@ ytmusic-message-renderer.ytmusic-tab-renderer {
 }
 #layout[blyrics-rtl-enabled] .blyrics-container {
 	direction: rtl;
-
 }
+
+#blyrics-watermark{
+	display: none;
+	position:absolute;
+	bottom: 1rem;
+	left: 1rem;
+	margin-bottom: 0 !important;
+	justify-content: center;
+	user-select: none;
+}
+
+#blyrics-watermark > .blyrics-watermark__container{
+	display: flex;
+	align-items:center;
+	border-radius: 1000rem;
+	padding: 0.25rem;
+	padding-right: 0.75rem;
+	background-color: rgba(0, 0, 0, 0);
+	border: 1px solid rgba(0, 0, 0, 0.02);
+	backdrop-filter: brightness(0.66) blur(8px);
+}
+
+#blyrics-watermark > .blyrics-watermark__container > img{
+	width: 16px;
+	height: 16px;
+	margin-right: 0.5rem;
+}
+
+#blyrics-watermark > .blyrics-watermark__container > p{
+	font-size: 1rem;
+	color: #fff;
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+#blyrics-song-info{
+	display: none;
+	z-index: 2;
+	max-width: 40rem;
+}
+#blyrics-song-info > p#blyrics-title{
+	font-size: 2rem;
+	font-weight: 700;
+	margin: 0;
+}
+#blyrics-song-info > p#blyrics-artist{
+	font-size: 1.5rem;
+	margin: 0;
+	opacity: 0.5;
+	margin-top: 0.25rem;
+}
+
 @media (min-width: 615px) {
   ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not(
       [blyrics-dfs]
@@ -383,29 +434,43 @@ ytmusic-message-renderer.ytmusic-tab-renderer {
       [is-video-truncation-fix-enabled]
     )[player-fullscreened]:not([blyrics-dfs])
     #player.ytmusic-player-page {
-    -webkit-mask-image: linear-gradient(to left, var(--blyrics-gradient-stops));
-    mask-image: linear-gradient(to left, var(--blyrics-gradient-stops));
-    max-width: 50%;
+		height: 40rem ;
+		width: 40rem ;
+		top: calc(50% - var(--ytmusic-nav-bar-height)) ;
+		left: 20% ;
+		transform: translate(-50%, -50%);
+		mask-image: none !important;
+		box-shadow: rgba(0, 0, 0, 0.2) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   }
-  ytmusic-player-page:not(
+
+	ytmusic-player-page:not(
+		[is-video-truncation-fix-enabled]
+	)[player-fullscreened]:not([blyrics-dfs])
+	#blyrics-watermark{
+		display: none;
+	}
+
+	ytmusic-player-page:not(
       [is-video-truncation-fix-enabled]
-    )[player-fullscreened]:not([video-mode]):not([blyrics-dfs])
-    #player.ytmusic-player-page:after {
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    background: var(--blyrics-background-img);
-    background-position: 50%;
-    background-repeat: no-repeat;
-    background-size: cover;
-    content: "";
-    height: 100%;
-    left: 0;
-    -webkit-mask-image: linear-gradient(270deg, transparent, #000, #000);
-    mask-image: linear-gradient(270deg, transparent, #000, #000);
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
+    )[player-fullscreened]:not([blyrics-dfs])
+		#blyrics-song-info {
+		display: block;
+		position: absolute;
+    top: calc(50% - var(--ytmusic-nav-bar-height));
+    margin-top: calc(20rem + 2rem) ; /* 40rem is the height of the player */
+    left: 20%;
+    text-align: center;
+		transform: translateX(-50%);
+	}
+
+	ytmusic-player-page:not(
+      [is-video-truncation-fix-enabled]
+    )[player-fullscreened][video-mode]:not([blyrics-dfs])
+    #player.ytmusic-player-page {
+		width: calc(33.33%) !important;
+    height: auto !important;
+	}
+
   ytmusic-app-layout:not(
       [is-mweb-modernization-enabled]
     )[player-fullscreened]:not([blyrics-dfs])
@@ -425,13 +490,14 @@ ytmusic-message-renderer.ytmusic-tab-renderer {
     )[player-fullscreened]:not([blyrics-dfs])
     > [slot="player-page"]
     #side-panel {
+		min-width: 60%;
     transform: translateY(-7.5rem);
   }
   ytmusic-player-page:not(
       [is-mweb-modernization-enabled]
     )[player-fullscreened]:not([blyrics-dfs])
     .av.ytmusic-player-page {
-    width: 50% !important;
+    width: 40% !important;
   }
   ytmusic-app-layout[player-fullscreened][show-fullscreen-controls]:not(
       [blyrics-dfs]
@@ -469,6 +535,25 @@ ytmusic-message-renderer.ytmusic-tab-renderer {
   #blyrics-wrapper {
     margin-inline: -1.5rem;
   }
+	ytmusic-player-page:not(
+		[is-video-truncation-fix-enabled]
+	)[player-fullscreened]:not([blyrics-dfs])
+		#player.ytmusic-player-page {
+		top: 0;
+		height: 30rem;
+		width: 30rem;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+	ytmusic-player-page:not(
+      [is-video-truncation-fix-enabled]
+    )[player-fullscreened]:not([blyrics-dfs])
+		#blyrics-song-info {
+		top: 0;
+    margin-top: 32rem;
+    left: 50%;
+		transform: translateX(-50%);
+	}
 }
 @media (max-width: 615px) {
   .blyrics-container > div {

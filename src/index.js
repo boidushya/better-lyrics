@@ -9,6 +9,7 @@ const TRANSLATED_LYRICS_CLASS = "blyrics--translated"; // Class for the translat
 const ERROR_LYRICS_CLASS = "blyrics--error"; // Class for the error message
 const DESCRIPTION_CLASS = "description style-scope ytmusic-description-shelf-renderer"; // Class for the description container
 const FOOTER_CLASS = "blyrics-footer"; // Class for the footer
+const WATERMARK_CLASS = "blyrics-watermark"; // Class for the watermark
 const TIME_INFO_CLASS = "time-info style-scope ytmusic-player-bar"; // Class for the time info
 const YT_MUSIC_FOOTER_CLASS = "footer style-scope ytmusic-description-shelf-renderer"; // Class for the default footer
 const SONG_IMAGE_SELECTOR = "#song-image>#thumbnail>#img"; // Selector for the song image
@@ -142,6 +143,68 @@ const onAutoHideCursor = callback => {
 const onScriptSendSongInfo = (event, callback, timeoutId, cleanup) => {
   clearTimeout(timeoutId);
   const data = event.detail;
+
+  const mainPanel = document.getElementById("main-panel");
+
+  if (mainPanel) {
+    // Remove the existing song info
+
+    const existingSongInfo = document.getElementById("blyrics-song-info");
+
+    const existingWatermark = document.getElementById("blyrics-watermark");
+
+    existingSongInfo?.remove();
+    existingWatermark?.remove();
+
+    // Create the song info wrapper
+
+    const title = document.createElement("p");
+    title.id = "blyrics-title";
+    title.textContent = data.song;
+
+    const artist = document.createElement("p");
+    artist.id = "blyrics-artist";
+    artist.textContent = data.artist;
+
+    const songInfoWrapper = document.createElement("div");
+    songInfoWrapper.id = "blyrics-song-info";
+    songInfoWrapper.appendChild(title);
+    songInfoWrapper.appendChild(artist);
+
+    // Create the footer/watermark
+
+    const watermark = document.createElement("div");
+    watermark.id = WATERMARK_CLASS;
+
+    const watermarkContainer = document.createElement("div");
+    watermarkContainer.className = `${WATERMARK_CLASS}__container`;
+
+    // Watermark source pill
+    const watermarkImage = document.createElement("img");
+    watermarkImage.src = "https://better-lyrics.boidu.dev/icon-512.png";
+    watermarkImage.alt = "Better Lyrics Logo";
+    watermarkImage.width = "20";
+    watermarkImage.height = "20";
+
+    watermarkContainer.appendChild(watermarkImage);
+
+    const watermarkLink = document.createElement("p");
+    watermarkLink.textContent = "dub.sh/blyt";
+
+    watermarkContainer.appendChild(watermarkLink);
+
+    // Add the watermark container to the watermark
+    watermark.appendChild(watermarkContainer);
+
+    watermark.removeAttribute("is-empty");
+
+    const player = document.getElementById("player");
+
+    player.appendChild(watermark);
+
+    mainPanel.appendChild(songInfoWrapper);
+  }
+
   callback(data);
 
   cleanup && cleanup();
@@ -743,6 +806,17 @@ const cleanup = () => {
   if (existingFooter && existingFooter.classList.contains("blyrics--fallback")) {
     existingFooter.classList.remove("blyrics--fallback");
   }
+
+  const existingSongInfo = document.getElementById("blyrics-song-info");
+  const existingWatermark = document.getElementById("blyrics-watermark");
+
+  if (existingSongInfo) {
+    existingSongInfo.remove();
+  }
+  if (existingWatermark) {
+    existingWatermark.remove();
+  }
+
   clearLyrics();
 };
 
