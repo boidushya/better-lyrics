@@ -62,6 +62,7 @@ const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
 // Global variables
 const SHIFT_INTERVAL_MS = 1000; // Interval for shifting lyrics
+let lyricsTimeShift = 0; // Add this at the top of your file
 
 let lang = "en"; // Default language
 let lyricsCheckInterval; // Interval for syncing lyrics with video playback
@@ -528,7 +529,9 @@ const setRtlAttributes = isRtl => {
 };
 
 // Function to inject lyrics into the DOM
+let currentLyrics;
 const injectLyrics = lyrics => {
+  currentLyrics = lyrics;
   // Inject Lyrics into DOM
   let lyricsWrapper;
 
@@ -552,88 +555,11 @@ const injectLyrics = lyrics => {
     log(TRANSLATION_ENABLED_LOG, items.translationLanguage);
   });
 
-  renderLyrics(lyrics);
-
-  // Event listeners for shifting lyrics
-  document.getElementById('shift-forward').addEventListener('click', () => {
-    lyrics.forEach(item => {
-      item.startTimeMs += SHIFT_INTERVAL_MS;
-    });
-    renderLyrics(lyrics);
-  });
-
-  document.getElementById('shift-backward').addEventListener('click', () => {
-    lyrics.forEach(item => {
-      item.startTimeMs = Math.max(0, item.startTimeMs - SHIFT_INTERVAL_MS); // Prevent negative start times
-    });
-    renderLyrics(lyrics);
-  });
-
 
   // Set an interval to sync the lyrics with the video playback
   const allZero = lyrics.every(item => item.startTimeMs === "0");
-
-  // DONE: Refactor this to use the new renderLyrics function
-  // lyrics.forEach(item => {
-  //   let line = document.createElement("div");
-  //   line.dataset.time = item.startTimeMs / 1000; // Set the start time of the line
-  //   line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s;"; // Set the duration of the line
-
-  //   const words = item.words.split(" ");
-
-  //   if (!allZero) {
-  //     line.setAttribute("data-scrolled", false);
-
-  //     line.setAttribute(
-  //       "onClick",
-  //       `const player = document.getElementById("movie_player"); player.seekTo(${
-  //         item.startTimeMs / 1000
-  //       }, true);player.playVideo();` // Set the onClick event to seek to the start time and play the video
-  //     );
-  //   } else {
-  //     line.classList.add(CURRENT_LYRICS_CLASS);
-  //   }
-
-  //   words.forEach((word, index) => {
-  //     let span = document.createElement("span");
-  //     span.style.transitionDelay = `${index * 0.05}s`;
-  //     span.style.animationDelay = `${index * 0.05}s`;
-  //     span.textContent = words.length <= 1 ? word : word + " ";
-  //     line.appendChild(span);
-  //   });
-
-  //   onTranslationEnabled(items => {
-  //     let translatedLine = document.createElement("span"); // Create a span element
-  //     translatedLine.classList.add(TRANSLATED_LYRICS_CLASS);
-
-  //     let source_language = lang ?? "en"; // Use the saved language or the default 'en'
-  //     let target_language = items.translationLanguage || "en"; // Use the saved language or the default 'en'
-
-  //     if (source_language !== target_language) {
-  //       if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-  //         translateText(item.words, target_language).then(result => {
-  //           if (result) {
-  //             if (result.originalLanguage !== target_language) {
-  //               // If the translation was successful, set the translated text as the content for translatedLine
-  //               translatedLine.textContent = "\n" + result.translatedText;
-  //               line.appendChild(translatedLine);
-  //             }
-  //           } else {
-  //             // If an error occurred during translation, we show the line as "—" since we don't want to take away from the UX
-  //             translatedLine.textContent = "\n" + "—";
-  //             line.appendChild(translatedLine); // Add span to the line
-  //           }
-  //         });
-  //       }
-  //     }
-  //   });
-
-  //   try {
-  //     document.getElementsByClassName(LYRICS_CLASS)[0].appendChild(line); // Append the line to the lyrics container
-  //   } catch (_err) {
-  //     log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
-  //   }
-  // });
+  renderLyrics(lyrics);
+  addShiftButtons();
 
   if (!allZero) {
     lyricsCheckInterval = setInterval(function () {
@@ -642,61 +568,64 @@ const injectLyrics = lyrics => {
         return;
       }
       try {
-        let currentTime =
-          timeToInt(
-            document
-              .getElementsByClassName(TIME_INFO_CLASS)[0]
-              .innerHTML.replaceAll(" ", "")
-              .replaceAll("\n", "")
-              .split("/")[0]
-          ) + 0.75; // Get the current time of the video
-        const lyrics = [...document.getElementsByClassName(LYRICS_CLASS)[0].children]; // Get all the lyrics lines
-
-        lyrics.every((elem, index) => {
-          const time = parseFloat(elem.getAttribute("data-time")); // Get the start time of the line
-
-          if (currentTime >= time && index + 1 === lyrics.length && elem.getAttribute("data-scrolled") !== "true") {
-            // If it's the last line
-            elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
-
-            elem.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-              inline: "center",
-            }); // Scroll to the current line
-
-            elem.setAttribute("data-scrolled", true); // Mark as scrolled
-
-            return true;
-          } else if (currentTime > time && currentTime < parseFloat(lyrics[index + 1].getAttribute("data-time"))) {
-            // If it's between the current and next line
-            const current = document.getElementsByClassName(CURRENT_LYRICS_CLASS)[0];
-
-            elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
-            if (current !== undefined && current.getAttribute("data-scrolled") !== "true") {
-              current.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-                inline: "center",
-              }); // Scroll to the current line
-              current.setAttribute("data-scrolled", true); // Mark as scrolled
-            }
-            return true;
+        let currentTime = getCurrentTime() - lyricsTimeShift; // Subtract the time shift
+        const lyrics = [...document.getElementsByClassName(LYRICS_CLASS)[0].children];
+    
+        lyrics.forEach((elem, index) => {
+          const time = parseFloat(elem.getAttribute("data-time"));
+          const nextTime = index < lyrics.length - 1 ? parseFloat(lyrics[index + 1].getAttribute("data-time")) : Infinity;
+    
+          if (currentTime >= time && currentTime < nextTime) {
+            elem.classList.add(CURRENT_LYRICS_CLASS);
+            elem.scrollIntoView({ behavior: "smooth", block: "center" });
           } else {
-            elem.setAttribute("data-scrolled", false); // Reset the scrolled flag
-            elem.setAttribute("class", ""); // Remove the current class
-            return true;
+            elem.classList.remove(CURRENT_LYRICS_CLASS);
           }
         });
       } catch (err) {
         log(err);
-        return true;
       }
-    }, 50); // Check every 50ms
+    }, 50);
   } else {
     log(SYNC_DISABLED_LOG);
   }
 };
+
+function addShiftButtons() {
+  const lyricsWrapper = getLyricsWrapper();
+  if (!lyricsWrapper) return;
+
+  const controlContainer = document.createElement('div');
+  controlContainer.className = 'lyrics-shift-control';
+
+  const backwardButton = document.createElement('button');
+  backwardButton.className = 'shift-backward';
+  backwardButton.textContent = '⏪';
+  backwardButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    userClicksShift(false);
+  });
+
+  const forwardButton = document.createElement('button');
+  forwardButton.className = 'shift-forward';
+  forwardButton.textContent = '⏩';
+  forwardButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    userClicksShift(true);
+  });
+
+  const shiftDisplay = document.createElement('span');
+  shiftDisplay.id = 'lyrics-shift-display';
+  shiftDisplay.textContent = 'Shift: 0.0s';
+
+  controlContainer.appendChild(backwardButton);
+  controlContainer.appendChild(shiftDisplay);
+  controlContainer.appendChild(forwardButton);
+
+  lyricsWrapper.prepend(controlContainer);
+}
 
 // Render lyrics
 const renderLyrics = (lyrics) => {
@@ -765,6 +694,45 @@ const renderLyrics = (lyrics) => {
       log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
     }
   });
+};
+
+const userClicksShift = (forward) => {
+  lyricsTimeShift += forward ? SHIFT_INTERVAL_MS / 1000 : -SHIFT_INTERVAL_MS / 1000;
+  updateShiftDisplay();
+};
+
+const updateShiftDisplay = () => {
+  const shiftDisplay = document.getElementById('lyrics-shift-display');
+  if (shiftDisplay) {
+    shiftDisplay.textContent = `Shift: ${lyricsTimeShift.toFixed(1)}s`;
+  }
+};
+
+const adjustCurrentLyric = () => {
+  const currentTime = getCurrentTime();
+  const lyrics = [...document.getElementsByClassName(LYRICS_CLASS)[0].children];
+
+  lyrics.forEach((elem, index) => {
+    const time = parseFloat(elem.getAttribute("data-time"));
+    const nextTime = index < lyrics.length - 1 ? parseFloat(lyrics[index + 1].getAttribute("data-time")) : Infinity;
+
+    if (currentTime >= time && currentTime < nextTime) {
+      elem.classList.add(CURRENT_LYRICS_CLASS);
+      elem.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      elem.classList.remove(CURRENT_LYRICS_CLASS);
+    }
+  });
+};
+
+const getCurrentTime = () => {
+  return timeToInt(
+    document
+      .getElementsByClassName(TIME_INFO_CLASS)[0]
+      .innerHTML.replaceAll(" ", "")
+      .replaceAll("\n", "")
+      .split("/")[0]
+  ) + 0.75;
 };
 
 // Function to generate album art from the youtube video's thumbnail
@@ -996,3 +964,39 @@ try {
 } catch (err) {
   log(GENERAL_ERROR_LOG, err); // Log any errors
 }
+
+
+function injectCSS() {
+  const style = document.createElement('style');
+  style.textContent = `
+    .shift-button-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+      position: sticky;
+      top: 0;
+      background: rgba(0,0,0,0.7);
+      padding: 10px;
+      z-index: 1000;
+    }
+    .shift-backward, .shift-forward {
+      // background-color: #333;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      margin: 0 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .shift-backward:hover, .shift-forward:hover {
+      background-color: #333;
+    }
+    .shift-backward:focus, .shift-forward:focus {
+      outline: white auto 5px;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+// Call this function in your modify() function
+injectCSS();
