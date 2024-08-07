@@ -64,6 +64,7 @@
 	- [Can I use Better Lyrics on mobile?](#can-i-use-better-lyrics-on-mobile)
 	- [Can I use a different lyrics provider?](#can-i-use-a-different-lyrics-provider)
 	- [Can I use Better Lyrics on other browsers?](#can-i-use-better-lyrics-on-other-browsers)
+	- [Lyrics have stopped showing up completely for all songs. What do I do?](#lyrics-have-stopped-showing-up-completely-for-all-songs-what-do-i-do)
 	- [Can I use Better Lyrics on other music streaming services?](#can-i-use-better-lyrics-on-other-music-streaming-services)
 - [Contributing](#contributing)
 - [License](#license)
@@ -207,6 +208,16 @@ No, Better Lyrics uses a custom backend to fetch lyrics. This is to ensure a smo
 ### Can I use Better Lyrics on other browsers?
 
 Right now, Better Lyrics is only available for Chrome, Firefox, and Edge (and other Chromium-based browsers like Brave, Opera, Arc, etc.). If there is enough demand, I might consider porting it to other browsers as well.
+
+### Lyrics have stopped showing up completely for all songs. What do I do?
+
+First, make sure that this issue is not caused by the backend server being down. You can check the status of the backend server [here](https://better-lyrics-status.boidu.dev). This page will show you the current status of the server and any incidents that might be affecting the service by checking every 30 minutes. While it's rare, there might be times when the server is down for maintenance or due to an incident and this page hasn't updated yet. In that case
+
+- Check the extension logs/networks tab for any errors.
+- Check [Railway's status page](https://status.railway.app/) for any incidents that might be affecting the service hosting the backend.
+- If you're unsure, reaching out to me (@boidu) on [our Discord server](https://discord.gg/UsHE3d5fWF) is the fastest way to get help. I'm usually active and can help you figure out if the issue is on your end or mine.
+
+If the server is up and you're still facing issues, try refreshing the page. If that doesn't work, try disabling and re-enabling the extension/updating the extension to the latest version. If everything fails, report the issue under the `#bug-reports` channel in our [Discord community](https://discord.gg/UsHE3d5fWF) or open an issue on the [GitHub repository](https://github.com/boidushya/better-lyrics/issues/new/choose).
 
 ### Can I use Better Lyrics on other music streaming services?
 
