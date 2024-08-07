@@ -49,6 +49,22 @@
 - [Usage](#usage)
 - [Options](#options)
 - [Funding](#funding)
+- [Discord Community](#discord-community)
+- [FAQ](#faq)
+	- [Why are the lyrics not showing up?](#why-are-the-lyrics-not-showing-up)
+	- [How do I change settings?](#how-do-i-change-settings)
+	- [How do I translate lyrics?](#how-do-i-translate-lyrics)
+	- [Can I contribute to Better Lyrics?](#can-i-contribute-to-better-lyrics)
+	- [Some lyrics are out of sync/missing/incorrect. What can I do?](#some-lyrics-are-out-of-syncmissingincorrect-what-can-i-do)
+	- [How do I report a bug?](#how-do-i-report-a-bug)
+	- [I don't like the new update. Can I revert to the old version?](#i-dont-like-the-new-update-can-i-revert-to-the-old-version)
+	- [How do I support the project?](#how-do-i-support-the-project)
+	- [Do you plan on pay-walling the extension in the future?](#do-you-plan-on-pay-walling-the-extension-in-the-future)
+	- [I want to use Better Lyrics along with another extension. Is that possible?](#i-want-to-use-better-lyrics-along-with-another-extension-is-that-possible)
+	- [Can I use Better Lyrics on mobile?](#can-i-use-better-lyrics-on-mobile)
+	- [Can I use a different lyrics provider?](#can-i-use-a-different-lyrics-provider)
+	- [Can I use Better Lyrics on other browsers?](#can-i-use-better-lyrics-on-other-browsers)
+	- [Can I use Better Lyrics on other music streaming services?](#can-i-use-better-lyrics-on-other-music-streaming-services)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contributors ✨](#contributors-)
@@ -130,6 +146,73 @@ song.
 > Your support helps cover the costs of hosting and development, and ensures continued improvements and stability.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q2VA1E)
+
+## Discord Community
+
+Join our Discord community to discuss Better Lyrics and get support from the developer and other users:
+
+https://discord.gg/UsHE3d5fWF
+
+## FAQ
+
+### Why are the lyrics not showing up?
+
+Make sure that the extension is enabled and that you are on <https://music.youtube.com>. The extension won't work on the regular YouTube website.
+
+### How do I change settings?
+
+Click on the Better Lyrics icon in the extensions toolbar to access the settings. The changes require a page refresh to take effect.
+
+### How do I translate lyrics?
+
+Enable the "Translations" option in the extension settings and select the desired language from the dropdown.
+
+### Can I contribute to Better Lyrics?
+
+Yes you can! Please follow the contributing guidelines below.
+
+### Some lyrics are out of sync/missing/incorrect. What can I do?
+
+Right now, the extension uses a wrapper around a third-party API to fetch lyrics. Unfortunately, this API is not always accurate. I have plans in my [roadmap](https://github.com/boidushya/better-lyrics/issues/4) to improve this, but it will take some time. If you'd like to help / have any ideas, please consider contributing to the project!
+
+### How do I report a bug?
+
+Please open an issue on the [GitHub repository](https://github.com/boidushya/better-lyrics/issues/new/choose) with as much detail as possible. Alternatively, you can join our [Discord community](https://discord.gg/UsHE3d5fWF) and report it there under the `#bug-reports` channel.
+
+### I don't like the new update. Can I revert to the old version?
+
+Yes, you can! Please follow the manual installation instructions above to install the old version of the extension. However, please note that the old version will most likely not be maintained or have the latest features.
+
+### How do I support the project?
+
+Better Lyrics is a free and open-source project. The easiest way to support the project is by leaving a positive feedback on the [Chrome Web Store](https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg), [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/), or [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd) so that more people can discover it.
+If you want to support the project further, please consider making a donation to help cover the costs of hosting and development. You can donate via [Ko-fi](https://ko-fi.com/Q5Q2VA1E).
+
+### Do you plan on pay-walling the extension in the future?
+
+No, I have no plans to pay-wall the extension. Better Lyrics will always be free and open-source for everyone to use.
+
+### I want to use Better Lyrics along with another extension. Is that possible?
+
+Yes, Better Lyrics should work with most extensions. However, if you encounter any issues, please report them under the `#bug-reports` channel in our [Discord community](https://discord.gg/UsHE3d5fWF) or open an issue on the [GitHub repository](https://github.com/boidushya/better-lyrics/issues/new/choose).
+
+### Can I use Better Lyrics on mobile?
+
+Better Lyrics is currently only available for desktop browsers. However, if you use a browser that supports extensions on mobile (such as Kiwi Browser on Android), you might be able to use it on mobile as well since the extension is responsive.
+
+### Can I use a different lyrics provider?
+
+No, Better Lyrics uses a custom backend to fetch lyrics. This is to ensure a smooth, reliable & consistent experience for all users. The backend is open-source and maintained by the author and cannot be changed yet. If you'd like to help / have any ideas, please consider contributing to the project!
+
+### Can I use Better Lyrics on other browsers?
+
+Right now, Better Lyrics is only available for Chrome, Firefox, and Edge (and other Chromium-based browsers like Brave, Opera, Arc, etc.). If there is enough demand, I might consider porting it to other browsers as well.
+
+### Can I use Better Lyrics on other music streaming services?
+
+No, Better Lyrics is specifically designed for YouTube Music. If you want something similar for other music streaming services, consider using other extensions - some of which are mentioned below. If you have suggestions for similar extensions for other services, please open a PR to add them to this list.
+
+- [Beautiful Lyrics](https://github.com/surfbryce/beautiful-lyrics) - Spotify
 
 ## Contributing
 

@@ -7,6 +7,9 @@ body:
   - type: markdown
     attributes:
       value: |
+        > [!TIP]
+        > Please search the existing issues & [FAQ](https://github.com/boidushya/better-lyrics/tree/master?tab=readme-ov-file#faq) to avoid duplicates. If you find a similar issue, please upvote it and add a comment with additional information.
+        >
         > [!NOTE]
         > Please fill out the sections below to help us reproduce and investigate the issue. Ensure you have the latest version of the extension installed before submitting a bug report. You can find the version number in the extension settings.
 
