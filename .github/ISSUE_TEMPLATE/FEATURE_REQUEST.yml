@@ -3,6 +3,12 @@ description: Create a new ticket for a new feature request
 title: "💡 [REQUEST] - <title>"
 labels: ["question", "enhancement"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        > [!NOTE]
+        > Please search the [FAQ](https://github.com/boidushya/better-lyrics/tree/master?tab=readme-ov-file#faq) & [Roadmap](https://github.com/boidushya/better-lyrics/issues/4) to avoid duplicates. If you find a similar feature request, please upvote it and add a comment with additional information.
+
   - type: textarea
     id: summary
     attributes:
