@@ -62,6 +62,8 @@ const LOADER_ACTIVE_LOG = `${LOG_PREFIX} ${IGNORE_PREFIX} Loader is active, skip
 const GENERAL_ERROR_LOG = `${LOG_PREFIX} Error:`;
 
 // Global variables
+const SHIFT_INTERVAL_MS = 1000; // Interval for shifting lyrics
+let lyricsTimeShift = 0; // Add this at the top of your file
 
 let lang = "en"; // Default language
 let lyricsCheckInterval; // Interval for syncing lyrics with video playback
@@ -590,7 +592,9 @@ const setRtlAttributes = isRtl => {
 };
 
 // Function to inject lyrics into the DOM
+let currentLyrics;
 const injectLyrics = lyrics => {
+  currentLyrics = lyrics;
   // Inject Lyrics into DOM
   let lyricsWrapper;
 
@@ -614,7 +618,83 @@ const injectLyrics = lyrics => {
     log(TRANSLATION_ENABLED_LOG, items.translationLanguage);
   });
 
+
   // Set an interval to sync the lyrics with the video playback
+  const allZero = lyrics.every(item => item.startTimeMs === "0");
+  renderLyrics(lyrics);
+  addShiftButtons();
+
+  if (!allZero) {
+    lyricsCheckInterval = setInterval(function () {
+      if (isLoaderActive()) {
+        log(LOADER_ACTIVE_LOG);
+        return;
+      }
+      try {
+        let currentTime = getCurrentTime() - lyricsTimeShift; // Subtract the time shift
+        const lyrics = [...document.getElementsByClassName(LYRICS_CLASS)[0].children];
+    
+        lyrics.forEach((elem, index) => {
+          const time = parseFloat(elem.getAttribute("data-time"));
+          const nextTime = index < lyrics.length - 1 ? parseFloat(lyrics[index + 1].getAttribute("data-time")) : Infinity;
+    
+          if (currentTime >= time && currentTime < nextTime) {
+            elem.classList.add(CURRENT_LYRICS_CLASS);
+            elem.scrollIntoView({ behavior: "smooth", block: "center" });
+          } else {
+            elem.classList.remove(CURRENT_LYRICS_CLASS);
+          }
+        });
+      } catch (err) {
+        log(err);
+      }
+    }, 50);
+  } else {
+    log(SYNC_DISABLED_LOG);
+  }
+};
+
+function addShiftButtons() {
+  const lyricsWrapper = getLyricsWrapper();
+  if (!lyricsWrapper) return;
+
+  const controlContainer = document.createElement('div');
+  controlContainer.className = 'lyrics-shift-control';
+
+  const backwardButton = document.createElement('button');
+  backwardButton.className = 'shift-backward';
+  backwardButton.textContent = '⏪';
+  backwardButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    userClicksShift(false);
+  });
+
+  const forwardButton = document.createElement('button');
+  forwardButton.className = 'shift-forward';
+  forwardButton.textContent = '⏩';
+  forwardButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    userClicksShift(true);
+  });
+
+  const shiftDisplay = document.createElement('span');
+  shiftDisplay.id = 'lyrics-shift-display';
+  shiftDisplay.textContent = 'Shift: 0.0s';
+
+  controlContainer.appendChild(backwardButton);
+  controlContainer.appendChild(shiftDisplay);
+  controlContainer.appendChild(forwardButton);
+
+  lyricsWrapper.prepend(controlContainer);
+}
+
+// Render lyrics
+const renderLyrics = (lyrics) => {
+  const lyricsContainer = document.getElementsByClassName(LYRICS_CLASS)[0];
+  lyricsContainer.innerHTML = ''; // Clear existing lyrics
+
   const allZero = lyrics.every(item => item.startTimeMs === "0");
 
   lyrics.forEach(item => {
@@ -677,68 +757,45 @@ const injectLyrics = lyrics => {
       log(LYRICS_WRAPPER_NOT_VISIBLE_LOG); // Log lyrics wrapper not visible
     }
   });
+};
 
-  if (!allZero) {
-    lyricsCheckInterval = setInterval(function () {
-      if (isLoaderActive()) {
-        log(LOADER_ACTIVE_LOG);
-        return;
-      }
-      try {
-        let currentTime =
-          timeToInt(
-            document
-              .getElementsByClassName(TIME_INFO_CLASS)[0]
-              .innerHTML.replaceAll(" ", "")
-              .replaceAll("\n", "")
-              .split("/")[0]
-          ) + 0.75; // Get the current time of the video
-        const lyrics = [...document.getElementsByClassName(LYRICS_CLASS)[0].children]; // Get all the lyrics lines
+const userClicksShift = (forward) => {
+  lyricsTimeShift += forward ? SHIFT_INTERVAL_MS / 1000 : -SHIFT_INTERVAL_MS / 1000;
+  updateShiftDisplay();
+};
 
-        lyrics.every((elem, index) => {
-          const time = parseFloat(elem.getAttribute("data-time")); // Get the start time of the line
-
-          if (currentTime >= time && index + 1 === lyrics.length && elem.getAttribute("data-scrolled") !== "true") {
-            // If it's the last line
-            elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
-
-            elem.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-              inline: "center",
-            }); // Scroll to the current line
-
-            elem.setAttribute("data-scrolled", true); // Mark as scrolled
-
-            return true;
-          } else if (currentTime > time && currentTime < parseFloat(lyrics[index + 1].getAttribute("data-time"))) {
-            // If it's between the current and next line
-            const current = document.getElementsByClassName(CURRENT_LYRICS_CLASS)[0];
-
-            elem.setAttribute("class", CURRENT_LYRICS_CLASS); // Set it as the current line
-            if (current !== undefined && current.getAttribute("data-scrolled") !== "true") {
-              current.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-                inline: "center",
-              }); // Scroll to the current line
-              current.setAttribute("data-scrolled", true); // Mark as scrolled
-            }
-            return true;
-          } else {
-            elem.setAttribute("data-scrolled", false); // Reset the scrolled flag
-            elem.setAttribute("class", ""); // Remove the current class
-            return true;
-          }
-        });
-      } catch (err) {
-        log(err);
-        return true;
-      }
-    }, 50); // Check every 50ms
-  } else {
-    log(SYNC_DISABLED_LOG);
+const updateShiftDisplay = () => {
+  const shiftDisplay = document.getElementById('lyrics-shift-display');
+  if (shiftDisplay) {
+    shiftDisplay.textContent = `Shift: ${lyricsTimeShift.toFixed(1)}s`;
   }
+};
+
+const adjustCurrentLyric = () => {
+  const currentTime = getCurrentTime();
+  const lyrics = [...document.getElementsByClassName(LYRICS_CLASS)[0].children];
+
+  lyrics.forEach((elem, index) => {
+    const time = parseFloat(elem.getAttribute("data-time"));
+    const nextTime = index < lyrics.length - 1 ? parseFloat(lyrics[index + 1].getAttribute("data-time")) : Infinity;
+
+    if (currentTime >= time && currentTime < nextTime) {
+      elem.classList.add(CURRENT_LYRICS_CLASS);
+      elem.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      elem.classList.remove(CURRENT_LYRICS_CLASS);
+    }
+  });
+};
+
+const getCurrentTime = () => {
+  return timeToInt(
+    document
+      .getElementsByClassName(TIME_INFO_CLASS)[0]
+      .innerHTML.replaceAll(" ", "")
+      .replaceAll("\n", "")
+      .split("/")[0]
+  ) + 0.75;
 };
 
 // Function to generate album art from the youtube video's thumbnail
@@ -981,3 +1038,39 @@ try {
 } catch (err) {
   log(GENERAL_ERROR_LOG, err); // Log any errors
 }
+
+
+function injectCSS() {
+  const style = document.createElement('style');
+  style.textContent = `
+    .shift-button-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+      position: sticky;
+      top: 0;
+      background: rgba(0,0,0,0.7);
+      padding: 10px;
+      z-index: 1000;
+    }
+    .shift-backward, .shift-forward {
+      // background-color: #333;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      margin: 0 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .shift-backward:hover, .shift-forward:hover {
+      background-color: #333;
+    }
+    .shift-backward:focus, .shift-forward:focus {
+      outline: white auto 5px;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+// Call this function in your modify() function
+injectCSS();
