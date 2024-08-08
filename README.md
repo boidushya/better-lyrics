@@ -53,6 +53,7 @@
 - [FAQ](#faq)
 	- [Why are the lyrics not showing up?](#why-are-the-lyrics-not-showing-up)
 	- [How do I change settings?](#how-do-i-change-settings)
+	- [How do I turn on full-screen mode?](#how-do-i-turn-on-full-screen-mode)
 	- [How do I translate lyrics?](#how-do-i-translate-lyrics)
 	- [Can I contribute to Better Lyrics?](#can-i-contribute-to-better-lyrics)
 	- [Some lyrics are out of sync/missing/incorrect. What can I do?](#some-lyrics-are-out-of-syncmissingincorrect-what-can-i-do)
@@ -163,6 +164,10 @@ Make sure that the extension is enabled and that you are on <https://music.youtu
 ### How do I change settings?
 
 Click on the Better Lyrics icon in the extensions toolbar to access the settings. The changes require a page refresh to take effect.
+
+### How do I turn on full-screen mode?
+
+Press F on your keyboard (with the window in focus) or hover over the album art and press the full-screen icon (⛶). Make sure that the "Disable fullscreen mode" option is not checked in the extension settings.
 
 ### How do I translate lyrics?
 
