@@ -147,7 +147,7 @@ song.
 >
 > Your support helps cover the costs of hosting and development, and ensures continued improvements and stability.
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q2VA1E)
+[![Github Sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23F20C33)](https://github.com/sponsors/boidushya)
 
 ## Discord Community
 
@@ -192,7 +192,7 @@ Yes, you can! Please follow the manual installation instructions above to instal
 ### How do I support the project?
 
 Better Lyrics is a free and open-source project. The easiest way to support the project is by leaving a positive feedback on the [Chrome Web Store](https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg), [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/), or [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd) so that more people can discover it.
-If you want to support the project further, please consider making a donation to help cover the costs of hosting and development. You can donate via [Ko-fi](https://ko-fi.com/Q5Q2VA1E).
+If you want to support the project further, please consider making a donation to help cover the costs of hosting and development. You can donate via [Github Sponsors](https://github.com/sponsors/boidushya).
 
 ### Do you plan on pay-walling the extension in the future?
 
