@@ -149,6 +149,8 @@ song.
 
 [![Github Sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23F20C33)](https://github.com/sponsors/boidushya)
 
+[![Sponsor through Drips](https://img.shields.io/static/v1?label=Sponsor&message=%F0%9F%92%A7&logo=ethereum&color=%230D1117)](https://drips.network/app/projects/github/boidushya/better-lyrics)
+
 ## Discord Community
 
 Join our Discord community to discuss Better Lyrics and get support from the developer and other users:
