@@ -132,14 +132,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const highlightCSS = code => {
-  // Escape HTML characters
   let escapedCode = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-  // Initialize a hashmap and placeholders
   const tokenMap = [];
   let placeholderCount = 0;
 
-  // Function to add a token to the map
   const addToken = (type, value) => {
     const placeholder = `__TOKEN_${placeholderCount}__`;
     tokenMap.push({ type, value, placeholder });
@@ -147,7 +144,6 @@ const highlightCSS = code => {
     return placeholder;
   };
 
-  // Replace parts of the CSS with placeholders
   let highlightedCode = escapedCode
     .replace(/\/\*[\s\S]*?\*\//g, match => addToken("comment", match))
     .replace(/(["'])(?:\\.|[^\\])*?\1/g, match => addToken("string", match))
@@ -157,7 +153,6 @@ const highlightCSS = code => {
     .replace(/!important\b/gi, match => addToken("important", match))
     .replace(/[{}:;]/g, match => addToken("punctuation", match));
 
-  // Convert tokens to HTML spans
   tokenMap.forEach(({ type, value, placeholder }) => {
     highlightedCode = highlightedCode.replace(placeholder, `<span class="${type}">${value}</span>`);
   });

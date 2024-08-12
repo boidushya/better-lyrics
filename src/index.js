@@ -210,6 +210,44 @@ const onScriptSendSongInfo = (event, callback, timeoutId, cleanup) => {
   cleanup && cleanup();
 };
 
+// Function to inject or update the <style> tag with the custom CSS
+const applyCustomCSS = css => {
+  // Check if a <style> tag with the ID 'custom-style' already exists
+  let styleTag = document.getElementById("blyrics-custom-style");
+
+  // If it exists, update its content
+  if (styleTag) {
+    styleTag.textContent = css;
+  } else {
+    // If it doesn't exist, create a new <style> tag and append it to the <head>
+    styleTag = document.createElement("style");
+    styleTag.id = "blyrics-custom-style";
+    styleTag.textContent = css;
+    document.head.appendChild(styleTag);
+  }
+};
+
+// Function to get the custom CSS from storage and apply it
+const getAndApplyCustomCSS = () => {
+  chrome.storage.sync.get(["customCSS"], result => {
+    if (result.customCSS) {
+      applyCustomCSS(result.customCSS);
+    }
+  });
+};
+
+// Listen for changes in the storage
+const subscribeToCustomCSS = () => {
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "sync" && changes.customCSS) {
+      applyCustomCSS(changes.customCSS.newValue);
+    }
+  });
+  getAndApplyCustomCSS();
+};
+
+// Initial application of CSS when the script loads
+
 // Helper function to convert time string to integer
 const timeToInt = time => {
   time = time.split(":");
@@ -902,6 +940,7 @@ const modify = () => {
   injectHeadTags();
   hideCursorOnIdle();
   handleSettings();
+  subscribeToCustomCSS();
 
   log(
     INITIALIZE_LOG,
