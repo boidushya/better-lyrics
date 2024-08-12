@@ -1,3 +1,6 @@
+let saveTimeout;
+const SAVE_DEBOUNCE_DELAY = 1000;
+
 const openEditCSS = () => {
   const editCSS = document.getElementById("css");
   const options = document.getElementById("options");
@@ -21,6 +24,7 @@ document.getElementById("back-btn").addEventListener("click", openOptions);
 document.addEventListener("DOMContentLoaded", function () {
   const editor = document.getElementById("editor");
   const highlight = document.querySelector("#highlight code");
+  const syncIndicator = document.getElementById("sync-indicator");
 
   function updateHighlighting() {
     const code = editor.value;
@@ -61,12 +65,42 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     editor.value = lines.join("\n");
-    editor.setSelectionRange(start, end); // Restore cursor position
+    editor.setSelectionRange(start, end);
     updateHighlighting();
   }
 
+  function saveToStorage() {
+    chrome.storage.sync
+      .set({ customCSS: editor.value })
+      .then(() => {
+        syncIndicator.innerText = "Saved!";
+        syncIndicator.classList.add("success");
+        setTimeout(() => {
+          syncIndicator.style.display = "none";
+          syncIndicator.innerText = "Saving...";
+          syncIndicator.classList.remove("success");
+        }, 1000);
+      })
+      .catch(() => {
+        syncIndicator.innerText = "Something went wrong!";
+        syncIndicator.classList.add("error");
+
+        setTimeout(() => {
+          syncIndicator.style.display = "none";
+          syncIndicator.innerText = "Saving...";
+          syncIndicator.classList.remove("error");
+        }, 1000);
+      });
+  }
+
+  function debounceSave() {
+    syncIndicator.style.display = "block";
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(saveToStorage, SAVE_DEBOUNCE_DELAY);
+  }
+
   editor.addEventListener("input", function () {
-    chrome.storage.sync.set({ customCSS: editor.value });
+    debounceSave();
     updateHighlighting();
   });
 

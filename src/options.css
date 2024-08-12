@@ -381,3 +381,26 @@ select option {
 .note a:visited {
 	color: rgba(255, 255, 255, 0.5);
 }
+
+#sync-indicator {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+	backdrop-filter: blur(10px);
+  color: white;
+  border-radius: 3px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  z-index: 1000;
+	display: none;
+}
+
+#sync-indicator.success {
+	color: #4CAF50;
+}
+
+#sync-indicator.error {
+	color: #FF7961;
+}
