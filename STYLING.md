@@ -30,7 +30,7 @@ If you're new to CSS, don't worry! This guide will walk you through the main com
 
 ## 2. Understanding the CSS Structure
 
-The CSS file is organized into several sections, each controlling different aspects of the lyrics display. Here's a brief overview of what you'll find:
+The [CSS file](https://github.com/boidushya/better-lyrics/blob/feat/css/src/index.css) is organized into several sections, each controlling different aspects of the lyrics display. Here's a brief overview of what you'll find:
 
 1. Global variables (custom properties)
 2. Main container styles
