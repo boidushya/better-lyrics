@@ -91,8 +91,6 @@ The font is set to a custom font called "Satoshi" which is injected by the exten
 
 To learn more about these properties, visit the [MDN Web Docs on CSS](https://developer.mozilla.org/en-US/docs/Web/CSS).
 
-[Previous sections remain unchanged]
-
 ## 5. Styling Individual Lyric Lines
 
 Better Lyrics displays lyrics line by line, with each line containing multiple words. The CSS styles each line (div) and each word (span) within the lyrics container.
