@@ -1,5 +1,7 @@
 html {
   width: 600px;
+	min-width: 600px;
+	max-width: 600px;
   overflow: auto;
 }
 
@@ -280,60 +282,6 @@ select option {
 	font-family: "JetBrains Mono", Consolas, "Courier New", monospace !important;
 }
 
-#editor, #highlight {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    font-size: 12px;
-    line-height: 1.5;
-    padding: 10px;
-    margin: 0;
-    border: 1px solid #3c3c3c;
-    border-radius: 4px;
-    overflow: auto;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    box-sizing: border-box;
-}
-
-#editor {
-    background-color: transparent;
-    color: transparent;
-    caret-color: #d4d4d4;
-    resize: none;
-    z-index: 1;
-}
-
-#highlight {
-    background-color: #252526;
-    color: #d4d4d4;
-    z-index: 0;
-}
-
-#editor:focus {
-    outline: none;
-}
-
-#editor::-webkit-scrollbar, #highlight::-webkit-scrollbar {
-    width: 12px;
-}
-
-#editor::-webkit-scrollbar-track, #highlight::-webkit-scrollbar-track {
-    background: #1e1e1e;
-}
-
-#editor::-webkit-scrollbar-thumb, #highlight::-webkit-scrollbar-thumb {
-    background-color: #424242;
-    border-radius: 6px;
-    border: 3px solid #1e1e1e;
-}
-
-#editor::-webkit-scrollbar-thumb:hover, #highlight::-webkit-scrollbar-thumb:hover {
-    background-color: #4f4f4f;
-}
-
 .selector {
   color: #e06c75;
 }
@@ -384,10 +332,10 @@ select option {
 
 #sync-indicator {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 20px;
+  right: 20px;
   padding: 5px 10px;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(128, 128, 128, 0.2);
 	backdrop-filter: blur(10px);
   color: white;
   border-radius: 3px;
@@ -413,3 +361,11 @@ select option {
 	margin-top: 1rem;
 }
 
+.CodeMirror-hints{
+	background: #28292c !important;
+	border: 1px solid #3e3e41 !important;
+}
+
+.CodeMirror-hint{
+	color: #fff !important;
+}

@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html>
   <head>
+		<meta name="color-scheme" content="dark">
     <title>Better Lyrics Settings</title>
   	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   	<link href="https://api.fontshare.com/v2/css?f[]=satoshi@1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="options.css" />
+
+		<link rel="stylesheet" href="libs/codemirror/codemirror.css">
+		<link rel="stylesheet" href="libs/codemirror/seti.css">
+		<link rel="stylesheet" href="libs/codemirror/show-hint.css">
+		<script src="libs/codemirror/codemirror.js"></script>
+		<script src="libs/codemirror/css.js"></script>
+		<script src="libs/codemirror/css-hint.js"></script>
+		<script src="libs/codemirror/show-hint.js"></script>
+		<script src="libs/codemirror/closebrackets.js"></script>
+		<script src="libs/codemirror/lint.js"></script>
+		<script src="libs/codemirror/autorefresh.js"></script>
+
 	</head>
   <body>
     <nav>
@@ -17,7 +30,7 @@
         />
 		<div class="heading">
 
-			Better Lyrics <span>v1.6.3</span>
+			Better Lyrics <span>v1.7.0</span>
 		</div>
       </h1>
       <div class="nav-container">
@@ -269,8 +282,9 @@
 		</div>
 		<div id="css">
 			<div id="editor-container">
-				<textarea id="editor" spellcheck="false"></textarea>
-				<pre id="highlight"><code></code></pre>
+				<!-- <div id="editor"></div> -->
+				 <textarea id="editor"></textarea>
+				<!-- <pre id="highlight"><code></code></pre> -->
 				<div id="sync-indicator">Saving...</div>
     	</div>
 			<div class="ie-utils">

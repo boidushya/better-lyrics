@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "version": "1.6.3",
+  "version": "1.7.0",
   "name": "Better Lyrics (Lyrics for Youtube Music)",
   "description": "Enhance YouTube Music with beautiful time-synced lyrics, multilingual support, real-time translations and more",
   "homepage_url": "https://better-lyrics.boidu.dev",
@@ -28,6 +28,19 @@
       "js": ["src/index.js"],
       "css": ["src/index.css"],
       "run_at": "document_end"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "src/libs/codemirror/codemirror.js",
+        "src/libs/codemirror/css.js",
+        "src/libs/codemirror/css-hint.js",
+        "src/libs/codemirror/show-hint.js",
+        "src/libs/codemirror/closebrackets.js",
+        "src/libs/codemirror/lint.js",
+        "src/libs/codemirror/autorefresh.js"
+      ],
+      "css": ["src/libs/codemirror/codemirror.css", "src/libs/codemirror/seti.css", "src/libs/codemirror/show-hint.css"]
     }
   ],
   "action": {
