@@ -95,27 +95,7 @@ To learn more about these properties, visit the [MDN Web Docs on CSS](https://de
 
 ## 5. Styling Individual Lyrics Lines
 
-Each line of lyrics is wrapped in a `<div>` inside the main container. These lines are styled as follows:
-
-```css
-.blyrics-container > div {
-  cursor: pointer;
-  padding-bottom: 2rem !important;
-  transform-origin: left center;
-  word-break: break-word;
-  transform: scale(0.95);
-  transition: transform 0.166s;
-}
-```
-
-This styling does several things:
-
-- Makes the cursor change to a pointer when hovering over a line
-- Adds padding below each line
-- Sets the origin point for transformations
-- Allows long words to break and wrap
-- Slightly reduces the size of each line (to 95% of its original size)
-- Adds a smooth transition effect when the size changes
+Better Lyrics displays lyrics line by line, with each line containing multiple words. The CSS styles each line (div) and each word (span) within the lyrics container.
 
 ### Word-Level Styling
 
@@ -158,6 +138,8 @@ This makes the active line full-sized and fully opaque, and applies animations t
 Understanding this structure (lines as divs, words as spans) is crucial if you want to modify the lyrics display. For example, if you wanted to create a karaoke-style effect where words light up one by one, you would focus on styling the individual spans within the active line.
 
 ### Line-Level Styling
+
+Each line of lyrics is wrapped in a `<div>` inside the main container. These lines are styled as follows:
 
 ```css
 .blyrics-container > div {
