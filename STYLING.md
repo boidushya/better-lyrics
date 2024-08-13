@@ -8,7 +8,7 @@
 	- [2. Understanding the CSS Structure](#2-understanding-the-css-structure)
 	- [3. Custom Properties (CSS Variables)](#3-custom-properties-css-variables)
 	- [4. Styling the Main Lyrics Container](#4-styling-the-main-lyrics-container)
-	- [5. Styling Individual Lyrics Lines](#5-styling-individual-lyrics-lines)
+	- [5. Styling Individual Lyric Lines](#5-styling-individual-lyric-lines)
 		- [Word-Level Styling](#word-level-styling)
 		- [Line-Level Styling](#line-level-styling)
 	- [6. Creating Animation Effects](#6-creating-animation-effects)
@@ -36,7 +36,7 @@ The [CSS file](https://github.com/boidushya/better-lyrics/blob/feat/css/src/inde
 
 1. Global variables (custom properties)
 2. Main container styles
-3. Individual lyrics line styles
+3. Individual lyric line styles
 4. Animation definitions
 5. YouTube Music layout modifications
 6. Responsive design rules
@@ -93,7 +93,7 @@ To learn more about these properties, visit the [MDN Web Docs on CSS](https://de
 
 [Previous sections remain unchanged]
 
-## 5. Styling Individual Lyrics Lines
+## 5. Styling Individual Lyric Lines
 
 Better Lyrics displays lyrics line by line, with each line containing multiple words. The CSS styles each line (div) and each word (span) within the lyrics container.
 
