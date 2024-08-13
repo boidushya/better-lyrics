@@ -161,6 +161,8 @@ This styling does a bunch of things:
 - Slightly reduces the size of each line (to 95% of its original size)
 - Adds a smooth transition effect when the size changes
 
+All the non-traditional properties (like `transform`, `transition`, etc.) are used to create animations and effects that enhance the lyrics display. The `transform` property is used to scale the lines, while `transition` controls the smoothness of the scaling effect.
+
 The currently active line (the one being sung) has additional styling:
 
 ```css
