@@ -221,7 +221,7 @@ The CSS includes several rules that modify the existing YouTube Music interface 
 ```
 
 This rule makes certain elements transparent when the player page is open, allowing the lyrics to be more prominent.
-Since the Custom CSS you write is injected into the page, you can override pretty much any style on the page.
+Since the Custom CSS you write is injected into the page, you can override pretty much any style relevant to YouTube Music.
 
 The CSS also adds a custom background to the player page:
 
