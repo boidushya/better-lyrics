@@ -2,7 +2,7 @@ let saveTimeout;
 let editor;
 const SAVE_DEBOUNCE_DELAY = 1000;
 
-const invalidKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Shift", "Enter"];
+const invalidKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Shift", "Enter", "Tab"];
 
 const showAlert = message => {
   const status = document.getElementById("status-css");
