@@ -2,6 +2,8 @@ let saveTimeout;
 let editor;
 const SAVE_DEBOUNCE_DELAY = 1000;
 
+const invalidKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Shift", "Enter"];
+
 const showAlert = message => {
   const status = document.getElementById("status-css");
   status.innerText = message;
@@ -125,7 +127,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   editor.on("keydown", function (cm, event) {
-    if (!cm.state.completionActive && event.key !== "Shift" && event.key !== "Enter") {
+    const isInvalidKey = invalidKeys.includes(event.key);
+    if (!cm.state.completionActive && !isInvalidKey) {
       cm.showHint({ completeSingle: false });
     }
   });
