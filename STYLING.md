@@ -181,7 +181,7 @@ When a line is active:
 
 The `blyrics--active` class is added to the active line, and it scales the line back to its original size. It also changes the cursor to default and applies the `blyrics-glow` and `blyrics-wobble` animations to the text.
 
-All these in conjunction make the active line full-sized and applies animations to make it stand out.
+All these in conjunction make the active line full-sized and helps apply animations to make it stand out.
 
 ## 6. Creating Animation Effects
 
