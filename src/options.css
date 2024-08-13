@@ -65,13 +65,13 @@ label input {
   cursor: pointer;
 }
 
-#status,
+#status, #status-css,
 label input {
   position: absolute;
   opacity: 0;
 }
 
-#status,
+#status, #status-css,
 button {
   font-size: 1.125rem;
 }
@@ -169,7 +169,7 @@ label .checkmark:after {
   transform: rotate(35deg);
 }
 
-#status {
+#status, #status-css {
   top: 0;
   left: 50%;
   transform: translateX(-50%) translateY(-100%);
@@ -185,7 +185,7 @@ label .checkmark:after {
   transition: transform 0.2s, opacity 0.2s;
 }
 
-#status.active {
+#status.active, #status-css.active {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
 }
@@ -272,7 +272,7 @@ select option {
 #editor-container{
     position: relative;
     width: 100%;
-    height: 300px;
+    height: 250px;
 		box-sizing: border-box;
 }
 
@@ -404,3 +404,12 @@ select option {
 #sync-indicator.error {
 	color: #FF7961;
 }
+
+.ie-utils{
+	display: flex;
+	align-items: center;
+	justify-content: start;
+	gap: 0.5rem;
+	margin-top: 1rem;
+}
+

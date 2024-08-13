@@ -1,6 +1,20 @@
 let saveTimeout;
 const SAVE_DEBOUNCE_DELAY = 1000;
 
+const showAlert = message => {
+  const status = document.getElementById("status-css");
+
+  status.innerText = message;
+  status.classList.add("active");
+
+  setTimeout(() => {
+    status.classList.remove("active");
+    setTimeout(() => {
+      status.innerText = "";
+    }, 200);
+  }, 2000);
+};
+
 const openEditCSS = () => {
   const editCSS = document.getElementById("css");
   const options = document.getElementById("options");
@@ -20,6 +34,32 @@ const openOptions = () => {
 };
 
 document.getElementById("back-btn").addEventListener("click", openOptions);
+
+document.getElementById("import-btn").addEventListener("click", () => {
+  // Paste from clipboard, parse base64 and set as value
+  navigator.clipboard.readText().then(text => {
+    try {
+      const css = atob(text);
+      document.getElementById("editor").value = css;
+      document.getElementById("editor").dispatchEvent(new Event("input"));
+      showAlert("Styles imported from clipboard!");
+    } catch {
+      showAlert("Invalid styles in clipboard! Please try again.");
+    }
+  });
+});
+
+document.getElementById("export-btn").addEventListener("click", () => {
+  const css = document.getElementById("editor").value;
+  if (!css) {
+    showAlert("No styles to export!");
+    return;
+  }
+  const base64 = btoa(css);
+  navigator.clipboard.writeText(base64).then(() => {
+    showAlert("Styles copied to clipboard!");
+  });
+});
 
 document.addEventListener("DOMContentLoaded", function () {
   const editor = document.getElementById("editor");
