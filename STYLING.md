@@ -9,6 +9,8 @@
 	- [3. Custom Properties (CSS Variables)](#3-custom-properties-css-variables)
 	- [4. Styling the Main Lyrics Container](#4-styling-the-main-lyrics-container)
 	- [5. Styling Individual Lyrics Lines](#5-styling-individual-lyrics-lines)
+		- [Word-Level Styling](#word-level-styling)
+		- [Line-Level Styling](#line-level-styling)
 	- [6. Creating Animation Effects](#6-creating-animation-effects)
 	- [7. Modifying YouTube Music's Layout](#7-modifying-youtube-musics-layout)
 	- [8. Handling Loading and Errors](#8-handling-loading-and-errors)
@@ -89,6 +91,8 @@ The font is set to a custom font called "Satoshi" which is injected by the exten
 
 To learn more about these properties, visit the [MDN Web Docs on CSS](https://developer.mozilla.org/en-US/docs/Web/CSS).
 
+[Previous sections remain unchanged]
+
 ## 5. Styling Individual Lyrics Lines
 
 Each line of lyrics is wrapped in a `<div>` inside the main container. These lines are styled as follows:
@@ -105,6 +109,68 @@ Each line of lyrics is wrapped in a `<div>` inside the main container. These lin
 ```
 
 This styling does several things:
+
+- Makes the cursor change to a pointer when hovering over a line
+- Adds padding below each line
+- Sets the origin point for transformations
+- Allows long words to break and wrap
+- Slightly reduces the size of each line (to 95% of its original size)
+- Adds a smooth transition effect when the size changes
+
+### Word-Level Styling
+
+Within each line (div), individual words are wrapped in `<span>` elements. This structure allows for more granular control over the styling and animation of the lyrics. Here's how these spans are styled:
+
+```css
+.blyrics-container > div > span {
+  opacity: 0.33;
+  transition: opacity 0.33s;
+}
+```
+
+This styling:
+
+- Sets each word to be partially transparent (33% opaque)
+- Adds a smooth transition effect for changes in opacity
+
+By wrapping each word in a span, Better Lyrics can:
+
+1. Animate or highlight individual words as they are sung
+2. Apply different styles to specific words (e.g., for emphasis)
+3. More precisely control the timing of lyrics display
+
+The currently active line (the one being sung) has additional styling:
+
+```css
+.blyrics-container > div.blyrics--active {
+  transform: scale(1);
+}
+
+.blyrics-container > div.blyrics--active > span:not(:empty):not(.blyrics--translated) {
+  cursor: default;
+  opacity: 1;
+  animation: blyrics-glow var(--blyrics-duration) forwards, blyrics-wobble calc(var(--blyrics-duration) / 2) forwards;
+}
+```
+
+This makes the active line full-sized and fully opaque, and applies animations to make it stand out. The animations are applied to each word (span) individually, creating a dynamic effect as the lyrics are sung.
+
+Understanding this structure (lines as divs, words as spans) is crucial if you want to modify the lyrics display. For example, if you wanted to create a karaoke-style effect where words light up one by one, you would focus on styling the individual spans within the active line.
+
+### Line-Level Styling
+
+```css
+.blyrics-container > div {
+  cursor: pointer;
+  padding-bottom: 2rem !important;
+  transform-origin: left center;
+  word-break: break-word;
+  transform: scale(0.95);
+  transition: transform 0.166s;
+}
+```
+
+This styling does a bunch of things:
 
 - Makes the cursor change to a pointer when hovering over a line
 - Adds padding below each line
