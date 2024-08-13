@@ -14,7 +14,8 @@
       "src/options.html",
       "src/options.min.js",
       ".all-contributorsrc",
-      "src/libs/codemirror/**/*"
+      "src/libs/codemirror/**/*",
+      "STYLING.md"
     ]
   },
   "organizeImports": { "enabled": true },
@@ -30,7 +31,8 @@
       "src/options.html",
       "src/options.min.js",
       ".all-contributorsrc",
-      "src/libs/codemirror/**/*"
+      "src/libs/codemirror/**/*",
+      "STYLING.md"
     ]
   },
   "javascript": {
