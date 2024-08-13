@@ -207,7 +207,7 @@ To learn more about CSS animations, check out the [MDN Web Docs on CSS Animation
 
 ## 7. Modifying YouTube Music's Layout
 
-The CSS includes several rules that modify the existing YouTube Music interface to better accommodate the lyrics display. For example:
+The CSS includes several rules that modify the existing YouTube Music interface to better accommodate the lyrics display, for example:
 
 ```css
 #layout[player-ui-state="PLAYER_PAGE_OPEN"] #mini-guide-background,
