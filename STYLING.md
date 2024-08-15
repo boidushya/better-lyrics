@@ -21,7 +21,7 @@
 	- [13. Displaying Song Information](#13-displaying-song-information)
 	- [14. Best Practices for Modifying This CSS](#14-best-practices-for-modifying-this-css)
 	- [15. Importing/Exporting Styles](#15-importingexporting-styles)
-	- [15. Additional Resources](#15-additional-resources)
+	- [16. Additional Resources](#16-additional-resources)
 
 ## 1. Introduction to CSS and Better Lyrics
 
@@ -428,7 +428,7 @@ To import custom CSS:
 Right now, the extension only supports importing and exporting CSS styles. In future versions, I might add a theme system or other features to make it easier to share and manage custom styles.
 In the meantime, feel free to share your custom styles with the [Better Lyrics community on Discord](https://discord.gg/UsHE3d5fWF)!
 
-## 15. Additional Resources
+## 16. Additional Resources
 
 To learn more about CSS and web development, check out these resources:
 
