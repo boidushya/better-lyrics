@@ -40,8 +40,11 @@ document.getElementById("back-btn").addEventListener("click", openOptions);
 document.getElementById("import-btn").addEventListener("click", () => {
   navigator.clipboard.readText().then(text => {
     try {
-      const css = atob(text);
-      editor.setValue(css); // Use CodeMirror's setValue method
+      if (!text.startsWith("blyrics-")) {
+        throw new Error("Invalid prefix");
+      }
+      const css = atob(text.substring(8));
+      editor.setValue(css);
       showAlert("Styles imported from clipboard!");
     } catch {
       showAlert("Invalid styles in clipboard! Please try again.");
@@ -55,7 +58,7 @@ document.getElementById("export-btn").addEventListener("click", () => {
     showAlert("No styles to export!");
     return;
   }
-  const base64 = btoa(css);
+  const base64 = "blyrics-" + btoa(css);
   navigator.clipboard.writeText(base64).then(() => {
     showAlert("Styles copied to clipboard!");
   });
@@ -132,4 +135,75 @@ document.addEventListener("DOMContentLoaded", function () {
       cm.showHint({ completeSingle: false });
     }
   });
+});
+
+// Themes
+
+const generateDefaultFilename = () => {
+  const date = new Date();
+  const timestamp = date.toISOString().replace(/[:.]/g, "-").slice(0, -5);
+  return `blyrics-theme-${timestamp}.css`;
+};
+
+const saveCSSToFile = (css, defaultFilename) => {
+  const blob = new Blob([css], { type: "text/css" });
+  const url = URL.createObjectURL(blob);
+
+  chrome.downloads.download(
+    {
+      url: url,
+      filename: defaultFilename,
+      saveAs: true,
+    },
+    () => {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+        showAlert("Error saving file. Please try again.");
+      } else {
+        showAlert("CSS file save dialog opened. Choose where to save your file.");
+      }
+      URL.revokeObjectURL(url);
+    }
+  );
+};
+
+const loadCSSFromFile = file => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = event => {
+      resolve(event.target.result);
+    };
+    reader.onerror = error => {
+      reject(error);
+    };
+    reader.readAsText(file);
+  });
+};
+
+document.getElementById("file-import-btn").addEventListener("click", () => {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".css";
+  input.onchange = event => {
+    const file = event.target.files[0];
+    loadCSSFromFile(file)
+      .then(css => {
+        editor.setValue(css);
+        showAlert(`CSS file "${file.name}" imported!`);
+      })
+      .catch(() => {
+        showAlert("Error reading CSS file! Please try again.");
+      });
+  };
+  input.click();
+});
+
+document.getElementById("file-export-btn").addEventListener("click", () => {
+  const css = editor.getValue();
+  if (!css) {
+    showAlert("No styles to export!");
+    return;
+  }
+  const defaultFilename = generateDefaultFilename();
+  saveCSSToFile(css, defaultFilename);
 });

@@ -4,29 +4,83 @@
 # Requires jq and terser to be installed (npm install -g jq terser)
 # Requires postcss-cli, autoprefixer and cssnano to be installed (npm install -g postcss postcss-cli autoprefixer cssnano)
 
+# set -e
+
+# CURRENT_DIR=$(pwd)
+# TEMP_DIR=$(mktemp -d)
+# SCRIPT_DIR=$(dirname "$0")
+
+# cp -r images src manifest.json templates $TEMP_DIR
+
+# cd $TEMP_DIR
+
+# terser src/index.js -c -m -o src/index.min.js && rm src/index.js
+
+# terser src/editor.js -c -m -o src/editor.min.js && rm src/editor.js
+
+# sed -i.bak 's/src="editor\.js"/src="editor.min.js"/' src/options.html && rm src/options.html.bak
+
+# postcss src/index.css --use autoprefixer cssnano -r --no-map
+
+# mv templates/manifest.chrome.json manifest.json
+
+# jq '.content_scripts[0].js = ["src/index.min.js"]' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
+
+# zip -r better-lyrics.zip ./* -x "./dist/*" "LICENSE" "README.md" "./templates/*" "*.DS_Store" "${SCRIPT_DIR}/*"
+
+# mkdir -p $CURRENT_DIR/dist
+
+# mv better-lyrics.zip $CURRENT_DIR/dist/better-lyrics-chrome.zip
+
+# cd ..
+# rm -rf $TEMP_DIR
+
+#!/bin/bash
+
+# Build script to minify JavaScript and CSS files, and create a zip file for the extension
+# Requires jq, terser, postcss-cli, autoprefixer, and cssnano to be installed
+# npm install -g jq terser postcss postcss-cli autoprefixer cssnano
+
 set -e
 
 CURRENT_DIR=$(pwd)
 TEMP_DIR=$(mktemp -d)
 SCRIPT_DIR=$(dirname "$0")
 
+# Copy necessary files to temp directory
 cp -r images src manifest.json templates $TEMP_DIR
 
 cd $TEMP_DIR
 
+# Minify JavaScript files
 terser src/index.js -c -m -o src/index.min.js && rm src/index.js
+terser src/options/editor.js -c -m -o src/options/editor.min.js && rm src/options/editor.js
+terser src/options/options.js -c -m -o src/options/options.min.js && rm src/options/options.js
 
-postcss src/index.css --use autoprefixer cssnano -r --no-map
+# Update HTML files to use minified JavaScript
+sed -i.bak 's/src="editor\.js"/src="editor.min.js"/' src/options/options.html && rm src/options/options.html.bak
+sed -i.bak 's/src="options\.js"/src="options.min.js"/' src/options/options.html && rm src/options/options.html.bak
 
+# Minify CSS files
+postcss src/index.css --use autoprefixer cssnano -o src/index.min.css && rm src/index.css
+postcss src/options/options.css --use autoprefixer cssnano -o src/options/options.min.css && rm src/options/options.css
+
+# Update HTML file to use minified CSS
+sed -i.bak 's/href="options\.css"/href="options.min.css"/' src/options/options.html && rm src/options/options.html.bak
+
+# Update manifest to use minified files
 mv templates/manifest.chrome.json manifest.json
+jq '.content_scripts[0].js = ["src/index.min.js"] | .content_scripts[0].css = ["src/index.min.css"]' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
 
-jq '.content_scripts[0].js = ["src/index.min.js"]' manifest.json > manifest.json.tmp && mv manifest.json.tmp manifest.json
+# Create zip file
+zip -r better-lyrics.zip ./* -x "./dist/*" "LICENSE" "README.md" "./templates/*" "*.DS_Store" "${SCRIPT_DIR}/*"
 
-zip -r better-lyrics.zip ./* -x "./dist/*" "LICENSE" "README.md" "./templates/*" "${SCRIPT_DIR}/*"
-
+# Move zip file to dist directory
 mkdir -p $CURRENT_DIR/dist
-
 mv better-lyrics.zip $CURRENT_DIR/dist/better-lyrics-chrome.zip
 
+# Clean up
 cd ..
 rm -rf $TEMP_DIR
+
+echo "Build completed successfully. Zip file created at dist/better-lyrics-chrome.zip"

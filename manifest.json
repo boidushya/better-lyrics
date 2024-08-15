@@ -11,9 +11,9 @@
   },
   "update_url": "https://clients2.google.com/service/update2/crx",
   "host_permissions": ["*://music.youtube.com/*"],
-  "permissions": ["storage", "clipboardRead", "clipboardWrite"],
+  "permissions": ["storage", "clipboardRead", "clipboardWrite", "downloads"],
   "options_ui": {
-    "page": "src/options.html",
+    "page": "src/options/options.html",
     "open_in_tab": false
   },
   "web_accessible_resources": [
@@ -32,18 +32,22 @@
     {
       "matches": ["<all_urls>"],
       "js": [
-        "src/libs/codemirror/codemirror.js",
-        "src/libs/codemirror/css.js",
-        "src/libs/codemirror/css-hint.js",
-        "src/libs/codemirror/show-hint.js",
-        "src/libs/codemirror/closebrackets.js",
-        "src/libs/codemirror/lint.js",
-        "src/libs/codemirror/autorefresh.js"
+        "src/libs/codemirror/codemirror.min.js",
+        "src/libs/codemirror/css.min.js",
+        "src/libs/codemirror/css-hint.min.js",
+        "src/libs/codemirror/show-hint.min.js",
+        "src/libs/codemirror/closebrackets.min.js",
+        "src/libs/codemirror/lint.min.js",
+        "src/libs/codemirror/autorefresh.min.js"
       ],
-      "css": ["src/libs/codemirror/codemirror.css", "src/libs/codemirror/seti.css", "src/libs/codemirror/show-hint.css"]
+      "css": [
+        "src/libs/codemirror/codemirror.min.css",
+        "src/libs/codemirror/seti.min.css",
+        "src/libs/codemirror/show-hint.min.css"
+      ]
     }
   ],
   "action": {
-    "default_popup": "src/options.html"
+    "default_popup": "src/options/options.html"
   }
 }

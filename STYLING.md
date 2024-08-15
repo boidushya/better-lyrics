@@ -20,6 +20,7 @@
 	- [12. Adding a Watermark](#12-adding-a-watermark)
 	- [13. Displaying Song Information](#13-displaying-song-information)
 	- [14. Best Practices for Modifying This CSS](#14-best-practices-for-modifying-this-css)
+	- [15. Importing/Exporting Styles](#15-importingexporting-styles)
 	- [15. Additional Resources](#15-additional-resources)
 
 ## 1. Introduction to CSS and Better Lyrics
@@ -394,6 +395,38 @@ When modifying or building upon this CSS:
 3. Use CSS comments to explain your changes and why you made them.
 4. Be cautious when changing structural elements or removing existing styles, as it may affect the overall layout.
 5. When adding new styles, try to follow the existing naming conventions and structure. This will make it easier to maintain and understand the code.
+
+## 15. Importing/Exporting Styles
+
+The Better Lyrics extension allows you to import and export custom CSS styles. This feature is useful for sharing your custom styles with others or backing up your settings. Right now there's two ways to do this:
+
+-	**Clipboard**: You can copy the CSS from the extension and share the unique string with others. They can then paste it into their extension to apply the styles.
+-	**File**: You can save the CSS to a file and import it back into the extension.
+
+To export your custom CSS:
+
+1. Open the Better Lyrics extension.
+2. Go to the "Edit CSS" section.
+   1. Click on the "Export to clipboard" button.
+      1. This will copy a unique string prefixed with "blyrics-" to your clipboard.
+      2. Share this string with others or save it for later use.
+   2. Click on the "Export to file" button.
+      1. This will open a file save dialog where you can save the CSS to a file on your computer.
+      2. You can import this file back into the extension later.
+
+To import custom CSS:
+
+1. Open the Better Lyrics extension.
+2. Go to the "Edit CSS" section.
+	 1. Click on the "Import from clipboard" button.
+			1. Paste the unique string you received from someone else or saved earlier.
+			2. Click "Import" to apply the styles.
+	 2. Click on the "Import from file" button.
+			1. Select the CSS file you saved earlier.
+			2. Click "Import" to apply the styles.
+
+Right now, the extension only supports importing and exporting CSS styles. In future versions, I might add a theme system or other features to make it easier to share and manage custom styles.
+In the meantime, feel free to share your custom styles with the [Better Lyrics community on Discord](https://discord.gg/UsHE3d5fWF)!
 
 ## 15. Additional Resources
 

@@ -7,16 +7,16 @@
   	<link href="https://api.fontshare.com/v2/css?f[]=satoshi@1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="options.css" />
 
-		<link rel="stylesheet" href="libs/codemirror/codemirror.css">
-		<link rel="stylesheet" href="libs/codemirror/seti.css">
-		<link rel="stylesheet" href="libs/codemirror/show-hint.css">
-		<script src="libs/codemirror/codemirror.js"></script>
-		<script src="libs/codemirror/css.js"></script>
-		<script src="libs/codemirror/css-hint.js"></script>
-		<script src="libs/codemirror/show-hint.js"></script>
-		<script src="libs/codemirror/closebrackets.js"></script>
-		<script src="libs/codemirror/lint.js"></script>
-		<script src="libs/codemirror/autorefresh.js"></script>
+		<link rel="stylesheet" href="../libs/codemirror/codemirror.min.css">
+		<link rel="stylesheet" href="../libs/codemirror/seti.min.css">
+		<link rel="stylesheet" href="../libs/codemirror/show-hint.min.css">
+		<script src="../libs/codemirror/codemirror.min.js"></script>
+		<script src="../libs/codemirror/css.min.js"></script>
+		<script src="../libs/codemirror/css-hint.min.js"></script>
+		<script src="../libs/codemirror/show-hint.min.js"></script>
+		<script src="../libs/codemirror/closebrackets.min.js"></script>
+		<script src="../libs/codemirror/lint.min.js"></script>
+		<script src="../libs/codemirror/autorefresh.min.js"></script>
 
 	</head>
   <body>
@@ -296,12 +296,21 @@
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6m-1 1.5L18.5 9H13m-4.07 3.22H16v7.07l-2.12-2.12L11.05 20l-2.83-2.83l2.83-2.82"/></svg>
 					Export to clipboard</button>
 			</div>
+			<div class="ie-utils">
+				<button id="file-import-btn" class="small-btn">
+					<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 16V7.85l-2.6 2.6L7 9l5-5l5 5l-1.4 1.45l-2.6-2.6V16zm-5 4q-.825 0-1.412-.587T4 18v-3h2v3h12v-3h2v3q0 .825-.587 1.413T18 20z"/></svg>
+					Import from file
+				</button>
+				<button id="file-export-btn" class="small-btn">
+					<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 15.575q-.2 0-.375-.062T11.3 15.3l-3.6-3.6q-.3-.3-.288-.7t.288-.7q.3-.3.713-.312t.712.287L11 12.15V5q0-.425.288-.712T12 4t.713.288T13 5v7.15l1.875-1.875q.3-.3.713-.288t.712.313q.275.3.288.7t-.288.7l-3.6 3.6q-.15.15-.325.213t-.375.062M6 20q-.825 0-1.412-.587T4 18v-2q0-.425.288-.712T5 15t.713.288T6 16v2h12v-2q0-.425.288-.712T19 15t.713.288T20 16v2q0 .825-.587 1.413T18 20z"/></svg>
+					Export to file</button>
+			</div>
 			<p class="note">Note: You can use <a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank">CSS</a> to style the lyrics. All changes are saved and applied instantly. For more info about the available classes & selectors, visit the <a href="https://github.com/boidushya/better-lyrics/blob/feat/css/STYLING.md" target="_blank">documentation</a>.
 			</p>
 			<div id="status-css"></div>
 			<button id="back-btn">Back</button>
 		</div>
     <script type="module" defer src="editor.js"></script>
-    <script type="module" defer src="options.min.js"></script>
+    <script type="module" defer src="options.js"></script>
   </body>
 </html>

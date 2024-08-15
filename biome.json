@@ -12,7 +12,6 @@
       "www/.next/**/*",
       "node_modules",
       "src/options.html",
-      "src/options.min.js",
       ".all-contributorsrc",
       "src/libs/codemirror/**/*",
       "STYLING.md"
@@ -29,7 +28,6 @@
       "www/.next/**/*",
       "node_modules",
       "src/options.html",
-      "src/options.min.js",
       ".all-contributorsrc",
       "src/libs/codemirror/**/*",
       "STYLING.md"
