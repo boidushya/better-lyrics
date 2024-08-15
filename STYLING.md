@@ -398,6 +398,8 @@ When modifying or building upon this CSS:
 
 ## 15. Importing/Exporting Styles
 
+<img width="597" alt="image" src="https://github.com/user-attachments/assets/4bd6aa35-f54a-46b0-8412-3c3973b96c2c">
+
 The Better Lyrics extension allows you to import and export custom CSS styles. This feature is useful for sharing your custom styles with others or backing up your settings. Right now there's two ways to do this:
 
 -	**Clipboard**: You can copy the CSS from the extension and share the unique string with others. They can then paste it into their extension to apply the styles.
