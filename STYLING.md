@@ -88,7 +88,24 @@ Let's break down what each property does:
 - `position: relative`: Allows positioning of child elements relative to this container.
 - `z-index: 1`: Sets the stacking order of the container.
 
-The font is set to a custom font called "Satoshi" which is injected by the extension. If the font is not available, the browser will fall back to the other fonts listed. Due to limitations of browser extensions, the font must be injected by the extension and cannot be imported directly in the CSS via `@import url()`. If you want to use a different font, you can replace "Satoshi" with a web-safe font or a default system font. In future versions, Better Lyrics may provide more flexibility in font selection.
+The font is set to a custom font called "Satoshi" which is injected by the extension. If the font is not available, the browser will fall back to the other fonts listed.
+
+You can change the default font, size, weight, or other properties to customize the appearance of the lyrics container.
+
+For example, we could import a different font by adding a `@import` rule at the top of the CSS file:
+
+```css
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+```
+
+Then, we could update the `font-family` property to use the new font:
+
+```css
+.blyrics-container {
+	font-family: 'Bricolage Grotesque', sans-serif;
+	/* other styles ... */
+}
+```
 
 To learn more about these properties, visit the [MDN Web Docs on CSS](https://developer.mozilla.org/en-US/docs/Web/CSS).
 
