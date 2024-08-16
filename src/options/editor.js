@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   editor.refresh();
 
-  editor.setSize(null, 250);
+  editor.setSize(null, 300);
 
   function saveToStorage() {
     const css = editor.getValue();

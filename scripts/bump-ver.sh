@@ -25,10 +25,10 @@ else
 fi
 
 # Update the version in src/options.html
-if [[ -f "src/options.html" ]]; then
-	sed -i '' "s/v[0-9]*\.[0-9]*\.[0-9]*/v$1/" src/options.html
+if [[ -f "src/options/options.html" ]]; then
+	sed -i '' "s/v[0-9]*\.[0-9]*\.[0-9]*/v$1/" src/options/options.html
 else
-	echo "src/options.html file not found."
+	echo "src/options/options.html file not found."
 fi
 
 # Run biome lint and format after bumping the version

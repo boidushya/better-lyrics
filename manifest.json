@@ -25,7 +25,17 @@
   "content_scripts": [
     {
       "matches": ["*://music.youtube.com/*"],
-      "js": ["src/index.js"],
+      "js": [
+        "src/core/constants.js",
+        "src/core/utils.js",
+        "src/core/storage.js",
+        "src/modules/lyrics/translation.js",
+        "src/modules/lyrics/lyrics.js",
+        "src/modules/ui/dom.js",
+        "src/modules/ui/observer.js",
+        "src/modules/settings/settings.js",
+        "src/index.js"
+      ],
       "css": ["src/index.css"],
       "run_at": "document_end"
     },

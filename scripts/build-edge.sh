@@ -16,6 +16,14 @@ cp -r images src manifest.json templates $TEMP_DIR
 cd $TEMP_DIR
 
 # Minify JavaScript files
+terser src/core/constants.js -c -m -o src/core/constants.min.js && rm src/core/constants.js
+terser src/core/utils.js -c -m -o src/core/utils.min.js && rm src/core/utils.js
+terser src/core/storage.js -c -m -o src/core/storage.min.js && rm src/core/storage.js
+terser src/modules/lyrics/translation.js -c -m -o src/modules/lyrics/translation.min.js && rm src/modules/lyrics/translation.js
+terser src/modules/lyrics/lyrics.js -c -m -o src/modules/lyrics/lyrics.min.js && rm src/modules/lyrics/lyrics.js
+terser src/modules/ui/dom.js -c -m -o src/modules/ui/dom.min.js && rm src/modules/ui/dom.js
+terser src/modules/ui/observer.js -c -m -o src/modules/ui/observer.min.js && rm src/modules/ui/observer.js
+terser src/modules/settings/settings.js -c -m -o src/modules/settings/settings.min.js && rm src/modules/settings/settings.js
 terser src/index.js -c -m -o src/index.min.js && rm src/index.js
 terser src/options/editor.js -c -m -o src/options/editor.min.js && rm src/options/editor.js
 terser src/options/options.js -c -m -o src/options/options.min.js && rm src/options/options.js
@@ -33,7 +41,17 @@ sed -i.bak 's/href="options\.css"/href="options.min.css"/' src/options/options.h
 
 # Update manifest
 mv templates/manifest.chrome.json manifest.json
-jq '.content_scripts[0].js = ["src/index.min.js"] | .content_scripts[0].css = ["src/index.min.css"] | del(.update_url)' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
+jq '.content_scripts[0].js = [
+  "src/core/constants.min.js",
+  "src/core/utils.min.js",
+  "src/core/storage.min.js",
+  "src/modules/lyrics/translation.min.js",
+  "src/modules/lyrics/lyrics.min.js",
+  "src/modules/ui/dom.min.js",
+  "src/modules/ui/observer.min.js",
+  "src/modules/settings/settings.min.js",
+  "src/index.min.js"
+] | .content_scripts[0].css = ["src/index.min.css"] | del(.update_url)' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
 
 # Create zip file
 zip -r better-lyrics.zip ./* -x "./dist/*" "LICENSE" "README.md" "./templates/*" "*.DS_Store" "${SCRIPT_DIR}/*"

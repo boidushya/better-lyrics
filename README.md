@@ -48,6 +48,7 @@
 	- [Firefox](#firefox)
 - [Usage](#usage)
 - [Options](#options)
+- [Styling](#styling)
 - [Funding](#funding)
 - [Discord Community](#discord-community)
 - [FAQ](#faq)
@@ -138,6 +139,10 @@ song.
 > [!TIP]
 >
 > To change defaults, click on the Better Lyrics icon in the extensions toolbar. The changes require a page refresh to take effect.
+
+## Styling
+
+Better Lyrics v1.7.0 and above supports custom styling for the lyrics. You can customize pretty much everything related to how not only the lyrics but the entire Youtube Music page looks. For more information on how to customize the styles, import/export styles/use themes, please refer to the [Styling Guide](./STYLING.md).
 
 ## Funding
 
