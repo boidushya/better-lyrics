@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "version": "1.6.3",
+  "version": "1.7.0",
   "name": "Better Lyrics (Lyrics for Youtube Music)",
   "description": "Enhance YouTube Music with beautiful time-synced lyrics, multilingual support, real-time translations and more",
   "homepage_url": "https://better-lyrics.boidu.dev",
@@ -9,21 +9,57 @@
     "48": "images/icons/icon-48.png",
     "512": "images/icons/icon-512.png"
   },
-  "permissions": ["storage", "*://music.youtube.com/*", "*://lyrics-api.boidu.dev/*", "*://translate.googleapis.com/*"],
+  "permissions": [
+    "storage",
+    "clipboardRead",
+    "clipboardWrite",
+    "downloads",
+    "tabs",
+    "*://music.youtube.com/*",
+    "*://lyrics-api.boidu.dev/*",
+    "*://translate.googleapis.com/*"
+  ],
   "options_ui": {
-    "page": "src/options.html",
+    "page": "src/options/options.html",
     "open_in_tab": false
   },
   "content_scripts": [
     {
       "matches": ["*://music.youtube.com/*"],
-      "js": ["src/index.js"],
+      "js": [
+        "src/core/constants.js",
+        "src/core/utils.js",
+        "src/core/storage.js",
+        "src/modules/lyrics/translation.js",
+        "src/modules/lyrics/lyrics.js",
+        "src/modules/ui/dom.js",
+        "src/modules/ui/observer.js",
+        "src/modules/settings/settings.js",
+        "src/index.js"
+      ],
       "css": ["src/index.css"]
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "src/libs/codemirror/codemirror.min.js",
+        "src/libs/codemirror/css.min.js",
+        "src/libs/codemirror/css-hint.min.js",
+        "src/libs/codemirror/show-hint.min.js",
+        "src/libs/codemirror/closebrackets.min.js",
+        "src/libs/codemirror/lint.min.js",
+        "src/libs/codemirror/autorefresh.min.js"
+      ],
+      "css": [
+        "src/libs/codemirror/codemirror.min.css",
+        "src/libs/codemirror/seti.min.css",
+        "src/libs/codemirror/show-hint.min.css"
+      ]
     }
   ],
   "web_accessible_resources": ["src/script.js"],
   "browser_action": {
-    "default_popup": "src/options.html"
+    "default_popup": "src/options/options.html"
   },
   "browser_specific_settings": {
     "gecko": {

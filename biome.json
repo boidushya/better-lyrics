@@ -8,7 +8,14 @@
     "lineEnding": "lf",
     "lineWidth": 120,
     "attributePosition": "auto",
-    "ignore": ["www/.next/**/*", "node_modules", "src/options.html", "src/options.min.js", ".all-contributorsrc"]
+    "ignore": [
+      "www/.next/**/*",
+      "node_modules",
+      "src/options.html",
+      ".all-contributorsrc",
+      "src/libs/codemirror/**/*",
+      "STYLING.md"
+    ]
   },
   "organizeImports": { "enabled": true },
   "linter": {
@@ -17,7 +24,14 @@
       "recommended": false,
       "correctness": { "noUnusedVariables": "error" }
     },
-    "ignore": ["www/.next/**/*", "node_modules", "src/options.html", "src/options.min.js", ".all-contributorsrc"]
+    "ignore": [
+      "www/.next/**/*",
+      "node_modules",
+      "src/options.html",
+      ".all-contributorsrc",
+      "src/libs/codemirror/**/*",
+      "STYLING.md"
+    ]
   },
   "javascript": {
     "formatter": {

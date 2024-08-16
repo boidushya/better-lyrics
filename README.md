@@ -5,7 +5,7 @@
 
 <p align="center">
  <a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
- <img src="https://img.shields.io/badge/version-1.6.3-blue.svg" alt=""/>
+ <img src="https://img.shields.io/badge/version-1.7.0-blue.svg" alt=""/>
 
  <img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt=""/>
  <a aria-label="Volkswagen CI" href="https://github.com/boidushya/better-lyrics"><img src="https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1" alt=""/></a>
@@ -48,6 +48,7 @@
 	- [Firefox](#firefox)
 - [Usage](#usage)
 - [Options](#options)
+- [Styling](#styling)
 - [Funding](#funding)
 - [Discord Community](#discord-community)
 - [FAQ](#faq)
@@ -138,6 +139,10 @@ song.
 > [!TIP]
 >
 > To change defaults, click on the Better Lyrics icon in the extensions toolbar. The changes require a page refresh to take effect.
+
+## Styling
+
+Better Lyrics v1.7.0 and above supports custom styling for the lyrics. You can customize pretty much everything related to how not only the lyrics but the entire Youtube Music page looks. For more information on how to customize the styles, import/export styles/use themes, please refer to the [Styling Guide](./STYLING.md).
 
 ## Funding
 

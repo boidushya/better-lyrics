@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "version": "1.6.3",
+  "version": "1.7.0",
   "name": "Better Lyrics (Lyrics for Youtube Music)",
   "description": "Enhance YouTube Music with beautiful time-synced lyrics, multilingual support, real-time translations and more",
   "homepage_url": "https://better-lyrics.boidu.dev",
@@ -11,9 +11,9 @@
   },
   "update_url": "https://clients2.google.com/service/update2/crx",
   "host_permissions": ["*://music.youtube.com/*"],
-  "permissions": ["storage"],
+  "permissions": ["storage", "clipboardRead", "clipboardWrite", "downloads", "tabs"],
   "options_ui": {
-    "page": "src/options.html",
+    "page": "src/options/options.html",
     "open_in_tab": false
   },
   "web_accessible_resources": [
@@ -25,12 +25,39 @@
   "content_scripts": [
     {
       "matches": ["*://music.youtube.com/*"],
-      "js": ["src/index.js"],
+      "js": [
+        "src/core/constants.js",
+        "src/core/utils.js",
+        "src/core/storage.js",
+        "src/modules/lyrics/translation.js",
+        "src/modules/lyrics/lyrics.js",
+        "src/modules/ui/dom.js",
+        "src/modules/ui/observer.js",
+        "src/modules/settings/settings.js",
+        "src/index.js"
+      ],
       "css": ["src/index.css"],
       "run_at": "document_end"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "src/libs/codemirror/codemirror.min.js",
+        "src/libs/codemirror/css.min.js",
+        "src/libs/codemirror/css-hint.min.js",
+        "src/libs/codemirror/show-hint.min.js",
+        "src/libs/codemirror/closebrackets.min.js",
+        "src/libs/codemirror/lint.min.js",
+        "src/libs/codemirror/autorefresh.min.js"
+      ],
+      "css": [
+        "src/libs/codemirror/codemirror.min.css",
+        "src/libs/codemirror/seti.min.css",
+        "src/libs/codemirror/show-hint.min.css"
+      ]
     }
   ],
   "action": {
-    "default_popup": "src/options.html"
+    "default_popup": "src/options/options.html"
   }
 }

@@ -6,5 +6,9 @@
     "MD041": false
   },
   "editor.defaultFormatter": "biomejs.biome",
-  "prettier.enable": false
+  "prettier.enable": false,
+  "[markdown]": {
+    "editor.defaultFormatter": "yzhang.markdown-all-in-one",
+    "editor.formatOnSave": true
+  }
 }
