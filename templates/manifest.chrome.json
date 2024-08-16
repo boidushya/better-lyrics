@@ -11,7 +11,7 @@
   },
   "update_url": "https://clients2.google.com/service/update2/crx",
   "host_permissions": ["*://music.youtube.com/*"],
-  "permissions": ["storage", "clipboardRead", "clipboardWrite", "downloads"],
+  "permissions": ["storage", "clipboardRead", "clipboardWrite", "downloads", "tabs"],
   "options_ui": {
     "page": "src/options/options.html",
     "open_in_tab": false

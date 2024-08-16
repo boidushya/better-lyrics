@@ -236,6 +236,16 @@ const getAndApplyCustomCSS = () => {
   });
 };
 
+// Function to listen for messages from the popup
+
+const listenForPopupMessages = () => {
+  chrome.runtime.onMessage.addListener(request => {
+    if (request.action === "updateCSS") {
+      applyCustomCSS(request.css);
+    }
+  });
+};
+
 // Listen for changes in the storage
 const subscribeToCustomCSS = () => {
   chrome.storage.onChanged.addListener((changes, area) => {
@@ -941,6 +951,7 @@ const modify = () => {
   hideCursorOnIdle();
   handleSettings();
   subscribeToCustomCSS();
+  listenForPopupMessages();
 
   log(
     INITIALIZE_LOG,

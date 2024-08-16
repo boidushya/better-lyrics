@@ -89,8 +89,9 @@ document.addEventListener("DOMContentLoaded", function () {
   editor.setSize(null, 250);
 
   function saveToStorage() {
+    const css = editor.getValue();
     chrome.storage.sync
-      .set({ customCSS: editor.getValue() })
+      .set({ customCSS: css })
       .then(() => {
         syncIndicator.innerText = "Saved!";
         syncIndicator.classList.add("success");
@@ -99,11 +100,17 @@ document.addEventListener("DOMContentLoaded", function () {
           syncIndicator.innerText = "Saving...";
           syncIndicator.classList.remove("success");
         }, 1000);
+
+        // Send message to all tabs to update CSS
+        chrome.tabs.query({ url: "*://music.youtube.com/*" }, tabs => {
+          tabs.forEach(tab => {
+            chrome.tabs.sendMessage(tab.id, { action: "updateCSS", css: css });
+          });
+        });
       })
       .catch(() => {
         syncIndicator.innerText = "Something went wrong!";
         syncIndicator.classList.add("error");
-
         setTimeout(() => {
           syncIndicator.style.display = "none";
           syncIndicator.innerText = "Saving...";
