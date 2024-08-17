@@ -43,6 +43,7 @@
 - [Description](#description)
 - [Download](#download)
 - [Features](#features)
+- [Extension Permissions](#extension-permissions)
 - [Manual Installation](#manual-installation)
 	- [Chrome](#chrome)
 	- [Firefox](#firefox)
@@ -98,6 +99,16 @@ song.
 🌏 Supports multiple languages\
 🪶 Lightweight and easy to use\
 🖥️ Support for full-screen mode
+
+## Extension Permissions
+
+- **Read and change all your data on the websites you visit**: This permission is required to inject the lyrics into the Youtube Music page & for the code editor specific JS & CSS. The extension does not store any of your data.
+- **Get data from the clipboard**: This permission is required to import styles and themes from the clipboard.
+- **Input data to the clipboard**: This permission is required to export styles and themes from the clipboard.
+- **Download files and read and modify the browser’s download history**: This permission is required to download the styles and themes as a CSS file. The extension does not read or modify the browser's download history.
+- **Access browser tabs**: This permission is required to make sure the code editor works on all tabs (the changes are ultimately applied to the Youtube Music tab).
+
+Better Lyrics does not collect any personal data or track your browsing activity. The extension is open-source and thoroughly reviewed by the community to ensure that your privacy is protected.
 
 ## Manual Installation
 
