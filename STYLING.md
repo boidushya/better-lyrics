@@ -60,6 +60,44 @@ At the beginning of the file, you'll see a `:root` selector with custom properti
 
 These define CSS custom properties (also known as CSS variables) used throughout the stylesheet. They allow for easy customization of colors, sizes, and other properties.
 
+| Variable                           | Default Value                                                                                                                            | Description                                   |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `--blyrics-text-color`             | `#fff`                                                                                                                                   | Main text color for lyrics                    |
+| `--blyrics-background-color`       | `rgba(0, 0, 0, 0.75)`                                                                                                                    | Background color for the lyrics container     |
+| `--blyrics-highlight-color`        | `rgba(255, 255, 255, 0.5)`                                                                                                               | Color used for highlighting active lyrics     |
+| `--blyrics-error-color`            | `#fee2e2`                                                                                                                                | Color used for error messages                 |
+| `--blyrics-footer-bg-color`        | `hsla(0, 0%, 100%, 0.1)`                                                                                                                 | Background color for the footer               |
+| `--blyrics-footer-border-color`    | `hsla(0, 0%, 100%, 0.1)`                                                                                                                 | Border color for the footer                   |
+| `--blyrics-footer-text-color`      | `#aaa`                                                                                                                                   | Text color for the footer                     |
+| `--blyrics-footer-link-color`      | `#fff`                                                                                                                                   | Color for links in the footer                 |
+| `--blyrics-discord-hover-color`    | `#5865F2`                                                                                                                                | Hover color for the Discord button            |
+| `--blyrics-font-family`            | `Satoshi, Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif` | Main font family for lyrics                   |
+| `--blyrics-font-size`              | `3rem`                                                                                                                                   | Font size for lyrics                          |
+| `--blyrics-font-weight`            | `700`                                                                                                                                    | Font weight for lyrics                        |
+| `--blyrics-line-height`            | `1.333`                                                                                                                                  | Line height for lyrics                        |
+| `--blyrics-translated-font-size`   | `2rem`                                                                                                                                   | Font size for translated lyrics               |
+| `--blyrics-translated-font-weight` | `600`                                                                                                                                    | Font weight for translated lyrics             |
+| `--blyrics-footer-font-family`     | `Roboto, Noto Naskh Arabic UI, Arial, sans-serif`                                                                                        | Font family for the footer                    |
+| `--blyrics-footer-font-size`       | `14px`                                                                                                                                   | Font size for the footer                      |
+| `--blyrics-footer-font-weight`     | `400`                                                                                                                                    | Font weight for the footer                    |
+| `--blyrics-transition-duration`    | `0.166s`                                                                                                                                 | Duration for general transitions              |
+| `--blyrics-opacity-transition`     | `0.33s`                                                                                                                                  | Duration for opacity transitions              |
+| `--blyrics-glow-duration`          | `var(--blyrics-duration, 2s)`                                                                                                            | Duration for the glow animation               |
+| `--blyrics-wobble-duration`        | `calc(var(--blyrics-duration, 2s) / 2)`                                                                                                  | Duration for the wobble animation             |
+| `--blyrics-padding`                | `2rem`                                                                                                                                   | Padding for lyrics container                  |
+| `--blyrics-margin`                 | `2rem`                                                                                                                                   | Margin for lyrics container                   |
+| `--blyrics-border-radius`          | `1000rem`                                                                                                                                | Border radius for rounded elements            |
+| `--blyrics-blur-amount`            | `30px`                                                                                                                                   | Amount of blur for various effects            |
+| `--blyrics-scale`                  | `0.95`                                                                                                                                   | Scale factor for inactive lyrics              |
+| `--blyrics-active-scale`           | `1`                                                                                                                                      | Scale factor for active lyrics                |
+| `--blyrics-inactive-opacity`       | `0.33`                                                                                                                                   | Opacity for inactive lyrics                   |
+| `--blyrics-active-opacity`         | `1`                                                                                                                                      | Opacity for active lyrics                     |
+| `--blyrics-translated-opacity`     | `0.6`                                                                                                                                    | Opacity for translated lyrics                 |
+| `--blyrics-error-opacity`          | `0.33`                                                                                                                                   | Opacity for error messages                    |
+| `--blyrics-background-blur`        | `100px`                                                                                                                                  | Blur amount for background elements           |
+| `--blyrics-background-saturate`    | `2`                                                                                                                                      | Saturation level for background elements      |
+| `--blyrics-gradient-stops`         | Complex gradient (see [file](https://github.com/boidushya/better-lyrics/blob/master/src/index.css))                                      | Gradient stops for various background effects |
+
 To learn more about CSS custom properties, check out the [MDN Web Docs on Using CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
 
 ## 4. Styling the Main Lyrics Container
