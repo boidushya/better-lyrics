@@ -98,6 +98,8 @@ These define CSS custom properties (also known as CSS variables) used throughout
 | `--blyrics-background-saturate`    | `2`                                                                                                                                      | Saturation level for background elements      |
 | `--blyrics-gradient-stops`         | Complex gradient (see [file](https://github.com/boidushya/better-lyrics/blob/master/src/index.css))                                      | Gradient stops for various background effects |
 
+`--blyrics-duration` is a special custom property that is set dynamically by the extension's main script. It's used to ensure that animations are in sync with the music playback. Learn more about this [here](#5-styling-individual-lyric-lines).
+
 To learn more about CSS custom properties, check out the [MDN Web Docs on Using CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
 
 ## 4. Styling the Main Lyrics Container
