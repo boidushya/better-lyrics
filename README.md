@@ -102,13 +102,13 @@ song.
 
 ## Extension Permissions
 
-| Permission                                                        | Reason                                                                                  | Data Usage                                         |
-| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| Read and change all your data on the websites you visit           | Required to inject lyrics into Youtube Music page & for code editor specific JS & CSS   | No data stored                                     |
-| Get data from the clipboard                                       | Required to import styles and themes from clipboard                                     | -                                                  |
-| Input data to the clipboard                                       | Required to export styles and themes to clipboard                                       | -                                                  |
-| Download files and read and modify the browser's download history | Required to download styles and themes as CSS file                                      | Does not read or modify browser's download history |
-| Access browser tabs                                               | Required to ensure code editor works on all tabs (changes applied to Youtube Music tab) | -                                                  |
+| Permission                                                            | Reason                                                                                  | Data Usage                                         |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| **Read and change all your data on the websites you visit**           | Required to inject lyrics into Youtube Music page & for code editor specific JS & CSS   | No data stored                                     |
+| **Get data from the clipboard**                                       | Required to import styles and themes from clipboard                                     | -                                                  |
+| **Input data to the clipboard**                                       | Required to export styles and themes to clipboard                                       | -                                                  |
+| **Download files and read and modify the browser's download history** | Required to download styles and themes as CSS file                                      | Does not read or modify browser's download history |
+| **Access browser tabs**                                               | Required to ensure code editor works on all tabs (changes applied to Youtube Music tab) | -                                                  |
 
 Better Lyrics **does not** collect any personal data or track your browsing activity. The extension is open-source and thoroughly reviewed by the community to ensure that your privacy is protected.
 
