@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Send message to all tabs to update CSS
         try {
           chrome.runtime.sendMessage({ action: "updateCSS", css: css }).catch(error => {
-            console.error("[BetterLyrics] (Safe to ignore) Error sending message:", error);
+            console.log("[BetterLyrics] (Safe to ignore) Error sending message:", error);
           });
         } catch (err) {
           console.log(err);
@@ -155,7 +155,7 @@ const downloadFile = (css, defaultFilename) => {
     },
     () => {
       if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
+        console.log(chrome.runtime.lastError);
         showAlert("Error saving file. Please try again.");
       } else {
         showAlert("CSS file save dialog opened. Choose where to save your file.");
