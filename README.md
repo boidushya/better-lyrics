@@ -155,7 +155,7 @@ Better Lyrics **does not** collect any personal data or track your browsing acti
 
 ## Styling
 
-Better Lyrics v1.7.0 and above supports custom styling for the lyrics. You can customize pretty much everything related to how not only the lyrics but the entire Youtube Music page looks. For more information on how to customize the styles, import/export styles/use themes, please refer to the [Styling Guide](./STYLING.md).
+Custom styling for lyrics is available in Better Lyrics v1.7.0 and later versions. This feature allows you to personalize the appearance of both the lyrics and the entire YouTube Music interface. For detailed instructions on customizing styles, importing/exporting themes, and using pre-made themes, please consult our [Styling Guide](./STYLING.md).
 
 ## Funding
 
