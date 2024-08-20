@@ -75,9 +75,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 1000);
 
         // Send message to all tabs to update CSS
-        chrome.runtime.sendMessage({ action: "updateCSS", css: css }, response => {
-          console.log(response.status);
-        });
+        try {
+          chrome.runtime.sendMessage({ action: "updateCSS", css: css }).catch(error => {
+            console.error("[BetterLyrics] (Safe to ignore) Error sending message:", error);
+          });
+        } catch (err) {
+          console.log(err);
+        }
       })
       .catch(() => {
         syncIndicator.innerText = "Something went wrong!";
