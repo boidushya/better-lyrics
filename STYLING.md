@@ -9,8 +9,6 @@
 	- [3. Custom Properties (CSS Variables)](#3-custom-properties-css-variables)
 	- [4. Styling the Main Lyrics Container](#4-styling-the-main-lyrics-container)
 	- [5. Styling Individual Lyric Lines](#5-styling-individual-lyric-lines)
-		- [Word-Level Styling](#word-level-styling)
-		- [Line-Level Styling](#line-level-styling)
 	- [6. Creating Animation Effects](#6-creating-animation-effects)
 	- [7. Modifying YouTube Music's Layout](#7-modifying-youtube-musics-layout)
 	- [8. Handling Loading and Errors](#8-handling-loading-and-errors)
@@ -19,7 +17,7 @@
 	- [11. Supporting Right-to-Left (RTL) Languages](#11-supporting-right-to-left-rtl-languages)
 	- [12. Adding a Watermark](#12-adding-a-watermark)
 	- [13. Displaying Song Information](#13-displaying-song-information)
-	- [14. Best Practices for Modifying This CSS](#14-best-practices-for-modifying-this-css)
+	- [14. Best Practices for Modifying CSS](#14-best-practices-for-modifying-css)
 	- [15. Importing/Exporting Styles](#15-importingexporting-styles)
 	- [16. Additional Resources](#16-additional-resources)
 
@@ -29,11 +27,13 @@ CSS (Cascading Style Sheets) is a styling language used to describe the presenta
 
 The Better Lyrics CSS file is designed to enhance the lyrics viewing experience on YouTube Music. It modifies the appearance of the lyrics display, adds animations, and adjusts the layout to create a more immersive and user-friendly experience.
 
+The extension let's you modify the CSS in real-time, so you can see the changes immediately.
+
 If you're new to CSS, don't worry! This guide will walk you through the main components of the Better Lyrics CSS and explain how they work.
 
 ## 2. Understanding the CSS Structure
 
-The [CSS file](https://github.com/boidushya/better-lyrics/blob/feat/css/src/index.css) is organized into several sections, each controlling different aspects of the lyrics display. Here's a brief overview of what you'll find:
+[The CSS file](https://github.com/boidushya/better-lyrics/blob/master/src/index.css) is organized into several sections, each controlling different aspects of the lyrics display. Here's a brief overview:
 
 1. Global variables (custom properties)
 2. Main container styles
@@ -43,21 +43,62 @@ The [CSS file](https://github.com/boidushya/better-lyrics/blob/feat/css/src/inde
 6. Responsive design rules
 7. Special styles for fullscreen mode
 
-Each section uses CSS selectors to target specific HTML elements and apply styles to them. For example, `.blyrics-container` targets an element with the class "blyrics-container".
+Each section uses CSS selectors to target specific HTML elements and apply styles to them.
 
 ## 3. Custom Properties (CSS Variables)
 
-At the beginning of the file, you'll see a `:root` selector with a custom property:
+At the beginning of the file, you'll see a `:root` selector with custom properties:
 
 ```css
 :root {
-  --blyrics-gradient-stops: transparent 0%, rgba(0, 0, 0, 0.013) 8.1%,
-    /* ... more gradient stops ... */
-    rgba(0, 0, 0, 0.987) 91.9%, #000 100%;
+  --blyrics-text-color: #fff;
+  --blyrics-background-color: rgba(0, 0, 0, 0.75);
+  --blyrics-highlight-color: rgba(255, 255, 255, 0.5);
+  /* ... more variables ... */
 }
 ```
 
-This defines a CSS custom property (also known as a CSS variable) called `--blyrics-gradient-stops`. It's used to create a consistent gradient effect throughout the design. Custom properties allow you to define reusable values that can be used in multiple places in your CSS.
+These define CSS custom properties (also known as CSS variables) used throughout the stylesheet. They allow for easy customization of colors, sizes, and other properties.
+
+| Variable                           | Default Value                                                                                                                            | Description                                   |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `--blyrics-text-color`             | `#fff`                                                                                                                                   | Main text color for lyrics                    |
+| `--blyrics-background-color`       | `rgba(0, 0, 0, 0.75)`                                                                                                                    | Background color for the lyrics container     |
+| `--blyrics-highlight-color`        | `rgba(255, 255, 255, 0.5)`                                                                                                               | Color used for highlighting active lyrics     |
+| `--blyrics-error-color`            | `#fee2e2`                                                                                                                                | Color used for error messages                 |
+| `--blyrics-footer-bg-color`        | `hsla(0, 0%, 100%, 0.1)`                                                                                                                 | Background color for the footer               |
+| `--blyrics-footer-border-color`    | `hsla(0, 0%, 100%, 0.1)`                                                                                                                 | Border color for the footer                   |
+| `--blyrics-footer-text-color`      | `#aaa`                                                                                                                                   | Text color for the footer                     |
+| `--blyrics-footer-link-color`      | `#fff`                                                                                                                                   | Color for links in the footer                 |
+| `--blyrics-discord-hover-color`    | `#5865F2`                                                                                                                                | Hover color for the Discord button            |
+| `--blyrics-font-family`            | `Satoshi, Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif` | Main font family for lyrics                   |
+| `--blyrics-font-size`              | `3rem`                                                                                                                                   | Font size for lyrics                          |
+| `--blyrics-font-weight`            | `700`                                                                                                                                    | Font weight for lyrics                        |
+| `--blyrics-line-height`            | `1.333`                                                                                                                                  | Line height for lyrics                        |
+| `--blyrics-translated-font-size`   | `2rem`                                                                                                                                   | Font size for translated lyrics               |
+| `--blyrics-translated-font-weight` | `600`                                                                                                                                    | Font weight for translated lyrics             |
+| `--blyrics-footer-font-family`     | `Roboto, Noto Naskh Arabic UI, Arial, sans-serif`                                                                                        | Font family for the footer                    |
+| `--blyrics-footer-font-size`       | `14px`                                                                                                                                   | Font size for the footer                      |
+| `--blyrics-footer-font-weight`     | `400`                                                                                                                                    | Font weight for the footer                    |
+| `--blyrics-transition-duration`    | `0.166s`                                                                                                                                 | Duration for general transitions              |
+| `--blyrics-opacity-transition`     | `0.33s`                                                                                                                                  | Duration for opacity transitions              |
+| `--blyrics-glow-duration`          | `var(--blyrics-duration, 2s)`                                                                                                            | Duration for the glow animation               |
+| `--blyrics-wobble-duration`        | `calc(var(--blyrics-duration, 2s) / 2)`                                                                                                  | Duration for the wobble animation             |
+| `--blyrics-padding`                | `2rem`                                                                                                                                   | Padding for lyrics container                  |
+| `--blyrics-margin`                 | `2rem`                                                                                                                                   | Margin for lyrics container                   |
+| `--blyrics-border-radius`          | `1000rem`                                                                                                                                | Border radius for rounded elements            |
+| `--blyrics-blur-amount`            | `30px`                                                                                                                                   | Amount of blur for various effects            |
+| `--blyrics-scale`                  | `0.95`                                                                                                                                   | Scale factor for inactive lyrics              |
+| `--blyrics-active-scale`           | `1`                                                                                                                                      | Scale factor for active lyrics                |
+| `--blyrics-inactive-opacity`       | `0.33`                                                                                                                                   | Opacity for inactive lyrics                   |
+| `--blyrics-active-opacity`         | `1`                                                                                                                                      | Opacity for active lyrics                     |
+| `--blyrics-translated-opacity`     | `0.6`                                                                                                                                    | Opacity for translated lyrics                 |
+| `--blyrics-error-opacity`          | `0.33`                                                                                                                                   | Opacity for error messages                    |
+| `--blyrics-background-blur`        | `100px`                                                                                                                                  | Blur amount for background elements           |
+| `--blyrics-background-saturate`    | `2`                                                                                                                                      | Saturation level for background elements      |
+| `--blyrics-gradient-stops`         | Complex gradient (see [file](https://github.com/boidushya/better-lyrics/blob/master/src/index.css))                                      | Gradient stops for various background effects |
+
+`--blyrics-duration` is a special custom property that is set dynamically by the extension's main script. It's used to ensure that animations are in sync with the music playback. Learn more about this [here](#5-styling-individual-lyric-lines).
 
 To learn more about CSS custom properties, check out the [MDN Web Docs on Using CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
 
@@ -67,85 +108,46 @@ The main container for the lyrics is styled using the `.blyrics-container` class
 
 ```css
 .blyrics-container {
-  font-family: Satoshi, Avenir, -apple-system, BlinkMacSystemFont, Segoe UI,
-    Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif;
-  font-size: 3rem;
-  font-weight: 700;
-  isolation: isolate;
-  line-height: 1.333;
+  font-family: var(--blyrics-font-family);
+  font-size: var(--blyrics-font-size);
+  font-weight: var(--blyrics-font-weight);
+  line-height: var(--blyrics-line-height);
   position: relative !important;
   z-index: 1;
 }
 ```
 
-Let's break down what each property does:
-
-- `font-family`: Sets the typeface for the text. It provides a list of fonts, using the first available one on the user's system.
-- `font-size`: Sets the size of the text to 3rem (relative to the root element's font size).
-- `font-weight`: Sets the thickness of the text (700 is bold).
-- `isolation`: Creates a new stacking context, which can help with layering elements.
-- `line-height`: Sets the height of each line of text (1.333 times the font size).
-- `position: relative`: Allows positioning of child elements relative to this container.
-- `z-index: 1`: Sets the stacking order of the container.
-
-The font is set to a custom font called "Satoshi" which is injected by the extension. If the font is not available, the browser will fall back to the other fonts listed.
-
-You can change the default font, size, weight, or other properties to customize the appearance of the lyrics container.
-
-For example, we could import a different font by adding a `@import` rule at the top of the CSS file:
-
-```css
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
-```
-
-Then, we could update the `font-family` property to use the new font:
-
-```css
-.blyrics-container {
-	font-family: 'Bricolage Grotesque', sans-serif;
-	/* other styles ... */
-}
-```
-
-To learn more about these properties, visit the [MDN Web Docs on CSS](https://developer.mozilla.org/en-US/docs/Web/CSS).
+This sets the overall appearance of the lyrics container. You can modify these properties to change the font, size, or positioning of the lyrics.
 
 ## 5. Styling Individual Lyric Lines
 
-Better Lyrics displays lyrics line by line, with each line containing multiple words. The CSS styles each line (div) and each word (span) within the lyrics container.
-
-### Word-Level Styling
-
-Within each line (div), individual words are wrapped in `<span>` elements. This structure allows for more granular control over the styling and animation of the lyrics. Here's how these spans are styled:
+Each line of lyrics is a `<div>` inside the main container, with individual words wrapped in `<span>` elements:
 
 ```css
+.blyrics-container > div {
+  cursor: pointer;
+  padding-bottom: var(--blyrics-padding) !important;
+  transform: scale(var(--blyrics-scale));
+  transition: transform var(--blyrics-transition-duration);
+}
+
 .blyrics-container > div > span {
-  opacity: 0.33;
-  transition: opacity 0.33s;
+  opacity: var(--blyrics-inactive-opacity);
+  transition: opacity var(--blyrics-opacity-transition);
 }
 ```
 
-This styling:
-
-- Sets each word to be partially transparent (33% opaque)
-- Adds a smooth transition effect for changes in opacity
-
-By wrapping each word in a span, Better Lyrics can:
-
-1. Animate or highlight individual words as they are sung
-2. Apply different styles to specific words (e.g., for emphasis)
-3. More precisely control the timing of lyrics display
-
-The currently active line (the one being sung) has additional styling:
+The active line has additional styles:
 
 ```css
 .blyrics-container > div.blyrics--active {
-  transform: scale(1);
+  transform: scale(var(--blyrics-active-scale));
 }
 
 .blyrics-container > div.blyrics--active > span:not(:empty):not(.blyrics--translated) {
-  cursor: default;
-  opacity: 1;
-  animation: blyrics-glow var(--blyrics-duration) forwards, blyrics-wobble calc(var(--blyrics-duration) / 2) forwards;
+  opacity: var(--blyrics-active-opacity);
+  animation: blyrics-glow var(--blyrics-glow-duration) forwards,
+             blyrics-wobble var(--blyrics-wobble-duration) forwards;
 }
 ```
 
@@ -153,57 +155,11 @@ This makes the active line full-sized and fully opaque, and applies animations t
 
 Understanding this structure (lines as divs, words as spans) is crucial if you want to modify the lyrics display. For example, if you wanted to create a karaoke-style effect where words light up one by one, you would focus on styling the individual spans within the active line.
 
-### Line-Level Styling
-
-Each line of lyrics is wrapped in a `<div>` inside the main container. These lines are styled as follows:
-
-```css
-.blyrics-container > div {
-  cursor: pointer;
-  padding-bottom: 2rem !important;
-  transform-origin: left center;
-  word-break: break-word;
-  transform: scale(0.95);
-  transition: transform 0.166s;
-}
-```
-
-This styling does a bunch of things:
-
-- Makes the cursor change to a pointer when hovering over a line
-- Adds padding below each line
-- Sets the origin point for transformations
-- Allows long words to break and wrap
-- Slightly reduces the size of each line (to 95% of its original size)
-- Adds a smooth transition effect when the size changes
-
-All the non-traditional properties (like `transform`, `transition`, etc.) are used to create animations and effects that enhance the lyrics display. The `transform` property is used to scale the lines, while `transition` controls the smoothness of the scaling effect.
-
-The currently active line (the one being sung) has additional styling:
-
-```css
-.blyrics-container > div.blyrics--active {
-  transform: scale(1);
-}
-
-.blyrics-container > div.blyrics--active > span:not(:empty):not(.blyrics--translated) {
-  cursor: default;
-  opacity: 1;
-  animation: blyrics-glow var(--blyrics-duration) forwards, blyrics-wobble calc(var(--blyrics-duration) / 2) forwards;
-}
-```
-
 The `--blyrics-duration` custom property is used to control the duration of the animations. It is defined in the extension's main javascript file and should not be modified here since it's critical for the animations to "sync" or give the illusion of syncing with the music. However, if you want to experiment with different durations, you can adjust/replace this property.
-
-When a line is active:
-
-The `blyrics--active` class is added to the active line, and it scales the line back to its original size. It also changes the cursor to default and applies the `blyrics-glow` and `blyrics-wobble` animations to the text.
-
-All these in conjunction make the active line full-sized and helps apply animations to make it stand out.
 
 ## 6. Creating Animation Effects
 
-The CSS defines two main animations: `blyrics-wobble` and `blyrics-glow`. These are created using the `@keyframes` rule:
+The CSS defines two main animations: `blyrics-wobble` and `blyrics-glow`:
 
 ```css
 @keyframes blyrics-wobble {
@@ -214,18 +170,18 @@ The CSS defines two main animations: `blyrics-wobble` and `blyrics-glow`. These 
 }
 
 @keyframes blyrics-glow {
-  0% { text-shadow: 0 0 1.5rem rgba(255, 255, 255, 0.5); }
-  to { text-shadow: 0 0 0 rgba(255, 255, 255, 0.5); }
+  0% { text-shadow: 0 0 1.5rem var(--blyrics-highlight-color); }
+  to { text-shadow: 0 0 0 var(--blyrics-highlight-color); }
 }
 ```
 
-The `blyrics-wobble` animation creates a subtle up-and-down movement, while `blyrics-glow` adds and then removes a text shadow for a glowing effect.
+These animations create subtle movement and glowing effects for the active lyrics.
 
 To learn more about CSS animations, check out the [MDN Web Docs on CSS Animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations).
 
 ## 7. Modifying YouTube Music's Layout
 
-The CSS includes several rules that modify the existing YouTube Music interface to better accommodate the lyrics display, for example:
+The CSS includes rules that modify the existing YouTube Music interface:
 
 ```css
 #layout[player-ui-state="PLAYER_PAGE_OPEN"] #mini-guide-background,
@@ -236,8 +192,7 @@ The CSS includes several rules that modify the existing YouTube Music interface 
 }
 ```
 
-This rule makes certain elements transparent when the player page is open, allowing the lyrics to be more prominent.
-Since the Custom CSS you write is injected into the page, you can override pretty much any style relevant to YouTube Music.
+This rule makes certain elements transparent when the player page is open, allowing the lyrics to be more prominent. Since the Custom CSS you write is injected into the page, you can override pretty much any style relevant to YouTube Music.
 
 The CSS also adds a custom background to the player page:
 
@@ -257,16 +212,11 @@ This creates a gradient overlay on top of a background image for a more immersiv
 
 ## 8. Handling Loading and Errors
 
-The CSS includes styles for a loading spinner and error messages:
+Styles for loading spinners and error messages are included:
 
 ```css
 #blyrics-loader {
   /* ... loader styles ... */
-}
-
-#blyrics-loader:before {
-  animation: blyrics-spin 1s linear infinite;
-  /* ... more styles ... */
 }
 
 .blyrics--error {
@@ -274,19 +224,15 @@ The CSS includes styles for a loading spinner and error messages:
 }
 ```
 
-These styles ensure that users get visual feedback while lyrics are loading or if an error occurs.
+These ensure users receive visual feedback during loading or if an error occurs.
 
 ## 9. Making the Design Responsive
 
-The CSS uses media queries to adjust the layout for different screen sizes:
+Media queries are used to adjust the layout for different screen sizes:
 
 ```css
 @media (min-width: 615px) {
   /* ... styles for larger screens ... */
-}
-
-@media (max-width: 936px) {
-  /* ... styles for medium screens ... */
 }
 
 @media (max-width: 615px) {
@@ -299,6 +245,7 @@ Media queries allow you to apply different styles based on the device's screen s
 To learn more about responsive design with CSS, check out the [MDN Web Docs on Responsive Design](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design).
 
 ## 10. Implementing Fullscreen Mode
+
 
 The CSS includes special styles for when the player is in fullscreen mode:
 
@@ -349,7 +296,7 @@ These styles adjust the layout and positioning of elements when in fullscreen mo
 
 ## 11. Supporting Right-to-Left (RTL) Languages
 
-The CSS includes support for right-to-left (RTL) languages:
+The CSS includes support for right-to-left languages:
 
 ```css
 #layout[blyrics-rtl-enabled] .blyrics-container {
@@ -365,7 +312,7 @@ These rules change the text direction and adjust the transform origin for RTL la
 
 ## 12. Adding a Watermark
 
-The CSS includes styles for a watermark, though it's initially hidden:
+Styles for a watermark are included, though it's initially hidden:
 
 ```css
 #blyrics-watermark {
@@ -381,12 +328,6 @@ This can be used to add branding or attribution to the lyrics display.
 Styles for displaying song information (title and artist) are included:
 
 ```css
-#blyrics-song-info {
-  display: none;
-  z-index: 2;
-  max-width: 40rem;
-}
-
 #blyrics-song-info > p#blyrics-title {
   font-size: 2rem;
   font-weight: 700;
@@ -401,17 +342,20 @@ Styles for displaying song information (title and artist) are included:
 }
 ```
 
-These styles allow for the display of song information alongside the lyrics in fullscreen mode and is initially hidden.
+These styles allow for the display of song information alongside the lyrics.
 
-## 14. Best Practices for Modifying This CSS
+## 14. Best Practices for Modifying CSS
 
-When modifying or building upon this CSS:
+When modifying this CSS:
 
-1. Use in-built CSS editor in the extension to make changes and see them in real-time. Alternatively, you can use browser developer tools to experiment with styles before applying them to the extension.
-2. Make small changes and test frequently to understand the impact of each modification.
-3. Use CSS comments to explain your changes and why you made them.
-4. Be cautious when changing structural elements or removing existing styles, as it may affect the overall layout.
-5. When adding new styles, try to follow the existing naming conventions and structure. This will make it easier to maintain and understand the code.
+1. Start small and test often. It's easier to fix one small change than a hundred big ones!
+1. Use comments to remind yourself why you made each change.
+1. Be careful when changing structural elements - you might accidentally move the whole stage!
+1. Try to stick to the existing naming style (like using `blyrics-` at the start of new class names).
+1. When modifying complex selectors, make sure you don't deviate too far from the original intent.
+1. Better Lyrics let's you modify pretty much everything, so don't be afraid to experiment!
+1. If you're stuck or need help, feel free to ask in the [Better Lyrics Discord community](https://discord.gg/UsHE3d5fWF).
+1. Most importantly, have fun! CSS is all about creativity and expression.
 
 ## 15. Importing/Exporting Styles
 
@@ -456,7 +400,4 @@ To learn more about CSS and web development, check out these resources:
 - [W3Schools CSS Tutorial](https://www.w3schools.com/css/)
 - [FreeCodeCamp's Responsive Web Design Certification](https://www.freecodecamp.org/learn/responsive-web-design/)
 
-Remember, the best way to learn CSS is by experimenting and practicing. Don't be afraid to make changes and see what happens!
-If you're stuck or have questions, feel free to reach out to the [Better Lyrics Discord community](https://discord.gg/UsHE3d5fWF) for help and guidance.
-
-Happy coding! 🎶🎨
+Remember, the best way to learn CSS is by experimenting and practicing. If you're stuck or have questions, feel free to reach out to the [Better Lyrics Discord community](https://discord.gg/UsHE3d5fWF) for help and guidance!
