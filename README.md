@@ -102,13 +102,13 @@ song.
 
 ## Extension Permissions
 
-| Permission                                                            | Reason                                                                                  | Data Usage                                         |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| **Read and change all your data on the websites you visit**           | Required to inject lyrics into Youtube Music page & for code editor specific JS & CSS   | No data stored                                     |
-| **Get data from the clipboard**                                       | Required to import styles and themes from clipboard                                     | -                                                  |
-| **Input data to the clipboard**                                       | Required to export styles and themes to clipboard                                       | -                                                  |
-| **Download files and read and modify the browser's download history** | Required to download styles and themes as CSS file                                      | Does not read or modify browser's download history |
-| **Access browser tabs**                                               | Required to ensure code editor works on all tabs (changes applied to Youtube Music tab) | -                                                  |
+| Permission                                                            | Reason                                                                                                                                                                                                         | Data Usage                                         |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| **Read and change all your data on the websites you visit**           | [Required to inject lyrics into Youtube Music page & for code editor specific JS & CSS](https://github.com/boidushya/better-lyrics/blob/master/src/index.js)                                                   | No data stored                                     |
+| **Get data from the clipboard**                                       | [Required to import styles and themes from clipboard](https://github.com/boidushya/better-lyrics/blob/b9d5f888703f1b786e48a4fe66bfec08a1553739/src/options/editor.js#L41)                                      | -                                                  |
+| **Input data to the clipboard**                                       | [Required to export styles and themes to clipboard](https://github.com/boidushya/better-lyrics/blob/b9d5f888703f1b786e48a4fe66bfec08a1553739/src/options/editor.js#L62)                                        | -                                                  |
+| **Download files and read and modify the browser's download history** | [Required to download styles and themes as CSS file](https://github.com/boidushya/better-lyrics/blob/b9d5f888703f1b786e48a4fe66bfec08a1553739/src/options/editor.js#L159)                                      | Does not read or modify browser's download history |
+| **Access browser tabs**                                               | [Required to ensure code editor works on all tabs (changes applied to Youtube Music tab)](https://github.com/boidushya/better-lyrics/blob/b9d5f888703f1b786e48a4fe66bfec08a1553739/src/options/editor.js#L105) | -                                                  |
 
 Better Lyrics **does not** collect any personal data or track your browsing activity. The extension is open-source and thoroughly reviewed by the community to ensure that your privacy is protected.
 
