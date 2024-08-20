@@ -37,33 +37,6 @@ const openOptions = () => {
 
 document.getElementById("back-btn").addEventListener("click", openOptions);
 
-document.getElementById("import-btn").addEventListener("click", () => {
-  navigator.clipboard.readText().then(text => {
-    try {
-      if (!text.startsWith("blyrics-")) {
-        throw new Error("Invalid prefix");
-      }
-      const css = atob(text.substring(8));
-      editor.setValue(css);
-      showAlert("Styles imported from clipboard!");
-    } catch {
-      showAlert("Invalid styles in clipboard! Please try again.");
-    }
-  });
-});
-
-document.getElementById("export-btn").addEventListener("click", () => {
-  const css = editor.getValue(); // Use CodeMirror's getValue method
-  if (!css) {
-    showAlert("No styles to export!");
-    return;
-  }
-  const base64 = "blyrics-" + btoa(css);
-  navigator.clipboard.writeText(base64).then(() => {
-    showAlert("Styles copied to clipboard!");
-  });
-});
-
 document.addEventListener("DOMContentLoaded", function () {
   const syncIndicator = document.getElementById("sync-indicator");
 
@@ -102,10 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 1000);
 
         // Send message to all tabs to update CSS
-        chrome.tabs.query({ url: "*://music.youtube.com/*" }, tabs => {
-          tabs.forEach(tab => {
-            chrome.tabs.sendMessage(tab.id, { action: "updateCSS", css: css });
-          });
+        chrome.runtime.sendMessage({ action: "updateCSS", css: css }, response => {
+          console.log(response.status);
         });
       })
       .catch(() => {
@@ -153,6 +124,22 @@ const generateDefaultFilename = () => {
 };
 
 const saveCSSToFile = (css, defaultFilename) => {
+  chrome.permissions.contains({ permissions: ["downloads"] }, hasPermission => {
+    if (hasPermission) {
+      downloadFile(css, defaultFilename);
+    } else {
+      chrome.permissions.request({ permissions: ["downloads"] }, granted => {
+        if (granted) {
+          downloadFile(css, defaultFilename);
+        } else {
+          fallbackSaveMethod(css, defaultFilename);
+        }
+      });
+    }
+  });
+};
+
+const downloadFile = (css, defaultFilename) => {
   const blob = new Blob([css], { type: "text/css" });
   const url = URL.createObjectURL(blob);
 
@@ -172,6 +159,23 @@ const saveCSSToFile = (css, defaultFilename) => {
       URL.revokeObjectURL(url);
     }
   );
+};
+
+const fallbackSaveMethod = (css, defaultFilename) => {
+  const blob = new Blob([css], { type: "text/css" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = defaultFilename;
+
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+
+  showAlert("CSS file download initiated. Check your downloads folder.");
 };
 
 const loadCSSFromFile = file => {

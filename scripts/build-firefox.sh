@@ -27,6 +27,7 @@ terser src/modules/settings/settings.js -c -m -o src/modules/settings/settings.m
 terser src/index.js -c -m -o src/index.min.js && rm src/index.js
 terser src/options/editor.js -c -m -o src/options/editor.min.js && rm src/options/editor.js
 terser src/options/options.js -c -m -o src/options/options.min.js && rm src/options/options.js
+terser src/background.js -c -m -o src/background.min.js && rm src/background.js
 
 # Update HTML files to use minified JavaScript
 sed -i.bak 's/src="editor\.js"/src="editor.min.js"/' src/options/options.html && rm src/options/options.html.bak
@@ -51,7 +52,7 @@ jq '.content_scripts[0].js = [
   "src/modules/ui/observer.min.js",
   "src/modules/settings/settings.min.js",
   "src/index.min.js"
-] | .content_scripts[0].css = ["src/index.min.css"]' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
+] | .content_scripts[0].css = ["src/index.min.css"] | .background.scripts = ["src/background.min.js"]' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
 
 # Create zip file
 zip -r better-lyrics.zip ./* -x "./dist/*" "LICENSE" "README.md" "./templates/*" "*.DS_Store" "${SCRIPT_DIR}/*"
