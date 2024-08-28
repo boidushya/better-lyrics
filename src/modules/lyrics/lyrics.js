@@ -1,4 +1,45 @@
+document.addEventListener('keydown', function(event) {
+  if (event.ctrlKey && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+    event.preventDefault(); // Prevent default browser behavior
+    BetterLyrics.Lyrics.shiftLyrics(event.key === 'ArrowRight' ? 0.5 : -0.5);
+  }
+});
 BetterLyrics.Lyrics = {
+  lyrics: [],
+  // shiftAmount: 0.5 second at every clicks,
+  shiftLyrics: function(shiftAmount) {
+
+  
+    // Update the lyrics object in memory
+    BetterLyrics.Lyrics.lyrics = BetterLyrics.Lyrics.lyrics.map(lyric => ({
+      ...lyric,
+      startTimeMs: (parseInt(lyric.startTimeMs) + shiftAmount * 1000).toString() ,
+      durationMs: (parseInt(lyric.durationMs) + shiftAmount * 1000).toString()
+    }));
+
+    // console.log(JSON.stringify(BetterLyrics.Lyrics.lyrics));
+
+    const lyricsElements = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].children;
+    
+    Array.from(lyricsElements).forEach((elem, index) => {
+      const lyric = BetterLyrics.Lyrics.lyrics[index];
+      elem.dataset.time = (parseInt(lyric.startTimeMs) / 1000).toString();
+      elem.style = `--blyrics-duration: ${parseInt(lyric.durationMs) / 1000}s;`;
+      
+      // Update onClick attribute if it exists
+      if (elem.hasAttribute('onClick')) {
+        elem.setAttribute(
+          'onClick',
+          `const player = document.getElementById("movie_player"); player.seekTo(${
+            parseInt(lyric.startTimeMs) / 1000
+          }, true);player.playVideo();`
+        );
+      }
+    });
+    // Re-render lyrics if necessary
+    BetterLyrics.Lyrics.setupLyricsCheckInterval();
+  },
+
   createLyrics: function () {
     BetterLyrics.DOM.requestSongInfo(e => {
       const song = e.song;
@@ -18,7 +59,7 @@ BetterLyrics.Lyrics = {
         })
         .then(data => {
           const lyrics = data.lyrics;
-
+          BetterLyrics.Lyrics.lyrics = lyrics; // store the lyrics in the global variable
           BetterLyrics.App.lang = data.language;
           BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
 
@@ -49,6 +90,7 @@ BetterLyrics.Lyrics = {
   },
 
   injectLyrics: function (lyrics) {
+    BetterLyrics.Lyrics.lyrics = lyrics; // Store lyrics in memory
     let lyricsWrapper = BetterLyrics.DOM.createLyricsWrapper();
     BetterLyrics.DOM.addFooter();
 
