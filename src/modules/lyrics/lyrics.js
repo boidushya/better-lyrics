@@ -1,7 +1,8 @@
 document.addEventListener('keydown', function(event) {
   if (event.ctrlKey && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
     event.preventDefault(); // Prevent default browser behavior
-    BetterLyrics.Lyrics.shiftLyrics(event.key === 'ArrowRight' ? 0.5 : -0.5);
+    const shiftAmount = event.key === 'ArrowLeft' ? 0.5 : -0.5;
+    BetterLyrics.Lyrics.shiftLyrics(shiftAmount);
   }
 });
 BetterLyrics.Lyrics = {
@@ -9,12 +10,10 @@ BetterLyrics.Lyrics = {
   // shiftAmount: 0.5 second at every clicks,
   shiftLyrics: function(shiftAmount) {
 
-  
     // Update the lyrics object in memory
     BetterLyrics.Lyrics.lyrics = BetterLyrics.Lyrics.lyrics.map(lyric => ({
       ...lyric,
       startTimeMs: (parseInt(lyric.startTimeMs) + shiftAmount * 1000).toString() ,
-      durationMs: (parseInt(lyric.durationMs) + shiftAmount * 1000).toString()
     }));
 
     // console.log(JSON.stringify(BetterLyrics.Lyrics.lyrics));
@@ -36,8 +35,30 @@ BetterLyrics.Lyrics = {
         );
       }
     });
+    BetterLyrics.showShiftPopup(shiftAmount);
     // Re-render lyrics if necessary
     BetterLyrics.Lyrics.setupLyricsCheckInterval();
+  },
+  showShiftPopup: function(shiftAmount) {
+    // Remove any existing popups
+    const existingPopups = document.querySelectorAll('.blyrics--shift-popup');
+    existingPopups.forEach(popup => popup.remove());
+
+    // Create and append the new popup
+    const popup = document.createElement('div');
+    popup.className = 'blyrics--shift-popup';
+    const direction = shiftAmount > 0 ? 'backward' : 'forward';
+    popup.textContent = `Shifted ${Math.abs(shiftAmount)} second ${direction}`;
+    document.body.appendChild(popup);
+
+    // Show the popup
+    setTimeout(() => popup.classList.add('show'), 10);
+
+    // Hide and remove the popup after 2 seconds
+    setTimeout(() => {
+      popup.classList.remove('show');
+      setTimeout(() => popup.remove(), 300); // Wait for fade-out transition
+    }, 2000);
   },
 
   createLyrics: function () {
