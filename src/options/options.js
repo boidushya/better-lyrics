@@ -1,6 +1,7 @@
 // Function to save user options
 const saveOptions = () => {
   const options = getOptionsFromForm();
+  // console.log(JSON.stringify(options));
   saveOptionsToStorage(options);
 };
 
@@ -15,6 +16,7 @@ const getOptionsFromForm = () => {
     isTranslateEnabled: document.getElementById("translate").checked,
     translationLanguage: document.getElementById("translationLanguage").value,
     isCursorAutoHideEnabled: document.getElementById("cursorAutoHide").checked,
+    apiValue : document.getElementById("api").value || "",
   };
 };
 
@@ -51,6 +53,7 @@ const restoreOptions = () => {
     isStylizedAnimationsEnabled: true,
     isTranslateEnabled: false,
     translationLanguage: "en",
+    apiValue : "",
   };
 
   chrome.storage.sync.get(defaultOptions, setOptionsInForm);
@@ -66,6 +69,7 @@ const setOptionsInForm = items => {
   document.getElementById("isStylizedAnimationsEnabled").checked = items.isStylizedAnimationsEnabled;
   document.getElementById("translate").checked = items.isTranslateEnabled;
   document.getElementById("translationLanguage").value = items.translationLanguage;
+  document.getElementById("api").value = items.apiValue;
 };
 
 // Event listeners

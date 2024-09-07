@@ -38,6 +38,7 @@ BetterLyrics.Constants = {
   INITIALIZE_LOG:
     "%c[BetterLyrics] Loaded Successfully. Logs are enabled by default. You can disable them in the extension options.",
   FETCH_LYRICS_LOG: "[BetterLyrics] Attempting to fetch lyrics for",
+  API_KEY_NOT_FOUND_LOG: "[BetterLyrics] API key not found, unable to fetch lyrics",
   SERVER_ERROR_LOG: "[BetterLyrics] Unable to fetch lyrics due to server error",
   NO_LYRICS_FOUND_LOG: "[BetterLyrics] No lyrics found for the current song",
   LYRICS_LEGACY_LOG: "[BetterLyrics] Using legacy method to fetch song info",

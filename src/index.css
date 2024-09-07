@@ -683,3 +683,22 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
     padding: 0 !important;
   }
 }
+
+.blyrics--shift-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 9999;
+}
+
+.blyrics--shift-popup.show {
+  opacity: 1;
+}
