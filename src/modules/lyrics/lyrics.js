@@ -1,3 +1,4 @@
+
 document.addEventListener('keydown', function(event) {
   if (event.ctrlKey && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
     event.preventDefault(); // Prevent default browser behavior
@@ -5,18 +6,63 @@ document.addEventListener('keydown', function(event) {
     BetterLyrics.Lyrics.shiftLyrics(shiftAmount);
   }
 });
+ function saveLyricsData(lyricsData) {
+  localStorage.setItem('lyricsData', JSON.stringify(lyricsData));
+}
+// Function to set the offset value for a song
+ function setSongOffset(song, offsetValue) {
+  const lyricsData = getStoredLyrics();
+  lyricsData[song] = offsetValue;
+  saveLyricsData(lyricsData);
+}
+ function getStoredLyrics() {
+  const storedLyrics = localStorage.getItem('lyricsData');
+  return storedLyrics ? JSON.parse(storedLyrics) : {};
+}
+// Function to get the offset value for a song
+  function getSongOffset(song) {
+  const lyricsData = getStoredLyrics();
+  if(lyricsData === null) {
+    return 0;
+  }
+  return lyricsData[song] || 0; // Return 0 if the song is not found
+}
+// let offsetValue = 0;
+let songName = "";
+
 BetterLyrics.Lyrics = {
   lyrics: [],
   // shiftAmount: 0.5 second at every clicks,
+  // CHANGES: We will shift the lyrics by the offset value stored in the local storage
   shiftLyrics: function(shiftAmount) {
+    // console.log("Shifted by: ", shiftAmount);
+    // console.log(songName);
 
-    // Update the lyrics object in memory
-    BetterLyrics.Lyrics.lyrics = BetterLyrics.Lyrics.lyrics.map(lyric => ({
-      ...lyric,
-      startTimeMs: (parseInt(lyric.startTimeMs) + shiftAmount * 1000).toString() ,
-    }));
+    // Check if BetterLyrics.Getters is defined
+    // if (typeof BetterLyrics.Getters !== 'undefined') {
+        try {
+            // Get the current offset and update it
+            let currentOffset = getSongOffset(songName);
+            let newOffset = currentOffset + shiftAmount;
+            
+            // Store the new offset in localStorage
+            setSongOffset(songName, newOffset);
+            
+            console.log(`Updated offset for ${songName}: ${newOffset}`);
+        } catch (error) {
+            console.error("Error accessing Getters methods:", error);
+        }
+    // } else {
+    //     console.warn("BetterLyrics.Getters is not defined. Skipping offset storage.");
+    // }
 
-    // console.log(JSON.stringify(BetterLyrics.Lyrics.lyrics));
+    // Update the lyrics objects in memory
+    BetterLyrics.Lyrics.lyrics = BetterLyrics.Lyrics.lyrics.map(lyric => {
+        return {
+            ...lyric,
+            startTimeMs: (parseInt(lyric.startTimeMs) + shiftAmount * 1000).toString(),
+        };
+    });
 
     const lyricsElements = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].children;
     
@@ -35,7 +81,7 @@ BetterLyrics.Lyrics = {
         );
       }
     });
-    BetterLyrics.showShiftPopup(shiftAmount);
+    BetterLyrics.Lyrics.showShiftPopup(shiftAmount);
     // Re-render lyrics if necessary
     BetterLyrics.Lyrics.setupLyricsCheckInterval();
   },
@@ -60,11 +106,15 @@ BetterLyrics.Lyrics = {
       setTimeout(() => popup.remove(), 300); // Wait for fade-out transition
     }, 2000);
   },
+  // DONE: We will make a map or a dictionary to store the lyrics and their respective offset time
+  // and before loading we will see whether this music is there in the map or not if yes then we will shift every line with the offset value
+  // if not then we will load the lyrics as usual
 
   createLyrics: function () {
     BetterLyrics.DOM.requestSongInfo(e => {
       const song = e.song;
       const artist = e.artist;
+      songName = song;
 
       BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
@@ -132,6 +182,18 @@ BetterLyrics.Lyrics = {
     });
 
     const allZero = lyrics.every(item => item.startTimeMs === "0");
+
+    // CHANGES: if local storage has the offset value for this song then we will shift the lyrics by that amount
+    if(getSongOffset(songName) !== 0) {
+      const offsetValue = getSongOffset(songName);
+      // console.log(`Shifting lyrics by ${offsetValue} seconds`);
+      lyrics = lyrics.map(lyric => {
+        return {
+          ...lyric,
+          startTimeMs: (parseInt(lyric.startTimeMs) + offsetValue * 1000).toString(),
+        };
+      });
+    }
 
     lyrics.forEach(item => {
       let line = document.createElement("div");
