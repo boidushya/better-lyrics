@@ -111,7 +111,7 @@ BetterLyrics.Lyrics = {
   // if not then we will load the lyrics as usual
 
   createLyrics: function () {
-    BetterLyrics.DOM.requestSongInfo(e => {
+    BetterLyrics.DOM.requestSongInfo( async e => {
       const song = e.song;
       const artist = e.artist;
       songName = song;
@@ -119,6 +119,26 @@ BetterLyrics.Lyrics = {
       BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
       const url = `${BetterLyrics.Constants.LYRICS_API_URL}?s=${encodeURIComponent(BetterLyrics.Utils.unEntity(song))}&a=${encodeURIComponent(BetterLyrics.Utils.unEntity(artist))}`;
+      const apiKey = await new Promise((resolve) => {
+        chrome.storage.sync.get(['apiValue'], (result) => {
+          resolve(result.apiValue);
+        });
+      });
+
+      if (!apiKey) {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.API_KEY_NOT_FOUND_LOG);
+      }
+      const targetLanguage = await new Promise((resolve) => {
+        chrome.storage.sync.get(['translationLanguage'], (result) => {
+          resolve(result.translationLanguage);
+        });
+      }) || "en";
+
+      const translationEnable = await new Promise((resolve) => {
+        chrome.storage.sync.get(['isTranslateEnabled'], (result) => {
+          resolve(result.isTranslateEnabled);
+        });
+      }) || false;
 
       fetch(url)
         .then(response => {
@@ -128,8 +148,14 @@ BetterLyrics.Lyrics = {
 
           return response.json();
         })
-        .then(data => {
+        .then(async data => {
           const lyrics = data.lyrics;
+          if(lyrics && lyrics.length !== 0 && translationEnable){
+            const translatedLyrics = await BetterLyrics.Translation.translateTextUsingGPT(lyrics, targetLanguage, apiKey);
+            if (translatedLyrics) {
+              lyrics = translatedLyrics;
+            }
+          }
           BetterLyrics.Lyrics.lyrics = lyrics; // store the lyrics in the global variable
           BetterLyrics.App.lang = data.language;
           BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
@@ -149,7 +175,7 @@ BetterLyrics.Lyrics = {
           } catch (_err) {
             BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_NOT_DISABLED_LOG);
           }
-          BetterLyrics.Lyrics.injectLyrics(lyrics);
+          BetterLyrics.Lyrics.injectLyrics(lyrics, translationEnable, targetLanguage);
         })
         .catch(err => {
           clearInterval(BetterLyrics.App.lyricsCheckInterval);
@@ -160,7 +186,7 @@ BetterLyrics.Lyrics = {
     });
   },
 
-  injectLyrics: function (lyrics) {
+  injectLyrics: async function (lyrics , translationEnable , targetLanguage) {
     BetterLyrics.Lyrics.lyrics = lyrics; // Store lyrics in memory
     let lyricsWrapper = BetterLyrics.DOM.createLyricsWrapper();
     BetterLyrics.DOM.addFooter();
@@ -222,29 +248,24 @@ BetterLyrics.Lyrics = {
         line.appendChild(span);
       });
 
-      BetterLyrics.Translation.onTranslationEnabled(items => {
+      if (translationEnable) {
         let translatedLine = document.createElement("span");
         translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
-
-        let source_language = BetterLyrics.App.lang ?? "en";
-        let target_language = items.translationLanguage || "en";
-
-        if (source_language !== target_language) {
-          if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-            BetterLyrics.Translation.translateText(item.words, target_language).then(result => {
-              if (result) {
-                if (result.originalLanguage !== target_language) {
-                  translatedLine.textContent = "\n" + result.translatedText;
-                  line.appendChild(translatedLine);
-                }
-              } else {
-                translatedLine.textContent = "\n" + "—";
+    
+        if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+          if (!item.translatedLines) {
+            BetterLyrics.Translation.translateText(item.words, targetLanguage).then((result) => {
+              if (result && result.originalLanguage !== targetLanguage) {
+                translatedLine.textContent = result.translatedText;
                 line.appendChild(translatedLine);
               }
             });
+          } else {
+            translatedLine.textContent = item.translatedLines;
+            line.appendChild(translatedLine);
           }
         }
-      });
+    }
 
       try {
         document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].appendChild(line);
