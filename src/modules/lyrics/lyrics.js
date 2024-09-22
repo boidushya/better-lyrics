@@ -1,8 +1,119 @@
+
+document.addEventListener('keydown', function(event) {
+  if (event.ctrlKey && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+    event.preventDefault(); // Prevent default browser behavior
+    const shiftAmount = event.key === 'ArrowLeft' ? 0.5 : -0.5;
+    BetterLyrics.Lyrics.shiftLyrics(shiftAmount);
+  }
+});
+ function saveLyricsData(lyricsData) {
+  localStorage.setItem('lyricsData', JSON.stringify(lyricsData));
+}
+// Function to set the offset value for a song
+ function setSongOffset(song, offsetValue) {
+  const lyricsData = getStoredLyrics();
+  lyricsData[song] = offsetValue;
+  saveLyricsData(lyricsData);
+}
+ function getStoredLyrics() {
+  const storedLyrics = localStorage.getItem('lyricsData');
+  return storedLyrics ? JSON.parse(storedLyrics) : {};
+}
+// Function to get the offset value for a song
+  function getSongOffset(song) {
+  const lyricsData = getStoredLyrics();
+  if(lyricsData === null) {
+    return 0;
+  }
+  return lyricsData[song] || 0; // Return 0 if the song is not found
+}
+// let offsetValue = 0;
+let songName = null;
+
 BetterLyrics.Lyrics = {
+  lyrics: [],
+  // shiftAmount: 0.5 second at every clicks,
+  // CHANGES: We will shift the lyrics by the offset value stored in the local storage
+  shiftLyrics: function(shiftAmount) {
+    // console.log("Shifted by: ", shiftAmount);
+    // console.log(songName);
+
+    // Check if BetterLyrics.Getters is defined
+    // if (typeof BetterLyrics.Getters !== 'undefined') {
+        try {
+            // Get the current offset and update it
+            let currentOffset = getSongOffset(songName);
+            let newOffset = currentOffset + shiftAmount;
+            // Store the new offset in localStorage
+            setSongOffset(songName, newOffset);
+            // console.log(`Updated offset for ${songName}: ${newOffset}`);
+        } catch (error) {
+            console.error("Error accessing Getters methods:", error);
+        }
+    // } else {
+    //     console.warn("BetterLyrics.Getters is not defined. Skipping offset storage.");
+    // }
+
+    // Update the lyrics objects in memory
+    BetterLyrics.Lyrics.lyrics = BetterLyrics.Lyrics.lyrics.map(lyric => {
+        return {
+            ...lyric,
+            startTimeMs: (parseInt(lyric.startTimeMs) + shiftAmount * 1000).toString(),
+        };
+    });
+
+    const lyricsElements = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].children;
+    
+    Array.from(lyricsElements).forEach((elem, index) => {
+      const lyric = BetterLyrics.Lyrics.lyrics[index];
+      elem.dataset.time = (parseInt(lyric.startTimeMs) / 1000).toString();
+      elem.style = `--blyrics-duration: ${parseInt(lyric.durationMs) / 1000}s;`;
+      
+      // Update onClick attribute if it exists
+      if (elem.hasAttribute('onClick')) {
+        elem.setAttribute(
+          'onClick',
+          `const player = document.getElementById("movie_player"); player.seekTo(${
+            parseInt(lyric.startTimeMs) / 1000
+          }, true);player.playVideo();`
+        );
+      }
+    });
+    BetterLyrics.Lyrics.showShiftPopup(shiftAmount);
+    // Re-render lyrics if necessary
+    BetterLyrics.Lyrics.setupLyricsCheckInterval();
+  },
+  showShiftPopup: function(shiftAmount) {
+    // Remove any existing popups
+    const existingPopups = document.querySelectorAll('.blyrics--shift-popup');
+    existingPopups.forEach(popup => popup.remove());
+
+    // Create and append the new popup
+    const popup = document.createElement('div');
+    popup.className = 'blyrics--shift-popup';
+    const direction = shiftAmount > 0 ? 'backward' : 'forward';
+    popup.textContent = `Shifted ${Math.abs(shiftAmount)} second ${direction}`;
+    document.body.appendChild(popup);
+
+    // Show the popup
+    setTimeout(() => popup.classList.add('show'), 10);
+
+    // Hide and remove the popup after 2 seconds
+    setTimeout(() => {
+      popup.classList.remove('show');
+      setTimeout(() => popup.remove(), 300); // Wait for fade-out transition
+    }, 2000);
+  },
+  // DONE: We will make a map or a dictionary to store the lyrics and their respective offset time
+  // and before loading we will see whether this music is there in the map or not if yes then we will shift every line with the offset value
+  // if not then we will load the lyrics as usual
+
   createLyrics: function () {
     BetterLyrics.DOM.requestSongInfo(e => {
       const song = e.song;
       const artist = e.artist;
+      const videoId = new URLSearchParams(window.location.search).get("v");
+      songName = videoId;
 
       BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
@@ -18,7 +129,7 @@ BetterLyrics.Lyrics = {
         })
         .then(data => {
           const lyrics = data.lyrics;
-
+          BetterLyrics.Lyrics.lyrics = lyrics; // store the lyrics in the global variable
           BetterLyrics.App.lang = data.language;
           BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
 
@@ -49,6 +160,7 @@ BetterLyrics.Lyrics = {
   },
 
   injectLyrics: function (lyrics) {
+    BetterLyrics.Lyrics.lyrics = lyrics; // Store lyrics in memory
     let lyricsWrapper = BetterLyrics.DOM.createLyricsWrapper();
     BetterLyrics.DOM.addFooter();
 
@@ -69,6 +181,18 @@ BetterLyrics.Lyrics = {
     });
 
     const allZero = lyrics.every(item => item.startTimeMs === "0");
+
+    // CHANGES: if local storage has the offset value for this song then we will shift the lyrics by that amount
+    if(getSongOffset(songName) !== 0) {
+      const offsetValue = getSongOffset(songName);
+      // console.log(`Shifting lyrics by ${offsetValue} seconds`);
+      lyrics = lyrics.map(lyric => {
+        return {
+          ...lyric,
+          startTimeMs: (parseInt(lyric.startTimeMs) + offsetValue * 1000).toString(),
+        };
+      });
+    }
 
     lyrics.forEach(item => {
       let line = document.createElement("div");
