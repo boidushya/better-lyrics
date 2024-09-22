@@ -28,7 +28,7 @@ document.addEventListener('keydown', function(event) {
   return lyricsData[song] || 0; // Return 0 if the song is not found
 }
 // let offsetValue = 0;
-let songName = "";
+let songName = null;
 
 BetterLyrics.Lyrics = {
   lyrics: [],
@@ -44,11 +44,9 @@ BetterLyrics.Lyrics = {
             // Get the current offset and update it
             let currentOffset = getSongOffset(songName);
             let newOffset = currentOffset + shiftAmount;
-            
             // Store the new offset in localStorage
             setSongOffset(songName, newOffset);
-            
-            console.log(`Updated offset for ${songName}: ${newOffset}`);
+            // console.log(`Updated offset for ${songName}: ${newOffset}`);
         } catch (error) {
             console.error("Error accessing Getters methods:", error);
         }
@@ -114,7 +112,8 @@ BetterLyrics.Lyrics = {
     BetterLyrics.DOM.requestSongInfo(e => {
       const song = e.song;
       const artist = e.artist;
-      songName = song;
+      const videoId = new URLSearchParams(window.location.search).get("v");
+      songName = videoId;
 
       BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
