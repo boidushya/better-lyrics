@@ -683,3 +683,10 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
     padding: 0 !important;
   }
 }
+
+#songDivContainer {
+  display:none !important;
+}
+#thumbnail > img {
+  object-fit:contain !important;
+}
