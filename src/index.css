@@ -683,3 +683,34 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
     padding: 0 !important;
   }
 }
+
+
+#songDivContainer {
+  display:none !important;
+}
+#thumbnail > img {
+  object-fit:contain !important;
+}
+
+@supports (selector(:root:has(#ThemeSong-MainContainer))) {
+  :root:has(#ThemeSong-MainContainer) {
+    ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #mini-guide-background,
+    ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #nav-bar-background,
+    ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #guide-wrapper {
+      background-color: var(--ts-navbar-color) !important;
+    }
+
+    ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #nav-bar-background {
+      background-color: var(--ts-navbar-color) !important;
+    }
+    
+    ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] ytmusic-player-bar,
+    ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #player-bar-background {
+        background-color: var(--ts-navbar-color) !important;
+    }
+
+    [style*="--blyrics-background-img"] {
+      --blyrics-background-img: unset !important;
+    }
+  }
+}
