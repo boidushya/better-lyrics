@@ -70,4 +70,6 @@ const setOptionsInForm = items => {
 
 // Event listeners
 document.addEventListener("DOMContentLoaded", restoreOptions);
-document.getElementById("save").addEventListener("click", saveOptions);
+document.querySelectorAll("#options input, #options select").forEach(element => {
+  element.addEventListener("change", saveOptions);
+});
