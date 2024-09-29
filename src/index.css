@@ -668,20 +668,20 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
       padding-inline: 64px;
     }
 
-		ytmusic-app-layout[player-fullscreened][blyrics-dfs] #player-page {
-			height: calc(100% - 128px);
-		}
+    ytmusic-app-layout[player-fullscreened][blyrics-dfs] #player-page {
+      height: calc(100% - 128px);
+    }
 
-		ytmusic-app-layout[player-fullscreened]:not([blyrics-dfs]) #player-bar-background.ytmusic-app-layout {
-			display: block;
-			backdrop-filter: none !important;
-			background: transparent !important;
-		}
+    ytmusic-app-layout[player-fullscreened]:not([blyrics-dfs]) #player-bar-background.ytmusic-app-layout {
+      display: block;
+      backdrop-filter: none !important;
+      background: transparent !important;
+    }
 
-		ytmusic-app-layout[player-fullscreened][blyrics-dfs] #player{
-			margin-bottom: 0px !important;
-    	bottom: 0;
-		}
+    ytmusic-app-layout[player-fullscreened][blyrics-dfs] #player {
+      margin-bottom: 0px !important;
+      bottom: 0;
+    }
 
     #av-id {
       top: 64px;
