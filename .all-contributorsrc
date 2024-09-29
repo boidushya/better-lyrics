@@ -15,6 +15,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "VinayChaurasiyaA",
+      "name": "VINAY CHAURASIYA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92705023?v=4",
+      "profile": "https://vinay-portfolioo.netlify.app/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "badgeTemplate": "<img src=\"https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg\" alt=\"\"/>",
