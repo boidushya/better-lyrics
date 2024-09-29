@@ -12,8 +12,8 @@
  <a aria-label="Better Stack Badge" href="https://better-lyrics-status.boidu.dev"><img height="20" src="https://uptime.betterstack.com/status-badges/v2/monitor/1dqoz.svg" alt="Better Stack Badge" /></a>
 
  <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
- <img src="https://img.shields.io/badge/all_contributors-1-orange.svg" alt=""/>
- <!-- ALL-CONTRIBUTORS-BADGE:END -->
+<img src="https://img.shields.io/badge/all_contributors-2-orange.svg" alt=""/>
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 </p>
 
 <p align="center">
@@ -265,6 +265,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ZeDarkAdam"><img src="https://avatars.githubusercontent.com/u/80891624?v=4?s=100" width="100px;" alt="Oleh"/><br /><sub><b>Oleh</b></sub></a><br /><a href="https://github.com/boidushya/better-lyrics/commits?author=ZeDarkAdam" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://vinay-portfolioo.netlify.app/"><img src="https://avatars.githubusercontent.com/u/92705023?v=4?s=100" width="100px;" alt="VINAY CHAURASIYA"/><br /><sub><b>VINAY CHAURASIYA</b></sub></a><br /><a href="https://github.com/boidushya/better-lyrics/commits?author=VinayChaurasiyaA" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
