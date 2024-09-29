@@ -683,9 +683,9 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
       bottom: 0;
     }
 
-		#player[player-ui-state="MINIPLAYER"]{
-			margin-bottom: 64px !important;
-		}
+    #player[player-ui-state="MINIPLAYER"] {
+      margin-bottom: 64px !important;
+    }
 
     #av-id {
       top: 64px;
