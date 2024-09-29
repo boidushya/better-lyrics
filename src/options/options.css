@@ -1,7 +1,7 @@
 html {
   width: 600px;
-	min-width: 600px;
-	max-width: 600px;
+  min-width: 600px;
+  max-width: 600px;
   overflow: auto;
 }
 
@@ -67,19 +67,22 @@ label input {
   cursor: pointer;
 }
 
-#status, #status-css,
+#status,
+#status-css,
 label input {
   position: absolute;
   opacity: 0;
 }
 
-#status, #status-css,
+#status,
+#status-css,
 button {
   font-size: 1.125rem;
 }
 
 * {
-  font-family: Avenir, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: Avenir, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
   font-weight: 400;
 }
 
@@ -118,12 +121,12 @@ button {
 }
 
 button:hover,
-label:hover input~.checkmark {
+label:hover input ~ .checkmark {
   background-color: hsla(0, 0%, 100%, 0.2);
 }
 
 .checkmark,
-label input:checked~.checkmark {
+label input:checked ~ .checkmark {
   background-color: hsla(0, 0%, 100%, 0.1);
 }
 
@@ -155,7 +158,7 @@ label input {
   display: none;
 }
 
-label input:checked~.checkmark:after {
+label input:checked ~ .checkmark:after {
   display: block;
 }
 
@@ -171,7 +174,8 @@ label .checkmark:after {
   transform: rotate(35deg);
 }
 
-#status, #status-css {
+#status,
+#status-css {
   top: 0;
   left: 50%;
   transform: translateX(-50%) translateY(-100%);
@@ -187,7 +191,8 @@ label .checkmark:after {
   transition: transform 0.2s, opacity 0.2s;
 }
 
-#status.active, #status-css.active {
+#status.active,
+#status-css.active {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
 }
@@ -237,11 +242,11 @@ select option {
 }
 
 .discord-btn {
-  background-color: #5865F2;
+  background-color: #5865f2;
 }
 
 .discord-btn:hover {
-  background-color: #4053D6;
+  background-color: #4053d6;
 }
 
 .small-btn {
@@ -267,19 +272,19 @@ select option {
   height: 0.875rem;
 }
 
-#css{
-	display: none;
+#css {
+  display: none;
 }
 
-#editor-container{
-    position: relative;
-    width: 100%;
-    height: 300px;
-		box-sizing: border-box;
+#editor-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  box-sizing: border-box;
 }
 
-#editor-container *{
-	font-family: "JetBrains Mono", Consolas, "Courier New", monospace !important;
+#editor-container * {
+  font-family: "JetBrains Mono", Consolas, "Courier New", monospace !important;
 }
 
 .selector {
@@ -310,24 +315,24 @@ select option {
   color: #abb2bf;
 }
 
-.note{
-	font-size: 0.875rem;
-	color: rgba(255, 255, 255, 0.5);
-	margin-top: 1rem;
+.note {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 1rem;
 }
 
 .note a {
-	color: rgba(255, 255, 255, 0.5);
-	text-decoration: underline;
-	text-underline-offset: 0.1em;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: underline;
+  text-underline-offset: 0.1em;
 }
 
 .note a:hover {
-	color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .note a:visited {
-	color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 #sync-indicator {
@@ -336,36 +341,36 @@ select option {
   right: 20px;
   padding: 5px 10px;
   background-color: rgba(128, 128, 128, 0.2);
-	backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   color: white;
   border-radius: 3px;
   font-size: 12px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   z-index: 1000;
-	display: none;
+  display: none;
 }
 
 #sync-indicator.success {
-	color: #4CAF50;
+  color: #4caf50;
 }
 
 #sync-indicator.error {
-	color: #FF7961;
+  color: #ff7961;
 }
 
-.ie-utils{
-	display: flex;
-	align-items: center;
-	justify-content: start;
-	gap: 0.5rem;
-	margin-top: 1rem;
+.ie-utils {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
 
-.CodeMirror-hints{
-	background: #28292c !important;
-	border: 1px solid #3e3e41 !important;
+.CodeMirror-hints {
+  background: #28292c !important;
+  border: 1px solid #3e3e41 !important;
 }
 
-.CodeMirror-hint{
-	color: #fff !important;
+.CodeMirror-hint {
+  color: #fff !important;
 }
