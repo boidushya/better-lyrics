@@ -374,3 +374,13 @@ select option {
 .CodeMirror-hint {
   color: #fff !important;
 }
+
+#theme-selector {
+  max-width: 6.5rem;
+  width: fit-content;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+}
