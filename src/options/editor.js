@@ -382,7 +382,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 1000);
       });
 
-    // Reset isUserTyping after save
     isUserTyping = false;
   }
 
@@ -394,10 +393,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   editor.on("change", function (_, changeObj) {
     if (changeObj.origin === "+input") {
-      // User is typing
       isUserTyping = true;
       if (currentThemeName !== null) {
-        // User started typing while a theme was selected
         const themeSelector = document.getElementById("theme-selector");
         themeSelector.value = "";
         currentThemeName = null;
@@ -464,7 +461,7 @@ ${selectedTheme.css}
       editor.setValue(themeContent);
       chrome.storage.sync.set({ themeName: selectedTheme.name });
       currentThemeName = selectedTheme.name;
-      isUserTyping = false; // Reset isUserTyping when a theme is selected
+      isUserTyping = false;
       saveToStorage(true);
       showAlert(`Applied theme: ${selectedTheme.name}`);
     }
