@@ -8,6 +8,14 @@ BetterLyrics.Settings = {
         layout.setAttribute(BetterLyrics.Constants.LYRICS_DISABLED_ATTR, "");
         playerPage.setAttribute(BetterLyrics.Constants.LYRICS_DISABLED_ATTR, "");
       }
+    }, () => {
+      const layout = document.getElementById("layout");
+      const playerPage = document.getElementById("player-page");
+
+      if (layout && playerPage) {
+        layout.removeAttribute(BetterLyrics.Constants.LYRICS_DISABLED_ATTR);
+        playerPage.removeAttribute(BetterLyrics.Constants.LYRICS_DISABLED_ATTR);
+      }
     });
 
     BetterLyrics.Settings.onStylizedAnimationsEnabled(() => {
@@ -20,6 +28,16 @@ BetterLyrics.Settings = {
         playerPage.setAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR, "");
         appBase.setAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR, "");
       }
+    }, () => {
+      const layout = document.getElementById("layout");
+      const playerPage = document.getElementById("player-page");
+      const appBase = document.getElementsByTagName("ytmusic-app")[0];
+
+      if (layout && playerPage) {
+        layout.removeAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR);
+        playerPage.removeAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR);
+        appBase.removeAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR);
+      }
     });
   },
 
@@ -31,59 +49,84 @@ BetterLyrics.Settings = {
     });
   },
 
-  onFullScreenDisabled: function (callback) {
+  onFullScreenDisabled: function (callback1, callback2) {
     BetterLyrics.Storage.getStorage({ isFullScreenDisabled: false }, items => {
       if (items.isFullScreenDisabled) {
-        callback();
+        callback1();
+      } else {
+        callback2();
       }
     });
   },
 
-  onAlbumArtEnabled: function (callback) {
+  onAlbumArtEnabled: function (callback1, callback2) {
     BetterLyrics.Storage.getStorage({ isAlbumArtEnabled: true }, items => {
       if (items.isAlbumArtEnabled) {
-        callback();
+        callback1();
+      } else {
+        callback2();
       }
     });
   },
 
-  onStylizedAnimationsEnabled: function (callback) {
+  onStylizedAnimationsEnabled: function (callback1, callback2) {
     BetterLyrics.Storage.getStorage({ isStylizedAnimationsEnabled: true }, items => {
       if (items.isStylizedAnimationsEnabled) {
-        callback();
+        callback1();
+      } else {
+        callback2();
       }
     });
   },
 
-  onAutoHideCursor: function (callback) {
+  onAutoHideCursor: function (callback1, callback2) {
     BetterLyrics.Storage.getStorage({ isCursorAutoHideEnabled: true }, items => {
       if (items.isCursorAutoHideEnabled) {
-        callback();
+        callback1();
+      } else {
+        callback2();
       }
     });
   },
 
+  mouseTimer: null,
+  cursorEventListener: null,
   hideCursorOnIdle: function () {
     BetterLyrics.Settings.onAutoHideCursor(() => {
-      let mouseTimer = null,
-        cursorVisible = true;
+      let cursorVisible = true;
 
       function disappearCursor() {
-        mouseTimer = null;
+        this.mouseTimer = null;
         document.getElementById("layout").setAttribute("cursor-hidden", "");
         cursorVisible = false;
       }
 
-      document.onmousemove = function () {
-        if (mouseTimer) {
-          window.clearTimeout(mouseTimer);
+      function handleMouseMove() {
+        if (BetterLyrics.Settings.mouseTimer) {
+          window.clearTimeout(BetterLyrics.Settings.mouseTimer);
         }
         if (!cursorVisible) {
           document.getElementById("layout").removeAttribute("cursor-hidden");
           cursorVisible = true;
         }
-        mouseTimer = window.setTimeout(disappearCursor, 3000);
-      };
+        BetterLyrics.Settings.mouseTimer = window.setTimeout(disappearCursor, 3000);
+      }
+
+      if (BetterLyrics.Settings.cursorEventListener) {
+        document.removeEventListener("mousemove", BetterLyrics.Settings.cursorEventListener);
+      }
+
+      BetterLyrics.Settings.cursorEventListener = handleMouseMove;
+      document.addEventListener("mousemove", handleMouseMove);
+    }, () => {
+      if (BetterLyrics.Settings.mouseTimer) {
+        window.clearTimeout(BetterLyrics.Settings.mouseTimer);
+      }
+      document.getElementById("layout").removeAttribute("cursor-hidden");
+      if (BetterLyrics.Settings.cursorEventListener) {
+        document.removeEventListener("mousemove", BetterLyrics.Settings.cursorEventListener);
+        BetterLyrics.Settings.cursorEventListener = null;
+      }
     });
   },
 
@@ -91,6 +134,11 @@ BetterLyrics.Settings = {
     chrome.runtime.onMessage.addListener(request => {
       if (request.action === "updateCSS") {
         BetterLyrics.Utils.applyCustomCSS(request.css);
+      } else if (request.action === "updateSettings") {
+        BetterLyrics.Settings.hideCursorOnIdle();
+        BetterLyrics.Settings.handleSettings();
+        BetterLyrics.Settings.onAlbumArtEnabled(BetterLyrics.DOM.addAlbumArtToLayout, BetterLyrics.DOM.removeAlbumArtFromLayout);
+        BetterLyrics.App.handleModifications();
       }
     });
   },
