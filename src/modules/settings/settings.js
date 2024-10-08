@@ -1,90 +1,96 @@
 BetterLyrics.Settings = {
   handleSettings: function () {
-    BetterLyrics.Settings.onFullScreenDisabled(() => {
-      const layout = document.getElementById("layout");
-      const playerPage = document.getElementById("player-page");
+    BetterLyrics.Settings.onFullScreenDisabled(
+      () => {
+        const layout = document.getElementById("layout");
+        const playerPage = document.getElementById("player-page");
 
-      if (layout && playerPage) {
-        layout.setAttribute(BetterLyrics.Constants.LYRICS_DISABLED_ATTR, "");
-        playerPage.setAttribute(BetterLyrics.Constants.LYRICS_DISABLED_ATTR, "");
+        if (layout && playerPage) {
+          layout.setAttribute(BetterLyrics.Constants.LYRICS_DISABLED_ATTR, "");
+          playerPage.setAttribute(BetterLyrics.Constants.LYRICS_DISABLED_ATTR, "");
+        }
+      },
+      () => {
+        const layout = document.getElementById("layout");
+        const playerPage = document.getElementById("player-page");
+
+        if (layout && playerPage) {
+          layout.removeAttribute(BetterLyrics.Constants.LYRICS_DISABLED_ATTR);
+          playerPage.removeAttribute(BetterLyrics.Constants.LYRICS_DISABLED_ATTR);
+        }
       }
-    }, () => {
-      const layout = document.getElementById("layout");
-      const playerPage = document.getElementById("player-page");
+    );
 
-      if (layout && playerPage) {
-        layout.removeAttribute(BetterLyrics.Constants.LYRICS_DISABLED_ATTR);
-        playerPage.removeAttribute(BetterLyrics.Constants.LYRICS_DISABLED_ATTR);
+    BetterLyrics.Settings.onStylizedAnimationsEnabled(
+      () => {
+        const layout = document.getElementById("layout");
+        const playerPage = document.getElementById("player-page");
+        const appBase = document.getElementsByTagName("ytmusic-app")[0];
+
+        if (layout && playerPage) {
+          layout.setAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR, "");
+          playerPage.setAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR, "");
+          appBase.setAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR, "");
+        }
+      },
+      () => {
+        const layout = document.getElementById("layout");
+        const playerPage = document.getElementById("player-page");
+        const appBase = document.getElementsByTagName("ytmusic-app")[0];
+
+        if (layout && playerPage) {
+          layout.removeAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR);
+          playerPage.removeAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR);
+          appBase.removeAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR);
+        }
       }
-    });
-
-    BetterLyrics.Settings.onStylizedAnimationsEnabled(() => {
-      const layout = document.getElementById("layout");
-      const playerPage = document.getElementById("player-page");
-      const appBase = document.getElementsByTagName("ytmusic-app")[0];
-
-      if (layout && playerPage) {
-        layout.setAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR, "");
-        playerPage.setAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR, "");
-        appBase.setAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR, "");
-      }
-    }, () => {
-      const layout = document.getElementById("layout");
-      const playerPage = document.getElementById("player-page");
-      const appBase = document.getElementsByTagName("ytmusic-app")[0];
-
-      if (layout && playerPage) {
-        layout.removeAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR);
-        playerPage.removeAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR);
-        appBase.removeAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR);
-      }
-    });
+    );
   },
 
-  onAutoSwitchEnabled: function (callback) {
+  onAutoSwitchEnabled: function (enableAutoSwitch) {
     BetterLyrics.Storage.getStorage({ isAutoSwitchEnabled: false }, items => {
       if (items.isAutoSwitchEnabled) {
-        callback();
+        enableAutoSwitch();
       }
     });
   },
 
-  onFullScreenDisabled: function (callback1, callback2) {
+  onFullScreenDisabled: function (disableFullScreen, enableFullScreen) {
     BetterLyrics.Storage.getStorage({ isFullScreenDisabled: false }, items => {
       if (items.isFullScreenDisabled) {
-        callback1();
+        disableFullScreen();
       } else {
-        callback2();
+        enableFullScreen();
       }
     });
   },
 
-  onAlbumArtEnabled: function (callback1, callback2) {
+  onAlbumArtEnabled: function (enableAlbumArt, disableAlbumArt) {
     BetterLyrics.Storage.getStorage({ isAlbumArtEnabled: true }, items => {
       if (items.isAlbumArtEnabled) {
-        callback1();
+        enableAlbumArt();
       } else {
-        callback2();
+        disableAlbumArt();
       }
     });
   },
 
-  onStylizedAnimationsEnabled: function (callback1, callback2) {
+  onStylizedAnimationsEnabled: function (enableAnimations, disableAnimations) {
     BetterLyrics.Storage.getStorage({ isStylizedAnimationsEnabled: true }, items => {
       if (items.isStylizedAnimationsEnabled) {
-        callback1();
+        enableAnimations();
       } else {
-        callback2();
+        disableAnimations();
       }
     });
   },
 
-  onAutoHideCursor: function (callback1, callback2) {
+  onAutoHideCursor: function (enableCursorAutoHide, disableCursorAutoHide) {
     BetterLyrics.Storage.getStorage({ isCursorAutoHideEnabled: true }, items => {
       if (items.isCursorAutoHideEnabled) {
-        callback1();
+        enableCursorAutoHide();
       } else {
-        callback2();
+        disableCursorAutoHide();
       }
     });
   },
@@ -92,42 +98,45 @@ BetterLyrics.Settings = {
   mouseTimer: null,
   cursorEventListener: null,
   hideCursorOnIdle: function () {
-    BetterLyrics.Settings.onAutoHideCursor(() => {
-      let cursorVisible = true;
+    BetterLyrics.Settings.onAutoHideCursor(
+      () => {
+        let cursorVisible = true;
 
-      function disappearCursor() {
-        this.mouseTimer = null;
-        document.getElementById("layout").setAttribute("cursor-hidden", "");
-        cursorVisible = false;
-      }
+        function disappearCursor() {
+          this.mouseTimer = null;
+          document.getElementById("layout").setAttribute("cursor-hidden", "");
+          cursorVisible = false;
+        }
 
-      function handleMouseMove() {
+        function handleMouseMove() {
+          if (BetterLyrics.Settings.mouseTimer) {
+            window.clearTimeout(BetterLyrics.Settings.mouseTimer);
+          }
+          if (!cursorVisible) {
+            document.getElementById("layout").removeAttribute("cursor-hidden");
+            cursorVisible = true;
+          }
+          BetterLyrics.Settings.mouseTimer = window.setTimeout(disappearCursor, 3000);
+        }
+
+        if (BetterLyrics.Settings.cursorEventListener) {
+          document.removeEventListener("mousemove", BetterLyrics.Settings.cursorEventListener);
+        }
+
+        BetterLyrics.Settings.cursorEventListener = handleMouseMove;
+        document.addEventListener("mousemove", handleMouseMove);
+      },
+      () => {
         if (BetterLyrics.Settings.mouseTimer) {
           window.clearTimeout(BetterLyrics.Settings.mouseTimer);
         }
-        if (!cursorVisible) {
-          document.getElementById("layout").removeAttribute("cursor-hidden");
-          cursorVisible = true;
+        document.getElementById("layout").removeAttribute("cursor-hidden");
+        if (BetterLyrics.Settings.cursorEventListener) {
+          document.removeEventListener("mousemove", BetterLyrics.Settings.cursorEventListener);
+          BetterLyrics.Settings.cursorEventListener = null;
         }
-        BetterLyrics.Settings.mouseTimer = window.setTimeout(disappearCursor, 3000);
       }
-
-      if (BetterLyrics.Settings.cursorEventListener) {
-        document.removeEventListener("mousemove", BetterLyrics.Settings.cursorEventListener);
-      }
-
-      BetterLyrics.Settings.cursorEventListener = handleMouseMove;
-      document.addEventListener("mousemove", handleMouseMove);
-    }, () => {
-      if (BetterLyrics.Settings.mouseTimer) {
-        window.clearTimeout(BetterLyrics.Settings.mouseTimer);
-      }
-      document.getElementById("layout").removeAttribute("cursor-hidden");
-      if (BetterLyrics.Settings.cursorEventListener) {
-        document.removeEventListener("mousemove", BetterLyrics.Settings.cursorEventListener);
-        BetterLyrics.Settings.cursorEventListener = null;
-      }
-    });
+    );
   },
 
   listenForPopupMessages: function () {
@@ -137,7 +146,10 @@ BetterLyrics.Settings = {
       } else if (request.action === "updateSettings") {
         BetterLyrics.Settings.hideCursorOnIdle();
         BetterLyrics.Settings.handleSettings();
-        BetterLyrics.Settings.onAlbumArtEnabled(BetterLyrics.DOM.addAlbumArtToLayout, BetterLyrics.DOM.removeAlbumArtFromLayout);
+        BetterLyrics.Settings.onAlbumArtEnabled(
+          BetterLyrics.DOM.addAlbumArtToLayout,
+          BetterLyrics.DOM.removeAlbumArtFromLayout
+        );
         BetterLyrics.App.handleModifications();
       }
     });
