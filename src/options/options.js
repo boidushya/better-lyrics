@@ -79,3 +79,17 @@ document.addEventListener("DOMContentLoaded", restoreOptions);
 document.querySelectorAll("#options input, #options select").forEach(element => {
   element.addEventListener("change", saveOptions);
 });
+
+// Tab switcher
+const tabButtons = document.querySelectorAll(".tab");
+const tabContents = document.querySelectorAll(".tab-content");
+
+tabButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    tabButtons.forEach(btn => btn.classList.remove("active"));
+    tabContents.forEach(content => content.classList.remove("active"));
+
+    button.classList.add("active");
+    document.querySelector(button.getAttribute("data-target")).classList.add("active");
+  });
+});
