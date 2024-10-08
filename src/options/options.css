@@ -182,6 +182,11 @@ select option {
   background-color: hsla(0, 0%, 100%, 0.1);
 }
 
+.select-large {
+	min-width: 20ch;
+	max-width: 40ch;
+}
+
 .select:after {
   content: "";
   position: absolute;
@@ -331,7 +336,7 @@ select option {
 }
 
 #theme-selector {
-  max-width: 6.5rem;
+  max-width: 18ch;
   width: fit-content;
   overflow: hidden;
   text-overflow: ellipsis;
