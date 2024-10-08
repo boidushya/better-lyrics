@@ -52,6 +52,7 @@ BetterLyrics.Constants = {
   LYRICS_TAB_NOT_DISABLED_LOG: "[BetterLyrics] (Safe to ignore) Lyrics tab is not disabled, unable to enable it",
   SONG_SWITCHED_LOG: "[BetterLyrics] Song has been switched",
   ALBUM_ART_ADDED_LOG: "[BetterLyrics] Album art added to the layout",
+  ALBUM_ART_REMOVED_LOG: "[BetterLyrics] Album art removed from the layout",
   AUTO_SWITCH_ENABLED_LOG: "[BetterLyrics] Auto switch enabled, switching to lyrics tab",
   TRANSLATION_ENABLED_LOG: "[BetterLyrics] Translation enabled, translating lyrics. Language: ",
   TRANSLATION_ERROR_LOG: "[BetterLyrics] Unable to translate lyrics due to error",

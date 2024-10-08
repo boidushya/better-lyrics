@@ -295,6 +295,14 @@ BetterLyrics.DOM = {
     BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_LOG);
   },
 
+  removeAlbumArtFromLayout: function () {
+    const layout = document.getElementById("layout");
+    if (layout) {
+      layout.style.removeProperty("--blyrics-background-img");
+      BetterLyrics.Utils.log("Album art removed from layout");
+    }
+  },
+
   injectHeadTags: function () {
     const imgURL = "https://better-lyrics.boidu.dev/icon-512.png";
 

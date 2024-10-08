@@ -7,6 +7,8 @@ chrome.runtime.onMessage.addListener(request => {
         });
       });
     });
+  } else if (request.action === "updateSettings") {
+    BetterLyrics.Settings.handleSettings(request.settings);
   }
   return true;
 });

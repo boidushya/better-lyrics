@@ -20,11 +20,17 @@ const getOptionsFromForm = () => {
 
 // Function to save options to Chrome storage
 const saveOptionsToStorage = options => {
-  chrome.storage.sync.set(options, showSaveConfirmation);
+  chrome.storage.sync.set(options, () => {
+    chrome.tabs.query({ url: "https://music.youtube.com/*" }, function (tabs) {
+      tabs.forEach(tab => {
+        chrome.tabs.sendMessage(tab.id, { action: "updateSettings", settings: options });
+      });
+    });
+  });
 };
 
 // Function to show save confirmation message
-const showSaveConfirmation = () => {
+const _showSaveConfirmation = () => {
   const status = document.getElementById("status");
   status.textContent = "Options saved. Refresh tab to apply changes.";
   status.classList.add("active");

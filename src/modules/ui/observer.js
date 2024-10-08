@@ -47,7 +47,10 @@ BetterLyrics.Observer = {
           ) {
             BetterLyrics.Utils.log(BetterLyrics.Constants.SONG_SWITCHED_LOG, targetNode.innerHTML);
             song.title = targetNode.innerHTML;
-            BetterLyrics.Settings.onAlbumArtEnabled(BetterLyrics.DOM.addAlbumArtToLayout);
+            BetterLyrics.Settings.onAlbumArtEnabled(
+              BetterLyrics.DOM.addAlbumArtToLayout,
+              BetterLyrics.DOM.removeAlbumArtFromLayout
+            );
 
             const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
             if (tabSelector.getAttribute("aria-selected") === "true") {
