@@ -3,6 +3,7 @@ let editor;
 let currentThemeName = null;
 let isUserTyping = false;
 const SAVE_DEBOUNCE_DELAY = 1000;
+const VALID_CHANGE_ORIGINS = ["undo", "redo", "cut", "paste", "drag", "+delete", "+input"];
 
 const THEMES = [
   {
@@ -392,7 +393,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   editor.on("change", function (_, changeObj) {
-    if (changeObj.origin === "+input") {
+    console.log("cm", changeObj);
+    if (VALID_CHANGE_ORIGINS.includes(changeObj.origin)) {
       isUserTyping = true;
       if (currentThemeName !== null) {
         const themeSelector = document.getElementById("theme-selector");
