@@ -183,8 +183,8 @@ select option {
 }
 
 .select-large {
-	min-width: 20ch;
-	max-width: 40ch;
+  min-width: 20ch;
+  max-width: 40ch;
 }
 
 .select:after {
