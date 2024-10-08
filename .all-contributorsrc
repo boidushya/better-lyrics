@@ -24,6 +24,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Myse1f",
+      "name": "Yvon",
+      "avatar_url": "https://avatars.githubusercontent.com/u/28757057?v=4",
+      "profile": "https://github.com/Myse1f",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "badgeTemplate": "<img src=\"https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg\" alt=\"\"/>",
