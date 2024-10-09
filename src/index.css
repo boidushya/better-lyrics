@@ -108,6 +108,32 @@
 .blyrics-container > div.blyrics--active > span.blyrics--translated {
   opacity: var(--blyrics-translated-opacity);
 }
+/* Romanization */
+.blyrics--romanized {
+  display: block;
+  font-style: italic;
+  color: #6c757d;
+  font-size: 0.9em;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  padding-left: 10px;
+  border-left: 2px solid #007bff;
+  align-items: center;
+  line-height: 1.4;
+}
+
+/* Ensure proper spacing when romanized lyrics follow original lyrics */
+.blyrics-line > span + .blyrics--romanized {
+  margin-top: 4px;
+}
+
+/* For better visibility on dark backgrounds */
+@media (prefers-color-scheme: dark) {
+  .blyrics--romanized {
+      color: #a9b5c0;
+      border-left-color: #4dabf7;
+  }
+}
 
 /* RTL support */
 #layout[blyrics-rtl-enabled] .blyrics-container > div {

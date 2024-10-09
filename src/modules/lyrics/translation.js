@@ -17,6 +17,26 @@ BetterLyrics.Translation = {
         return null;
       });
   },
+  translateTextIntoRomaji: async function (lang ,text) {
+    let url = BetterLyrics.Constants.TRANSLATE_IN_ROMAJI(lang , text);
+    return fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        return data[0][1][3];
+      })
+      .catch(error => {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.TRANSLATION_ERROR_LOG, error);
+        return null;
+      });
+  },
+
+  getRomanizationStatus: async function (callback) {
+    BetterLyrics.Storage.getStorage(["isRomanizationEnable"], items => {
+      if (items.isRomanizationEnable) {
+        callback(items);
+      }
+    });
+  },
 
   onTranslationEnabled: function (callback) {
     BetterLyrics.Storage.getStorage(["isTranslateEnabled", "translationLanguage"], items => {
