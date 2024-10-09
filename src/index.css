@@ -105,7 +105,8 @@
   animation: blyrics-glow var(--blyrics-glow-duration) forwards, blyrics-wobble var(--blyrics-wobble-duration) forwards;
 }
 
-.blyrics-container > div.blyrics--active > span.blyrics--translated, .blyrics-container > div.blyrics--active > span.blyrics--romanized {
+.blyrics-container > div.blyrics--active > span.blyrics--translated,
+.blyrics-container > div.blyrics--active > span.blyrics--romanized {
   opacity: var(--blyrics-translated-opacity);
 }
 
@@ -310,7 +311,8 @@ ytmusic-player-bar,
 }
 
 /* Miscellaneous styles */
-.blyrics--translated, .blyrics--romanized {
+.blyrics--translated,
+.blyrics--romanized {
   display: block;
   font-size: var(--blyrics-translated-font-size);
   font-weight: var(--blyrics-translated-font-weight);
@@ -321,13 +323,13 @@ ytmusic-player-bar,
 
 /* Romanization */
 .blyrics--romanized {
-	/* font-style: italic; */
-	width: fit-content;
+  /* font-style: italic; */
+  width: fit-content;
   padding-block: 1rem;
   font-size: calc(var(--blyrics-translated-font-size) / 1.25);
-	background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   padding: 0.375rem 0.75rem;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 1rem;
 }
 

@@ -34,35 +34,35 @@ BetterLyrics.Constants = {
   TRANSLATE_LYRICS_URL: function (lang, text) {
     return `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`;
   },
-  romanizationLanguages : [
-    "ja",  // Japanese - Romaji
-    "ru",  // Russian - Romanization
-    "ko",  // Korean - Romanization
-    "zh-CN",  // Simplified Chinese - Pinyin
-    "zh-TW",  // Traditional Chinese - Pinyin
+  romanizationLanguages: [
+    "ja", // Japanese - Romaji
+    "ru", // Russian - Romanization
+    "ko", // Korean - Romanization
+    "zh-CN", // Simplified Chinese - Pinyin
+    "zh-TW", // Traditional Chinese - Pinyin
     // "hi" , // Hindi
-    "zh",  // Chinese
-    "bn",  // Bengali - Romanization
-    "th",  // Thai - Romanization
-    "el",  // Greek - Romanization
-    "he",  // Hebrew - Romanization
-    "ar",  // Arabic - Romanization
-    "ta",  // Tamil - Romanization
-    "te",  // Telugu - Romanization
-    "ml",  // Malayalam - Romanization
-    "kn",  // Kannada - Romanization
-    "gu",  // Gujarati - Romanization
-    "pa",  // Punjabi - Romanization
-    "mr",  // Marathi - Romanization
-    "ur",  // Urdu - Romanization
-    "si",  // Sinhala - Romanization
-    "my",  // Burmese - Romanization
-    "ka",  // Georgian - Romanization
-    "km",  // Khmer - Romanization
-    "lo",  // Lao - Romanization
-    "fa"   // Persian - Romanization
-  ],  
-  TRANSLATE_IN_ROMAJI: function (lang , text) {
+    "zh", // Chinese
+    "bn", // Bengali - Romanization
+    "th", // Thai - Romanization
+    "el", // Greek - Romanization
+    "he", // Hebrew - Romanization
+    "ar", // Arabic - Romanization
+    "ta", // Tamil - Romanization
+    "te", // Telugu - Romanization
+    "ml", // Malayalam - Romanization
+    "kn", // Kannada - Romanization
+    "gu", // Gujarati - Romanization
+    "pa", // Punjabi - Romanization
+    "mr", // Marathi - Romanization
+    "ur", // Urdu - Romanization
+    "si", // Sinhala - Romanization
+    "my", // Burmese - Romanization
+    "ka", // Georgian - Romanization
+    "km", // Khmer - Romanization
+    "lo", // Lao - Romanization
+    "fa", // Persian - Romanization
+  ],
+  TRANSLATE_IN_ROMAJI: function (lang, text) {
     //DONE: LANGUAGE COMING FROM OPTIONS AND IF IT'S A JAPANESE SONG THEN WE CAN USE THIS or IF it's a russian we can change that accordingly
     return `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${lang}&tl=en&dt=t&dt=rm&q=${encodeURIComponent(text)}`;
   },
