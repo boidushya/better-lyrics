@@ -15,6 +15,7 @@ const getOptionsFromForm = () => {
     isTranslateEnabled: document.getElementById("translate").checked,
     translationLanguage: document.getElementById("translationLanguage").value,
     isCursorAutoHideEnabled: document.getElementById("cursorAutoHide").checked,
+    isRomanizationEnabled: document.getElementById("isRomanizationEnabled").checked,
   };
 };
 
@@ -57,6 +58,7 @@ const restoreOptions = () => {
     isStylizedAnimationsEnabled: true,
     isTranslateEnabled: false,
     translationLanguage: "en",
+    isRomanizationEnabled: false,
   };
 
   chrome.storage.sync.get(defaultOptions, setOptionsInForm);
@@ -72,6 +74,7 @@ const setOptionsInForm = items => {
   document.getElementById("isStylizedAnimationsEnabled").checked = items.isStylizedAnimationsEnabled;
   document.getElementById("translate").checked = items.isTranslateEnabled;
   document.getElementById("translationLanguage").value = items.translationLanguage;
+  document.getElementById("isRomanizationEnabled").checked = items.isRomanizationEnabled;
 };
 
 // Event listeners

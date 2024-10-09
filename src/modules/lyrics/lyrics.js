@@ -97,29 +97,50 @@ BetterLyrics.Lyrics = {
         line.appendChild(span);
       });
 
-      BetterLyrics.Translation.onTranslationEnabled(items => {
-        let translatedLine = document.createElement("span");
-        translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
+      BetterLyrics.Translation.onRomanizationEnabled(
+        async () => {
+          let romanizedLine = document.createElement("span");
+          romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
 
-        let source_language = BetterLyrics.App.lang ?? "en";
-        let target_language = items.translationLanguage || "en";
+          let source_language = BetterLyrics.App.lang ?? "en";
+          if (BetterLyrics.Constants.romanizationLanguages.includes(source_language)) {
+            if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+              const result = await BetterLyrics.Translation.translateTextIntoRomaji(source_language, item.words);
+              if (result && result.trim() !== "") {
+                romanizedLine.textContent = result ? "\n" + result : "\n";
+                line.appendChild(romanizedLine);
+              }
+            }
+          }
+        },
+        async () => {
+          BetterLyrics.Translation.onTranslationEnabled(async items => {
+            let translatedLine = document.createElement("span");
+            translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
 
-        if (source_language !== target_language) {
-          if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-            BetterLyrics.Translation.translateText(item.words, target_language).then(result => {
-              if (result) {
-                if (result.originalLanguage !== target_language) {
-                  translatedLine.textContent = "\n" + result.translatedText;
+            let source_language = BetterLyrics.App.lang ?? "en";
+            let target_language = items.translationLanguage || "en";
+
+            if (source_language !== target_language) {
+              if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+                const result = await BetterLyrics.Translation.translateText(item.words, target_language);
+
+                if (result) {
+                  if (result.originalLanguage !== target_language) {
+                    translatedLine.textContent = "\n" + result.translatedText;
+                    line.appendChild(translatedLine);
+                  }
+                } else {
+                  translatedLine.textContent = "\n" + "—";
                   line.appendChild(translatedLine);
                 }
-              } else {
-                translatedLine.textContent = "\n" + "—";
+
                 line.appendChild(translatedLine);
               }
-            });
-          }
+            }
+          });
         }
-      });
+      );
 
       try {
         document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].appendChild(line);

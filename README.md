@@ -5,7 +5,7 @@
 
 <p align="center">
  <a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
- <img src="https://img.shields.io/badge/version-1.7.5-blue.svg" alt=""/>
+ <img src="https://img.shields.io/badge/version-1.8.0-blue.svg" alt=""/>
 
  <img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt=""/>
  <a aria-label="Volkswagen CI" href="https://github.com/boidushya/better-lyrics"><img src="https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1" alt=""/></a>
@@ -55,6 +55,7 @@
 - [FAQ](#faq)
 	- [Why are the lyrics not showing up?](#why-are-the-lyrics-not-showing-up)
 	- [How do I change settings?](#how-do-i-change-settings)
+	- [My CSS changes are not showing up. What do I do?](#my-css-changes-are-not-showing-up-what-do-i-do)
 	- [How do I turn on full-screen mode?](#how-do-i-turn-on-full-screen-mode)
 	- [How do I translate lyrics?](#how-do-i-translate-lyrics)
 	- [Can I contribute to Better Lyrics?](#can-i-contribute-to-better-lyrics)
@@ -144,10 +145,11 @@ Better Lyrics **does not** collect any personal data or track your browsing acti
 | Stylized Lyrics (Background/Wobble/Glow) | Enabled            |
 | Translations                             | Disabled           |
 | Translation Language                     | English            |
+| Romanization                             | Disabled           |
 
 > [!TIP]
 >
-> To change defaults, click on the Better Lyrics icon in the extensions toolbar. The changes require a page refresh to take effect.
+> To change defaults, click on the Better Lyrics icon in the extensions toolbar. The changes are applied immediately and don't require a page refresh. However in some cases, for example, updating the extension, you might need to refresh the page to toggle settings/ add or update css.
 
 ## Styling
 
@@ -179,7 +181,11 @@ Make sure that the extension is enabled and that you are on <https://music.youtu
 
 ### How do I change settings?
 
-Click on the Better Lyrics icon in the extensions toolbar to access the settings. The changes require a page refresh to take effect.
+Click on the Better Lyrics icon in the extensions toolbar to access the settings. The changes are applied immediately and don't require a page refresh. However, in some cases, for example, updating the extension, you might need to refresh the page to toggle settings/add or update CSS.
+
+### My CSS changes are not showing up. What do I do?
+
+If you've made changes to the CSS and they're not showing up, try refreshing the page, especially after updating the extension. Your CSS changes will be saved regardless. If that doesn't work, try disabling and re-enabling the extension.
 
 ### How do I turn on full-screen mode?
 
