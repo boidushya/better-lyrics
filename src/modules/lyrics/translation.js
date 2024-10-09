@@ -17,8 +17,8 @@ BetterLyrics.Translation = {
         return null;
       });
   },
-  translateTextIntoRomaji: async function (lang ,text) {
-    let url = BetterLyrics.Constants.TRANSLATE_IN_ROMAJI(lang , text);
+  translateTextIntoRomaji: async function (lang, text) {
+    let url = BetterLyrics.Constants.TRANSLATE_IN_ROMAJI(lang, text);
     return fetch(url)
       .then(response => response.json())
       .then(data => {
@@ -30,11 +30,12 @@ BetterLyrics.Translation = {
       });
   },
 
-  getRomanizationStatus: async function (callback) {
-    BetterLyrics.Storage.getStorage(["isRomanizationEnable"], items => {
-      if (items.isRomanizationEnable) {
-        callback(items);
+  onRomanizationEnabled: async function (callback, next = () => {}) {
+    BetterLyrics.Storage.getStorage(["isRomanizationEnabled"], async items => {
+      if (items.isRomanizationEnabled) {
+        await callback(items);
       }
+      await next();
     });
   },
 

@@ -94,45 +94,19 @@
   transition: opacity var(--blyrics-opacity-transition);
 }
 
-.blyrics-container > div > span:not(:empty):not(.blyrics--translated) {
+.blyrics-container > div > span:not(:empty):not(.blyrics--translated):not(.blyrics--romanized) {
   display: inline-block;
   white-space: pre-wrap;
 }
 
-.blyrics-container > div.blyrics--active > span:not(:empty):not(.blyrics--translated) {
+.blyrics-container > div.blyrics--active > span:not(:empty):not(.blyrics--translated):not(.blyrics--romanized) {
   cursor: default;
   opacity: var(--blyrics-active-opacity);
   animation: blyrics-glow var(--blyrics-glow-duration) forwards, blyrics-wobble var(--blyrics-wobble-duration) forwards;
 }
 
-.blyrics-container > div.blyrics--active > span.blyrics--translated {
+.blyrics-container > div.blyrics--active > span.blyrics--translated, .blyrics-container > div.blyrics--active > span.blyrics--romanized {
   opacity: var(--blyrics-translated-opacity);
-}
-/* Romanization */
-.blyrics--romanized {
-  display: block;
-  font-style: italic;
-  color: #6c757d;
-  font-size: 0.9em;
-  margin-top: 4px;
-  margin-bottom: 8px;
-  padding-left: 10px;
-  border-left: 2px solid #007bff;
-  align-items: center;
-  line-height: 1.4;
-}
-
-/* Ensure proper spacing when romanized lyrics follow original lyrics */
-.blyrics-line > span + .blyrics--romanized {
-  margin-top: 4px;
-}
-
-/* For better visibility on dark backgrounds */
-@media (prefers-color-scheme: dark) {
-  .blyrics--romanized {
-      color: #a9b5c0;
-      border-left-color: #4dabf7;
-  }
 }
 
 /* RTL support */
@@ -336,13 +310,25 @@ ytmusic-player-bar,
 }
 
 /* Miscellaneous styles */
-.blyrics--translated {
+.blyrics--translated, .blyrics--romanized {
   display: block;
   font-size: var(--blyrics-translated-font-size);
   font-weight: var(--blyrics-translated-font-weight);
   white-space: normal;
   line-height: 1.1;
   margin-top: 8px;
+}
+
+/* Romanization */
+.blyrics--romanized {
+	/* font-style: italic; */
+	width: fit-content;
+  padding-block: 1rem;
+  font-size: calc(var(--blyrics-translated-font-size) / 1.25);
+	background: rgba(255,255,255,0.05);
+  padding: 0.375rem 0.75rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 1rem;
 }
 
 #side-panel {
