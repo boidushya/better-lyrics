@@ -6,6 +6,18 @@ BetterLyrics.Lyrics = {
 
       BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
+      // Create a unique key for the song
+      const cacheKey = `lyrics_${song}_${artist}`;
+
+      // Check if lyrics are in local storage
+      const cachedLyrics = localStorage.getItem(cacheKey);
+      if (cachedLyrics) {
+        BetterLyrics.Utils.log('Lyrics found in cache');
+        const data = JSON.parse(cachedLyrics);
+        BetterLyrics.Lyrics.processLyrics(data);
+        return;
+      }
+
       const url = `${BetterLyrics.Constants.LYRICS_API_URL}?s=${encodeURIComponent(BetterLyrics.Utils.unEntity(song))}&a=${encodeURIComponent(BetterLyrics.Utils.unEntity(artist))}`;
 
       fetch(url)
@@ -17,27 +29,9 @@ BetterLyrics.Lyrics = {
           return response.json();
         })
         .then(data => {
-          const lyrics = data.lyrics;
-
-          BetterLyrics.App.lang = data.language;
-          BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
-
-          clearInterval(BetterLyrics.App.lyricsCheckInterval);
-
-          if (!lyrics || lyrics.length === 0) {
-            BetterLyrics.Utils.log(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
-            setTimeout(BetterLyrics.DOM.injectError, 500);
-            return;
-          }
-
-          BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_FOUND_LOG);
-          try {
-            const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
-            lyricsElement.innerHTML = "";
-          } catch (_err) {
-            BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_NOT_DISABLED_LOG);
-          }
-          BetterLyrics.Lyrics.injectLyrics(lyrics);
+          // Cache the lyrics in local storage
+          localStorage.setItem(cacheKey, JSON.stringify(data));
+          BetterLyrics.Lyrics.processLyrics(data);
         })
         .catch(err => {
           clearInterval(BetterLyrics.App.lyricsCheckInterval);
@@ -46,6 +40,30 @@ BetterLyrics.Lyrics = {
           setTimeout(BetterLyrics.DOM.injectError, 500);
         });
     });
+  },
+
+  processLyrics: function (data) {
+    const lyrics = data.lyrics;
+  
+    BetterLyrics.App.lang = data.language;
+    BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
+  
+    clearInterval(BetterLyrics.App.lyricsCheckInterval);
+  
+    if (!lyrics || lyrics.length === 0) {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
+      setTimeout(BetterLyrics.DOM.injectError, 500);
+      return;
+    }
+  
+    BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_FOUND_LOG);
+    try {
+      const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
+      lyricsElement.innerHTML = "";
+    } catch (_err) {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_NOT_DISABLED_LOG);
+    }
+    BetterLyrics.Lyrics.injectLyrics(lyrics);
   },
 
   injectLyrics: function (lyrics) {
