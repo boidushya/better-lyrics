@@ -452,7 +452,7 @@ ytmusic-message-renderer.ytmusic-tab-renderer {
 }
 
 ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--active > span:not(:empty) {
-  animation: none;
+  animation: none !important;
 }
 
 /* Animations */
