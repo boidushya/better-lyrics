@@ -93,4 +93,9 @@ BetterLyrics.Constants = {
   YT_MUSIC_LYRICS_AVAILABLE_LOG: "[BetterLyrics] Lyrics are available on the page & backend failed to fetch lyrics",
   LOADER_ACTIVE_LOG: "[BetterLyrics] (Safe to ignore) Loader is active, skipping lyrics sync",
   GENERAL_ERROR_LOG: "[BetterLyrics] Error:",
+  HTTP_ERROR_MESSAGE: 'HTTP error! status: ',
+  LRCLIB_API_URL: 'https://lrclib.net/api/get',
+  LRCLIB_CLIENT_HEADER: 'BetterLyrics Extension (https://github.com/boidushya/better-lyrics)',
+  LRCLIB_LYRICS_FOUND_LOG: '[BetterLyrics] Lyrics found from LRCLIB',
+  NO_LRCLIB_LYRICS_FOUND_LOG: '[BetterLyrics] No lyrics found on LRCLIB',
 };

@@ -6,26 +6,26 @@ BetterLyrics.Lyrics = {
 
       BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
       async function fetchFromLrclib(song, artist) {
-        const lrclibUrl = `https://lrclib.net/api/get?track_name=${encodeURIComponent(song)}&artist_name=${encodeURIComponent(artist)}`;
+        const lrclibUrl = `${BetterLyrics.Constants.LRCLIB_API_URL}?track_name=${encodeURIComponent(BetterLyrics.Utils.unEntity(song))}&artist_name=${encodeURIComponent(BetterLyrics.Utils.unEntity(artist))}`;
 
         const response = await fetch(lrclibUrl, {
           headers: {
-            'Lrclib-Client': 'BetterLyrics Extension (https://github.com/boidushya/better-lyrics)'
+            'Lrclib-Client': BetterLyrics.Constants.LRCLIB_CLIENT_HEADER
           }
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(BetterLyrics.Constants.HTTP_ERROR_MESSAGE + response.status);
         }
 
         const data = await response.json();
 
         if (data && data.syncedLyrics) {
-          BetterLyrics.Utils.log('Lyrics found from LRCLIB');
+          BetterLyrics.Utils.log(BetterLyrics.Constants.LRCLIB_LYRICS_FOUND_LOG);
           const parsedLyrics = BetterLyrics.Lyrics.parseLRCLIBLyrics(data.syncedLyrics, data.duration);
           return parsedLyrics;
         } else {
-          throw new Error('No lyrics found on LRCLIB');
+          throw new Error(BetterLyrics.Constants.NO_LRCLIB_LYRICS_FOUND_LOG);
         }
       }
       const url = `${BetterLyrics.Constants.LYRICS_API_URL}?s=${encodeURIComponent(BetterLyrics.Utils.unEntity(song))}&a=${encodeURIComponent(BetterLyrics.Utils.unEntity(artist))}`;
@@ -33,7 +33,7 @@ BetterLyrics.Lyrics = {
       fetch(url)
         .then(response => {
           if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(BetterLyrics.Constants.HTTP_ERROR_MESSAGE + response.status);
           }
 
           return response.json();
