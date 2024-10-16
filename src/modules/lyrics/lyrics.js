@@ -5,7 +5,29 @@ BetterLyrics.Lyrics = {
       const artist = e.artist;
 
       BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
+      async function fetchFromLrclib(song, artist) {
+        const lrclibUrl = `https://lrclib.net/api/get?track_name=${encodeURIComponent(song)}&artist_name=${encodeURIComponent(artist)}`;
 
+        const response = await fetch(lrclibUrl, {
+          headers: {
+            'Lrclib-Client': 'BetterLyrics Extension (https://github.com/boidushya/better-lyrics)'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data && data.syncedLyrics) {
+          BetterLyrics.Utils.log('Lyrics found from LRCLIB');
+          const parsedLyrics = BetterLyrics.Lyrics.parseLRCLIBLyrics(data.syncedLyrics, data.duration);
+          return parsedLyrics;
+        } else {
+          throw new Error('No lyrics found on LRCLIB');
+        }
+      }
       const url = `${BetterLyrics.Constants.LYRICS_API_URL}?s=${encodeURIComponent(BetterLyrics.Utils.unEntity(song))}&a=${encodeURIComponent(BetterLyrics.Utils.unEntity(artist))}`;
 
       fetch(url)
@@ -25,9 +47,25 @@ BetterLyrics.Lyrics = {
           clearInterval(BetterLyrics.App.lyricsCheckInterval);
 
           if (!lyrics || lyrics.length === 0) {
-            BetterLyrics.Utils.log(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
-            setTimeout(BetterLyrics.DOM.injectError, 500);
-            return;
+
+            fetchFromLrclib(song, artist)
+              .then(lrclibLyrics => {
+                BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_FOUND_LOG);
+                try {
+                  const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
+                  lyricsElement.innerHTML = "";
+                } catch (_err) {
+                  BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_NOT_DISABLED_LOG);
+                }
+                BetterLyrics.Lyrics.injectLyrics(lrclibLyrics);
+              })
+              .catch(lrclibErr => {
+                clearInterval(BetterLyrics.App.lyricsCheckInterval);
+                BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG);
+                BetterLyrics.Utils.log(lrclibErr);
+                setTimeout(BetterLyrics.DOM.injectError, 500);
+              });
+            return; // Prevent executing the code below when using LRCLIB lyrics
           }
 
           BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_FOUND_LOG);
@@ -40,10 +78,24 @@ BetterLyrics.Lyrics = {
           BetterLyrics.Lyrics.injectLyrics(lyrics);
         })
         .catch(err => {
-          clearInterval(BetterLyrics.App.lyricsCheckInterval);
-          BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG);
-          BetterLyrics.Utils.log(err);
-          setTimeout(BetterLyrics.DOM.injectError, 500);
+          // If primary source fails, try fetching from LRCLIB
+          fetchFromLrclib(song, artist)
+            .then(lrclibLyrics => {
+              BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_FOUND_LOG);
+              try {
+                const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
+                lyricsElement.innerHTML = "";
+              } catch (_err) {
+                BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_NOT_DISABLED_LOG);
+              }
+              BetterLyrics.Lyrics.injectLyrics(lrclibLyrics);
+            })
+            .catch(lrclibErr => {
+              clearInterval(BetterLyrics.App.lyricsCheckInterval);
+              BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG);
+              BetterLyrics.Utils.log(lrclibErr);
+              setTimeout(BetterLyrics.DOM.injectError, 500);
+            });
         });
     });
   },
@@ -209,4 +261,41 @@ BetterLyrics.Lyrics = {
       }
     }, 50);
   },
+  parseLRCLIBLyrics: function (syncedLyrics, duration) {
+    const lines = syncedLyrics.split('\n');
+    const lyricsArray = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const match = line.match(/^\[(\d{2}):(\d{2}\.\d{2})\](.*)/);
+      if (match) {
+        const minutes = parseInt(match[1]);
+        const seconds = parseFloat(match[2]);
+        const words = match[3].trim();
+        const startTimeMs = Math.floor((minutes * 60 + seconds) * 1000);
+
+        lyricsArray.push({
+          startTimeMs: startTimeMs.toString(),
+          words: words,
+          durationMs: "0" // Will calculate later
+        });
+      }
+    }
+
+    // Calculate durationMs for each lyric line
+    for (let i = 0; i < lyricsArray.length; i++) {
+      if (i < lyricsArray.length - 1) {
+        const nextStartTimeMs = parseInt(lyricsArray[i + 1].startTimeMs);
+        const currentStartTimeMs = parseInt(lyricsArray[i].startTimeMs);
+        lyricsArray[i].durationMs = (nextStartTimeMs - currentStartTimeMs).toString();
+      } else {
+        // For the last line, use the total duration
+        const totalDurationMs = duration * 1000;
+        const currentStartTimeMs = parseInt(lyricsArray[i].startTimeMs);
+        lyricsArray[i].durationMs = (totalDurationMs - currentStartTimeMs).toString();
+      }
+    }
+
+    return lyricsArray;
+  }
 };
