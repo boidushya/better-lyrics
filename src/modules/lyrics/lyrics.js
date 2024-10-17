@@ -6,7 +6,7 @@ BetterLyrics.Lyrics = {
 
       BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
-      const cacheKey = `lyrics_${song}_${artist}`;
+      const cacheKey = `blyrics_${song}_${artist}`;
 
       // Check for cached lyrics
       BetterLyrics.Storage.getTransientStorage(cacheKey, cachedLyrics => {
@@ -28,18 +28,19 @@ BetterLyrics.Lyrics = {
             return response.json();
           })
           .then(data => {
-            this.cacheAndProcessLyrics(cacheKey, data);
+            BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, data);
           })
           .catch(err => {
             // If the primary API fails, fall back to LRCLIB
             BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, err);
             fetchFromLrclib(song, artist)
               .then(lrclibLyrics => {
-                this.cacheAndProcessLyrics(cacheKey, { lyrics: lrclibLyrics });
+                BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, { lyrics: lrclibLyrics });
               })
               .catch(lrclibErr => {
                 BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, lrclibErr);
                 setTimeout(BetterLyrics.DOM.injectError, 500);
+                return;
               });
           });
       });

@@ -33,32 +33,16 @@ BetterLyrics.Storage = {
   },
 
   getTransientStorage: function (key, callback) {
-    const inChrome = typeof chrome !== "undefined" && typeof browser === "undefined";
-    const inFirefox = typeof browser !== "undefined";
-
-    const handleStorageResult = result => {
-      const data = result[key];
-      if (data && data.value && data.expiryTime) {
-        const now = Date.now();
-        if (now < data.expiryTime) {
-          callback(data.value);
-        } else {
-          this.removeStorage(key);
-          callback(null);
-        }
+    const data = localStorage.getItem(key);
+    if (data) {
+      const parsedData = JSON.parse(data);
+      const now = Date.now();
+      if (parsedData.expiryTime && now < parsedData.expiryTime) {
+        callback(parsedData.value);
       } else {
+        BetterLyrics.Storage.removeStorage(key);
         callback(null);
       }
-    };
-
-    if (inChrome) {
-      if (chrome.runtime?.id) {
-        chrome.storage.sync.get(key, handleStorageResult);
-      } else {
-        callback(null);
-      }
-    } else if (inFirefox) {
-      browser.storage.sync.get(key, handleStorageResult);
     } else {
       callback(null);
     }
@@ -67,62 +51,55 @@ BetterLyrics.Storage = {
   },
 
   setTransientStorage: function (key, value, expiryInMs) {
-    const inChrome = typeof chrome !== "undefined" && typeof browser === "undefined";
-    const inFirefox = typeof browser !== "undefined";
-
     const data = {
       type: "transient",
       value: value,
       expiryTime: Date.now() + expiryInMs,
     };
-
-    if (inChrome) {
-      if (chrome.runtime?.id) {
-        chrome.storage.sync.set({ [key]: data });
-      }
-    } else if (inFirefox) {
-      browser.storage.sync.set({ [key]: data });
-    }
-
+    // using localStorage due to sync storage limitations
+    localStorage.setItem(key, JSON.stringify(data));
     BetterLyrics.Utils.log(BetterLyrics.Constants.STORAGE_TRANSIENT_SET_LOG, key);
+    BetterLyrics.Storage.saveCacheInfo();
   },
 
   removeStorage: function (key) {
-    const inChrome = typeof chrome !== "undefined" && typeof browser === "undefined";
-    const inFirefox = typeof browser !== "undefined";
-
-    if (inChrome) {
-      if (chrome.runtime?.id) {
-        chrome.storage.sync.remove(key);
-      }
-    } else if (inFirefox) {
-      browser.storage.sync.remove(key);
-    }
+    localStorage.removeItem(key);
     BetterLyrics.Utils.log(BetterLyrics.Constants.PURGE_LOG, key);
   },
 
-  purgeExpiredKeys: function () {
-    const inChrome = typeof chrome !== "undefined" && typeof browser === "undefined";
-    const inFirefox = typeof browser !== "undefined";
-
-    const handleStorageResult = items => {
-      const now = Date.now();
-
-      Object.keys(items).forEach(key => {
-        const data = items[key];
-
-        if (data && data.expiryTime && now >= data.expiryTime) {
-          this.removeStorage(key);
-        }
-      });
+  getUpdatedCacheInfo: function () {
+    const lyricsKeys = Object.keys(localStorage).filter(key => key.startsWith("blyrics_"));
+    const totalSize = lyricsKeys.reduce((acc, key) => acc + localStorage.getItem(key).length, 0);
+    return {
+      count: lyricsKeys.length,
+      size: totalSize,
     };
+  },
 
-    if (inChrome) {
-      if (chrome.runtime?.id) {
-        chrome.storage.sync.get(null, handleStorageResult);
+  saveCacheInfo: function () {
+    const cacheInfo = BetterLyrics.Storage.getUpdatedCacheInfo();
+    chrome.storage.sync.set({ cacheInfo: cacheInfo });
+  },
+
+  clearCache: function () {
+    const lyricsKeys = Object.keys(localStorage).filter(key => key.startsWith("blyrics_"));
+    lyricsKeys.forEach(key => {
+      BetterLyrics.Storage.removeStorage(key);
+    });
+    BetterLyrics.Storage.saveCacheInfo();
+  },
+
+  purgeExpiredKeys: function () {
+    const now = Date.now();
+    Object.keys(localStorage).forEach(key => {
+      const data = localStorage.getItem(key);
+      if (!key.startsWith("blyrics_")) return;
+      if (data) {
+        const parsedData = JSON.parse(data);
+        if (parsedData.expiryTime && now >= parsedData.expiryTime) {
+          BetterLyrics.Storage.removeStorage(key);
+        }
       }
-    } else if (inFirefox) {
-      browser.storage.sync.get(null, handleStorageResult);
-    }
+    });
   },
 };

@@ -140,7 +140,7 @@ BetterLyrics.Settings = {
   },
 
   listenForPopupMessages: function () {
-    chrome.runtime.onMessage.addListener(request => {
+    chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
       if (request.action === "updateCSS") {
         BetterLyrics.Utils.applyCustomCSS(request.css);
       } else if (request.action === "updateSettings") {
@@ -151,6 +151,13 @@ BetterLyrics.Settings = {
           BetterLyrics.DOM.removeAlbumArtFromLayout
         );
         BetterLyrics.App.handleModifications();
+      } else if (request.action === "clearCache") {
+        try {
+          BetterLyrics.Storage.clearCache();
+          sendResponse({ success: true });
+        } catch {
+          sendResponse({ success: false });
+        }
       }
     });
   },

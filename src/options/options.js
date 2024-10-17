@@ -63,18 +63,17 @@ const showAlert = message => {
 
 // Function to clear transient lyrics
 const clearTransientLyrics = () => {
-  chrome.storage.sync.get(null, items => {
-    const keysToRemove = Object.keys(items).filter(key => items[key].type === "transient");
-
-    if (keysToRemove.length > 0) {
-      chrome.storage.sync.remove(keysToRemove, () => {
-        console.log("All transient lyrics have been cleared.");
-        showAlert("Lyrics cleared from cache!");
+  chrome.tabs.query({ url: "https://music.youtube.com/*" }, function (tabs) {
+    tabs.forEach(tab => {
+      chrome.tabs.sendMessage(tab.id, { action: "clearCache" }, response => {
+        if (response.success) {
+          updateCacheInfo();
+          showAlert("Cache cleared successfully!");
+        } else {
+          showAlert("Failed to clear cache!");
+        }
       });
-    } else {
-      console.log("No transient lyrics to clear.");
-      showAlert("No lyrics to clear!");
-    }
+    });
   });
 };
 
@@ -90,27 +89,36 @@ const _formatBytes = (bytes, decimals = 2) => {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
 
-// Function to update cache info
-const updateCacheInfo = () => {
-  chrome.storage.sync.get(null, items => {
-    const lyricsKeys = Object.keys(items).filter(key => items[key].type === "transient");
-
-    document.getElementById("lyrics-count").textContent = lyricsKeys.length;
-
-    let totalSize = 0;
-    lyricsKeys.forEach(key => {
-      const value = JSON.stringify(items[key]);
-      totalSize += value.length;
-    });
-
-    document.getElementById("cache-size").textContent = _formatBytes(totalSize);
+// Function to subscribe to cache info updates
+const subscribeToCacheInfo = () => {
+  chrome.storage.sync.get("cacheInfo", items => {
+    updateCacheInfo(items);
   });
-  console.log("Cache info updated.");
+
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "sync" && changes.cacheInfo) {
+      updateCacheInfo({ cacheInfo: changes.cacheInfo.newValue });
+    }
+  });
+};
+
+// Function to update cache info
+const updateCacheInfo = items => {
+  if (!items) {
+    showAlert("Nothing to clear!");
+    return;
+  }
+  const cacheInfo = items.cacheInfo || { count: 0, size: 0 };
+  const cacheCount = document.getElementById("lyrics-count");
+  const cacheSize = document.getElementById("cache-size");
+
+  cacheCount.textContent = cacheInfo.count;
+  cacheSize.textContent = _formatBytes(cacheInfo.size);
 };
 
 // Function to restore user options
 const restoreOptions = () => {
-  updateCacheInfo();
+  subscribeToCacheInfo();
 
   const defaultOptions = {
     isLogsEnabled: true,
@@ -127,12 +135,6 @@ const restoreOptions = () => {
   chrome.storage.sync.get(defaultOptions, setOptionsInForm);
 
   document.getElementById("clear-cache").addEventListener("click", clearTransientLyrics);
-
-  chrome.storage.onChanged.addListener((_, areaName) => {
-    if (areaName === "sync") {
-      updateCacheInfo();
-    }
-  });
 };
 
 // Function to set options in form elements
