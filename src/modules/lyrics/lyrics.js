@@ -12,7 +12,7 @@ BetterLyrics.Lyrics = {
       // Check if lyrics are in local storage
       const cachedLyrics = localStorage.getItem(cacheKey);
       if (cachedLyrics) {
-        BetterLyrics.Utils.log('Lyrics found in cache');
+        BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_CACHE_FOUND_LOG);
         const data = JSON.parse(cachedLyrics);
         BetterLyrics.Lyrics.processLyrics(data);
         return;
