@@ -33,6 +33,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "nitinmano",
+      "name": "NMPro",
+      "avatar_url": "https://avatars.githubusercontent.com/u/55648552?v=4",
+      "profile": "https://github.com/nitinmano",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "badgeTemplate": "<img src=\"https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg\" alt=\"\"/>",
