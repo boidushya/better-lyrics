@@ -469,3 +469,67 @@ input:checked + .checkmark {
 input:checked + .checkmark:before {
   transform: translateX(16px);
 }
+
+.text-group {
+  display: flex;
+  gap: 0.25rem;
+  flex-direction: column;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+}
+
+.text-group p {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.text-group .text-group__title {
+  flex-shrink: 0;
+}
+
+.text-group > p > span:not(.text-group__title) {
+  font-weight: 600;
+  font-family: "JetBrains Mono", Consolas, "Courier New", monospace !important;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+hr {
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dots {
+  flex-grow: 1;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.btn-danger {
+  line-height: 1rem;
+  background-color: rgb(239 68 68);
+  transition: background-color 0.2s;
+}
+
+.btn-danger:hover {
+  background-color: rgb(220 38 38);
+}
+
+.container > h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+}
+
+.container--small {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}

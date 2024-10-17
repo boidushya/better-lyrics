@@ -73,6 +73,7 @@ BetterLyrics.Constants = {
   FETCH_LYRICS_LOG: "[BetterLyrics] Attempting to fetch lyrics for",
   SERVER_ERROR_LOG: "[BetterLyrics] Unable to fetch lyrics due to server error",
   NO_LYRICS_FOUND_LOG: "[BetterLyrics] No lyrics found for the current song",
+  LYRICS_CACHE_FOUND_LOG: "[BetterLyrics] Lyrics found in cache, skipping backend fetch",
   LYRICS_LEGACY_LOG: "[BetterLyrics] Using legacy method to fetch song info",
   LYRICS_FOUND_LOG: "[BetterLyrics] Lyrics found, injecting into the page",
   LYRICS_TAB_HIDDEN_LOG: "[BetterLyrics] (Safe to ignore) Lyrics tab is hidden, skipping lyrics fetch",
@@ -93,4 +94,8 @@ BetterLyrics.Constants = {
   YT_MUSIC_LYRICS_AVAILABLE_LOG: "[BetterLyrics] Lyrics are available on the page & backend failed to fetch lyrics",
   LOADER_ACTIVE_LOG: "[BetterLyrics] (Safe to ignore) Loader is active, skipping lyrics sync",
   GENERAL_ERROR_LOG: "[BetterLyrics] Error:",
+  HTTP_ERROR_LOG: "[BetterLyrics] HTTP error. Status: ",
+  PURGE_LOG: "[BetterLyrics] Purged key from storage: ",
+  STORAGE_TRANSIENT_SET_LOG: "[BetterLyrics] Set transient storage for key: ",
+  STORAGE_TRANSIENT_GET_LOG: "[BetterLyrics] Get transient storage for key: ",
 };

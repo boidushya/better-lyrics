@@ -6,46 +6,63 @@ BetterLyrics.Lyrics = {
 
       BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
-      const url = `${BetterLyrics.Constants.LYRICS_API_URL}?s=${encodeURIComponent(BetterLyrics.Utils.unEntity(song))}&a=${encodeURIComponent(BetterLyrics.Utils.unEntity(artist))}`;
+      const cacheKey = `lyrics_${song}_${artist}`;
 
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+      BetterLyrics.Storage.getTransientStorage(cacheKey, cachedLyrics => {
+        if (cachedLyrics) {
+          BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_CACHE_FOUND_LOG);
+          const data = JSON.parse(cachedLyrics);
+          BetterLyrics.Lyrics.processLyrics(data);
+          return;
+        }
 
-          return response.json();
-        })
-        .then(data => {
-          const lyrics = data.lyrics;
+        const url = `${BetterLyrics.Constants.LYRICS_API_URL}?s=${encodeURIComponent(BetterLyrics.Utils.unEntity(song))}&a=${encodeURIComponent(BetterLyrics.Utils.unEntity(artist))}`;
 
-          BetterLyrics.App.lang = data.language;
-          BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
-
-          clearInterval(BetterLyrics.App.lyricsCheckInterval);
-
-          if (!lyrics || lyrics.length === 0) {
-            BetterLyrics.Utils.log(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
+        fetch(url)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`${BetterLyrics.Constants.HTTP_ERROR_LOG} ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            // Cache the lyrics in storage with a 1-week expiry (7 days * 24 hours * 60 minutes * 60 seconds * 1000 ms)
+            const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
+            BetterLyrics.Storage.setTransientStorage(cacheKey, JSON.stringify(data), oneWeekInMs);
+            BetterLyrics.Lyrics.processLyrics(data);
+          })
+          .catch(err => {
+            clearInterval(BetterLyrics.App.lyricsCheckInterval);
+            BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG);
+            BetterLyrics.Utils.log(err);
             setTimeout(BetterLyrics.DOM.injectError, 500);
-            return;
-          }
-
-          BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_FOUND_LOG);
-          try {
-            const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
-            lyricsElement.innerHTML = "";
-          } catch (_err) {
-            BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_NOT_DISABLED_LOG);
-          }
-          BetterLyrics.Lyrics.injectLyrics(lyrics);
-        })
-        .catch(err => {
-          clearInterval(BetterLyrics.App.lyricsCheckInterval);
-          BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG);
-          BetterLyrics.Utils.log(err);
-          setTimeout(BetterLyrics.DOM.injectError, 500);
-        });
+          });
+      });
     });
+  },
+
+  processLyrics: function (data) {
+    const lyrics = data.lyrics;
+
+    BetterLyrics.App.lang = data.language;
+    BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
+
+    clearInterval(BetterLyrics.App.lyricsCheckInterval);
+
+    if (!lyrics || lyrics.length === 0) {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
+      setTimeout(BetterLyrics.DOM.injectError, 500);
+      return;
+    }
+
+    BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_FOUND_LOG);
+    try {
+      const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
+      lyricsElement.innerHTML = "";
+    } catch (_err) {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_NOT_DISABLED_LOG);
+    }
+    BetterLyrics.Lyrics.injectLyrics(lyrics);
   },
 
   injectLyrics: function (lyrics) {

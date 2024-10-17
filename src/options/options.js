@@ -47,8 +47,71 @@ const hideSaveConfirmation = () => {
   }, 200);
 };
 
+// Function to show alert message
+const showAlert = message => {
+  const status = document.getElementById("status");
+  status.innerText = message;
+  status.classList.add("active");
+
+  setTimeout(() => {
+    status.classList.remove("active");
+    setTimeout(() => {
+      status.innerText = "";
+    }, 200);
+  }, 2000);
+};
+
+// Function to clear transient lyrics
+const clearTransientLyrics = () => {
+  chrome.storage.sync.get(null, items => {
+    const keysToRemove = Object.keys(items).filter(key => items[key].type === "transient");
+
+    if (keysToRemove.length > 0) {
+      chrome.storage.sync.remove(keysToRemove, () => {
+        console.log("All transient lyrics have been cleared.");
+        showAlert("Lyrics cleared from cache!");
+      });
+    } else {
+      console.log("No transient lyrics to clear.");
+      showAlert("No lyrics to clear!");
+    }
+  });
+};
+
+const _formatBytes = (bytes, decimals = 2) => {
+  if (!+bytes) return "0 Bytes";
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+};
+
+// Function to update cache info
+const updateCacheInfo = () => {
+  chrome.storage.sync.get(null, items => {
+    const lyricsKeys = Object.keys(items).filter(key => items[key].type === "transient");
+
+    document.getElementById("lyrics-count").textContent = lyricsKeys.length;
+
+    let totalSize = 0;
+    lyricsKeys.forEach(key => {
+      const value = JSON.stringify(items[key]);
+      totalSize += value.length;
+    });
+
+    document.getElementById("cache-size").textContent = _formatBytes(totalSize);
+  });
+  console.log("Cache info updated.");
+};
+
 // Function to restore user options
 const restoreOptions = () => {
+  updateCacheInfo();
+
   const defaultOptions = {
     isLogsEnabled: true,
     isAutoSwitchEnabled: false,
@@ -62,6 +125,14 @@ const restoreOptions = () => {
   };
 
   chrome.storage.sync.get(defaultOptions, setOptionsInForm);
+
+  document.getElementById("clear-cache").addEventListener("click", clearTransientLyrics);
+
+  chrome.storage.onChanged.addListener((_, areaName) => {
+    if (areaName === "sync") {
+      updateCacheInfo();
+    }
+  });
 };
 
 // Function to set options in form elements
