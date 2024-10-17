@@ -9,6 +9,7 @@ BetterLyrics.App = {
     BetterLyrics.Settings.hideCursorOnIdle();
     BetterLyrics.Settings.handleSettings();
     BetterLyrics.Storage.subscribeToCustomCSS();
+    BetterLyrics.Storage.purgeExpiredKeys();
     BetterLyrics.Settings.listenForPopupMessages();
     BetterLyrics.Observer.observeSongChanges();
     BetterLyrics.Observer.lyricReloader();
