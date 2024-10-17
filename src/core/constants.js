@@ -98,4 +98,8 @@ BetterLyrics.Constants = {
   PURGE_LOG: "[BetterLyrics] Purged key from storage: ",
   STORAGE_TRANSIENT_SET_LOG: "[BetterLyrics] Set transient storage for key: ",
   STORAGE_TRANSIENT_GET_LOG: "[BetterLyrics] Get transient storage for key: ",
+  LRCLIB_API_URL: "https://lrclib.net/api/get",
+  LRCLIB_CLIENT_HEADER: "BetterLyrics Extension (https://github.com/boidushya/better-lyrics)",
+  LRCLIB_LYRICS_FOUND_LOG: "[BetterLyrics] Lyrics found from LRCLIB",
+  NO_LRCLIB_LYRICS_FOUND_LOG: "[BetterLyrics] No lyrics found on LRCLIB",
 };
