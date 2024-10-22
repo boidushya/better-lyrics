@@ -32,74 +32,97 @@ BetterLyrics.Storage = {
     BetterLyrics.Storage.getAndApplyCustomCSS();
   },
 
-  getTransientStorage: function (key, callback) {
-    const data = localStorage.getItem(key);
-    if (data) {
-      const parsedData = JSON.parse(data);
-      const now = Date.now();
-      if (parsedData.expiryTime && now < parsedData.expiryTime) {
-        callback(parsedData.value);
-      } else {
-        BetterLyrics.Storage.removeStorage(key);
-        callback(null);
+  getTransientStorage: async function (key) {
+    try {
+      const result = await chrome.storage.local.get(key);
+      const item = result[key];
+
+      if (!item) return null;
+
+      const { value, expiry } = item;
+      if (expiry && Date.now() > expiry) {
+        await chrome.storage.local.remove(key);
+        return null;
       }
-    } else {
-      callback(null);
+
+      return value;
+    } catch (error) {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, error);
+      return null;
     }
-
-    BetterLyrics.Utils.log(BetterLyrics.Constants.STORAGE_TRANSIENT_GET_LOG, key);
   },
 
-  setTransientStorage: function (key, value, expiryInMs) {
-    const data = {
-      type: "transient",
-      value: value,
-      expiryTime: Date.now() + expiryInMs,
-    };
-    // using localStorage due to sync storage limitations
-    localStorage.setItem(key, JSON.stringify(data));
-    BetterLyrics.Utils.log(BetterLyrics.Constants.STORAGE_TRANSIENT_SET_LOG, key);
-    BetterLyrics.Storage.saveCacheInfo();
+  setTransientStorage: async function (key, value, ttl) {
+    try {
+      const expiry = Date.now() + ttl;
+      await chrome.storage.local.set({
+        [key]: {
+          type: "transient",
+          value,
+          expiry,
+        },
+      });
+      BetterLyrics.Utils.log(BetterLyrics.Constants.STORAGE_TRANSIENT_SET_LOG, key);
+      await BetterLyrics.Storage.saveCacheInfo();
+    } catch (error) {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, error);
+    }
   },
 
-  removeStorage: function (key) {
-    localStorage.removeItem(key);
-    BetterLyrics.Utils.log(BetterLyrics.Constants.PURGE_LOG, key);
+  getUpdatedCacheInfo: async function () {
+    try {
+      const result = await chrome.storage.local.get(null);
+      const lyricsKeys = Object.keys(result).filter(key => key.startsWith("blyrics_"));
+      const totalSize = lyricsKeys.reduce((acc, key) => {
+        const item = result[key];
+        return acc + JSON.stringify(item).length;
+      }, 0);
+      return {
+        count: lyricsKeys.length,
+        size: totalSize,
+      };
+    } catch (error) {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, error);
+      return { count: 0, size: 0 };
+    }
   },
 
-  getUpdatedCacheInfo: function () {
-    const lyricsKeys = Object.keys(localStorage).filter(key => key.startsWith("blyrics_"));
-    const totalSize = lyricsKeys.reduce((acc, key) => acc + localStorage.getItem(key).length, 0);
-    return {
-      count: lyricsKeys.length,
-      size: totalSize,
-    };
-  },
-
-  saveCacheInfo: function () {
-    const cacheInfo = BetterLyrics.Storage.getUpdatedCacheInfo();
+  saveCacheInfo: async function () {
+    const cacheInfo = await BetterLyrics.Storage.getUpdatedCacheInfo();
     chrome.storage.sync.set({ cacheInfo: cacheInfo });
   },
 
-  clearCache: function () {
-    const lyricsKeys = Object.keys(localStorage).filter(key => key.startsWith("blyrics_"));
-    lyricsKeys.forEach(key => {
-      BetterLyrics.Storage.removeStorage(key);
-    });
-    BetterLyrics.Storage.saveCacheInfo();
+  clearCache: async function () {
+    try {
+      const result = await chrome.storage.local.get(null);
+      const lyricsKeys = Object.keys(result).filter(key => key.startsWith("blyrics_"));
+      await chrome.storage.local.remove(lyricsKeys);
+      await BetterLyrics.Storage.saveCacheInfo();
+    } catch (error) {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, error);
+    }
   },
 
-  purgeExpiredKeys: function () {
-    const now = Date.now();
-    Object.keys(localStorage).forEach(key => {
-      const data = localStorage.getItem(key);
-      if (!key.startsWith("blyrics_")) return;
-      if (data) {
-        const parsedData = JSON.parse(data);
-        if (parsedData.expiryTime && now >= parsedData.expiryTime) {
-          BetterLyrics.Storage.removeStorage(key);
+  purgeExpiredKeys: async function () {
+    try {
+      const now = Date.now();
+      const result = await chrome.storage.local.get(null);
+      const keysToRemove = [];
+
+      Object.keys(result).forEach(key => {
+        if (key.startsWith("blyrics_")) {
+          const { expiryTime } = result[key];
+          if (expiryTime && now >= expiryTime) {
+            keysToRemove.push(key);
+          }
         }
+      });
+
+      if (keysToRemove.length) {
+        await chrome.storage.local.remove(keysToRemove);
       }
-    });
+    } catch (error) {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, error);
+    }
   },
 };
