@@ -320,6 +320,16 @@ BetterLyrics.DOM = {
   },
 
   cleanup: function () {
+    if (BetterLyrics.App.lyricsObserver) {
+      BetterLyrics.App.lyricsObserver.disconnect();
+      BetterLyrics.App.lyricsObserver = null;
+    }
+
+    const ytMusicLyrics = document.querySelector(BetterLyrics.Constants.NO_LYRICS_TEXT_SELECTOR)?.parentElement;
+    if (ytMusicLyrics) {
+      ytMusicLyrics.style.display = "";
+    }
+
     const existingFooter = document.getElementsByClassName(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)[0];
     const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
     const blyricsFooter = document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0];
@@ -329,6 +339,7 @@ BetterLyrics.DOM = {
     }
     if (existingLyrics) {
       for (let lyrics of existingLyrics) {
+        lyrics.style.display = "";
         if (lyrics.classList.contains("blyrics--fallback")) {
           lyrics.classList.remove("blyrics--fallback");
         }

@@ -154,13 +154,57 @@ BetterLyrics.Lyrics = {
     }
 
     BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_FOUND_LOG);
+
+    const ytMusicLyrics = document.querySelector(BetterLyrics.Constants.NO_LYRICS_TEXT_SELECTOR)?.parentElement;
+    if (ytMusicLyrics) {
+      ytMusicLyrics.style.display = "none";
+    }
+
+    const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
+    if (existingLyrics) {
+      for (let lyrics of existingLyrics) {
+        lyrics.style.display = "none";
+      }
+    }
+
+    const existingFooter = document.getElementsByClassName(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)[0];
+    if (existingFooter) {
+      existingFooter.style.display = "none";
+    }
+
     try {
       const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
       lyricsElement.innerHTML = "";
     } catch (_err) {
       BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_NOT_DISABLED_LOG);
     }
+
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        if (mutation.addedNodes.length) {
+          mutation.addedNodes.forEach(node => {
+            if (
+              node.classList?.contains(BetterLyrics.Constants.DESCRIPTION_CLASS) ||
+              node.classList?.contains(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)
+            ) {
+              node.style.display = "none";
+            }
+          });
+        }
+      });
+    });
+
+    const lyricsContainer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+    if (lyricsContainer) {
+      observer.observe(lyricsContainer, {
+        childList: true,
+        subtree: true,
+      });
+    }
+
     BetterLyrics.Lyrics.injectLyrics(lyrics);
+
+    BetterLyrics.App.lyricsObserver = observer;
   },
 
   injectLyrics: function (lyrics) {
