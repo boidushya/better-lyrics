@@ -370,4 +370,67 @@ BetterLyrics.DOM = {
     };
     (document.head || document.documentElement).appendChild(s);
   },
+  tickLyrics: function (currentTime) {
+    if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
+      return;
+    }
+    try {
+      const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
+      // If lyrics element doesn't exist, clear the interval and return silently
+      if (!lyricsElement) {
+        BetterLyrics.App.areLyricsTicking = false;
+        BetterLyrics.Utils.log(BetterLyrics.Constants.NO_LYRICS_ELEMENT_LOG);
+        return;
+      }
+
+      const lyrics = [...lyricsElement.children];
+      const timeInfoElement = document.getElementsByClassName(BetterLyrics.Constants.TIME_INFO_CLASS)[0];
+
+      if (!timeInfoElement) {
+        return;
+      }
+
+      lyrics.every((elem, index) => {
+        if (!elem.hasAttribute("data-time")) {
+          return true;
+        }
+
+        const time = parseFloat(elem.getAttribute("data-time"));
+        const nextLyric = lyrics[index + 1];
+        const nextTime = nextLyric ? parseFloat(nextLyric.getAttribute("data-time")) : Infinity;
+
+        if (currentTime >= time && index + 1 === lyrics.length && elem.getAttribute("data-scrolled") !== "true") {
+          elem.setAttribute("class", BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
+          elem.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "center",
+          });
+          elem.setAttribute("data-scrolled", true);
+          return true;
+        } else if (currentTime > time && currentTime < nextTime) {
+          const current = document.getElementsByClassName(BetterLyrics.Constants.CURRENT_LYRICS_CLASS)[0];
+          elem.setAttribute("class", BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
+          if (current && current.getAttribute("data-scrolled") !== "true") {
+            current.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+              inline: "center",
+            });
+            current.setAttribute("data-scrolled", true);
+          }
+          return true;
+        } else {
+          elem.setAttribute("data-scrolled", false);
+          elem.setAttribute("class", "");
+          return true;
+        }
+      });
+    } catch (err) {
+      if (!(err.message && err.message.includes("undefined"))) {
+        BetterLyrics.Utils.log("Error in lyrics check interval:", err);
+      }
+      return true;
+    }
+  }
 };
