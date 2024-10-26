@@ -1,6 +1,6 @@
 BetterLyrics.App = {
   lang: "en",
-  lyricsCheckInterval: null,
+  areLyricsTicking: false,
 
   modify: function () {
     BetterLyrics.DOM.injectGetSongInfo();

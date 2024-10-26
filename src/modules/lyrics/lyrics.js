@@ -84,7 +84,7 @@ BetterLyrics.Lyrics = {
     BetterLyrics.App.lang = data.language;
     BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
 
-    clearInterval(BetterLyrics.App.lyricsCheckInterval);
+    BetterLyrics.App.areLyricsTicking = false;
 
     if (!lyrics || lyrics.length === 0) {
       BetterLyrics.Utils.log(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
@@ -209,59 +209,8 @@ BetterLyrics.Lyrics = {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SYNC_DISABLED_LOG);
     }
   },
-
   setupLyricsCheckInterval: function () {
-    BetterLyrics.App.lyricsCheckInterval = setInterval(function () {
-      if (BetterLyrics.DOM.isLoaderActive()) {
-        BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_ACTIVE_LOG);
-        return;
-      }
-      try {
-        let currentTime =
-          BetterLyrics.Utils.timeToInt(
-            document
-              .getElementsByClassName(BetterLyrics.Constants.TIME_INFO_CLASS)[0]
-              .innerHTML.replaceAll(" ", "")
-              .replaceAll("\n", "")
-              .split("/")[0]
-          ) + 0.75;
-        const lyrics = [...document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].children];
-
-        lyrics.every((elem, index) => {
-          const time = parseFloat(elem.getAttribute("data-time"));
-
-          if (currentTime >= time && index + 1 === lyrics.length && elem.getAttribute("data-scrolled") !== "true") {
-            elem.setAttribute("class", BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
-            elem.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-              inline: "center",
-            });
-            elem.setAttribute("data-scrolled", true);
-            return true;
-          } else if (currentTime > time && currentTime < parseFloat(lyrics[index + 1].getAttribute("data-time"))) {
-            const current = document.getElementsByClassName(BetterLyrics.Constants.CURRENT_LYRICS_CLASS)[0];
-            elem.setAttribute("class", BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
-            if (current !== undefined && current.getAttribute("data-scrolled") !== "true") {
-              current.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-                inline: "center",
-              });
-              current.setAttribute("data-scrolled", true);
-            }
-            return true;
-          } else {
-            elem.setAttribute("data-scrolled", false);
-            elem.setAttribute("class", "");
-            return true;
-          }
-        });
-      } catch (err) {
-        BetterLyrics.Utils.log(err);
-        return true;
-      }
-    }, 50);
+    BetterLyrics.App.areLyricsTicking = true;
   },
   parseLRCLIBLyrics: function (syncedLyrics, duration) {
     const lines = syncedLyrics.split("\n");
@@ -301,3 +250,50 @@ BetterLyrics.Lyrics = {
     return lyricsArray;
   },
 };
+
+document.addEventListener("blyrics-send-player-time", function(event) {
+  tickLyrics(event.detail.currentTime + 0.25);
+});
+
+let tickLyrics = function (currentTime) {
+  if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
+    return;
+  }
+  try {
+    const lyrics = [...document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].children];
+
+    lyrics.every((elem, index) => {
+      const time = parseFloat(elem.getAttribute("data-time"));
+
+      if (currentTime >= time && index + 1 === lyrics.length && elem.getAttribute("data-scrolled") !== "true") {
+        elem.setAttribute("class", BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
+        elem.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "center",
+        });
+        elem.setAttribute("data-scrolled", true);
+        return true;
+      } else if (currentTime > time && currentTime < parseFloat(lyrics[index + 1].getAttribute("data-time"))) {
+        const current = document.getElementsByClassName(BetterLyrics.Constants.CURRENT_LYRICS_CLASS)[0];
+        elem.setAttribute("class", BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
+        if (current !== undefined && current.getAttribute("data-scrolled") !== "true") {
+          current.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "center",
+          });
+          current.setAttribute("data-scrolled", true);
+        }
+        return true;
+      } else {
+        elem.setAttribute("data-scrolled", false);
+        elem.setAttribute("class", "");
+        return true;
+      }
+    });
+  } catch (err) {
+    BetterLyrics.Utils.log(err);
+    return true;
+  }
+}
