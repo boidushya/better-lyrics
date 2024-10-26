@@ -1,81 +1,142 @@
 BetterLyrics.Lyrics = {
   createLyrics: function () {
-    BetterLyrics.DOM.requestSongInfo(e => {
-      const song = e.song;
-      const artist = e.artist;
+    BetterLyrics.DOM.requestSongInfo(async e => {
+      // Input validation
+      if (!e || typeof e.song !== "string" || typeof e.artist !== "string") {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid song or artist data");
+        setTimeout(BetterLyrics.DOM.injectError, 500);
+        return;
+      }
 
-      BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
+      const song = e.song.trim();
+      const artist = e.artist.trim();
+
+      // Check for empty strings after trimming
+      if (!song || !artist) {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Empty song or artist name");
+        setTimeout(BetterLyrics.DOM.injectError, 500);
+        return;
+      }
 
       const cacheKey = `blyrics_${song}_${artist}`;
+      BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
-      // Check for cached lyrics
-      BetterLyrics.Storage.getTransientStorage(cacheKey, cachedLyrics => {
+      try {
+        // Try to get lyrics from cache with validation
+        const cachedLyrics = await BetterLyrics.Storage.getTransientStorage(cacheKey);
         if (cachedLyrics) {
-          BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_CACHE_FOUND_LOG);
-          const data = JSON.parse(cachedLyrics);
-          BetterLyrics.Lyrics.processLyrics(data);
-          return;
-        }
-
-        // Fetch lyrics from the primary API if not found in cache
-        const url = `${BetterLyrics.Constants.LYRICS_API_URL}?s=${encodeURIComponent(BetterLyrics.Utils.unEntity(song))}&a=${encodeURIComponent(BetterLyrics.Utils.unEntity(artist))}`;
-
-        fetch(url)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`${BetterLyrics.Constants.HTTP_ERROR_LOG} ${response.status}`);
+          try {
+            const data = JSON.parse(cachedLyrics);
+            // Validate cached data structure
+            if (data && (Array.isArray(data.lyrics) || data.syncedLyrics)) {
+              BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_CACHE_FOUND_LOG);
+              BetterLyrics.Lyrics.processLyrics(data);
+              return;
             }
-            return response.json();
-          })
-          .then(data => {
-            BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, data);
-          })
-          .catch(err => {
-            // If the primary API fails, fall back to LRCLIB
-            BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, err);
-            fetchFromLrclib(song, artist)
-              .then(lrclibLyrics => {
-                BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, { lyrics: lrclibLyrics });
-              })
-              .catch(lrclibErr => {
-                BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, lrclibErr);
-                setTimeout(BetterLyrics.DOM.injectError, 500);
-                return;
-              });
-          });
-      });
-
-      async function fetchFromLrclib(song, artist) {
-        const lrclibUrl = `${BetterLyrics.Constants.LRCLIB_API_URL}?track_name=${encodeURIComponent(BetterLyrics.Utils.unEntity(song))}&artist_name=${encodeURIComponent(BetterLyrics.Utils.unEntity(artist))}`;
-
-        const response = await fetch(lrclibUrl, {
-          headers: {
-            "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(BetterLyrics.Constants.HTTP_ERROR_LOG + response.status);
+          } catch (cacheError) {
+            BetterLyrics.Utils.log("Cache parsing error:", cacheError);
+            // Invalid cache, continue to fetch fresh data
+          }
         }
 
-        const data = await response.json();
+        // Fetch from the primary API if cache is empty or invalid
+        const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
+        url.searchParams.append("s", BetterLyrics.Utils.unEntity(song));
+        url.searchParams.append("a", BetterLyrics.Utils.unEntity(artist));
 
-        if (data && data.syncedLyrics) {
-          BetterLyrics.Utils.log(BetterLyrics.Constants.LRCLIB_LYRICS_FOUND_LOG);
-          const parsedLyrics = BetterLyrics.Lyrics.parseLRCLIBLyrics(data.syncedLyrics, data.duration);
-          return parsedLyrics;
-        } else {
-          throw new Error(BetterLyrics.Constants.NO_LRCLIB_LYRICS_FOUND_LOG);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        try {
+          const response = await fetch(url.toString(), {
+            signal: controller.signal,
+          });
+          clearTimeout(timeout);
+
+          if (!response.ok) {
+            throw new Error(`${BetterLyrics.Constants.HTTP_ERROR_LOG} ${response.status}`);
+          }
+
+          const data = await response.json();
+          // Validate API response structure
+          if (!data || (!Array.isArray(data.lyrics) && !data.syncedLyrics)) {
+            throw new Error("Invalid API response structure");
+          }
+
+          BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, data);
+        } catch (fetchError) {
+          if (fetchError.name === "AbortError") {
+            throw new Error("Primary API request timed out");
+          }
+          throw fetchError;
+        }
+      } catch (primaryError) {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, primaryError);
+        // Fallback to LRCLIB if the primary fetch fails
+        try {
+          const lrclibLyrics = await BetterLyrics.Lyrics.fetchFromLrclib(song, artist);
+          if (lrclibLyrics) {
+            BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, { lyrics: lrclibLyrics });
+          } else {
+            throw new Error("No valid lyrics returned from LRCLIB");
+          }
+        } catch (lrclibError) {
+          BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, lrclibError);
+          setTimeout(BetterLyrics.DOM.injectError, 500);
         }
       }
     });
   },
 
+  // Helper function to fetch from LRCLIB
+  async fetchFromLrclib(song, artist) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+    try {
+      const url = new URL(BetterLyrics.Constants.LRCLIB_API_URL);
+      url.searchParams.append("track_name", BetterLyrics.Utils.unEntity(song));
+      url.searchParams.append("artist_name", BetterLyrics.Utils.unEntity(artist));
+
+      const response = await fetch(url.toString(), {
+        headers: {
+          "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER,
+        },
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      if (!response.ok) {
+        throw new Error(BetterLyrics.Constants.HTTP_ERROR_LOG + response.status);
+      }
+
+      const data = await response.json();
+
+      if (data && data.syncedLyrics && typeof data.duration === "number") {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.LRCLIB_LYRICS_FOUND_LOG);
+        return BetterLyrics.Lyrics.parseLRCLIBLyrics(data.syncedLyrics, data.duration);
+      } else {
+        throw new Error(BetterLyrics.Constants.NO_LRCLIB_LYRICS_FOUND_LOG);
+      }
+    } catch (error) {
+      if (error.name === "AbortError") {
+        throw new Error("LRCLIB request timed out");
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
+  },
+
   cacheAndProcessLyrics: function (cacheKey, data) {
-    // Cache the lyrics in storage with a 1-week expiry (7 days * 24 hours * 60 minutes * 60 seconds * 1000 ms)
-    const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
-    BetterLyrics.Storage.setTransientStorage(cacheKey, JSON.stringify(data), oneWeekInMs);
-    BetterLyrics.Lyrics.processLyrics(data);
+    try {
+      const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
+      BetterLyrics.Storage.setTransientStorage(cacheKey, JSON.stringify(data), oneWeekInMs);
+      BetterLyrics.Lyrics.processLyrics(data);
+    } catch (error) {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.CACHE_PROCESS_ERROR_LOG, error);
+      setTimeout(BetterLyrics.DOM.injectError, 500);
+    }
   },
 
   processLyrics: function (data) {
@@ -93,13 +154,57 @@ BetterLyrics.Lyrics = {
     }
 
     BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_FOUND_LOG);
+
+    const ytMusicLyrics = document.querySelector(BetterLyrics.Constants.NO_LYRICS_TEXT_SELECTOR)?.parentElement;
+    if (ytMusicLyrics) {
+      ytMusicLyrics.style.display = "none";
+    }
+
+    const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
+    if (existingLyrics) {
+      for (let lyrics of existingLyrics) {
+        lyrics.style.display = "none";
+      }
+    }
+
+    const existingFooter = document.getElementsByClassName(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)[0];
+    if (existingFooter) {
+      existingFooter.style.display = "none";
+    }
+
     try {
       const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
       lyricsElement.innerHTML = "";
     } catch (_err) {
       BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_NOT_DISABLED_LOG);
     }
+
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        if (mutation.addedNodes.length) {
+          mutation.addedNodes.forEach(node => {
+            if (
+              node.classList?.contains(BetterLyrics.Constants.DESCRIPTION_CLASS) ||
+              node.classList?.contains(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)
+            ) {
+              node.style.display = "none";
+            }
+          });
+        }
+      });
+    });
+
+    const lyricsContainer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+    if (lyricsContainer) {
+      observer.observe(lyricsContainer, {
+        childList: true,
+        subtree: true,
+      });
+    }
+
     BetterLyrics.Lyrics.injectLyrics(lyrics);
+
+    BetterLyrics.App.lyricsObserver = observer;
   },
 
   injectLyrics: function (lyrics) {
@@ -217,18 +322,34 @@ BetterLyrics.Lyrics = {
         return;
       }
       try {
+        const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
+        // If lyrics element doesn't exist, clear the interval and return silently
+        if (!lyricsElement) {
+          clearInterval(BetterLyrics.App.lyricsCheckInterval);
+          BetterLyrics.Utils.log(BetterLyrics.Constants.NO_LYRICS_ELEMENT_LOG);
+          return;
+        }
+
+        const lyrics = [...lyricsElement.children];
+        const timeInfoElement = document.getElementsByClassName(BetterLyrics.Constants.TIME_INFO_CLASS)[0];
+
+        if (!timeInfoElement) {
+          return;
+        }
+
         let currentTime =
           BetterLyrics.Utils.timeToInt(
-            document
-              .getElementsByClassName(BetterLyrics.Constants.TIME_INFO_CLASS)[0]
-              .innerHTML.replaceAll(" ", "")
-              .replaceAll("\n", "")
-              .split("/")[0]
+            timeInfoElement.innerHTML.replaceAll(" ", "").replaceAll("\n", "").split("/")[0]
           ) + 0.75;
-        const lyrics = [...document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].children];
 
         lyrics.every((elem, index) => {
+          if (!elem.hasAttribute("data-time")) {
+            return true;
+          }
+
           const time = parseFloat(elem.getAttribute("data-time"));
+          const nextLyric = lyrics[index + 1];
+          const nextTime = nextLyric ? parseFloat(nextLyric.getAttribute("data-time")) : Infinity;
 
           if (currentTime >= time && index + 1 === lyrics.length && elem.getAttribute("data-scrolled") !== "true") {
             elem.setAttribute("class", BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
@@ -239,10 +360,10 @@ BetterLyrics.Lyrics = {
             });
             elem.setAttribute("data-scrolled", true);
             return true;
-          } else if (currentTime > time && currentTime < parseFloat(lyrics[index + 1].getAttribute("data-time"))) {
+          } else if (currentTime > time && currentTime < nextTime) {
             const current = document.getElementsByClassName(BetterLyrics.Constants.CURRENT_LYRICS_CLASS)[0];
             elem.setAttribute("class", BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
-            if (current !== undefined && current.getAttribute("data-scrolled") !== "true") {
+            if (current && current.getAttribute("data-scrolled") !== "true") {
               current.scrollIntoView({
                 behavior: "smooth",
                 block: "center",
@@ -258,7 +379,9 @@ BetterLyrics.Lyrics = {
           }
         });
       } catch (err) {
-        BetterLyrics.Utils.log(err);
+        if (!(err.message && err.message.includes("undefined"))) {
+          BetterLyrics.Utils.log("Error in lyrics check interval:", err);
+        }
         return true;
       }
     }, 50);
