@@ -374,6 +374,8 @@ BetterLyrics.DOM = {
     if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
       return;
     }
+    currentTime += 0.25; //adjust time to account for scroll time
+
     try {
       const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
       // If lyrics element doesn't exist, clear the interval and return silently
