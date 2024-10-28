@@ -42,6 +42,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "varun7654",
+      "name": "Varun Ahuja",
+      "avatar_url": "https://avatars.githubusercontent.com/u/59785640?v=4",
+      "profile": "https://github.com/varun7654",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "badgeTemplate": "<img src=\"https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg\" alt=\"\"/>",
