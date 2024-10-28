@@ -33,7 +33,7 @@ BetterLyrics.App = {
     try {
       if (document.readyState !== "loading") {
         BetterLyrics.App.modify();
-        document.addEventListener("blyrics-send-player-time", function(event) {
+        document.addEventListener("blyrics-send-player-time", function (event) {
           BetterLyrics.DOM.tickLyrics(event.detail.currentTime);
         });
       } else {

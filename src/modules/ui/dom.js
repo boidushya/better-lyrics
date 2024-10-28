@@ -434,5 +434,5 @@ BetterLyrics.DOM = {
       }
       return true;
     }
-  }
+  },
 };

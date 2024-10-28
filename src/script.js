@@ -14,7 +14,6 @@ document.addEventListener("blyrics-get-song-info", function () {
   document.dispatchEvent(event);
 });
 
-
 // Initialize the time update interval and stop it when the page is unloaded
 
 let timeUpdateInterval;
@@ -39,14 +38,14 @@ const startTimeUpdate = () => {
       stopTimeUpdate();
     }
   }, 20);
-}
+};
 
 const stopTimeUpdate = () => {
   if (timeUpdateInterval) {
     clearInterval(timeUpdateInterval);
     timeUpdateInterval = null;
   }
-}
+};
 
 window.addEventListener("unload", stopTimeUpdate);
 

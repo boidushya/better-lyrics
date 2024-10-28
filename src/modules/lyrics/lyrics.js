@@ -355,5 +355,3 @@ BetterLyrics.Lyrics = {
     return lyricsArray;
   },
 };
-
-
