@@ -35,8 +35,6 @@ const startTimeUpdate = () => {
       } catch (_) {
         stopTimeUpdate();
       }
-    } else {
-      stopTimeUpdate();
     }
   }, 20);
 }
