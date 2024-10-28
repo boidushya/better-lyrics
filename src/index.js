@@ -1,6 +1,6 @@
 BetterLyrics.App = {
   lang: "en",
-  lyricsCheckInterval: null,
+  areLyricsTicking: false,
 
   modify: function () {
     BetterLyrics.DOM.injectGetSongInfo();
@@ -33,6 +33,9 @@ BetterLyrics.App = {
     try {
       if (document.readyState !== "loading") {
         BetterLyrics.App.modify();
+        document.addEventListener("blyrics-send-player-time", function(event) {
+          BetterLyrics.DOM.tickLyrics(event.detail.currentTime);
+        });
       } else {
         document.addEventListener("DOMContentLoaded", this.modify.bind(this));
       }
