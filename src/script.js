@@ -16,12 +16,12 @@ document.addEventListener("blyrics-get-song-info", function () {
 
 // Initialize the time update interval and stop it when the page is unloaded
 
-let timeUpdateInterval;
+let tickLyricsInterval;
 
-const startTimeUpdate = () => {
-  stopTimeUpdate();
+const startLyricsTick = () => {
+  stopLyricsTick();
 
-  timeUpdateInterval = setInterval(function () {
+  tickLyricsInterval = setInterval(function () {
     const player = document.getElementById("movie_player");
     if (player) {
       try {
@@ -32,21 +32,19 @@ const startTimeUpdate = () => {
           })
         );
       } catch (_) {
-        stopTimeUpdate();
+        stopLyricsTick();
       }
-    } else {
-      stopTimeUpdate();
     }
   }, 20);
 };
 
-const stopTimeUpdate = () => {
-  if (timeUpdateInterval) {
-    clearInterval(timeUpdateInterval);
-    timeUpdateInterval = null;
+const stopLyricsTick = () => {
+  if (tickLyricsInterval) {
+    clearInterval(tickLyricsInterval);
+    tickLyricsInterval = null;
   }
 };
 
-window.addEventListener("unload", stopTimeUpdate);
+window.addEventListener("unload", stopLyricsTick);
 
-startTimeUpdate();
+startLyricsTick();
