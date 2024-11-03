@@ -24,6 +24,7 @@ BetterLyrics.App = {
   handleModifications: function () {
     BetterLyrics.DOM.cleanup();
     BetterLyrics.DOM.renderLoader();
+    BetterLyrics.DOM.scrollToTop();
     setTimeout(() => {
       BetterLyrics.Lyrics.createLyrics();
     }, 1000);
