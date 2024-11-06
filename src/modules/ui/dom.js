@@ -435,4 +435,18 @@ BetterLyrics.DOM = {
       return true;
     }
   },
+  scrollToTop: function () {
+    try {
+      const lyricsContainer = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
+      const lyrics = lyricsContainer.children;
+      lyrics[0].scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "start",
+      });
+      lyricsContainer.scrollTop = 0;
+    } catch (err) {
+      BetterLyrics.Utils.log(err);
+    }
+  },
 };
