@@ -180,7 +180,7 @@ export function Landing() {
                     data-umami-event="chrome-btn"
                   >
                     <img
-                      src="https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/YT2Grfi9vEBa2wAPzhWa.png"
+                      src="https://developer.chrome.com/static/docs/webstore/branding/image/mPGKYBIR2uCP0ApchDXE.png"
                       alt="Chrome Web Store"
                       className="h-full mx-auto"
                     />
