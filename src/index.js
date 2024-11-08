@@ -22,18 +22,18 @@ BetterLyrics.App = {
     );
   },
 
-  handleModifications: function (song, artist) {
+  handleModifications: function (song, artist, currentTime) {
     if (BetterLyrics.App.lyricInjectionPromise) {
       BetterLyrics.App.lyricInjectionPromise.then(() => {
         // wait until the prev request finishes, then reru
         BetterLyrics.App.lyricInjectionPromise = null;
-        BetterLyrics.App.handleModifications(song, artist);
+        BetterLyrics.App.handleModifications(song, artist, currentTime);
       })
     } else {
       BetterLyrics.DOM.cleanup();
       BetterLyrics.DOM.renderLoader();
-      BetterLyrics.DOM.scrollToTop();
-      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist);
+      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist)
+          .then(() => BetterLyrics.DOM.tickLyrics(currentTime));
     }
   },
 
@@ -71,12 +71,12 @@ BetterLyrics.App = {
             const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
             if (tabSelector.getAttribute("aria-selected") === "true") {
               BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_VISIBLE_LOG);
-              BetterLyrics.App.handleModifications(detail.song, detail.artist);
+              BetterLyrics.App.handleModifications(detail.song, detail.artist, detail.currentTime);
             } else {
               BetterLyrics.Settings.onAutoSwitchEnabled(() => {
                 tabSelector.click();
                 BetterLyrics.Utils.log(BetterLyrics.Constants.AUTO_SWITCH_ENABLED_LOG);
-                BetterLyrics.App.handleModifications(detail.song, detail.artist);
+                BetterLyrics.App.handleModifications(detail.song, detail.artist, detail.currentTime);
               });
 
               BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_HIDDEN_LOG);

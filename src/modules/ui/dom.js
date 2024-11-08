@@ -340,12 +340,4 @@ BetterLyrics.DOM = {
       return true;
     }
   },
-  scrollToTop: function () {
-    try {
-      const lyricsContainer = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
-      lyricsContainer.scrollTop = 0;
-    } catch (err) {
-      BetterLyrics.Utils.log(err);
-    }
-  },
 };
