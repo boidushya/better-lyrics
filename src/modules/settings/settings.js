@@ -150,7 +150,7 @@ BetterLyrics.Settings = {
           BetterLyrics.DOM.addAlbumArtToLayout,
           BetterLyrics.DOM.removeAlbumArtFromLayout
         );
-        BetterLyrics.App.handleModifications();
+        BetterLyrics.App.reloadLyrics();
       } else if (request.action === "clearCache") {
         try {
           BetterLyrics.Storage.clearCache();

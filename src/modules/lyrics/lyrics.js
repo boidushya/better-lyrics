@@ -1,91 +1,89 @@
 BetterLyrics.Lyrics = {
-  createLyrics: function () {
-    BetterLyrics.DOM.requestSongInfo(async e => {
-      // Input validation
-      if (!e || typeof e.song !== "string" || typeof e.artist !== "string") {
-        BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid song or artist data");
-        setTimeout(BetterLyrics.DOM.injectError, 500);
-        return;
+  createLyrics: async function (song, artist) {
+    // Input validation
+    if (typeof song !== "string" || typeof artist !== "string") {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid song or artist data");
+      setTimeout(BetterLyrics.DOM.injectError, 500);
+      return;
+    }
+
+    song = song.trim();
+    artist = artist.trim();
+
+    // Check for empty strings after trimming
+    if (!song || !artist) {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Empty song or artist name");
+      setTimeout(BetterLyrics.DOM.injectError, 500);
+      return;
+    }
+
+    const cacheKey = `blyrics_${song}_${artist}`;
+    BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
+
+    try {
+      // Try to get lyrics from cache with validation
+      const cachedLyrics = await BetterLyrics.Storage.getTransientStorage(cacheKey);
+      if (cachedLyrics) {
+        try {
+          const data = JSON.parse(cachedLyrics);
+          // Validate cached data structure
+          if (data && (Array.isArray(data.lyrics) || data.syncedLyrics)) {
+            BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_CACHE_FOUND_LOG);
+            BetterLyrics.Lyrics.processLyrics(data);
+            return;
+          }
+        } catch (cacheError) {
+          BetterLyrics.Utils.log("Cache parsing error:", cacheError);
+          // Invalid cache, continue to fetch fresh data
+        }
       }
 
-      const song = e.song.trim();
-      const artist = e.artist.trim();
+      // Fetch from the primary API if cache is empty or invalid
+      const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
+      url.searchParams.append("s", BetterLyrics.Utils.unEntity(song));
+      url.searchParams.append("a", BetterLyrics.Utils.unEntity(artist));
 
-      // Check for empty strings after trimming
-      if (!song || !artist) {
-        BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Empty song or artist name");
-        setTimeout(BetterLyrics.DOM.injectError, 500);
-        return;
-      }
-
-      const cacheKey = `blyrics_${song}_${artist}`;
-      BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
       try {
-        // Try to get lyrics from cache with validation
-        const cachedLyrics = await BetterLyrics.Storage.getTransientStorage(cacheKey);
-        if (cachedLyrics) {
-          try {
-            const data = JSON.parse(cachedLyrics);
-            // Validate cached data structure
-            if (data && (Array.isArray(data.lyrics) || data.syncedLyrics)) {
-              BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_CACHE_FOUND_LOG);
-              BetterLyrics.Lyrics.processLyrics(data);
-              return;
-            }
-          } catch (cacheError) {
-            BetterLyrics.Utils.log("Cache parsing error:", cacheError);
-            // Invalid cache, continue to fetch fresh data
-          }
+        const response = await fetch(url.toString(), {
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+
+        if (!response.ok) {
+          throw new Error(`${BetterLyrics.Constants.HTTP_ERROR_LOG} ${response.status}`);
         }
 
-        // Fetch from the primary API if cache is empty or invalid
-        const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
-        url.searchParams.append("s", BetterLyrics.Utils.unEntity(song));
-        url.searchParams.append("a", BetterLyrics.Utils.unEntity(artist));
-
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-        try {
-          const response = await fetch(url.toString(), {
-            signal: controller.signal,
-          });
-          clearTimeout(timeout);
-
-          if (!response.ok) {
-            throw new Error(`${BetterLyrics.Constants.HTTP_ERROR_LOG} ${response.status}`);
-          }
-
-          const data = await response.json();
-          // Validate API response structure
-          if (!data || (!Array.isArray(data.lyrics) && !data.syncedLyrics)) {
-            throw new Error("Invalid API response structure");
-          }
-
-          BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, data);
-        } catch (fetchError) {
-          if (fetchError.name === "AbortError") {
-            throw new Error("Primary API request timed out");
-          }
-          throw fetchError;
+        const data = await response.json();
+        // Validate API response structure
+        if (!data || (!Array.isArray(data.lyrics) && !data.syncedLyrics)) {
+          throw new Error("Invalid API response structure");
         }
-      } catch (primaryError) {
-        BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, primaryError);
-        // Fallback to LRCLIB if the primary fetch fails
-        try {
-          const lrclibLyrics = await BetterLyrics.Lyrics.fetchFromLrclib(song, artist);
-          if (lrclibLyrics) {
-            BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, { lyrics: lrclibLyrics });
-          } else {
-            throw new Error("No valid lyrics returned from LRCLIB");
-          }
-        } catch (lrclibError) {
-          BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, lrclibError);
-          setTimeout(BetterLyrics.DOM.injectError, 500);
+
+        BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, data);
+      } catch (fetchError) {
+        if (fetchError.name === "AbortError") {
+          throw new Error("Primary API request timed out");
         }
+        throw fetchError;
       }
-    });
+    } catch (primaryError) {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, primaryError);
+      // Fallback to LRCLIB if the primary fetch fails
+      try {
+        const lrclibLyrics = await BetterLyrics.Lyrics.fetchFromLrclib(song, artist);
+        if (lrclibLyrics) {
+          BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, {lyrics: lrclibLyrics});
+        } else {
+          throw new Error("No valid lyrics returned from LRCLIB");
+        }
+      } catch (lrclibError) {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, lrclibError);
+        setTimeout(BetterLyrics.DOM.injectError, 500);
+      }
+    }
   },
 
   // Helper function to fetch from LRCLIB

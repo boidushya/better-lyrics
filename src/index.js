@@ -1,6 +1,7 @@
 BetterLyrics.App = {
   lang: "en",
   areLyricsTicking: false,
+  lastVideoId: null,
 
   modify: function () {
     BetterLyrics.DOM.injectGetSongInfo();
@@ -12,7 +13,6 @@ BetterLyrics.App = {
     BetterLyrics.Storage.purgeExpiredKeys();
     BetterLyrics.Storage.saveCacheInfo();
     BetterLyrics.Settings.listenForPopupMessages();
-    BetterLyrics.Observer.observeSongChanges();
     BetterLyrics.Observer.lyricReloader();
 
     BetterLyrics.Utils.log(
@@ -21,13 +21,15 @@ BetterLyrics.App = {
     );
   },
 
-  handleModifications: function () {
+  handleModifications: function (song, artist) {
     BetterLyrics.DOM.cleanup();
     BetterLyrics.DOM.renderLoader();
     BetterLyrics.DOM.scrollToTop();
-    setTimeout(() => {
-      BetterLyrics.Lyrics.createLyrics();
-    }, 1000);
+    BetterLyrics.Lyrics.createLyrics(song, artist);
+  },
+
+  reloadLyrics() {
+    BetterLyrics.App.lastVideoId = null;
   },
 
   init: function () {
@@ -35,7 +37,33 @@ BetterLyrics.App = {
       if (document.readyState !== "loading") {
         BetterLyrics.App.modify();
         document.addEventListener("blyrics-send-player-time", function (event) {
-          BetterLyrics.DOM.tickLyrics(event.detail.currentTime);
+          let detail = event.detail;
+          BetterLyrics.DOM.tickLyrics(detail.currentTime);
+          if (detail.videoId !== BetterLyrics.App.lastVideoId) {
+            BetterLyrics.App.lastVideoId = detail.videoId;
+
+            let targetNode = document.getElementsByClassName(BetterLyrics.Constants.TITLE_CLASS)[0];
+
+            BetterLyrics.Utils.log(BetterLyrics.Constants.SONG_SWITCHED_LOG, targetNode.innerHTML);
+            BetterLyrics.Settings.onAlbumArtEnabled(
+                BetterLyrics.DOM.addAlbumArtToLayout,
+                BetterLyrics.DOM.removeAlbumArtFromLayout
+            );
+
+            const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+            if (tabSelector.getAttribute("aria-selected") === "true") {
+              BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_VISIBLE_LOG);
+              BetterLyrics.App.handleModifications(detail.song, detail.artist);
+            } else {
+              BetterLyrics.Settings.onAutoSwitchEnabled(() => {
+                tabSelector.click();
+                BetterLyrics.Utils.log(BetterLyrics.Constants.AUTO_SWITCH_ENABLED_LOG);
+                BetterLyrics.App.handleModifications(detail.song, detail.artist);
+              });
+
+              BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_HIDDEN_LOG);
+            }
+          }
         });
       } else {
         document.addEventListener("DOMContentLoaded", this.modify.bind(this));
