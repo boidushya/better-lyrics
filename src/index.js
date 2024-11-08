@@ -1,7 +1,8 @@
 BetterLyrics.App = {
   lang: "en",
   areLyricsTicking: false,
-  lastVideoId: null,
+  lastVideo: null,
+  lyricInjectionPromise: null,
 
   modify: function () {
     BetterLyrics.DOM.injectGetSongInfo();
@@ -22,14 +23,22 @@ BetterLyrics.App = {
   },
 
   handleModifications: function (song, artist) {
-    BetterLyrics.DOM.cleanup();
-    BetterLyrics.DOM.renderLoader();
-    BetterLyrics.DOM.scrollToTop();
-    BetterLyrics.Lyrics.createLyrics(song, artist);
+    if (BetterLyrics.App.lyricInjectionPromise) {
+      BetterLyrics.App.lyricInjectionPromise.then(() => {
+        // wait until the prev request finishes, then reru
+        BetterLyrics.App.lyricInjectionPromise = null;
+        BetterLyrics.App.handleModifications(song, artist);
+      })
+    } else {
+      BetterLyrics.DOM.cleanup();
+      BetterLyrics.DOM.renderLoader();
+      BetterLyrics.DOM.scrollToTop();
+      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist);
+    }
   },
 
   reloadLyrics() {
-    BetterLyrics.App.lastVideoId = null;
+    BetterLyrics.App.lastVideo = null;
   },
 
   init: function () {
@@ -39,8 +48,17 @@ BetterLyrics.App = {
         document.addEventListener("blyrics-send-player-time", function (event) {
           let detail = event.detail;
           BetterLyrics.DOM.tickLyrics(detail.currentTime);
-          if (detail.videoId !== BetterLyrics.App.lastVideoId) {
-            BetterLyrics.App.lastVideoId = detail.videoId;
+
+          // Video ID can change before the song & artist are available; also encode them, so we listen to when they change
+          // If the song and artist are available it seems to be safe to inject our lyrics w/o any sort of delay
+          let currentVideo = detail.videoId + " " + detail.song + " " + detail.artist;
+
+          if (currentVideo !== BetterLyrics.App.lastVideo) {
+            BetterLyrics.App.lastVideo = currentVideo;
+
+            if (!detail.song || !detail.artist) {
+              return;
+            }
 
             let targetNode = document.getElementsByClassName(BetterLyrics.Constants.TITLE_CLASS)[0];
 
