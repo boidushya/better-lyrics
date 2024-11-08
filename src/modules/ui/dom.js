@@ -141,13 +141,13 @@ BetterLyrics.DOM = {
       if (lyricsWrapper) {
         lyricsWrapper.innerHTML = "";
       }
-      BetterLyrics.DOM.renderLoader();
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
   },
 
   injectError: function () {
+    BetterLyrics.DOM.cleanup();
     const message = "No lyrics found for this song.";
 
     try {

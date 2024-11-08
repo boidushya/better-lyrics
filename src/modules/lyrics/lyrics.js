@@ -26,11 +26,10 @@ BetterLyrics.Lyrics = {
     }
 
     // We should get recalled if we were executed without a valid song/artist and aren't able to get lyrics
-
+    BetterLyrics.DOM.renderLoader(); // Only render the loader after we've checked the cache
     // Input validation
     if (typeof song !== "string" || typeof artist !== "string") {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid song or artist data");
-      setTimeout(BetterLyrics.DOM.injectError, 500);
       return;
     }
 
@@ -213,6 +212,7 @@ BetterLyrics.Lyrics = {
   },
 
   injectLyrics: function (lyrics) {
+    BetterLyrics.DOM.cleanup();
     let lyricsWrapper = BetterLyrics.DOM.createLyricsWrapper();
     BetterLyrics.DOM.addFooter();
 

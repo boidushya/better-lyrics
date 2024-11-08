@@ -16,7 +16,8 @@ const startLyricsTick = () => {
             detail: { currentTime: currentTime, videoId: video_id, song: title, artist: author },
           })
         );
-      } catch (_) {
+      } catch (e) {
+        console.log(e);
         stopLyricsTick();
       }
     }

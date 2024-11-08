@@ -35,6 +35,7 @@ BetterLyrics.Observer = {
       tab2.addEventListener("click", function () {
         if (!BetterLyrics.App.areLyricsLoaded) {
           BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_CLICKED_LOG);
+          BetterLyrics.DOM.cleanup();
           BetterLyrics.App.reloadLyrics();
         }
       });

@@ -32,8 +32,6 @@ BetterLyrics.App = {
         BetterLyrics.App.handleModifications(song, artist, currentTime, videoId);
       });
     } else {
-      BetterLyrics.DOM.cleanup();
-      BetterLyrics.DOM.renderLoader();
       BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist, videoId).then(() =>
         BetterLyrics.DOM.tickLyrics(currentTime)
       ).then(() => console.log("finished loading"));
@@ -41,7 +39,7 @@ BetterLyrics.App = {
   },
 
   reloadLyrics() {
-    BetterLyrics.App.lastVideo = null;
+    BetterLyrics.App.lastVideoId = null;
   },
 
   init: function () {
