@@ -100,8 +100,9 @@ BetterLyrics.DOM = {
       tabRenderer.prepend(loaderWrapper);
       loaderWrapper.style.display = "inline-block !important";
       loaderWrapper.setAttribute("active", "");
+      loaderWrapper.hidden = false;
       loaderWrapper.scrollIntoView({
-        behavior: "smooth",
+        behavior: "instant",
         block: "start",
         inline: "start",
       });
@@ -116,6 +117,7 @@ BetterLyrics.DOM = {
       if (loaderWrapper) {
         loaderWrapper.style.display = "none !important";
         loaderWrapper.removeAttribute("active");
+        loaderWrapper.hidden = true;
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
