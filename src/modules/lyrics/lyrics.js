@@ -1,5 +1,32 @@
 BetterLyrics.Lyrics = {
-  createLyrics: async function (song, artist) {
+  createLyrics: async function (song, artist, videoId) {
+
+    if (!videoId || typeof videoId !== 'string') {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid video id");
+      return
+    }
+
+    // Try to get lyrics from cache with validation
+    const cacheKey = `blyrics_${videoId}`;
+
+    const cachedLyrics = await BetterLyrics.Storage.getTransientStorage(cacheKey);
+    if (cachedLyrics) {
+      try {
+        const data = JSON.parse(cachedLyrics);
+        // Validate cached data structure
+        if (data && (Array.isArray(data.lyrics) || data.syncedLyrics)) {
+          BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_CACHE_FOUND_LOG);
+          BetterLyrics.Lyrics.processLyrics(data);
+          return;
+        }
+      } catch (cacheError) {
+        BetterLyrics.Utils.log("Cache parsing error:", cacheError);
+        // Invalid cache, continue to fetch fresh data
+      }
+    }
+
+    // We should get recalled if we were executed without a valid song/artist and aren't able to get lyrics
+
     // Input validation
     if (typeof song !== "string" || typeof artist !== "string") {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid song or artist data");
@@ -17,27 +44,9 @@ BetterLyrics.Lyrics = {
       return;
     }
 
-    const cacheKey = `blyrics_${song}_${artist}`;
     BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
     try {
-      // Try to get lyrics from cache with validation
-      const cachedLyrics = await BetterLyrics.Storage.getTransientStorage(cacheKey);
-      if (cachedLyrics) {
-        try {
-          const data = JSON.parse(cachedLyrics);
-          // Validate cached data structure
-          if (data && (Array.isArray(data.lyrics) || data.syncedLyrics)) {
-            BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_CACHE_FOUND_LOG);
-            BetterLyrics.Lyrics.processLyrics(data);
-            return;
-          }
-        } catch (cacheError) {
-          BetterLyrics.Utils.log("Cache parsing error:", cacheError);
-          // Invalid cache, continue to fetch fresh data
-        }
-      }
-
       // Fetch from the primary API if cache is empty or invalid
       const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
       url.searchParams.append("s", BetterLyrics.Utils.unEntity(song));
@@ -306,8 +315,10 @@ BetterLyrics.Lyrics = {
 
     if (!allZero) {
       BetterLyrics.Lyrics.setupLyricsCheckInterval();
+      BetterLyrics.App.areLyricsLoaded = true;
     } else {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SYNC_DISABLED_LOG);
+      BetterLyrics.App.areLyricsLoaded = true;
     }
   },
   setupLyricsCheckInterval: function () {

@@ -33,7 +33,7 @@ BetterLyrics.Observer = {
 
     if (tab1 !== undefined && tab2 !== undefined && tab3 !== undefined) {
       tab2.addEventListener("click", function () {
-        if (!BetterLyrics.App.areLyricsTicking) {
+        if (!BetterLyrics.App.areLyricsLoaded) {
           BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_CLICKED_LOG);
           BetterLyrics.App.reloadLyrics();
         }
