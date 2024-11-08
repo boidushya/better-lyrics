@@ -33,8 +33,10 @@ BetterLyrics.Observer = {
 
     if (tab1 !== undefined && tab2 !== undefined && tab3 !== undefined) {
       tab2.addEventListener("click", function () {
-        BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_CLICKED_LOG);
-        BetterLyrics.App.reloadLyrics();
+        if (!BetterLyrics.App.areLyricsTicking) {
+          BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_CLICKED_LOG);
+          BetterLyrics.App.reloadLyrics();
+        }
       });
     } else {
       setTimeout(() => BetterLyrics.Observer.lyricReloader(), 1000);

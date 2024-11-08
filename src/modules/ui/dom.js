@@ -145,6 +145,8 @@ BetterLyrics.DOM = {
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
+
+    BetterLyrics.App.areLyricsTicking = false;
   },
 
   injectError: function () {

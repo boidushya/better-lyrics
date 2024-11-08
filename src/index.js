@@ -63,6 +63,8 @@ BetterLyrics.App = {
             let targetNode = document.getElementsByClassName(BetterLyrics.Constants.TITLE_CLASS)[0];
 
             BetterLyrics.Utils.log(BetterLyrics.Constants.SONG_SWITCHED_LOG, targetNode.innerHTML);
+            BetterLyrics.App.areLyricsTicking = false;
+            
             BetterLyrics.Settings.onAlbumArtEnabled(
                 BetterLyrics.DOM.addAlbumArtToLayout,
                 BetterLyrics.DOM.removeAlbumArtFromLayout

@@ -143,8 +143,6 @@ BetterLyrics.Lyrics = {
     BetterLyrics.App.lang = data.language;
     BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
 
-    BetterLyrics.App.areLyricsTicking = false;
-
     if (!lyrics || lyrics.length === 0) {
       BetterLyrics.Utils.log(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
       setTimeout(BetterLyrics.DOM.injectError, 500);
