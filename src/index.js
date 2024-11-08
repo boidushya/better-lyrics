@@ -28,12 +28,13 @@ BetterLyrics.App = {
         // wait until the prev request finishes, then reru
         BetterLyrics.App.lyricInjectionPromise = null;
         BetterLyrics.App.handleModifications(song, artist, currentTime);
-      })
+      });
     } else {
       BetterLyrics.DOM.cleanup();
       BetterLyrics.DOM.renderLoader();
-      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist)
-          .then(() => BetterLyrics.DOM.tickLyrics(currentTime));
+      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist).then(() =>
+        BetterLyrics.DOM.tickLyrics(currentTime)
+      );
     }
   },
 
@@ -64,10 +65,10 @@ BetterLyrics.App = {
 
             BetterLyrics.Utils.log(BetterLyrics.Constants.SONG_SWITCHED_LOG, targetNode.innerHTML);
             BetterLyrics.App.areLyricsTicking = false;
-            
+
             BetterLyrics.Settings.onAlbumArtEnabled(
-                BetterLyrics.DOM.addAlbumArtToLayout,
-                BetterLyrics.DOM.removeAlbumArtFromLayout
+              BetterLyrics.DOM.addAlbumArtToLayout,
+              BetterLyrics.DOM.removeAlbumArtFromLayout
             );
 
             const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];

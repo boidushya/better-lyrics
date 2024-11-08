@@ -75,7 +75,7 @@ BetterLyrics.Lyrics = {
       try {
         const lrclibLyrics = await BetterLyrics.Lyrics.fetchFromLrclib(song, artist);
         if (lrclibLyrics) {
-          BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, {lyrics: lrclibLyrics});
+          BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, { lyrics: lrclibLyrics });
         } else {
           throw new Error("No valid lyrics returned from LRCLIB");
         }
