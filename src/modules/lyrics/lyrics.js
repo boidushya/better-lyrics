@@ -1,9 +1,8 @@
 BetterLyrics.Lyrics = {
   createLyrics: async function (song, artist, videoId) {
-
-    if (!videoId || typeof videoId !== 'string') {
+    if (!videoId || typeof videoId !== "string") {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid video id");
-      return
+      return;
     }
 
     // Try to get lyrics from cache with validation

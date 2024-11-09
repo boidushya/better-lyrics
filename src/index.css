@@ -162,8 +162,8 @@
   opacity: 0;
 }
 
-#tab-renderer[page-type="MUSIC_PAGE_TYPE_TRACK_LYRICS"] tp-yt-paper-spinner-lite{
-	display: none !important;
+#tab-renderer[page-type="MUSIC_PAGE_TYPE_TRACK_LYRICS"] tp-yt-paper-spinner-lite {
+  display: none !important;
 }
 
 /* Footer styles */

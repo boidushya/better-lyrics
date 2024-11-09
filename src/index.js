@@ -32,9 +32,9 @@ BetterLyrics.App = {
         BetterLyrics.App.handleModifications(song, artist, currentTime, videoId);
       });
     } else {
-      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist, videoId).then(() =>
-        BetterLyrics.DOM.tickLyrics(currentTime)
-      ).then(() => console.log("finished loading"));
+      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist, videoId)
+        .then(() => BetterLyrics.DOM.tickLyrics(currentTime))
+        .then(() => console.log("finished loading"));
     }
   },
 
@@ -52,7 +52,10 @@ BetterLyrics.App = {
           let currentVideoId = detail.videoId;
           let currentVideoDetails = detail.song + " " + detail.artist;
 
-          if (currentVideoId !== BetterLyrics.App.lastVideoId || currentVideoDetails !== BetterLyrics.App.lastVideoDetails) {
+          if (
+            currentVideoId !== BetterLyrics.App.lastVideoId ||
+            currentVideoDetails !== BetterLyrics.App.lastVideoDetails
+          ) {
             try {
               if (currentVideoId === BetterLyrics.App.lastVideoId && BetterLyrics.App.areLyricsTicking) {
                 console.log(BetterLyrics.Constants.SKIPPING_LOAD_WITH_META);
