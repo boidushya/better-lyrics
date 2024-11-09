@@ -115,7 +115,6 @@ BetterLyrics.DOM = {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
       if (loaderWrapper) {
-        loaderWrapper.style.display = "none !important";
         loaderWrapper.removeAttribute("active");
         loaderWrapper.hidden = true;
       }
