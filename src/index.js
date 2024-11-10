@@ -7,6 +7,7 @@ BetterLyrics.App = {
   lyricInjectionPromise: null,
 
   modify: function () {
+    BetterLyrics.Utils.setUpLog();
     BetterLyrics.DOM.injectGetSongInfo();
     BetterLyrics.DOM.injectHeadTags();
     BetterLyrics.Observer.enableLyricsTab();

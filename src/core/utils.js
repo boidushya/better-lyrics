@@ -7,6 +7,16 @@ BetterLyrics.Utils = {
     });
   },
 
+  setUpLog: function () {
+    BetterLyrics.Storage.getStorage({ isLogsEnabled: true }, items => {
+      if (items.isLogsEnabled) {
+        BetterLyrics.Utils.log = console.log.bind(window.console);
+      } else {
+        BetterLyrics.Utils.log = function(){};
+      }
+    });
+  },
+
   timeToInt: function (time) {
     time = time.split(":");
     time = parseFloat(time[0]) * 60 + parseFloat(time[1]);
