@@ -39,6 +39,7 @@ BetterLyrics.Observer = {
           BetterLyrics.DOM.cleanup();
           BetterLyrics.DOM.renderLoader();
           BetterLyrics.App.reloadLyrics();
+          BetterLyrics.App.handleModifications(detail.song, detail.artist, detail.currentTime, detail.videoId);
         }
       }, 100);
     }
