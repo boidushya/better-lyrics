@@ -292,11 +292,6 @@ BetterLyrics.DOM = {
       }
 
       const lyrics = [...lyricsElement.children];
-      const timeInfoElement = document.getElementsByClassName(BetterLyrics.Constants.TIME_INFO_CLASS)[0];
-
-      if (!timeInfoElement) {
-        return;
-      }
 
       lyrics.every((elem, index) => {
         if (!elem.hasAttribute("data-time")) {
@@ -339,20 +334,6 @@ BetterLyrics.DOM = {
         BetterLyrics.Utils.log("Error in lyrics check interval:", err);
       }
       return true;
-    }
-  },
-  scrollToTop: function () {
-    try {
-      const lyricsContainer = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
-      const lyrics = lyricsContainer.children;
-      lyrics[0].scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-        inline: "start",
-      });
-      lyricsContainer.scrollTop = 0;
-    } catch (err) {
-      BetterLyrics.Utils.log(err);
     }
   },
 };
