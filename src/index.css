@@ -74,7 +74,6 @@
   word-break: break-word;
   transform: scale(var(--blyrics-scale));
   transition: transform var(--blyrics-transition-duration);
-	scroll-margin-top: 16px;
 }
 
 .blyrics-container > div,

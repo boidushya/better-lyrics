@@ -70,4 +70,5 @@ BetterLyrics.App = {
   },
 };
 
+// Initialize the application
 BetterLyrics.App.init();
