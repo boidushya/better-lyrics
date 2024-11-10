@@ -111,6 +111,7 @@ BetterLyrics.Constants = {
   ALBUM_ART_REMOVED_LOG: "[BetterLyrics] Album art removed from the layout",
   LOADING_WITHOUT_SONG_META: "[BetterLyrics] Trying to load without Song/Artist info",
   SKIPPING_LOAD_WITH_META: "[BetterLyrics] Skipping Reload From Metadata Available: Already Loaded",
+  LOADER_TRANSITION_ENDED: "[BetterLyrics] Loader Transition Ended",
 
   // Feature State Logs
   AUTO_SWITCH_ENABLED_LOG: "[BetterLyrics] Auto switch enabled, switching to lyrics tab",
