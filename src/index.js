@@ -29,11 +29,10 @@ BetterLyrics.App = {
 
   handleModifications: function (song, artist, currentTime, videoId) {
     if (BetterLyrics.App.lyricInjectionPromise) {
-      BetterLyrics.App.lyricInjectionPromise
-        .then(() => {
-          BetterLyrics.App.lyricInjectionPromise = null;
-          BetterLyrics.App.handleModifications(song, artist, currentTime, videoId);
-        })
+      BetterLyrics.App.lyricInjectionPromise.then(() => {
+        BetterLyrics.App.lyricInjectionPromise = null;
+        BetterLyrics.App.handleModifications(song, artist, currentTime, videoId);
+      });
     } else {
       BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist, videoId)
         .then(() => {

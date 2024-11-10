@@ -12,7 +12,7 @@ BetterLyrics.Utils = {
       if (items.isLogsEnabled) {
         BetterLyrics.Utils.log = console.log.bind(window.console);
       } else {
-        BetterLyrics.Utils.log = function(){};
+        BetterLyrics.Utils.log = function () {};
       }
     });
   },

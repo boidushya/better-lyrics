@@ -52,8 +52,8 @@ BetterLyrics.Observer = {
       let currentVideoDetails = detail.song + " " + detail.artist;
 
       if (
-          currentVideoId !== BetterLyrics.App.lastVideoId ||
-          currentVideoDetails !== BetterLyrics.App.lastVideoDetails
+        currentVideoId !== BetterLyrics.App.lastVideoId ||
+        currentVideoDetails !== BetterLyrics.App.lastVideoDetails
       ) {
         try {
           if (currentVideoId === BetterLyrics.App.lastVideoId && BetterLyrics.App.areLyricsTicking) {
@@ -76,12 +76,12 @@ BetterLyrics.Observer = {
         BetterLyrics.App.queueLyricInjection = true;
 
         BetterLyrics.Settings.onAlbumArtEnabled(
-            BetterLyrics.DOM.addAlbumArtToLayout,
-            BetterLyrics.DOM.removeAlbumArtFromLayout
+          BetterLyrics.DOM.addAlbumArtToLayout,
+          BetterLyrics.DOM.removeAlbumArtFromLayout
         );
       }
 
-      if (BetterLyrics.App.queueLyricInjection){
+      if (BetterLyrics.App.queueLyricInjection) {
         const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
         if (tabSelector) {
           BetterLyrics.App.queueLyricInjection = false;
@@ -99,7 +99,6 @@ BetterLyrics.Observer = {
           }
         }
       }
-
 
       BetterLyrics.DOM.tickLyrics(detail.currentTime);
     });

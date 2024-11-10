@@ -224,7 +224,6 @@ BetterLyrics.Lyrics = {
 
       lyricsWrapper.removeAttribute("is-empty");
 
-
       // add a line at -1s so that we scroll to it at when the song starts
       let line = document.createElement("div");
       line.dataset.time = -1;
@@ -239,7 +238,6 @@ BetterLyrics.Lyrics = {
     });
 
     const allZero = lyrics.every(item => item.startTimeMs === "0");
-
 
     lyrics.forEach(item => {
       let line = document.createElement("div");
