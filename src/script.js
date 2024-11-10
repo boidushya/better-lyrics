@@ -1,19 +1,3 @@
-const getSongInfo = () => {
-  const player = document.getElementById("movie_player");
-
-  const { title, author } = player.getVideoData();
-  return {
-    song: title,
-    artist: author,
-  };
-};
-
-document.addEventListener("blyrics-get-song-info", function () {
-  const data = getSongInfo();
-  const event = new CustomEvent("blyrics-send-song-info", { detail: data });
-  document.dispatchEvent(event);
-});
-
 // Initialize the time update interval and stop it when the page is unloaded
 
 let tickLyricsInterval;
@@ -26,12 +10,14 @@ const startLyricsTick = () => {
     if (player) {
       try {
         const currentTime = player.getCurrentTime();
+        const { video_id, title, author } = player.getVideoData();
         document.dispatchEvent(
           new CustomEvent("blyrics-send-player-time", {
-            detail: { currentTime: currentTime },
+            detail: { currentTime: currentTime, videoId: video_id, song: title, artist: author },
           })
         );
-      } catch (_) {
+      } catch (e) {
+        console.log(e);
         stopLyricsTick();
       }
     }

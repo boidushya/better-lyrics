@@ -1,6 +1,10 @@
 BetterLyrics.App = {
   lang: "en",
   areLyricsTicking: false,
+  areLyricsLoaded: false,
+  lastVideoId: null,
+  lastVideoDetails: null,
+  lyricInjectionPromise: null,
 
   modify: function () {
     BetterLyrics.DOM.injectGetSongInfo();
@@ -12,8 +16,8 @@ BetterLyrics.App = {
     BetterLyrics.Storage.purgeExpiredKeys();
     BetterLyrics.Storage.saveCacheInfo();
     BetterLyrics.Settings.listenForPopupMessages();
-    BetterLyrics.Observer.observeSongChanges();
     BetterLyrics.Observer.lyricReloader();
+    BetterLyrics.Observer.lyricsInitialize();
 
     BetterLyrics.Utils.log(
       BetterLyrics.Constants.INITIALIZE_LOG,
@@ -21,24 +25,44 @@ BetterLyrics.App = {
     );
   },
 
-  handleModifications: function () {
-    BetterLyrics.DOM.cleanup();
-    BetterLyrics.DOM.renderLoader();
-    BetterLyrics.DOM.scrollToTop();
-    setTimeout(() => {
-      BetterLyrics.Lyrics.createLyrics();
-    }, 1000);
+  handleModifications: function (song, artist, currentTime, videoId) {
+    if (!song || !artist || !videoId) return;
+
+    if (BetterLyrics.App.lyricInjectionPromise) {
+      BetterLyrics.App.lyricInjectionPromise
+        .then(() => {
+          BetterLyrics.App.lyricInjectionPromise = null;
+          BetterLyrics.App.handleModifications(song, artist, currentTime, videoId);
+        })
+        .catch(err => {
+          BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, err);
+          BetterLyrics.App.lyricInjectionPromise = null;
+        });
+    } else {
+      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist, videoId)
+        .then(() => {
+          BetterLyrics.App.areLyricsLoaded = true;
+          return BetterLyrics.DOM.tickLyrics(currentTime);
+        })
+        .catch(err => {
+          BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, err);
+          BetterLyrics.App.areLyricsLoaded = false;
+        });
+    }
+  },
+
+  reloadLyrics() {
+    BetterLyrics.App.lastVideoId = null;
+    BetterLyrics.App.areLyricsLoaded = false;
+    BetterLyrics.App.areLyricsTicking = false;
   },
 
   init: function () {
     try {
       if (document.readyState !== "loading") {
         BetterLyrics.App.modify();
-        document.addEventListener("blyrics-send-player-time", function (event) {
-          BetterLyrics.DOM.tickLyrics(event.detail.currentTime);
-        });
       } else {
-        document.addEventListener("DOMContentLoaded", this.modify.bind(this));
+        document.addEventListener("DOMContentLoaded", BetterLyrics.App.modify);
       }
     } catch (err) {
       BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, err);
@@ -46,4 +70,5 @@ BetterLyrics.App = {
   },
 };
 
+// Initialize the application
 BetterLyrics.App.init();

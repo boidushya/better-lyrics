@@ -100,8 +100,9 @@ BetterLyrics.DOM = {
       tabRenderer.prepend(loaderWrapper);
       loaderWrapper.style.display = "inline-block !important";
       loaderWrapper.setAttribute("active", "");
+      loaderWrapper.hidden = false;
       loaderWrapper.scrollIntoView({
-        behavior: "smooth",
+        behavior: "instant",
         block: "start",
         inline: "start",
       });
@@ -114,8 +115,8 @@ BetterLyrics.DOM = {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
       if (loaderWrapper) {
-        loaderWrapper.style.display = "none !important";
         loaderWrapper.removeAttribute("active");
+        loaderWrapper.hidden = true;
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
@@ -139,13 +140,13 @@ BetterLyrics.DOM = {
       if (lyricsWrapper) {
         lyricsWrapper.innerHTML = "";
       }
-      BetterLyrics.DOM.renderLoader();
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
   },
 
   injectError: function () {
+    BetterLyrics.DOM.cleanup();
     const message = "No lyrics found for this song.";
 
     try {
@@ -191,101 +192,6 @@ BetterLyrics.DOM = {
       BetterLyrics.Utils.log(err);
     }
   },
-
-  requestSongInfo: function (callback) {
-    let timeoutId;
-
-    timeoutId = setTimeout(() => {
-      const legacyData = BetterLyrics.DOM.legacySongInfo();
-      callback(legacyData);
-    }, 1000);
-
-    const handleSongInfo = event => {
-      BetterLyrics.DOM.onScriptSendSongInfo(event, callback, timeoutId);
-    };
-
-    document.addEventListener("blyrics-send-song-info", handleSongInfo);
-
-    document.dispatchEvent(new Event("blyrics-get-song-info"));
-
-    document.removeEventListener("blyrics-send-song-info", handleSongInfo);
-    clearTimeout(timeoutId);
-  },
-
-  legacySongInfo: function () {
-    BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_LEGACY_LOG);
-    const song = document.getElementsByClassName(BetterLyrics.Constants.TITLE_CLASS)[0].innerHTML;
-    let artist;
-    try {
-      artist = document.getElementsByClassName(BetterLyrics.Constants.SUBTITLE_CLASS)[0].children[0].children[0]
-        .innerHTML;
-    } catch (_err) {
-      artist = document.getElementsByClassName(BetterLyrics.Constants.SUBTITLE_CLASS)[0].children[0].innerHTML;
-    }
-
-    return {
-      song,
-      artist,
-    };
-  },
-
-  onScriptSendSongInfo: function (event, callback, timeoutId) {
-    clearTimeout(timeoutId);
-    const data = event.detail;
-
-    const mainPanel = document.getElementById("main-panel");
-
-    if (mainPanel) {
-      const existingSongInfo = document.getElementById("blyrics-song-info");
-      const existingWatermark = document.getElementById("blyrics-watermark");
-
-      existingSongInfo?.remove();
-      existingWatermark?.remove();
-
-      const title = document.createElement("p");
-      title.id = "blyrics-title";
-      title.textContent = data.song;
-
-      const artist = document.createElement("p");
-      artist.id = "blyrics-artist";
-      artist.textContent = data.artist;
-
-      const songInfoWrapper = document.createElement("div");
-      songInfoWrapper.id = "blyrics-song-info";
-      songInfoWrapper.appendChild(title);
-      songInfoWrapper.appendChild(artist);
-
-      const watermark = document.createElement("div");
-      watermark.id = BetterLyrics.Constants.WATERMARK_CLASS;
-
-      const watermarkContainer = document.createElement("div");
-      watermarkContainer.className = `${BetterLyrics.Constants.WATERMARK_CLASS}__container`;
-
-      const watermarkImage = document.createElement("img");
-      watermarkImage.src = "https://better-lyrics.boidu.dev/icon-512.png";
-      watermarkImage.alt = "Better Lyrics Logo";
-      watermarkImage.width = "20";
-      watermarkImage.height = "20";
-
-      watermarkContainer.appendChild(watermarkImage);
-
-      const watermarkLink = document.createElement("p");
-      watermarkLink.textContent = "dub.sh/blyt";
-
-      watermarkContainer.appendChild(watermarkLink);
-
-      watermark.appendChild(watermarkContainer);
-      watermark.removeAttribute("is-empty");
-
-      const player = document.getElementById("player");
-      player.appendChild(watermark);
-
-      mainPanel.appendChild(songInfoWrapper);
-    }
-
-    callback(data);
-  },
-
   addAlbumArtToLayout: function () {
     let albumArt = document.querySelector(BetterLyrics.Constants.SONG_IMAGE_SELECTOR).src;
     if (albumArt === BetterLyrics.Constants.EMPTY_THUMBNAIL_SRC) {
@@ -433,20 +339,6 @@ BetterLyrics.DOM = {
         BetterLyrics.Utils.log("Error in lyrics check interval:", err);
       }
       return true;
-    }
-  },
-  scrollToTop: function () {
-    try {
-      const lyricsContainer = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
-      const lyrics = lyricsContainer.children;
-      lyrics[0].scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-        inline: "start",
-      });
-      lyricsContainer.scrollTop = 0;
-    } catch (err) {
-      BetterLyrics.Utils.log(err);
     }
   },
 };
