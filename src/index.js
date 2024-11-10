@@ -5,6 +5,7 @@ BetterLyrics.App = {
   lastVideoId: null,
   lastVideoDetails: null,
   lyricInjectionPromise: null,
+  queueLyricInjection: false,
 
   modify: function () {
     BetterLyrics.DOM.injectGetSongInfo();
@@ -74,13 +75,18 @@ BetterLyrics.App = {
             BetterLyrics.App.areLyricsTicking = false;
             BetterLyrics.App.areLyricsLoaded = false;
 
+            BetterLyrics.App.queueLyricInjection = true;
+
             BetterLyrics.Settings.onAlbumArtEnabled(
               BetterLyrics.DOM.addAlbumArtToLayout,
               BetterLyrics.DOM.removeAlbumArtFromLayout
             );
+          }
 
+          if (BetterLyrics.App.queueLyricInjection){
             const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
             if (tabSelector) {
+              BetterLyrics.App.queueLyricInjection = false;
               if (tabSelector.getAttribute("aria-selected") === "true") {
                 BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_VISIBLE_LOG);
                 BetterLyrics.App.handleModifications(detail.song, detail.artist, detail.currentTime, detail.videoId);
@@ -95,6 +101,7 @@ BetterLyrics.App = {
               }
             }
           }
+
 
           BetterLyrics.DOM.tickLyrics(detail.currentTime);
         });
