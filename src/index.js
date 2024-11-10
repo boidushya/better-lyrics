@@ -27,15 +27,20 @@ BetterLyrics.App = {
 
   handleModifications: function (song, artist, currentTime, videoId) {
     if (BetterLyrics.App.lyricInjectionPromise) {
-      BetterLyrics.App.lyricInjectionPromise.then(() => {
-        // wait until the prev request finishes, then reru
-        BetterLyrics.App.lyricInjectionPromise = null;
-        BetterLyrics.App.handleModifications(song, artist, currentTime, videoId);
-      });
+      BetterLyrics.App.lyricInjectionPromise
+        .then(() => {
+          BetterLyrics.App.lyricInjectionPromise = null;
+          BetterLyrics.App.handleModifications(song, artist, currentTime, videoId);
+        })
     } else {
       BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist, videoId)
-        .then(() => BetterLyrics.DOM.tickLyrics(currentTime))
-        .then(() => console.log("finished loading"));
+        .then(() => {
+          return BetterLyrics.DOM.tickLyrics(currentTime);
+        })
+        .catch(err => {
+          BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, err);
+          BetterLyrics.App.areLyricsLoaded = false;
+        });
     }
   },
 
