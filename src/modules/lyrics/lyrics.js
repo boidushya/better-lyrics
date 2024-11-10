@@ -223,6 +223,13 @@ BetterLyrics.Lyrics = {
       BetterLyrics.DOM.flushLoader();
 
       lyricsWrapper.removeAttribute("is-empty");
+
+
+      // add a line at -1s so that we scroll to it at when the song starts
+      let line = document.createElement("div");
+      line.dataset.time = -1;
+      line.style = "--blyrics-duration: 0s; padding-top: 0 !important; padding-bottom: 0 !important;";
+      lyricsContainer.appendChild(line);
     } catch (_err) {
       BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
     }
@@ -232,6 +239,7 @@ BetterLyrics.Lyrics = {
     });
 
     const allZero = lyrics.every(item => item.startTimeMs === "0");
+
 
     lyrics.forEach(item => {
       let line = document.createElement("div");

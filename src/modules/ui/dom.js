@@ -292,11 +292,6 @@ BetterLyrics.DOM = {
       }
 
       const lyrics = [...lyricsElement.children];
-      const timeInfoElement = document.getElementsByClassName(BetterLyrics.Constants.TIME_INFO_CLASS)[0];
-
-      if (!timeInfoElement) {
-        return;
-      }
 
       lyrics.every((elem, index) => {
         if (!elem.hasAttribute("data-time")) {
