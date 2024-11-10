@@ -5,6 +5,7 @@ BetterLyrics.App = {
   lastVideoId: null,
   lastVideoDetails: null,
   lyricInjectionPromise: null,
+  queueLyricInjection: false,
 
   modify: function () {
     BetterLyrics.DOM.injectGetSongInfo();
@@ -17,7 +18,7 @@ BetterLyrics.App = {
     BetterLyrics.Storage.saveCacheInfo();
     BetterLyrics.Settings.listenForPopupMessages();
     BetterLyrics.Observer.lyricReloader();
-    BetterLyrics.Observer.lyricsInitialize();
+    BetterLyrics.Observer.initializeLyrics();
 
     BetterLyrics.Utils.log(
       BetterLyrics.Constants.INITIALIZE_LOG,
@@ -26,22 +27,15 @@ BetterLyrics.App = {
   },
 
   handleModifications: function (song, artist, currentTime, videoId) {
-    if (!song || !artist || !videoId) return;
-
     if (BetterLyrics.App.lyricInjectionPromise) {
       BetterLyrics.App.lyricInjectionPromise
         .then(() => {
           BetterLyrics.App.lyricInjectionPromise = null;
           BetterLyrics.App.handleModifications(song, artist, currentTime, videoId);
         })
-        .catch(err => {
-          BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, err);
-          BetterLyrics.App.lyricInjectionPromise = null;
-        });
     } else {
       BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist, videoId)
         .then(() => {
-          BetterLyrics.App.areLyricsLoaded = true;
           return BetterLyrics.DOM.tickLyrics(currentTime);
         })
         .catch(err => {
@@ -53,8 +47,6 @@ BetterLyrics.App = {
 
   reloadLyrics() {
     BetterLyrics.App.lastVideoId = null;
-    BetterLyrics.App.areLyricsLoaded = false;
-    BetterLyrics.App.areLyricsTicking = false;
   },
 
   init: function () {
@@ -62,7 +54,7 @@ BetterLyrics.App = {
       if (document.readyState !== "loading") {
         BetterLyrics.App.modify();
       } else {
-        document.addEventListener("DOMContentLoaded", BetterLyrics.App.modify);
+        document.addEventListener("DOMContentLoaded", this.modify.bind(this));
       }
     } catch (err) {
       BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, err);
