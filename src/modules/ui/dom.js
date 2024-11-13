@@ -118,10 +118,10 @@ BetterLyrics.DOM = {
         loaderWrapper.dataset.animatingOut = true;
         loaderWrapper.removeAttribute("active");
 
-        loaderWrapper.addEventListener("transitionend", function handleTransitionEnd(event) {
+        loaderWrapper.addEventListener("transitionend", function handleTransitionEnd(_event) {
           loaderWrapper.dataset.animatingOut = false;
           loaderWrapper.removeEventListener("transitionend", handleTransitionEnd);
-          BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_TRANSITION_ENDED)
+          BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_TRANSITION_ENDED);
         });
       }
     } catch (err) {
