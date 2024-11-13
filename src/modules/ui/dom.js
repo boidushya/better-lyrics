@@ -114,9 +114,15 @@ BetterLyrics.DOM = {
   flushLoader: function () {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
-      if (loaderWrapper) {
+      if (loaderWrapper && loaderWrapper.hasAttribute("active")) {
+        loaderWrapper.dataset.animatingOut = true;
         loaderWrapper.removeAttribute("active");
-        loaderWrapper.hidden = true;
+
+        loaderWrapper.addEventListener("transitionend", function handleTransitionEnd(event) {
+          loaderWrapper.dataset.animatingOut = false;
+          loaderWrapper.removeEventListener("transitionend", handleTransitionEnd);
+          BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_TRANSITION_ENDED)
+        });
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
@@ -127,11 +133,12 @@ BetterLyrics.DOM = {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
       if (loaderWrapper) {
-        return loaderWrapper.hasAttribute("active");
+        return loaderWrapper.hasAttribute("active") || loaderWrapper.dataset.animatingOut === "true";
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
+    return false;
   },
 
   clearLyrics: function () {
