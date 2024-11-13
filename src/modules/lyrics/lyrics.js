@@ -38,7 +38,6 @@ BetterLyrics.Lyrics = {
     // Check for empty strings after trimming
     if (!song || !artist) {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Empty song or artist name");
-      setTimeout(BetterLyrics.DOM.injectError, 500);
       return;
     }
 
