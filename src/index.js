@@ -8,6 +8,7 @@ BetterLyrics.App = {
   queueLyricInjection: false,
   queueAlbumArtInjection: false,
   shouldInjectAlbumArt: "Unknown",
+  queueSongDetailsInjection: false,
 
   modify: function () {
     BetterLyrics.Utils.setUpLog();

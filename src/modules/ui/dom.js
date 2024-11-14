@@ -262,16 +262,6 @@ BetterLyrics.DOM = {
       existingFooter.classList.remove("blyrics--fallback");
     }
 
-    const existingSongInfo = document.getElementById("blyrics-song-info");
-    const existingWatermark = document.getElementById("blyrics-watermark");
-
-    if (existingSongInfo) {
-      existingSongInfo.remove();
-    }
-    if (existingWatermark) {
-      existingWatermark.remove();
-    }
-
     BetterLyrics.DOM.clearLyrics();
   },
   injectGetSongInfo: function () {
@@ -343,4 +333,27 @@ BetterLyrics.DOM = {
       return true;
     }
   },
+  injectSongAttributes: function (title, artist) {
+    const mainPanel = document.getElementById("main-panel");
+    console.assert(mainPanel != null);
+    const existingSongInfo = document.getElementById("blyrics-song-info");
+    const existingWatermark = document.getElementById("blyrics-watermark");
+
+    existingSongInfo?.remove();
+    existingWatermark?.remove();
+
+    const titleElm = document.createElement("p");
+    titleElm.id = "blyrics-title";
+    titleElm.textContent = title;
+
+    const artistElm = document.createElement("p");
+    artistElm.id = "blyrics-artist";
+    artistElm.textContent = artist;
+
+    const songInfoWrapper = document.createElement("div");
+    songInfoWrapper.id = "blyrics-song-info";
+    songInfoWrapper.appendChild(titleElm);
+    songInfoWrapper.appendChild(artistElm);
+    mainPanel.appendChild(songInfoWrapper);
+  }
 };

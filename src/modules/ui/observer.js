@@ -74,10 +74,16 @@ BetterLyrics.Observer = {
         BetterLyrics.App.areLyricsLoaded = false;
 
         BetterLyrics.App.queueLyricInjection = true;
-
         BetterLyrics.App.queueAlbumArtInjection = true;
+        BetterLyrics.App.queueSongDetailsInjection = true;
       }
 
+      if (BetterLyrics.App.queueSongDetailsInjection
+          && detail.song && detail.artist
+          && document.getElementById("main-panel")) {
+        BetterLyrics.App.queueSongDetailsInjection = false;
+        BetterLyrics.DOM.injectSongAttributes(detail.song, detail.artist);
+      }
 
       if (BetterLyrics.App.queueAlbumArtInjection === true && BetterLyrics.App.shouldInjectAlbumArt === true) {
         BetterLyrics.App.queueAlbumArtInjection = false;
