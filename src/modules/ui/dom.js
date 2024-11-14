@@ -282,9 +282,20 @@ BetterLyrics.DOM = {
     (document.head || document.documentElement).appendChild(s);
   },
   tickLyrics: function (currentTime) {
-    if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
+    if (BetterLyrics.DOM.isLoaderActive()
+        || !BetterLyrics.App.areLyricsTicking
+        || document.visibilityState !== 'visible'
+    ) {
       return;
     }
+
+    const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+    console.assert(tabSelector != null);
+    // Don't tick lyrics if they're not visible
+    if (tabSelector.getAttribute("aria-selected") !== "true") {
+      return;
+    }
+
     currentTime += 0.25; //adjust time to account for scroll time
 
     try {
