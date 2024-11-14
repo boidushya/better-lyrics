@@ -90,6 +90,7 @@ BetterLyrics.DOM = {
 
   renderLoader: function () {
     try {
+      clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
       const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
       let loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
       if (!loaderWrapper) {
@@ -115,14 +116,21 @@ BetterLyrics.DOM = {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
       if (loaderWrapper && loaderWrapper.hasAttribute("active")) {
+        clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
         loaderWrapper.dataset.animatingOut = true;
         loaderWrapper.removeAttribute("active");
 
         loaderWrapper.addEventListener("transitionend", function handleTransitionEnd(_event) {
+          clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
           loaderWrapper.dataset.animatingOut = false;
           loaderWrapper.removeEventListener("transitionend", handleTransitionEnd);
           BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_TRANSITION_ENDED);
         });
+
+        BetterLyrics.App.loaderAnimationEndTimeout = setTimeout(() => {
+          loaderWrapper.dataset.animatingOut = false;
+          console.error("[BetterLyrics] Loader Animation Didn't End!")
+        }, 1000);
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);

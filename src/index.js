@@ -9,6 +9,7 @@ BetterLyrics.App = {
   queueAlbumArtInjection: false,
   shouldInjectAlbumArt: "Unknown",
   queueSongDetailsInjection: false,
+  loaderAnimationEndTimeout: null,
 
   modify: function () {
     BetterLyrics.Utils.setUpLog();
