@@ -199,10 +199,10 @@ BetterLyrics.DOM = {
       BetterLyrics.Utils.log(err);
     }
   },
-  addAlbumArtToLayout: function () {
+  addAlbumArtToLayout: function (videoId) {
     let albumArt = document.querySelector(BetterLyrics.Constants.SONG_IMAGE_SELECTOR).src;
     if (albumArt === BetterLyrics.Constants.EMPTY_THUMBNAIL_SRC) {
-      albumArt = BetterLyrics.Utils.generateAlbumArt();
+      albumArt = BetterLyrics.Utils.generateAlbumArt(videoId);
     }
     document.getElementById("layout").style = `--blyrics-background-img: url('${albumArt}')`;
     BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_LOG);

@@ -75,10 +75,13 @@ BetterLyrics.Observer = {
 
         BetterLyrics.App.queueLyricInjection = true;
 
-        BetterLyrics.Settings.onAlbumArtEnabled(
-          BetterLyrics.DOM.addAlbumArtToLayout,
-          BetterLyrics.DOM.removeAlbumArtFromLayout
-        );
+        BetterLyrics.App.queueAlbumArtInjection = true;
+      }
+
+
+      if (BetterLyrics.App.queueAlbumArtInjection === true && BetterLyrics.App.shouldInjectAlbumArt === true) {
+        BetterLyrics.App.queueAlbumArtInjection = false;
+        BetterLyrics.DOM.addAlbumArtToLayout(detail.videoId);
       }
 
       if (BetterLyrics.App.queueLyricInjection) {
