@@ -129,7 +129,7 @@ BetterLyrics.DOM = {
 
         BetterLyrics.App.loaderAnimationEndTimeout = setTimeout(() => {
           loaderWrapper.dataset.animatingOut = false;
-          console.error("[BetterLyrics] Loader Animation Didn't End!")
+          BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_ANIMATION_END_FAILED);
         }, 1000);
       }
     } catch (err) {
