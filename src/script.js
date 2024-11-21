@@ -11,9 +11,10 @@ const startLyricsTick = () => {
       try {
         const currentTime = player.getCurrentTime();
         const { video_id, title, author } = player.getVideoData();
+        const duration = player.getDuration();
         document.dispatchEvent(
           new CustomEvent("blyrics-send-player-time", {
-            detail: { currentTime: currentTime, videoId: video_id, song: title, artist: author },
+            detail: { currentTime: currentTime, videoId: video_id, song: title, artist: author, duration: duration },
           })
         );
       } catch (e) {

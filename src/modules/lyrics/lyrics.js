@@ -1,5 +1,5 @@
 BetterLyrics.Lyrics = {
-  createLyrics: async function (song, artist, videoId) {
+  createLyrics: async function (song, artist, videoId, duration) {
     if (!videoId || typeof videoId !== "string") {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid video id");
       return;
@@ -51,93 +51,32 @@ BetterLyrics.Lyrics = {
 
     BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
-    try {
-      // Fetch from the primary API if cache is empty or invalid
-      const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
-      url.searchParams.append("s", BetterLyrics.Utils.unEntity(song));
-      url.searchParams.append("a", BetterLyrics.Utils.unEntity(artist));
-
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
+    let lyrics;
+    for (let provider of BetterLyrics.LyricProviders.providersList) {
       try {
-        const response = await fetch(url.toString(), {
-          signal: controller.signal,
-        });
-        clearTimeout(timeout);
-
-        if (!response.ok) {
-          throw new Error(`${BetterLyrics.Constants.HTTP_ERROR_LOG} ${response.status}`);
-        }
-
-        const data = await response.json();
-        // Validate API response structure
-        if (!data || (!Array.isArray(data.lyrics) && !data.syncedLyrics)) {
-          throw new Error("Invalid API response structure");
-        }
-
-        BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, data);
-      } catch (fetchError) {
-        if (fetchError.name === "AbortError") {
-          throw new Error("Primary API request timed out");
-        }
-        throw fetchError;
-      }
-    } catch (primaryError) {
-      BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, primaryError);
-      // Fallback to LRCLIB if the primary fetch fails
-      try {
-        const lrclibLyrics = await BetterLyrics.Lyrics.fetchFromLrclib(song, artist);
-        if (lrclibLyrics) {
-          BetterLyrics.Lyrics.cacheAndProcessLyrics(cacheKey, { lyrics: lrclibLyrics });
-        } else {
-          throw new Error("No valid lyrics returned from LRCLIB");
-        }
-      } catch (lrclibError) {
-        BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, lrclibError);
-        setTimeout(BetterLyrics.DOM.injectError, 500);
+        lyrics = await provider(song, artist, duration);
+        break;
+      } catch (err) {
+        BetterLyrics.Utils.log(err);
       }
     }
-  },
 
-  // Helper function to fetch from LRCLIB
-  async fetchFromLrclib(song, artist) {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    const hasYtMusicLyrics = document.querySelector(BetterLyrics.Constants.NO_LYRICS_TEXT_SELECTOR);
+    console.log(hasYtMusicLyrics);
+    if (hasYtMusicLyrics &&
+      hasYtMusicLyrics.innerText !== "Lyrics not available" &&
+      hasYtMusicLyrics.parentElement.style.display === "none") {
 
-    try {
-      const url = new URL(BetterLyrics.Constants.LRCLIB_API_URL);
-      url.searchParams.append("track_name", BetterLyrics.Utils.unEntity(song));
-      url.searchParams.append("artist_name", BetterLyrics.Utils.unEntity(artist));
-
-      const response = await fetch(url.toString(), {
-        headers: {
-          "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER,
-        },
-        signal: controller.signal,
-      });
-      clearTimeout(timeout);
-
-      if (!response.ok) {
-        throw new Error(BetterLyrics.Constants.HTTP_ERROR_LOG + response.status);
-      }
-
-      const data = await response.json();
-
-      if (data && data.syncedLyrics && typeof data.duration === "number") {
-        BetterLyrics.Utils.log(BetterLyrics.Constants.LRCLIB_LYRICS_FOUND_LOG);
-        return BetterLyrics.Lyrics.parseLRCLIBLyrics(data.syncedLyrics, data.duration);
-      } else {
-        throw new Error(BetterLyrics.Constants.NO_LRCLIB_LYRICS_FOUND_LOG);
-      }
-    } catch (error) {
-      if (error.name === "AbortError") {
-        throw new Error("LRCLIB request timed out");
-      }
-      throw error;
-    } finally {
-      clearTimeout(timeout);
+      BetterLyrics.Utils.log(BetterLyrics.Constants.YT_MUSIC_LYRICS_AVAILABLE_LOG);
+      const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
+      console.log(existingLyrics);
     }
+
+    if (!lyrics) {
+      BetterLyrics.DOM.injectError();
+    }
+
+    this.cacheAndProcessLyrics(cacheKey, lyrics);
   },
 
   cacheAndProcessLyrics: function (cacheKey, data) {
@@ -153,11 +92,13 @@ BetterLyrics.Lyrics = {
 
   processLyrics: function (data) {
     const lyrics = data.lyrics;
+    console.log(lyrics);
 
     BetterLyrics.App.lang = data.language;
     BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
 
     if (!lyrics || lyrics.length === 0) {
+      console.log(data);
       BetterLyrics.Utils.log(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
       setTimeout(BetterLyrics.DOM.injectError, 500);
       return;
@@ -335,42 +276,5 @@ BetterLyrics.Lyrics = {
   },
   setupLyricsCheckInterval: function () {
     BetterLyrics.App.areLyricsTicking = true;
-  },
-  parseLRCLIBLyrics: function (syncedLyrics, duration) {
-    const lines = syncedLyrics.split("\n");
-    const lyricsArray = [];
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const match = line.match(/^\[(\d{2}):(\d{2}\.\d{2})\](.*)/);
-      if (match) {
-        const minutes = parseInt(match[1]);
-        const seconds = parseFloat(match[2]);
-        const words = match[3].trim();
-        const startTimeMs = Math.floor((minutes * 60 + seconds) * 1000);
-
-        lyricsArray.push({
-          startTimeMs: startTimeMs.toString(),
-          words: words,
-          durationMs: "0", // Will calculate later
-        });
-      }
-    }
-
-    // Calculate durationMs for each lyric line
-    for (let i = 0; i < lyricsArray.length; i++) {
-      if (i < lyricsArray.length - 1) {
-        const nextStartTimeMs = parseInt(lyricsArray[i + 1].startTimeMs);
-        const currentStartTimeMs = parseInt(lyricsArray[i].startTimeMs);
-        lyricsArray[i].durationMs = (nextStartTimeMs - currentStartTimeMs).toString();
-      } else {
-        // For the last line, use the total duration
-        const totalDurationMs = duration * 1000;
-        const currentStartTimeMs = parseInt(lyricsArray[i].startTimeMs);
-        lyricsArray[i].durationMs = (totalDurationMs - currentStartTimeMs).toString();
-      }
-    }
-
-    return lyricsArray;
   },
 };
