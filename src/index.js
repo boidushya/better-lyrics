@@ -31,8 +31,8 @@ BetterLyrics.App = {
     );
 
     BetterLyrics.Settings.onAlbumArtEnabled(
-        () => BetterLyrics.App.shouldInjectAlbumArt = true,
-        () => BetterLyrics.App.shouldInjectAlbumArt = false
+      () => (BetterLyrics.App.shouldInjectAlbumArt = true),
+      () => (BetterLyrics.App.shouldInjectAlbumArt = false)
     );
   },
 

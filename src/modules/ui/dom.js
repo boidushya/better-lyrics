@@ -282,9 +282,10 @@ BetterLyrics.DOM = {
     (document.head || document.documentElement).appendChild(s);
   },
   tickLyrics: function (currentTime) {
-    if (BetterLyrics.DOM.isLoaderActive()
-        || !BetterLyrics.App.areLyricsTicking
-        || document.visibilityState !== 'visible'
+    if (
+      BetterLyrics.DOM.isLoaderActive() ||
+      !BetterLyrics.App.areLyricsTicking ||
+      document.visibilityState !== "visible"
     ) {
       return;
     }
@@ -374,5 +375,5 @@ BetterLyrics.DOM = {
     songInfoWrapper.appendChild(titleElm);
     songInfoWrapper.appendChild(artistElm);
     mainPanel.appendChild(songInfoWrapper);
-  }
+  },
 };

@@ -78,9 +78,12 @@ BetterLyrics.Observer = {
         BetterLyrics.App.queueSongDetailsInjection = true;
       }
 
-      if (BetterLyrics.App.queueSongDetailsInjection
-          && detail.song && detail.artist
-          && document.getElementById("main-panel")) {
+      if (
+        BetterLyrics.App.queueSongDetailsInjection &&
+        detail.song &&
+        detail.artist &&
+        document.getElementById("main-panel")
+      ) {
         BetterLyrics.App.queueSongDetailsInjection = false;
         BetterLyrics.DOM.injectSongAttributes(detail.song, detail.artist);
       }

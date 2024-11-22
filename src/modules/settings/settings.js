@@ -147,13 +147,13 @@ BetterLyrics.Settings = {
         BetterLyrics.Utils.setUpLog();
         BetterLyrics.Settings.hideCursorOnIdle();
         BetterLyrics.Settings.handleSettings();
-        BetterLyrics.App.shouldInjectAlbumArt = "Unknown"
+        BetterLyrics.App.shouldInjectAlbumArt = "Unknown";
         BetterLyrics.Settings.onAlbumArtEnabled(
-            () => BetterLyrics.App.shouldInjectAlbumArt = true,
-            () => {
-              BetterLyrics.App.shouldInjectAlbumArt = false;
-              BetterLyrics.DOM.removeAlbumArtFromLayout();
-            }
+          () => (BetterLyrics.App.shouldInjectAlbumArt = true),
+          () => {
+            BetterLyrics.App.shouldInjectAlbumArt = false;
+            BetterLyrics.DOM.removeAlbumArtFromLayout();
+          }
         );
         BetterLyrics.App.reloadLyrics();
       } else if (request.action === "clearCache") {
