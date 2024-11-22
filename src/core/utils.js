@@ -27,8 +27,7 @@ BetterLyrics.Utils = {
     return str.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
   },
 
-  generateAlbumArt: function () {
-    const videoId = new URLSearchParams(window.location.search).get("v");
+  generateAlbumArt: function (videoId) {
     return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
   },
 

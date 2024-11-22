@@ -26,6 +26,14 @@ BetterLyrics.Lyrics = {
 
     // We should get recalled if we were executed without a valid song/artist and aren't able to get lyrics
     BetterLyrics.DOM.renderLoader(); // Only render the loader after we've checked the cache
+
+    const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+    console.assert(tabSelector != null);
+    if (tabSelector.getAttribute("aria-selected") !== "true") {
+      BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_HIDDEN_LOG);
+      return;
+    }
+
     // Input validation
     if (typeof song !== "string" || typeof artist !== "string") {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid song or artist data");

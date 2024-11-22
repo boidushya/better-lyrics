@@ -112,6 +112,7 @@ BetterLyrics.Constants = {
   LOADING_WITHOUT_SONG_META: "[BetterLyrics] Trying to load without Song/Artist info",
   SKIPPING_LOAD_WITH_META: "[BetterLyrics] Skipping Reload From Metadata Available: Already Loaded",
   LOADER_TRANSITION_ENDED: "[BetterLyrics] Loader Transition Ended",
+  LOADER_ANIMATION_END_FAILED: "[BetterLyrics] Loader Animation Didn't End",
 
   // Feature State Logs
   AUTO_SWITCH_ENABLED_LOG: "[BetterLyrics] Auto switch enabled, switching to lyrics tab",

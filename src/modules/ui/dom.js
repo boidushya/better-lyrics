@@ -90,6 +90,7 @@ BetterLyrics.DOM = {
 
   renderLoader: function () {
     try {
+      clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
       const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
       let loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
       if (!loaderWrapper) {
@@ -115,14 +116,21 @@ BetterLyrics.DOM = {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
       if (loaderWrapper && loaderWrapper.hasAttribute("active")) {
+        clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
         loaderWrapper.dataset.animatingOut = true;
         loaderWrapper.removeAttribute("active");
 
         loaderWrapper.addEventListener("transitionend", function handleTransitionEnd(_event) {
+          clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
           loaderWrapper.dataset.animatingOut = false;
           loaderWrapper.removeEventListener("transitionend", handleTransitionEnd);
           BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_TRANSITION_ENDED);
         });
+
+        BetterLyrics.App.loaderAnimationEndTimeout = setTimeout(() => {
+          loaderWrapper.dataset.animatingOut = false;
+          BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_ANIMATION_END_FAILED);
+        }, 1000);
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
@@ -199,10 +207,10 @@ BetterLyrics.DOM = {
       BetterLyrics.Utils.log(err);
     }
   },
-  addAlbumArtToLayout: function () {
+  addAlbumArtToLayout: function (videoId) {
     let albumArt = document.querySelector(BetterLyrics.Constants.SONG_IMAGE_SELECTOR).src;
     if (albumArt === BetterLyrics.Constants.EMPTY_THUMBNAIL_SRC) {
-      albumArt = BetterLyrics.Utils.generateAlbumArt();
+      albumArt = BetterLyrics.Utils.generateAlbumArt(videoId);
     }
     document.getElementById("layout").style = `--blyrics-background-img: url('${albumArt}')`;
     BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_LOG);
@@ -262,16 +270,6 @@ BetterLyrics.DOM = {
       existingFooter.classList.remove("blyrics--fallback");
     }
 
-    const existingSongInfo = document.getElementById("blyrics-song-info");
-    const existingWatermark = document.getElementById("blyrics-watermark");
-
-    if (existingSongInfo) {
-      existingSongInfo.remove();
-    }
-    if (existingWatermark) {
-      existingWatermark.remove();
-    }
-
     BetterLyrics.DOM.clearLyrics();
   },
   injectGetSongInfo: function () {
@@ -284,9 +282,21 @@ BetterLyrics.DOM = {
     (document.head || document.documentElement).appendChild(s);
   },
   tickLyrics: function (currentTime) {
-    if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
+    if (
+      BetterLyrics.DOM.isLoaderActive() ||
+      !BetterLyrics.App.areLyricsTicking ||
+      document.visibilityState !== "visible"
+    ) {
       return;
     }
+
+    const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+    console.assert(tabSelector != null);
+    // Don't tick lyrics if they're not visible
+    if (tabSelector.getAttribute("aria-selected") !== "true") {
+      return;
+    }
+
     currentTime += 0.25; //adjust time to account for scroll time
 
     try {
@@ -342,5 +352,28 @@ BetterLyrics.DOM = {
       }
       return true;
     }
+  },
+  injectSongAttributes: function (title, artist) {
+    const mainPanel = document.getElementById("main-panel");
+    console.assert(mainPanel != null);
+    const existingSongInfo = document.getElementById("blyrics-song-info");
+    const existingWatermark = document.getElementById("blyrics-watermark");
+
+    existingSongInfo?.remove();
+    existingWatermark?.remove();
+
+    const titleElm = document.createElement("p");
+    titleElm.id = "blyrics-title";
+    titleElm.textContent = title;
+
+    const artistElm = document.createElement("p");
+    artistElm.id = "blyrics-artist";
+    artistElm.textContent = artist;
+
+    const songInfoWrapper = document.createElement("div");
+    songInfoWrapper.id = "blyrics-song-info";
+    songInfoWrapper.appendChild(titleElm);
+    songInfoWrapper.appendChild(artistElm);
+    mainPanel.appendChild(songInfoWrapper);
   },
 };

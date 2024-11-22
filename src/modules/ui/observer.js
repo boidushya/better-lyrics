@@ -74,29 +74,37 @@ BetterLyrics.Observer = {
         BetterLyrics.App.areLyricsLoaded = false;
 
         BetterLyrics.App.queueLyricInjection = true;
+        BetterLyrics.App.queueAlbumArtInjection = true;
+        BetterLyrics.App.queueSongDetailsInjection = true;
+      }
 
-        BetterLyrics.Settings.onAlbumArtEnabled(
-          BetterLyrics.DOM.addAlbumArtToLayout,
-          BetterLyrics.DOM.removeAlbumArtFromLayout
-        );
+      if (
+        BetterLyrics.App.queueSongDetailsInjection &&
+        detail.song &&
+        detail.artist &&
+        document.getElementById("main-panel")
+      ) {
+        BetterLyrics.App.queueSongDetailsInjection = false;
+        BetterLyrics.DOM.injectSongAttributes(detail.song, detail.artist);
+      }
+
+      if (BetterLyrics.App.queueAlbumArtInjection === true && BetterLyrics.App.shouldInjectAlbumArt === true) {
+        BetterLyrics.App.queueAlbumArtInjection = false;
+        BetterLyrics.DOM.addAlbumArtToLayout(detail.videoId);
       }
 
       if (BetterLyrics.App.queueLyricInjection) {
         const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
         if (tabSelector) {
           BetterLyrics.App.queueLyricInjection = false;
-          if (tabSelector.getAttribute("aria-selected") === "true") {
-            BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_VISIBLE_LOG);
-            BetterLyrics.App.handleModifications(detail.song, detail.artist, detail.currentTime, detail.videoId);
-          } else {
+          if (tabSelector.getAttribute("aria-selected") !== "true") {
             BetterLyrics.Settings.onAutoSwitchEnabled(() => {
               tabSelector.click();
               BetterLyrics.Utils.log(BetterLyrics.Constants.AUTO_SWITCH_ENABLED_LOG);
-              BetterLyrics.App.handleModifications(detail.song, detail.artist, detail.currentTime, detail.videoId);
             });
-
-            BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_HIDDEN_LOG);
           }
+
+          BetterLyrics.App.handleModifications(detail.song, detail.artist, detail.currentTime, detail.videoId);
         }
       }
 
