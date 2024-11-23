@@ -108,6 +108,7 @@ BetterLyrics.Constants = {
   LYRICS_TAB_NOT_DISABLED_LOG: "[BetterLyrics] (Safe to ignore) Lyrics tab is not disabled, unable to enable it",
   SONG_SWITCHED_LOG: "[BetterLyrics] Song has been switched",
   ALBUM_ART_ADDED_LOG: "[BetterLyrics] Album art added to the layout",
+  ALBUM_ART_ADDED_FROM_MUTATION_LOG: "[BetterLyrics] Album art added to the layout from mutation event",
   ALBUM_ART_REMOVED_LOG: "[BetterLyrics] Album art removed from the layout",
   LOADING_WITHOUT_SONG_META: "[BetterLyrics] Trying to load without Song/Artist info",
   SKIPPING_LOAD_WITH_META: "[BetterLyrics] Skipping Reload From Metadata Available: Already Loaded",
