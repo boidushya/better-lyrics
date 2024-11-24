@@ -163,9 +163,9 @@ Custom styling for lyrics is available in Better Lyrics v1.7.0 and later version
 >
 > Your support helps cover the costs of hosting and development, and ensures continued improvements and stability.
 
-[![Github Sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23F20C33)](https://github.com/sponsors/boidushya)
+<a href="https://drips.network/app/projects/github/boidushya/better-lyrics" target="_blank"><img src="https://www.drips.network/api/embed/project/https%3A%2F%2Fgithub.com%2Fboidushya%2Fbetter-lyrics/support.png?background=light&style=drips&text=project&stat=support" alt="Support better-lyrics on drips.network" height="32"></a>
 
-[![Sponsor through Drips](https://img.shields.io/static/v1?label=Sponsor&message=%F0%9F%92%A7&logo=ethereum&color=%230D1117)](https://drips.network/app/projects/github/boidushya/better-lyrics)
+[![Github Sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23F20C33)](https://github.com/sponsors/boidushya)
 
 ## Discord Community
 
