@@ -220,7 +220,7 @@ BetterLyrics.DOM = {
       BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_FROM_MUTATION_LOG);
     });
 
-    observer.observe(albumArt, {attributes: true});
+    observer.observe(albumArt, { attributes: true });
     BetterLyrics.DOM.backgroundChangeObserver = observer;
 
     if (!albumArt.src !== BetterLyrics.Constants.EMPTY_THUMBNAIL_SRC) {
@@ -235,8 +235,7 @@ BetterLyrics.DOM = {
 
     img.onload = () => {
       document.getElementById("layout").style = `--blyrics-background-img: url('${src}')`;
-    }
-
+    };
   },
 
   removeAlbumArtFromLayout: function () {
