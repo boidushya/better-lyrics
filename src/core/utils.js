@@ -26,11 +26,6 @@ BetterLyrics.Utils = {
   unEntity: function (str) {
     return str.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
   },
-
-  generateAlbumArt: function (videoId) {
-    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-  },
-
   applyCustomCSS: function (css) {
     let styleTag = document.getElementById("blyrics-custom-style");
     if (styleTag) {

@@ -90,7 +90,7 @@ BetterLyrics.Observer = {
 
       if (BetterLyrics.App.queueAlbumArtInjection === true && BetterLyrics.App.shouldInjectAlbumArt === true) {
         BetterLyrics.App.queueAlbumArtInjection = false;
-        BetterLyrics.DOM.addAlbumArtToLayout(detail.videoId);
+        BetterLyrics.DOM.addAlbumArtToLayout();
       }
 
       if (BetterLyrics.App.queueLyricInjection) {

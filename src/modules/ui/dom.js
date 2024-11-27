@@ -207,16 +207,42 @@ BetterLyrics.DOM = {
       BetterLyrics.Utils.log(err);
     }
   },
-  addAlbumArtToLayout: function (videoId) {
-    let albumArt = document.querySelector(BetterLyrics.Constants.SONG_IMAGE_SELECTOR).src;
-    if (albumArt === BetterLyrics.Constants.EMPTY_THUMBNAIL_SRC) {
-      albumArt = BetterLyrics.Utils.generateAlbumArt(videoId);
+  /** @type {MutationObserver | null} */
+  backgroundChangeObserver: null,
+  addAlbumArtToLayout: function () {
+    if (BetterLyrics.DOM.backgroundChangeObserver) {
+      BetterLyrics.DOM.backgroundChangeObserver.disconnect();
     }
-    document.getElementById("layout").style = `--blyrics-background-img: url('${albumArt}')`;
-    BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_LOG);
+
+    let albumArt = document.querySelector(BetterLyrics.Constants.SONG_IMAGE_SELECTOR);
+    const observer = new MutationObserver(() => {
+      BetterLyrics.DOM.injectAlbumArt(albumArt.src);
+      BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_FROM_MUTATION_LOG);
+    });
+
+    observer.observe(albumArt, { attributes: true });
+    BetterLyrics.DOM.backgroundChangeObserver = observer;
+
+    if (!albumArt.src !== BetterLyrics.Constants.EMPTY_THUMBNAIL_SRC) {
+      BetterLyrics.DOM.injectAlbumArt(albumArt.src);
+      BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_LOG);
+    }
+  },
+
+  injectAlbumArt: function (src) {
+    let img = new Image();
+    img.src = src;
+
+    img.onload = () => {
+      document.getElementById("layout").style = `--blyrics-background-img: url('${src}')`;
+    };
   },
 
   removeAlbumArtFromLayout: function () {
+    if (BetterLyrics.DOM.backgroundChangeObserver) {
+      BetterLyrics.DOM.backgroundChangeObserver.disconnect();
+      BetterLyrics.DOM.backgroundChangeObserver = null;
+    }
     const layout = document.getElementById("layout");
     if (layout) {
       layout.style.removeProperty("--blyrics-background-img");
