@@ -1,4 +1,49 @@
 BetterLyrics.LyricProviders = {
+  /** @typedef {object} audioTrackData
+   * @property {string} id
+   * @property {object} kc
+   * @property {string} kc.name
+   * @property {string} kc.id
+   * @property {boolean} kc.isDefault
+   * @property {object[]} captionTracks
+   * @property {string} captionTracks.languageCode
+   * @property {string} captionTracks.languageName
+   * @property {string} captionTracks.kind
+   * @property {string} captionTracks.name
+   * @property {string} captionTracks.displayName
+   * @property {null} captionTracks.id
+   * @property {boolean} captionTracks.j
+   * @property {boolean} captionTracks.isTranslateable
+   * @property {string} captionTracks.url
+   * @property {string} captionTracks.vssId
+   * @property {boolean} captionTracks.isDefault
+   * @property {null} captionTracks.translationLanguage
+   * @property {string} captionTracks.xtags
+   * @property {string} captionTracks.captionId
+   * @property {null} D
+   * @property {object} C Current Track?
+   * @property {string} C.languageCode
+   * @property {string} C.languageName
+   * @property {string} C.kind
+   * @property {string} C.name
+   * @property {string} C.displayName
+   * @property {null} C.id
+   * @property {boolean} C.j
+   * @property {boolean} C.isTranslateable
+   * @property {string} C.url
+   * @property {string} C.vssId
+   * @property {boolean} C.isDefault
+   * @property {null} C.translationLanguage
+   * @property {string} C.xtags
+   * @property {string} C.captionId
+   * @property {string} xtags
+   * @property {boolean} G
+   * @property {null} j
+   * @property {string} B Current State?
+   * @property {string} captionsInitialState
+   */
+
+
   providersList: [],
 
   bLyrics: async function (song, artist, duration) {
@@ -118,8 +163,74 @@ BetterLyrics.LyricProviders = {
 
     return { lyrics: lyricsArray };
   },
+  /**
+   * @type{function(song: string, artist: string, duration:number, videoId: string, audioTrackData:audioTrackData)}
+   */
+  ytCaptions: async function(song, artist, duration, videoId, audioTrackData) {
+    if (audioTrackData.captionTracks.length === 0) {
+      return;
+    }
+    let langCode;
+    if (audioTrackData.captionTracks.length === 1) {
+      langCode = audioTrackData.captionTracks[0].languageCode;
+    } else {
+      // Try and determine the language by finding an auto generated track
+      for (let captionTracksKey in audioTrackData.captionTracks) {
+        let data = audioTrackData.captionTracks[captionTracksKey];
+        if (data.displayName.includes("auto-generated")) {
+          langCode = data.languageCode;
+          break;
+        }
+      }
+    }
+
+    if (!langCode) {
+      console.log(audioTrackData);
+      throw new Error("Found Caption Tracks, but couldn't determine the default");
+    }
+
+    let captionsUrl;
+    for (let captionTracksKey in audioTrackData.captionTracks) {
+      let data = audioTrackData.captionTracks[captionTracksKey];
+      if (!data.displayName.includes("auto-generated") && data.languageCode === langCode) {
+        captionsUrl = data.url;
+        break;
+      }
+    }
+
+    if (!captionsUrl) {
+      console.log(audioTrackData);
+      throw new Error("Only found auto generated lyrics, not using");
+    }
+
+    captionsUrl = new URL(captionsUrl);
+    captionsUrl.searchParams.set("fmt", "json3");
+
+    let captionData = await fetch(captionsUrl, {
+      method: "GET"
+    }).then(response => response.json())
+    console.log(captionData);
+
+    let lyricsArray = [];
+
+    captionData.events.forEach((event) => {
+      let words = "";
+      for (let segsKey in event.segs) {
+        words += event.segs[segsKey].utf8;
+      }
+
+      lyricsArray.push({
+        startTimeMs: event.tStartMs,
+        words: words,
+        durationMs: event.dDurationMs,
+      });
+    });
+
+    return { lyrics: lyricsArray, language: langCode };
+  },
   initProviders: function () {
     BetterLyrics.LyricProviders.providersList = [
+      BetterLyrics.LyricProviders.ytCaptions,
       BetterLyrics.LyricProviders.bLyrics,
       BetterLyrics.LyricProviders.lyricLib,
       BetterLyrics.LyricProviders.ytLyrics,

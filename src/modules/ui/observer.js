@@ -117,7 +117,8 @@ BetterLyrics.Observer = {
             detail.artist,
             detail.currentTime,
             detail.videoId,
-            detail.duration
+            detail.duration,
+            detail.audioTrackData
           );
         }
       }

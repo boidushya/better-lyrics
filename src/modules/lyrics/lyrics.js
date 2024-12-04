@@ -1,5 +1,5 @@
 BetterLyrics.Lyrics = {
-  createLyrics: async function (song, artist, videoId, duration) {
+  createLyrics: async function (song, artist, videoId, duration, audioTrackData) {
     if (!videoId || typeof videoId !== "string") {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid video id");
       return;
@@ -54,8 +54,8 @@ BetterLyrics.Lyrics = {
     let lyrics;
     for (let provider of BetterLyrics.LyricProviders.providersList) {
       try {
-        lyrics = await provider(song, artist, duration);
-        if (lyrics) {
+        lyrics = await provider(song, artist, duration, videoId, audioTrackData);
+        if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
           break;
         }
       } catch (err) {

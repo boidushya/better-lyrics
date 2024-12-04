@@ -38,14 +38,14 @@ BetterLyrics.App = {
     );
   },
 
-  handleModifications: function (song, artist, currentTime, videoId, duration) {
+  handleModifications: function (song, artist, currentTime, videoId, duration, audioTrackData) {
     if (BetterLyrics.App.lyricInjectionPromise) {
       BetterLyrics.App.lyricInjectionPromise.then(() => {
         BetterLyrics.App.lyricInjectionPromise = null;
-        BetterLyrics.App.handleModifications(song, artist, currentTime, videoId, duration);
+        BetterLyrics.App.handleModifications(song, artist, currentTime, videoId, duration, audioTrackData);
       });
     } else {
-      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist, videoId, duration)
+      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist, videoId, duration, audioTrackData)
         .then(() => {
           return BetterLyrics.DOM.tickLyrics(currentTime);
         })
