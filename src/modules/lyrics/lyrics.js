@@ -74,7 +74,6 @@ BetterLyrics.Lyrics = {
     const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
     BetterLyrics.Storage.setTransientStorage(cacheKey, JSON.stringify(data), oneWeekInMs);
     BetterLyrics.Lyrics.processLyrics(data);
-
   },
 
   processLyrics: function (data) {

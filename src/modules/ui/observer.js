@@ -105,7 +105,13 @@ BetterLyrics.Observer = {
             });
           }
 
-          BetterLyrics.App.handleModifications(detail.song, detail.artist, detail.currentTime, detail.videoId, detail.duration);
+          BetterLyrics.App.handleModifications(
+            detail.song,
+            detail.artist,
+            detail.currentTime,
+            detail.videoId,
+            detail.duration
+          );
         }
       }
 
