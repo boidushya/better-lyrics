@@ -1,5 +1,11 @@
 BetterLyrics.Lyrics = {
-  createLyrics: async function (song, artist, videoId, duration, audioTrackData) {
+  createLyrics: async function (detail) {
+    let song = detail.song;
+    let artist = detail.artist;
+    const videoId = detail.videoId;
+    const duration = detail.duration;
+    const audioTrackData = detail.audioTrackData;
+
     if (!videoId || typeof videoId !== "string") {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid video id");
       return;

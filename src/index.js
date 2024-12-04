@@ -38,16 +38,16 @@ BetterLyrics.App = {
     );
   },
 
-  handleModifications: function (song, artist, currentTime, videoId, duration, audioTrackData) {
+  handleModifications: function (detail) {
     if (BetterLyrics.App.lyricInjectionPromise) {
       BetterLyrics.App.lyricInjectionPromise.then(() => {
         BetterLyrics.App.lyricInjectionPromise = null;
-        BetterLyrics.App.handleModifications(song, artist, currentTime, videoId, duration, audioTrackData);
+        BetterLyrics.App.handleModifications(detail);
       });
     } else {
-      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(song, artist, videoId, duration, audioTrackData)
+      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(detail)
         .then(() => {
-          return BetterLyrics.DOM.tickLyrics(currentTime);
+          return BetterLyrics.DOM.tickLyrics(detail.currentTime);
         })
         .catch(err => {
           BetterLyrics.Utils.log(BetterLyrics.App.GENERAL_ERROR_LOG, err);
