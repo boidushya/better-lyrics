@@ -78,7 +78,6 @@ BetterLyrics.Lyrics = {
 
   processLyrics: function (data) {
     const lyrics = data.lyrics;
-    console.log(lyrics);
 
     BetterLyrics.App.lang = data.language;
     BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
