@@ -90,6 +90,11 @@ BetterLyrics.LyricProviders = {
   ytLyrics: async function (song, artist, duration) {
     let lyricText;
 
+    const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+    if (tabSelector.getAttribute("aria-selected") !== "true") {
+      throw new Error("Lyrics Tab Not Visible");
+    }
+
     const hasYtMusicLyrics = document.querySelector(BetterLyrics.Constants.NO_LYRICS_TEXT_SELECTOR);
     if (
       hasYtMusicLyrics &&

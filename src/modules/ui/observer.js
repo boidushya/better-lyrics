@@ -93,6 +93,13 @@ BetterLyrics.Observer = {
         BetterLyrics.DOM.addAlbumArtToLayout();
       }
 
+      if (BetterLyrics.App.lyricInjectionFailed) {
+        const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+        if (tabSelector && tabSelector.getAttribute("aria-selected") !== "true") {
+          BetterLyrics.App.lyricInjectionFailed = false; //ignore failure b/c the tab isn't visible
+        }
+      }
+
       if (BetterLyrics.App.queueLyricInjection || BetterLyrics.App.lyricInjectionFailed) {
         const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
         if (tabSelector) {
