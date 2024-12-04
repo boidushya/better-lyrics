@@ -88,7 +88,25 @@ BetterLyrics.LyricProviders = {
 
     return lyricsArray;
   },
+  ytLyrics: async function(song, artist, duration){
+    const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
+    const lyricText = existingLyrics[0].innerText;
+
+    const lyricsArray = [];
+    lyricText.split("\n").forEach(
+      words => {
+        lyricsArray.push({
+          startTimeMs: "0",
+          words: words,
+          durationMs: "0",
+        });
+      }
+    )
+
+    return {lyrics: lyricsArray};
+
+  },
   initProviders: function (){
-    BetterLyrics.LyricProviders.providersList = [BetterLyrics.LyricProviders.bLyrics, BetterLyrics.LyricProviders.lyricLib];
+    BetterLyrics.LyricProviders.providersList = [BetterLyrics.LyricProviders.bLyrics, BetterLyrics.LyricProviders.lyricLib, BetterLyrics.LyricProviders.ytLyrics];
   }
 }

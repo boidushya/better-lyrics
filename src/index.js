@@ -2,6 +2,7 @@ BetterLyrics.App = {
   lang: "en",
   areLyricsTicking: false,
   areLyricsLoaded: false,
+  lyricInjectionFailed: false,
   lastVideoId: null,
   lastVideoDetails: null,
   lyricInjectionPromise: null,
@@ -49,8 +50,9 @@ BetterLyrics.App = {
           return BetterLyrics.DOM.tickLyrics(currentTime);
         })
         .catch(err => {
-          BetterLyrics.Utils.log(GENERAL_ERROR_LOG, err);
+          BetterLyrics.Utils.log(BetterLyrics.App.GENERAL_ERROR_LOG, err);
           BetterLyrics.App.areLyricsLoaded = false;
+          BetterLyrics.App.lyricInjectionFailed = true;
         });
     }
   },
