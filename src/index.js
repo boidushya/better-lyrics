@@ -69,7 +69,7 @@ BetterLyrics.App = {
         document.addEventListener("DOMContentLoaded", this.modify.bind(this));
       }
     } catch (err) {
-      Utils.log(GENERAL_ERROR_LOG, err);
+      BetterLyrics.Utils.log(GENERAL_ERROR_LOG, err);
     }
   },
 };

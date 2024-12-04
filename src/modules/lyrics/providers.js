@@ -89,8 +89,18 @@ BetterLyrics.LyricProviders = {
     return lyricsArray;
   },
   ytLyrics: async function(song, artist, duration){
-    const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
-    const lyricText = existingLyrics[0].innerText;
+
+    let lyricText;
+
+    const hasYtMusicLyrics = document.querySelector(BetterLyrics.Constants.NO_LYRICS_TEXT_SELECTOR);
+    if (hasYtMusicLyrics &&
+      hasYtMusicLyrics.innerText === "Lyrics not available" &&
+      hasYtMusicLyrics.parentElement.style.display !== "none") {
+      lyricText = BetterLyrics.Constants.NO_LYRICS_TEXT;
+    } else {
+      const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
+      lyricText = existingLyrics[0].innerText;
+    }
 
     const lyricsArray = [];
     lyricText.split("\n").forEach(

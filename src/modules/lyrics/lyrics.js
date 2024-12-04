@@ -146,7 +146,9 @@ BetterLyrics.Lyrics = {
   injectLyrics: function (lyrics) {
     BetterLyrics.DOM.cleanup();
     let lyricsWrapper = BetterLyrics.DOM.createLyricsWrapper();
-    BetterLyrics.DOM.addFooter();
+    if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
+      BetterLyrics.DOM.addFooter();
+    }
 
     try {
       lyricsWrapper.innerHTML = "";

@@ -139,4 +139,6 @@ BetterLyrics.Constants = {
   LRCLIB_TIMEOUT_LOG: "[BetterLyrics] LRCLIB request timed out",
   NO_VALID_LRCLIB_LYRICS_LOG: "[BetterLyrics] No valid lyrics returned from LRCLIB",
   INVALID_CACHE_DATA_LOG: "[BetterLyrics] Invalid data structure in cache",
+
+  NO_LYRICS_TEXT: "No lyrics found for this song",
 };
