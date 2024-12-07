@@ -43,7 +43,6 @@ BetterLyrics.LyricProviders = {
    * @property {string} captionsInitialState
    */
 
-
   providersList: [],
 
   bLyrics: async function (song, artist, duration) {
@@ -132,7 +131,7 @@ BetterLyrics.LyricProviders = {
 
     return lyricsArray;
   },
-  ytLyrics: async function (song, artist, duration) {
+  ytLyrics: async function (_song, _artist, _duration) {
     let lyricText;
 
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
@@ -166,7 +165,7 @@ BetterLyrics.LyricProviders = {
   /**
    * @type{function(song: string, artist: string, duration:number, videoId: string, audioTrackData:audioTrackData)}
    */
-  ytCaptions: async function(song, artist, duration, videoId, audioTrackData) {
+  ytCaptions: async function (_song, _artist, _duration, _videoId, audioTrackData) {
     if (audioTrackData.captionTracks.length === 0) {
       return;
     }
@@ -175,6 +174,7 @@ BetterLyrics.LyricProviders = {
       langCode = audioTrackData.captionTracks[0].languageCode;
     } else {
       // Try and determine the language by finding an auto generated track
+      // TODO: This sucks as a method
       for (let captionTracksKey in audioTrackData.captionTracks) {
         let data = audioTrackData.captionTracks[captionTracksKey];
         if (data.displayName.includes("auto-generated")) {
@@ -185,7 +185,7 @@ BetterLyrics.LyricProviders = {
     }
 
     if (!langCode) {
-      console.log(audioTrackData);
+      BetterLyrics.Utils.log(audioTrackData);
       throw new Error("Found Caption Tracks, but couldn't determine the default");
     }
 
@@ -199,7 +199,7 @@ BetterLyrics.LyricProviders = {
     }
 
     if (!captionsUrl) {
-      console.log(audioTrackData);
+      BetterLyrics.Utils.log(audioTrackData);
       throw new Error("Only found auto generated lyrics, not using");
     }
 
@@ -207,13 +207,12 @@ BetterLyrics.LyricProviders = {
     captionsUrl.searchParams.set("fmt", "json3");
 
     let captionData = await fetch(captionsUrl, {
-      method: "GET"
-    }).then(response => response.json())
-    console.log(captionData);
+      method: "GET",
+    }).then(response => response.json());
 
     let lyricsArray = [];
 
-    captionData.events.forEach((event) => {
+    captionData.events.forEach(event => {
       let words = "";
       for (let segsKey in event.segs) {
         words += event.segs[segsKey].utf8;
@@ -225,7 +224,6 @@ BetterLyrics.LyricProviders = {
         durationMs: event.dDurationMs,
       });
     });
-
     return { lyrics: lyricsArray, language: langCode };
   },
   initProviders: function () {

@@ -23,7 +23,14 @@ const startLyricsTick = () => {
         const duration = player.getDuration();
         document.dispatchEvent(
           new CustomEvent("blyrics-send-player-time", {
-            detail: { currentTime: currentTime, videoId: video_id, song: title, artist: author, duration: duration, audioTrackData: audioTrackData },
+            detail: {
+              currentTime: currentTime,
+              videoId: video_id,
+              song: title,
+              artist: author,
+              duration: duration,
+              audioTrackData: audioTrackData,
+            },
           })
         );
       } catch (e) {
