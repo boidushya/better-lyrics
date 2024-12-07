@@ -217,7 +217,17 @@ BetterLyrics.LyricProviders = {
       for (let segsKey in event.segs) {
         words += event.segs[segsKey].utf8;
       }
-
+      words = words.replaceAll("\n", " ");
+      for (let c of BetterLyrics.Constants.MUSIC_NOTES) {
+        words = words.trim();
+        if (words.startsWith(c)) {
+          words = words.substring(1);
+        }
+        if (words.endsWith(c)) {
+          words = words.substring(0, words.length - 1);
+        }
+      }
+      words = words.trim();
       lyricsArray.push({
         startTimeMs: event.tStartMs,
         words: words,

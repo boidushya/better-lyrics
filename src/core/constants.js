@@ -141,4 +141,5 @@ BetterLyrics.Constants = {
   INVALID_CACHE_DATA_LOG: "[BetterLyrics] Invalid data structure in cache",
 
   NO_LYRICS_TEXT: "No lyrics found for this song",
+  MUSIC_NOTES: "♪𝅘𝅥𝅮𝅘𝅥𝅯𝅘𝅥𝅰𝅘𝅥𝅱𝅘𝅥𝅲",
 };
