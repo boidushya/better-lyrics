@@ -159,54 +159,6 @@ BetterLyrics.DOM = {
       BetterLyrics.Utils.log(err);
     }
   },
-
-  injectError: function () {
-    BetterLyrics.DOM.cleanup();
-    const message = "No lyrics found for this song.";
-
-    try {
-      const hasYtMusicLyrics = document.querySelector(BetterLyrics.Constants.NO_LYRICS_TEXT_SELECTOR);
-
-      if (hasYtMusicLyrics) {
-        if (
-          hasYtMusicLyrics.innerText === "Lyrics not available" &&
-          hasYtMusicLyrics.parentElement.style.display !== "none"
-        ) {
-          let lyricsWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_WRAPPER_ID);
-
-          if (!lyricsWrapper) {
-            lyricsWrapper = BetterLyrics.DOM.createLyricsWrapper();
-          }
-
-          const errorContainer = document.createElement("div");
-          errorContainer.className = BetterLyrics.Constants.ERROR_LYRICS_CLASS;
-          errorContainer.innerText = message;
-
-          if (lyricsWrapper) {
-            lyricsWrapper.innerHTML = "";
-          }
-
-          lyricsWrapper.appendChild(errorContainer);
-          BetterLyrics.DOM.flushLoader();
-
-          return;
-        }
-      }
-      BetterLyrics.Utils.log(BetterLyrics.Constants.YT_MUSIC_LYRICS_AVAILABLE_LOG);
-      const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
-      const existingFooter = document.getElementsByClassName(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)[0];
-      if (existingLyrics && existingFooter) {
-        for (let lyrics of existingLyrics) {
-          lyrics.classList.add("blyrics--fallback");
-        }
-        existingFooter.classList.add("blyrics--fallback");
-      }
-      BetterLyrics.DOM.flushLoader();
-    } catch (err) {
-      BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
-      BetterLyrics.Utils.log(err);
-    }
-  },
   /** @type {MutationObserver | null} */
   backgroundChangeObserver: null,
   addAlbumArtToLayout: function () {
