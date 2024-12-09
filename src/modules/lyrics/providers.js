@@ -135,9 +135,11 @@ BetterLyrics.LyricProviders = {
     let lyricText;
 
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
-    if (tabSelector.getAttribute("aria-selected") !== "true") {
-      throw new Error("Lyrics Tab Not Visible");
+    const spinner = document.querySelector("#tab-renderer > tp-yt-paper-spinner-lite");
+    if (tabSelector.getAttribute("aria-selected") !== "true" || !spinner || spinner.style.display === "") {
+      throw new Error("Lyrics aren't ready yet");
     }
+
 
     const hasYtMusicLyrics = document.querySelector(BetterLyrics.Constants.NO_LYRICS_TEXT_SELECTOR);
     if (
