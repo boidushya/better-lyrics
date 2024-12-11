@@ -83,11 +83,11 @@ BetterLyrics.Lyrics = {
   },
 
   processLyrics: function (data) {
-    const lyrics = data.lyrics;
 
     BetterLyrics.App.lang = data.language;
     BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
 
+    const lyrics = data.lyrics;
     if (!lyrics || lyrics.length === 0) {
       console.log(data);
       throw new Error(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
@@ -142,16 +142,17 @@ BetterLyrics.Lyrics = {
       });
     }
 
-    BetterLyrics.Lyrics.injectLyrics(lyrics);
+    BetterLyrics.Lyrics.injectLyrics(data);
 
     BetterLyrics.App.lyricsObserver = observer;
   },
 
-  injectLyrics: function (lyrics) {
+  injectLyrics: function (data) {
+    const lyrics = data.lyrics;
     BetterLyrics.DOM.cleanup();
     let lyricsWrapper = BetterLyrics.DOM.createLyricsWrapper();
     if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
-      BetterLyrics.DOM.addFooter();
+      BetterLyrics.DOM.addFooter(data.source, data.sourceHref);
     }
 
     try {
@@ -177,6 +178,9 @@ BetterLyrics.Lyrics = {
     });
 
     const allZero = lyrics.every(item => item.startTimeMs === "0");
+    if (lyrics[lyrics.length - 1].words === "") {
+      lyrics.pop();
+    }
 
     lyrics.forEach(item => {
       let line = document.createElement("div");

@@ -64,6 +64,9 @@ BetterLyrics.LyricProviders = {
       throw new Error("Invalid API response structure");
     }
 
+    data.source = "boidu.dev";
+    data.sourceHref = "https://better-lyrics.boidu.dev"
+
     return data;
   },
 
@@ -88,7 +91,11 @@ BetterLyrics.LyricProviders = {
 
     if (data && data.syncedLyrics && typeof data.duration === "number") {
       BetterLyrics.Utils.log(BetterLyrics.Constants.LRCLIB_LYRICS_FOUND_LOG);
-      return { lyrics: BetterLyrics.LyricProviders.parseLRCLIBLyrics(data.syncedLyrics, data.duration) };
+      return {
+        lyrics: BetterLyrics.LyricProviders.parseLRCLIBLyrics(data.syncedLyrics, data.duration),
+        source: "LRCLib",
+        sourceHref: "https://lrclib.net/"
+      };
     } else {
       throw new Error(BetterLyrics.Constants.NO_LRCLIB_LYRICS_FOUND_LOG);
     }
@@ -153,6 +160,14 @@ BetterLyrics.LyricProviders = {
       lyricText = existingLyrics[0].innerText;
     }
 
+    const source = document.querySelector("#contents > ytmusic-description-shelf-renderer > yt-formatted-string.footer.style-scope.ytmusic-description-shelf-renderer");
+    let sourceText;
+    if (!source) {
+      sourceText = "Unknown";
+    } else {
+      sourceText = source.innerText.substring(8);
+    }
+
     const lyricsArray = [];
     lyricText.split("\n").forEach(words => {
       lyricsArray.push({
@@ -162,7 +177,11 @@ BetterLyrics.LyricProviders = {
       });
     });
 
-    return { lyrics: lyricsArray };
+    return {
+      lyrics: lyricsArray,
+      source: sourceText + " (via YT)",
+      sourceHref: ""
+    };
   },
   /**
    * @type{function(song: string, artist: string, duration:number, videoId: string, audioTrackData:audioTrackData)}
@@ -236,7 +255,7 @@ BetterLyrics.LyricProviders = {
         durationMs: event.dDurationMs,
       });
     });
-    return { lyrics: lyricsArray, language: langCode };
+    return { lyrics: lyricsArray, language: langCode, source: "Youtube Captions", sourceHref: "" };
   },
   initProviders: function () {
     BetterLyrics.LyricProviders.providersList = [

@@ -16,15 +16,22 @@ BetterLyrics.DOM = {
     return wrapper;
   },
 
-  addFooter: function () {
-    if (document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS).length > 0) {
-      return;
+  /**
+   * @param source : {string}
+   * @param sourceHref : {string}
+   */
+  addFooter: function (source, sourceHref) {
+    if (document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS).length === 0) {
+      const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+      const footer = document.createElement("div");
+      footer.classList.add(BetterLyrics.Constants.FOOTER_CLASS);
+      tabRenderer.appendChild(footer);
+      BetterLyrics.DOM.createFooter();
     }
-    const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
-    const footer = document.createElement("div");
-    footer.classList.add(BetterLyrics.Constants.FOOTER_CLASS);
-    tabRenderer.appendChild(footer);
-    BetterLyrics.DOM.createFooter();
+
+    let footerLink = document.getElementById("betterLyricsFooterLink");
+    footerLink.textContent = source;
+    footerLink.href = sourceHref;
   },
 
   createFooter: function () {
@@ -45,9 +52,8 @@ BetterLyrics.DOM = {
       footerContainer.appendChild(document.createTextNode("Source: "));
 
       const footerLink = document.createElement("a");
-      footerLink.href = "https://better-lyrics.boidu.dev";
       footerLink.target = "_blank";
-      footerLink.textContent = "boidu.dev";
+      footerLink.id = "betterLyricsFooterLink"
 
       footerContainer.appendChild(footerLink);
 
