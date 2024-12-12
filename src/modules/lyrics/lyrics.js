@@ -11,6 +11,26 @@ BetterLyrics.Lyrics = {
       return;
     }
 
+    const spinner = document.querySelector("#tab-renderer > tp-yt-paper-spinner-lite");
+    let waitForLoaderPromise;
+    if (spinner) {
+      waitForLoaderPromise = new Promise((resolve, reject) => {
+        if (spinner.style.display !== "none") {
+          resolve(true);
+          return;
+        }
+        let observer = new MutationObserver(mutations => {
+          observer.disconnect();
+          resolve(true);
+        })
+        observer.observe(spinner, {
+          attributes: true
+        });
+      });
+    }
+
+
+
     // Try to get lyrics from cache with validation
     const cacheKey = `blyrics_${videoId}`;
 
@@ -58,10 +78,31 @@ BetterLyrics.Lyrics = {
     BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
     let lyrics;
+    let ytLyrics;
+    if (!BetterLyrics.App.requestCache || BetterLyrics.App.requestCache.get("id") !== videoId) {
+      BetterLyrics.App.requestCache = new Map();
+      BetterLyrics.App.requestCache.set("id", videoId);
+    }
+    /**
+     * @type {Map<Function, {}>}
+     */
+    let requestCache = BetterLyrics.App.requestCache;
+
     for (let provider of BetterLyrics.LyricProviders.providersList) {
       try {
-        lyrics = await provider(song, artist, duration, videoId, audioTrackData);
+        if (requestCache.has(provider)) {
+          lyrics = requestCache.get(provider);
+        } else {
+          lyrics = await provider(song, artist, duration, videoId, audioTrackData);
+          requestCache.set(provider, lyrics);
+        }
+
         if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
+          if (!ytLyrics) {
+            ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(waitForLoaderPromise)
+          }
+
+          // TODO compare ytLyrics w/ the returned lyrics and reject if they don't match.
           break;
         }
       } catch (err) {
@@ -69,16 +110,22 @@ BetterLyrics.Lyrics = {
       }
     }
 
+    if (!ytLyrics) {
+      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(waitForLoaderPromise)
+    }
+
     if (!lyrics) {
-      throw new Error(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
+      lyrics = ytLyrics;
     }
 
     this.cacheAndProcessLyrics(cacheKey, lyrics);
   },
 
   cacheAndProcessLyrics: function (cacheKey, data) {
-    const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
-    BetterLyrics.Storage.setTransientStorage(cacheKey, JSON.stringify(data), oneWeekInMs);
+    if (data.cacheAllowed === undefined || data.cacheAllowed) {
+      const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
+      BetterLyrics.Storage.setTransientStorage(cacheKey, JSON.stringify(data), oneWeekInMs);
+    }
     BetterLyrics.Lyrics.processLyrics(data);
   },
 
@@ -97,19 +144,19 @@ BetterLyrics.Lyrics = {
 
     const ytMusicLyrics = document.querySelector(BetterLyrics.Constants.NO_LYRICS_TEXT_SELECTOR)?.parentElement;
     if (ytMusicLyrics) {
-      ytMusicLyrics.style.display = "none";
+      ytMusicLyrics.classList.add("blyrics-hidden")
     }
 
     const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
     if (existingLyrics) {
       for (let lyrics of existingLyrics) {
-        lyrics.style.display = "none";
+        lyrics.classList.add("blyrics-hidden")
       }
     }
 
     const existingFooter = document.getElementsByClassName(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)[0];
     if (existingFooter) {
-      existingFooter.style.display = "none";
+      existingFooter.classList.add("blyrics-hidden")
     }
 
     try {
@@ -119,32 +166,7 @@ BetterLyrics.Lyrics = {
       BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_NOT_DISABLED_LOG);
     }
 
-    const observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
-        if (mutation.addedNodes.length) {
-          mutation.addedNodes.forEach(node => {
-            if (
-              node.classList?.contains(BetterLyrics.Constants.DESCRIPTION_CLASS) ||
-              node.classList?.contains(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)
-            ) {
-              node.style.display = "none";
-            }
-          });
-        }
-      });
-    });
-
-    const lyricsContainer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
-    if (lyricsContainer) {
-      observer.observe(lyricsContainer, {
-        childList: true,
-        subtree: true,
-      });
-    }
-
     BetterLyrics.Lyrics.injectLyrics(data);
-
-    BetterLyrics.App.lyricsObserver = observer;
   },
 
   injectLyrics: function (data) {

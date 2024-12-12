@@ -11,6 +11,7 @@ BetterLyrics.App = {
   shouldInjectAlbumArt: "Unknown",
   queueSongDetailsInjection: false,
   loaderAnimationEndTimeout: null,
+  requestCache: null,
 
   modify: function () {
     BetterLyrics.Utils.setUpLog();
@@ -69,7 +70,7 @@ BetterLyrics.App = {
         document.addEventListener("DOMContentLoaded", this.modify.bind(this));
       }
     } catch (err) {
-      BetterLyrics.Utils.log(GENERAL_ERROR_LOG, err);
+      BetterLyrics.Utils.log(BetterLyrics.GENERAL_ERROR_LOG, err);
     }
   },
 };

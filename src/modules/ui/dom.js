@@ -102,6 +102,8 @@ BetterLyrics.DOM = {
       if (!loaderWrapper) {
         loaderWrapper = document.createElement("div");
         loaderWrapper.id = BetterLyrics.Constants.LYRICS_LOADER_ID;
+      } else if (loaderWrapper.hasAttribute("active")) {
+        return;
       }
 
       tabRenderer.prepend(loaderWrapper);

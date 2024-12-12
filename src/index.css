@@ -67,6 +67,10 @@
   z-index: 1;
 }
 
+.blyrics-hidden {
+  display: none !important;
+}
+
 .blyrics-container > div {
   cursor: pointer;
   padding-bottom: var(--blyrics-padding) !important;

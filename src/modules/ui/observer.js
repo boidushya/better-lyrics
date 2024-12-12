@@ -7,14 +7,6 @@ BetterLyrics.Observer = {
       }, 1000);
       return;
     }
-    if (tabSelector.hasAttribute("disabled")) {
-      tabSelector.removeAttribute("disabled");
-      tabSelector.setAttribute("aria-disabled", "false");
-      BetterLyrics.Settings.onAutoSwitchEnabled(() => {
-        tabSelector.click();
-        BetterLyrics.Utils.log(BetterLyrics.Constants.AUTO_SWITCH_ENABLED_LOG);
-      });
-    }
     let observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
         if (mutation.attributeName === "disabled") {
@@ -111,7 +103,6 @@ BetterLyrics.Observer = {
               BetterLyrics.Utils.log(BetterLyrics.Constants.AUTO_SWITCH_ENABLED_LOG);
             });
           }
-
           BetterLyrics.App.handleModifications(detail);
         }
       }

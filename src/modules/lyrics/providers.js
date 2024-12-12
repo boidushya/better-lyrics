@@ -138,26 +138,63 @@ BetterLyrics.LyricProviders = {
 
     return lyricsArray;
   },
-  ytLyrics: async function (_song, _artist, _duration) {
+  ytLyrics: async function (waitForLoaderPromise) {
+    const spinner = document.querySelector("#tab-renderer > tp-yt-paper-spinner-lite");
+
+    if (!spinner || !waitForLoaderPromise) {
+      throw new Error("Lyrics not ready yet!");
+    }
+
+    const delay = (ms) => new Promise((resolve, reject) => setTimeout(() => resolve(false), ms));
+
+    if (await Promise.race([delay(2000), waitForLoaderPromise])) {
+      BetterLyrics.Utils.log("Found Loader, waiting for completion");
+    } else {
+      BetterLyrics.Utils.log("Timed out waiting for loader");
+    }
+
+    let waitForLoaderFinishPromise = new Promise((resolve, reject) => {
+      if (spinner.style.display === "none") {
+        resolve(true);
+        return;
+      }
+      let observer = new MutationObserver(mutations => {
+        if (spinner.style.display === "none") {
+          observer.disconnect();
+          resolve(true);
+        }
+      })
+      observer.observe(spinner, {
+        attributes: true
+      });
+    });
+
+    if (await Promise.race([delay(10000), waitForLoaderFinishPromise])) {
+      BetterLyrics.Utils.log("Loader finished successfully");
+    } else {
+      throw new Error("Timed out waiting for ytLyrics");
+    }
+
     let lyricText;
 
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
-    const spinner = document.querySelector("#tab-renderer > tp-yt-paper-spinner-lite");
-    if (tabSelector.getAttribute("aria-selected") !== "true" || !spinner || spinner.style.display === "") {
+    if (tabSelector.getAttribute("aria-selected") !== "true") {
       throw new Error("Lyrics aren't ready yet");
     }
 
 
-    const hasYtMusicLyrics = document.querySelector(BetterLyrics.Constants.NO_LYRICS_TEXT_SELECTOR);
-    if (
-      hasYtMusicLyrics &&
-      hasYtMusicLyrics.innerText === "Lyrics not available" &&
-      hasYtMusicLyrics.parentElement.style.display !== "none"
-    ) {
+    if (!document.querySelector("#tab-renderer > ytmusic-section-list-renderer") ||
+      document.querySelector("#tab-renderer > ytmusic-section-list-renderer").style.display === "none") {
       lyricText = BetterLyrics.Constants.NO_LYRICS_TEXT;
     } else {
-      const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
-      lyricText = existingLyrics[0].innerText;
+      let existingLyrics;
+      if (document.getElementById("bLyrics-yt-lyrics")) {
+        existingLyrics = document.getElementById("bLyrics-yt-lyrics");
+      } else {
+        existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS)[0];
+        existingLyrics.id = "bLyrics-yt-lyrics";
+      }
+      lyricText = existingLyrics.innerText;
     }
 
     const source = document.querySelector("#contents > ytmusic-description-shelf-renderer > yt-formatted-string.footer.style-scope.ytmusic-description-shelf-renderer");
@@ -180,9 +217,12 @@ BetterLyrics.LyricProviders = {
     return {
       lyrics: lyricsArray,
       source: sourceText + " (via YT)",
-      sourceHref: ""
+      sourceHref: "",
+      cacheAllowed: false,
+      text: lyricText
     };
   },
+
   /**
    * @type{function(song: string, artist: string, duration:number, videoId: string, audioTrackData:audioTrackData)}
    */
@@ -262,7 +302,6 @@ BetterLyrics.LyricProviders = {
       BetterLyrics.LyricProviders.ytCaptions,
       BetterLyrics.LyricProviders.bLyrics,
       BetterLyrics.LyricProviders.lyricLib,
-      BetterLyrics.LyricProviders.ytLyrics,
     ];
   },
 };
