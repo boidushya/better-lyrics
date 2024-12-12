@@ -53,7 +53,7 @@ BetterLyrics.DOM = {
 
       const footerLink = document.createElement("a");
       footerLink.target = "_blank";
-      footerLink.id = "betterLyricsFooterLink"
+      footerLink.id = "betterLyricsFooterLink";
 
       footerContainer.appendChild(footerLink);
 

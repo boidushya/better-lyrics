@@ -14,22 +14,20 @@ BetterLyrics.Lyrics = {
     const spinner = document.querySelector("#tab-renderer > tp-yt-paper-spinner-lite");
     let waitForLoaderPromise;
     if (spinner) {
-      waitForLoaderPromise = new Promise((resolve, reject) => {
+      waitForLoaderPromise = new Promise(resolve => {
         if (spinner.style.display !== "none") {
           resolve(true);
           return;
         }
-        let observer = new MutationObserver(mutations => {
+        let observer = new MutationObserver(() => {
           observer.disconnect();
           resolve(true);
-        })
+        });
         observer.observe(spinner, {
-          attributes: true
+          attributes: true,
         });
       });
     }
-
-
 
     // Try to get lyrics from cache with validation
     const cacheKey = `blyrics_${videoId}`;
@@ -99,7 +97,7 @@ BetterLyrics.Lyrics = {
 
         if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
           if (!ytLyrics) {
-            ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(waitForLoaderPromise)
+            ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(waitForLoaderPromise);
           }
 
           // TODO compare ytLyrics w/ the returned lyrics and reject if they don't match.
@@ -111,7 +109,7 @@ BetterLyrics.Lyrics = {
     }
 
     if (!ytLyrics) {
-      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(waitForLoaderPromise)
+      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(waitForLoaderPromise);
     }
 
     if (!lyrics) {
@@ -130,7 +128,6 @@ BetterLyrics.Lyrics = {
   },
 
   processLyrics: function (data) {
-
     BetterLyrics.App.lang = data.language;
     BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
 
@@ -144,19 +141,19 @@ BetterLyrics.Lyrics = {
 
     const ytMusicLyrics = document.querySelector(BetterLyrics.Constants.NO_LYRICS_TEXT_SELECTOR)?.parentElement;
     if (ytMusicLyrics) {
-      ytMusicLyrics.classList.add("blyrics-hidden")
+      ytMusicLyrics.classList.add("blyrics-hidden");
     }
 
     const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
     if (existingLyrics) {
       for (let lyrics of existingLyrics) {
-        lyrics.classList.add("blyrics-hidden")
+        lyrics.classList.add("blyrics-hidden");
       }
     }
 
     const existingFooter = document.getElementsByClassName(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)[0];
     if (existingFooter) {
-      existingFooter.classList.add("blyrics-hidden")
+      existingFooter.classList.add("blyrics-hidden");
     }
 
     try {

@@ -65,7 +65,7 @@ BetterLyrics.LyricProviders = {
     }
 
     data.source = "boidu.dev";
-    data.sourceHref = "https://better-lyrics.boidu.dev"
+    data.sourceHref = "https://better-lyrics.boidu.dev";
 
     return data;
   },
@@ -94,7 +94,7 @@ BetterLyrics.LyricProviders = {
       return {
         lyrics: BetterLyrics.LyricProviders.parseLRCLIBLyrics(data.syncedLyrics, data.duration),
         source: "LRCLib",
-        sourceHref: "https://lrclib.net/"
+        sourceHref: "https://lrclib.net/",
       };
     } else {
       throw new Error(BetterLyrics.Constants.NO_LRCLIB_LYRICS_FOUND_LOG);
@@ -145,7 +145,7 @@ BetterLyrics.LyricProviders = {
       throw new Error("Lyrics not ready yet!");
     }
 
-    const delay = (ms) => new Promise((resolve, reject) => setTimeout(() => resolve(false), ms));
+    const delay = ms => new Promise(resolve => setTimeout(() => resolve(false), ms));
 
     if (await Promise.race([delay(2000), waitForLoaderPromise])) {
       BetterLyrics.Utils.log("Found Loader, waiting for completion");
@@ -153,19 +153,19 @@ BetterLyrics.LyricProviders = {
       BetterLyrics.Utils.log("Timed out waiting for loader");
     }
 
-    let waitForLoaderFinishPromise = new Promise((resolve, reject) => {
+    let waitForLoaderFinishPromise = new Promise(resolve => {
       if (spinner.style.display === "none") {
         resolve(true);
         return;
       }
-      let observer = new MutationObserver(mutations => {
+      let observer = new MutationObserver(() => {
         if (spinner.style.display === "none") {
           observer.disconnect();
           resolve(true);
         }
-      })
+      });
       observer.observe(spinner, {
-        attributes: true
+        attributes: true,
       });
     });
 
@@ -182,9 +182,10 @@ BetterLyrics.LyricProviders = {
       throw new Error("Lyrics aren't ready yet");
     }
 
-
-    if (!document.querySelector("#tab-renderer > ytmusic-section-list-renderer") ||
-      document.querySelector("#tab-renderer > ytmusic-section-list-renderer").style.display === "none") {
+    if (
+      !document.querySelector("#tab-renderer > ytmusic-section-list-renderer") ||
+      document.querySelector("#tab-renderer > ytmusic-section-list-renderer").style.display === "none"
+    ) {
       lyricText = BetterLyrics.Constants.NO_LYRICS_TEXT;
     } else {
       let existingLyrics;
@@ -197,7 +198,9 @@ BetterLyrics.LyricProviders = {
       lyricText = existingLyrics.innerText;
     }
 
-    const source = document.querySelector("#contents > ytmusic-description-shelf-renderer > yt-formatted-string.footer.style-scope.ytmusic-description-shelf-renderer");
+    const source = document.querySelector(
+      "#contents > ytmusic-description-shelf-renderer > yt-formatted-string.footer.style-scope.ytmusic-description-shelf-renderer"
+    );
     let sourceText;
     if (!source) {
       sourceText = "Unknown";
@@ -219,7 +222,7 @@ BetterLyrics.LyricProviders = {
       source: sourceText + " (via YT)",
       sourceHref: "",
       cacheAllowed: false,
-      text: lyricText
+      text: lyricText,
     };
   },
 
