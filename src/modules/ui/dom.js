@@ -30,6 +30,8 @@ BetterLyrics.DOM = {
     }
 
     let footerLink = document.getElementById("betterLyricsFooterLink");
+    source = source || "boidu.dev";
+    sourceHref = sourceHref || "https://better-lyrics.boidu.dev/";
     footerLink.textContent = source;
     footerLink.href = sourceHref;
   },

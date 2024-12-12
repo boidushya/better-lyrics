@@ -21,6 +21,7 @@ terser src/core/utils.js -c -m -o src/core/utils.min.js && rm src/core/utils.js
 terser src/core/storage.js -c -m -o src/core/storage.min.js && rm src/core/storage.js
 terser src/modules/lyrics/translation.js -c -m -o src/modules/lyrics/translation.min.js && rm src/modules/lyrics/translation.js
 terser src/modules/lyrics/lyrics.js -c -m -o src/modules/lyrics/lyrics.min.js && rm src/modules/lyrics/lyrics.js
+terser src/modules/lyrics/providers.js -c -m -o src/modules/lyrics/providers.min.js && rm src/modules/lyrics/providers.js
 terser src/modules/ui/dom.js -c -m -o src/modules/ui/dom.min.js && rm src/modules/ui/dom.js
 terser src/modules/ui/observer.js -c -m -o src/modules/ui/observer.min.js && rm src/modules/ui/observer.js
 terser src/modules/settings/settings.js -c -m -o src/modules/settings/settings.min.js && rm src/modules/settings/settings.js
@@ -48,6 +49,7 @@ jq '.content_scripts[0].js = [
   "src/core/storage.min.js",
   "src/modules/lyrics/translation.min.js",
   "src/modules/lyrics/lyrics.min.js",
+  "src/modules/lyrics/providers.min.js",
   "src/modules/ui/dom.min.js",
   "src/modules/ui/observer.min.js",
   "src/modules/settings/settings.min.js",
