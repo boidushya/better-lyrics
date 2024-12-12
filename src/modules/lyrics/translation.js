@@ -1,5 +1,5 @@
 BetterLyrics.Translation = {
-  translateText: function (text, targetLanguage) {
+  translateText: async function (text, targetLanguage) {
     let url = BetterLyrics.Constants.TRANSLATE_LYRICS_URL(targetLanguage, text);
 
     return fetch(url)

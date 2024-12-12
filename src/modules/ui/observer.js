@@ -7,14 +7,6 @@ BetterLyrics.Observer = {
       }, 1000);
       return;
     }
-    if (tabSelector.hasAttribute("disabled")) {
-      tabSelector.removeAttribute("disabled");
-      tabSelector.setAttribute("aria-disabled", "false");
-      BetterLyrics.Settings.onAutoSwitchEnabled(() => {
-        tabSelector.click();
-        BetterLyrics.Utils.log(BetterLyrics.Constants.AUTO_SWITCH_ENABLED_LOG);
-      });
-    }
     let observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
         if (mutation.attributeName === "disabled") {
@@ -56,7 +48,7 @@ BetterLyrics.Observer = {
         currentVideoDetails !== BetterLyrics.App.lastVideoDetails
       ) {
         try {
-          if (currentVideoId === BetterLyrics.App.lastVideoId && BetterLyrics.App.areLyricsTicking) {
+          if (currentVideoId === BetterLyrics.App.lastVideoId && BetterLyrics.App.areLyricsLoaded) {
             console.log(BetterLyrics.Constants.SKIPPING_LOAD_WITH_META);
             return; // We already loaded this video
           }
@@ -93,18 +85,25 @@ BetterLyrics.Observer = {
         BetterLyrics.DOM.addAlbumArtToLayout();
       }
 
-      if (BetterLyrics.App.queueLyricInjection) {
+      if (BetterLyrics.App.lyricInjectionFailed) {
+        const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+        if (tabSelector && tabSelector.getAttribute("aria-selected") !== "true") {
+          BetterLyrics.App.lyricInjectionFailed = false; //ignore failure b/c the tab isn't visible
+        }
+      }
+
+      if (BetterLyrics.App.queueLyricInjection || BetterLyrics.App.lyricInjectionFailed) {
         const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
         if (tabSelector) {
           BetterLyrics.App.queueLyricInjection = false;
+          BetterLyrics.App.lyricInjectionFailed = false;
           if (tabSelector.getAttribute("aria-selected") !== "true") {
             BetterLyrics.Settings.onAutoSwitchEnabled(() => {
               tabSelector.click();
               BetterLyrics.Utils.log(BetterLyrics.Constants.AUTO_SWITCH_ENABLED_LOG);
             });
           }
-
-          BetterLyrics.App.handleModifications(detail.song, detail.artist, detail.currentTime, detail.videoId);
+          BetterLyrics.App.handleModifications(detail);
         }
       }
 

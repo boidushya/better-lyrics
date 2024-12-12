@@ -67,6 +67,10 @@
   z-index: 1;
 }
 
+.blyrics-hidden {
+  display: none !important;
+}
+
 .blyrics-container > div {
   cursor: pointer;
   padding-bottom: var(--blyrics-padding) !important;
@@ -171,9 +175,8 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 4rem !important;
-  margin: 16px 0;
-  margin-top: 0 !important;
+  margin-top: 2rem;
+  margin-bottom: 4rem;
 }
 
 .blyrics-footer__discord {
