@@ -201,6 +201,24 @@ BetterLyrics.Lyrics = {
       lyrics.pop();
     }
 
+    const langPromise = new Promise(async resolve => {
+      if (!BetterLyrics.App.lang || BetterLyrics.App.lang === "") {
+        let text = "";
+        let lineCount = 0;
+        for (let item of lyrics) {
+          text += item.words.trim() + "\n";
+          lineCount++;
+          if (lineCount >= 10) {
+            break;
+          }
+        }
+        const translationResult = await BetterLyrics.Translation.translateText(text, "en");
+        BetterLyrics.App.lang = translationResult.originalLanguage;
+        BetterLyrics.Utils.log("[BetterLyrics] Lang was missing. Determined it is: " + translationResult.originalLanguage);
+      }
+      return resolve(BetterLyrics.App.lang);
+    })
+
     lyrics.forEach(item => {
       let line = document.createElement("div");
       line.dataset.time = item.startTimeMs / 1000;
@@ -228,56 +246,55 @@ BetterLyrics.Lyrics = {
         line.appendChild(span);
       });
 
-      BetterLyrics.Translation.onRomanizationEnabled(
-        async () => {
-          let romanizedLine = document.createElement("span");
-          romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
+      langPromise.then((source_language) => {
+        BetterLyrics.Translation.onRomanizationEnabled(
+          async () => {
+            let romanizedLine = document.createElement("span");
+            romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
 
-          let source_language = BetterLyrics.App.lang ?? "en";
-          if (BetterLyrics.Constants.romanizationLanguages.includes(source_language)) {
-            if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-              const result = await BetterLyrics.Translation.translateTextIntoRomaji(source_language, item.words);
-              if (result && result.trim() !== "") {
-                romanizedLine.textContent = result ? "\n" + result : "\n";
-                line.appendChild(romanizedLine);
+            if (BetterLyrics.Constants.romanizationLanguages.includes(source_language)) {
+              if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+                const result = await BetterLyrics.Translation.translateTextIntoRomaji(source_language, item.words);
+                if (result && result.trim() !== "") {
+                  romanizedLine.textContent = result ? "\n" + result : "\n";
+                  line.appendChild(romanizedLine);
+                }
               }
             }
-          }
-        },
-        async () => {
-          BetterLyrics.Translation.onTranslationEnabled(async items => {
-            let translatedLine = document.createElement("span");
-            translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
+          },
+          async () => {
+            BetterLyrics.Translation.onTranslationEnabled(async items => {
+              let translatedLine = document.createElement("span");
+              translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
 
-            let source_language = BetterLyrics.App.lang ?? "en";
-            let target_language = items.translationLanguage || "en";
+              let target_language = items.translationLanguage || "en";
 
-            if (source_language !== target_language) {
-              if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-                const result = await BetterLyrics.Translation.translateText(item.words, target_language);
+              if (source_language !== target_language) {
+                if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+                  const result = await BetterLyrics.Translation.translateText(item.words, target_language);
 
-                if (result) {
-                  if (result.originalLanguage !== target_language) {
-                    translatedLine.textContent = "\n" + result.translatedText;
+                  if (result) {
+                    if (result.originalLanguage !== target_language) {
+                      translatedLine.textContent = "\n" + result.translatedText;
+                      line.appendChild(translatedLine);
+                    }
+                  } else {
+                    translatedLine.textContent = "\n" + "—";
                     line.appendChild(translatedLine);
                   }
-                } else {
-                  translatedLine.textContent = "\n" + "—";
+
                   line.appendChild(translatedLine);
                 }
-
-                line.appendChild(translatedLine);
               }
-            }
+            });
           });
-        }
-      );
 
-      try {
-        document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].appendChild(line);
-      } catch (_err) {
-        BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
-      }
+        try {
+          document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].appendChild(line);
+        } catch (_err) {
+          BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
+        }
+      });
     });
 
     if (!allZero) {
