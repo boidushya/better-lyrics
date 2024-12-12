@@ -214,10 +214,12 @@ BetterLyrics.Lyrics = {
         }
         const translationResult = await BetterLyrics.Translation.translateText(text, "en");
         BetterLyrics.App.lang = translationResult.originalLanguage;
-        BetterLyrics.Utils.log("[BetterLyrics] Lang was missing. Determined it is: " + translationResult.originalLanguage);
+        BetterLyrics.Utils.log(
+          "[BetterLyrics] Lang was missing. Determined it is: " + translationResult.originalLanguage
+        );
       }
       return resolve(BetterLyrics.App.lang);
-    })
+    });
 
     lyrics.forEach(item => {
       let line = document.createElement("div");
@@ -246,7 +248,7 @@ BetterLyrics.Lyrics = {
         line.appendChild(span);
       });
 
-      langPromise.then((source_language) => {
+      langPromise.then(source_language => {
         BetterLyrics.Translation.onRomanizationEnabled(
           async () => {
             let romanizedLine = document.createElement("span");
@@ -287,7 +289,8 @@ BetterLyrics.Lyrics = {
                 }
               }
             });
-          });
+          }
+        );
 
         try {
           document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].appendChild(line);
