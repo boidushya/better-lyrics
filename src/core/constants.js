@@ -46,7 +46,7 @@ BetterLyrics.Constants = {
     return `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`;
   },
   TRANSLATE_IN_ROMAJI: function (lang, text) {
-    return `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${lang}&tl=en&dt=t&dt=rm&q=${encodeURIComponent(text)}`;
+    return `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${lang}&tl=${lang}-Latn&dt=t&dt=rm&q=${encodeURIComponent(text)}`;
   },
 
   // Supported Languages
