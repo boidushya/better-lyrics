@@ -1,3 +1,5 @@
+const LYRIC_CACHE_VERSION = "1.0.0";
+
 BetterLyrics.Lyrics = {
   createLyrics: async function (detail) {
     let song = detail.song;
@@ -37,7 +39,12 @@ BetterLyrics.Lyrics = {
       try {
         const data = JSON.parse(cachedLyrics);
         // Validate cached data structure
-        if (data && (Array.isArray(data.lyrics) || data.syncedLyrics)) {
+        if (
+          data &&
+          (Array.isArray(data.lyrics) || data.syncedLyrics) &&
+          data.version &&
+          data.version === LYRIC_CACHE_VERSION
+        ) {
           BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_CACHE_FOUND_LOG);
           BetterLyrics.Lyrics.processLyrics(data);
           return;
@@ -101,13 +108,15 @@ BetterLyrics.Lyrics = {
           }
           if (ytLyrics.text !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
             let lyricText = "";
-            lyrics.lyrics.forEach((lyric) => {
+            lyrics.lyrics.forEach(lyric => {
               lyricText += lyric.words + "\n";
-            })
+            });
 
             let matchAmount = stringSimilarity(lyricText.toLowerCase(), ytLyrics.text.toLowerCase());
             if (matchAmount < 0.8) {
-              BetterLyrics.Utils.log(`Got lyrics from ${lyrics.source}, but they don't match yt lyrics. Rejecting: Match: ${matchAmount}%`)
+              BetterLyrics.Utils.log(
+                `Got lyrics from ${lyrics.source}, but they don't match yt lyrics. Rejecting: Match: ${matchAmount}%`
+              );
               continue;
             }
           }
@@ -131,6 +140,7 @@ BetterLyrics.Lyrics = {
 
   cacheAndProcessLyrics: function (cacheKey, data) {
     if (data.cacheAllowed === undefined || data.cacheAllowed) {
+      data.version = LYRIC_CACHE_VERSION;
       const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
       BetterLyrics.Storage.setTransientStorage(cacheKey, JSON.stringify(data), oneWeekInMs);
     }
@@ -333,14 +343,17 @@ BetterLyrics.Lyrics = {
  * @returns Number between 0 and 1, with 0 being a low match score.
  */
 var stringSimilarity = function (str1, str2, substringLength, caseSensitive) {
-  if (substringLength === void 0) { substringLength = 2; }
-  if (caseSensitive === void 0) { caseSensitive = false; }
+  if (substringLength === void 0) {
+    substringLength = 2;
+  }
+  if (caseSensitive === void 0) {
+    caseSensitive = false;
+  }
   if (!caseSensitive) {
     str1 = str1.toLowerCase();
     str2 = str2.toLowerCase();
   }
-  if (str1.length < substringLength || str2.length < substringLength)
-    return 0;
+  if (str1.length < substringLength || str2.length < substringLength) return 0;
   var map = new Map();
   for (var i = 0; i < str1.length - (substringLength - 1); i++) {
     var substr1 = str1.substr(i, substringLength);
@@ -355,5 +368,5 @@ var stringSimilarity = function (str1, str2, substringLength, caseSensitive) {
       match++;
     }
   }
-  return (match * 2) / (str1.length + str2.length - ((substringLength - 1) * 2));
+  return (match * 2) / (str1.length + str2.length - (substringLength - 1) * 2);
 };
