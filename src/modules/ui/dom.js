@@ -239,7 +239,7 @@ BetterLyrics.DOM = {
   },
 
   cleanup: function () {
-    BetterLyrics.DOM.scrollPos = 0;
+    BetterLyrics.DOM.scrollPos = -1;
     BetterLyrics.DOM.minScroll = 0;
     BetterLyrics.DOM.maxScroll = 0;
     BetterLyrics.DOM.skipScrolls = 4;
@@ -293,11 +293,7 @@ BetterLyrics.DOM = {
   minScroll: 0,
   scrollPos: 0,
   tickLyrics: function (currentTime) {
-    if (
-      BetterLyrics.DOM.isLoaderActive() ||
-      !BetterLyrics.App.areLyricsTicking ||
-      document.visibilityState !== "visible"
-    ) {
+    if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
       return;
     }
 
@@ -354,58 +350,56 @@ BetterLyrics.DOM = {
       const wrapper = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
       const wrapperHeight = wrapper.getBoundingClientRect().height;
 
-      if (BetterLyrics.DOM.scrollResumeTime < Date.now()) {
+      let lastMarginTop = parseFloat(lyricsElement.style.marginTop.replace("px", ""));
+      if (isNaN(lastMarginTop)) {
+        lastMarginTop = 0;
+        BetterLyrics.DOM.minScroll = lyricsHeight;
+        BetterLyrics.DOM.maxScroll = lyricsHeight * 2 - wrapperHeight;
+      }
+
+      if (Math.abs(lastMarginTop - lyricsHeight) > 5) {
+        lyricsElement.style.marginTop = lyricsHeight + "px";
+        let marginChange = lyricsHeight - lastMarginTop;
+        console.log("Margin Change", marginChange);
+
+        wrapper.scrollTop += marginChange;
+        BetterLyrics.DOM.skipScrolls += 1;
+        BetterLyrics.DOM.minScroll += marginChange;
+        BetterLyrics.DOM.maxScroll += marginChange * 2;
+      } else if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
         let scrollPos = Math.max(0, BetterLyrics.DOM.targetScrollPos - wrapperHeight * (1 / 3));
         scrollPos = Math.min(lyricsHeight - wrapperHeight, scrollPos);
-
-        let lastMarginTop = parseFloat(lyricsElement.style.marginTop.replace("px", ""));
-
-        BetterLyrics.DOM.maxScroll = (lyricsHeight * 2) - scrollPos - wrapperHeight;
         BetterLyrics.DOM.minScroll = lyricsHeight - scrollPos;
+        BetterLyrics.DOM.maxScroll = lyricsHeight * 2 - scrollPos - wrapperHeight;
 
-        let scrollTop = Math.max(Math.min(BetterLyrics.DOM.maxScroll, wrapper.scrollTop), BetterLyrics.DOM.minScroll);
+        let scrollTop = wrapper.scrollTop;
         let currentLyricOffset = parseFloat(lyricsElement.style.top.replace("px", ""));
         if (isNaN(currentLyricOffset)) {
-          lyricsElement.style.top = (-scrollPos) + "px";
-          currentLyricOffset = -scrollPos;
+          lyricsElement.style.transition = "top 0s ease-in-out 0s";
+          lyricsElement.style.top = -scrollPos + "px";
+          wrapper.scrollTop = lyricsHeight;
+          BetterLyrics.DOM.skipScrolls += 1;
+          console.log("force scrolling", scrollPos);
+          return;
         }
 
-
         if (Math.abs(scrollTop - lyricsHeight) > 2) {
-          if (isNaN(lastMarginTop)) {
-            lyricsElement.style.marginTop = (lyricsHeight) + "px";
-            lastMarginTop = lyricsHeight;
-          }
-          console.log(`${currentLyricOffset} - (${scrollTop} - ${lyricsHeight}) - (${lyricsHeight} - ${lastMarginTop})`);
-
+          console.log("smooth user scroll", scrollTop, lyricsHeight);
           lyricsElement.style.transition = "top 0s ease-in-out 0s";
-          lyricsElement.style.top = `${currentLyricOffset - (scrollTop - lyricsHeight) - (lyricsHeight - lastMarginTop)}px`;
-          console.log(lyricsElement.style.top);
+          lyricsElement.style.top = `${currentLyricOffset - (scrollTop - lyricsHeight)}px`;
 
           wrapper.scrollTop = lyricsHeight;
           BetterLyrics.DOM.skipScrolls += 1;
         } else {
-          if (Math.abs(wrapper.scrollTop - scrollTop) > 5)  {
-            wrapper.scrollTop = scrollTop;
-            BetterLyrics.DOM.skipScrolls += 1;
-          }
-
           lyricsElement.style.transition = "";
 
           if (Math.abs(scrollPos + currentLyricOffset) > 10) {
-            lyricsElement.style.top = (-scrollPos) + "px";
-            console.log("scrolling", scrollPos, wrapperHeight, lyricsHeight);
+            console.log("lyric scrolling");
+            lyricsElement.style.top = -scrollPos + "px";
+            BetterLyrics.DOM.scrollPos = scrollPos;
           }
         }
-
-        BetterLyrics.DOM.scrollPos = scrollPos;
-      } else {
-        BetterLyrics.DOM.maxScroll = (lyricsHeight * 2) - BetterLyrics.DOM.scrollPos - wrapperHeight;
-        BetterLyrics.DOM.minScroll = lyricsHeight - BetterLyrics.DOM.scrollPos;
       }
-
-      lyricsElement.style.marginTop = (lyricsHeight) + "px";
-
     } catch (err) {
       if (!(err.message && err.message.includes("undefined"))) {
         BetterLyrics.Utils.log("Error in lyrics check interval:", err);

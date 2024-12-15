@@ -122,7 +122,7 @@ BetterLyrics.Lyrics = {
   cacheAndProcessLyrics: function (cacheKey, data) {
     if (data.cacheAllowed === undefined || data.cacheAllowed) {
       const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
-      //BetterLyrics.Storage.setTransientStorage(cacheKey, JSON.stringify(data), oneWeekInMs);
+      BetterLyrics.Storage.setTransientStorage(cacheKey, JSON.stringify(data), oneWeekInMs);
     }
     BetterLyrics.Lyrics.processLyrics(data);
   },

@@ -128,6 +128,5 @@ BetterLyrics.Observer = {
       return;
     }
     BetterLyrics.DOM.scrollResumeTime = Date.now() + 6000;
-    console.log("user scrolled");
   },
 };
