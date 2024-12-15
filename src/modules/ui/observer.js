@@ -112,4 +112,24 @@ BetterLyrics.Observer = {
       BetterLyrics.DOM.tickLyrics(detail.currentTime);
     });
   },
+  scrollEventHandler: () => {
+    const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+    if (tabSelector.getAttribute("aria-selected") !== "true") {
+      return;
+    }
+
+    const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+    if (tabRenderer.scrollTop > BetterLyrics.DOM.maxScroll) {
+      tabRenderer.scrollTop = BetterLyrics.DOM.maxScroll;
+    } else if (tabRenderer.scrollTop < BetterLyrics.DOM.minScroll) {
+      tabRenderer.scrollTop = BetterLyrics.DOM.minScroll;
+    }
+
+    if (BetterLyrics.DOM.skipScrolls > 0) {
+      BetterLyrics.DOM.skipScrolls--;
+      return;
+    }
+    BetterLyrics.DOM.scrollResumeTime = Date.now() + 6000;
+    console.log("user scrolled");
+  },
 };
