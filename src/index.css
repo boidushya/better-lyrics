@@ -65,7 +65,7 @@
   line-height: var(--blyrics-line-height);
   position: relative !important;
   z-index: 1;
-  transition: top 0.3s ease-in-out 0s;
+  transition: top 0.3s ease 0s;
 }
 
 .blyrics-hidden {
@@ -176,8 +176,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-top: 2rem;
-  margin-bottom: 6rem;
+  margin-bottom: 6rem !important;
 }
 
 .blyrics-footer__discord {

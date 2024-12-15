@@ -253,6 +253,9 @@ BetterLyrics.Lyrics = {
             item.startTimeMs / 1000
           }, true);player.playVideo();`
         );
+        line.addEventListener("click", (e) => {
+          BetterLyrics.DOM.scrollResumeTime = 0;
+        });
       } else {
         line.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
       }

@@ -161,7 +161,7 @@ BetterLyrics.DOM = {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
       if (loaderWrapper) {
-        return loaderWrapper.hasAttribute("active") || loaderWrapper.dataset.animatingOut === "true";
+        return loaderWrapper.hasAttribute("active"); // Math.abs(newMinScroll - BetterLyrics.DOM.minScroll) > 10
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
@@ -335,7 +335,6 @@ BetterLyrics.DOM = {
           if (elem) {
             let elemBounds = getRelativeBounds(lyricsElement, elem);
             BetterLyrics.DOM.targetScrollPos = elemBounds.y;
-
             elem.setAttribute("data-scrolled", true);
           }
           return true;
