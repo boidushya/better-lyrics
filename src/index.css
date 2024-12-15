@@ -65,6 +65,7 @@
   line-height: var(--blyrics-line-height);
   position: relative !important;
   z-index: 1;
+  transition: top 0.3s ease-in-out 0s;
 }
 
 .blyrics-hidden {
@@ -85,9 +86,9 @@
   padding-top: var(--blyrics-padding) !important;
 }
 
-.blyrics-container > div:last-child {
-  padding-bottom: 0 !important;
-}
+/*.blyrics-container > div:last-child {*/
+/*  padding-bottom: 0 !important;*/
+/*}*/
 
 .blyrics-container > div.blyrics--active {
   transform: scale(var(--blyrics-active-scale));
@@ -176,7 +177,7 @@
   align-items: center;
   gap: 1rem;
   margin-top: 2rem;
-  margin-bottom: 4rem;
+  margin-bottom: 6rem;
 }
 
 .blyrics-footer__discord {
