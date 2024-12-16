@@ -44,6 +44,11 @@
   --blyrics-background-blur: 100px;
   --blyrics-background-saturate: 2;
 
+  /*Lyric Transition Properties */
+  --blyrics-lyric-transition-duration: 0.3s;
+  --blyrics-lyric-transition-timing-function: ease;
+
+
   /* Gradient stops */
   --blyrics-gradient-stops:
     transparent 0%, rgba(0, 0, 0, 0.013) 8.1%,
@@ -65,9 +70,7 @@
   line-height: var(--blyrics-line-height);
   position: relative !important;
   z-index: 1;
-  transition-property: top;
-  transition-duration: 0.3s;
-  transition-timing-function: ease;
+  transition: top var(--blyrics-lyric-transition-duration) var(--blyrics-lyric-transition-timing-function) 0s;
   padding-top: 2rem;
   padding-bottom: 2rem;
 }
