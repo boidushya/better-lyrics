@@ -115,6 +115,7 @@ BetterLyrics.DOM = {
         loaderWrapper = document.createElement("div");
         loaderWrapper.id = BetterLyrics.Constants.LYRICS_LOADER_ID;
       } else if (loaderWrapper.hasAttribute("active")) {
+        loaderWrapper.style.top = "";
         return;
       }
 
@@ -366,6 +367,8 @@ BetterLyrics.DOM = {
       let lastMarginTop = parseFloat(lyricsElement.style.marginTop.replace("px", ""));
       if (!lyricsElement.style.marginTop || lyricsElement.style.marginTop === "") {
         lastMarginTop = 0;
+        wrapper.scrollTop = 0;
+        BetterLyrics.DOM.skipScrolls += 1;
       }
 
       if (Math.abs(lastMarginTop - lyricsHeight) > 5) {
@@ -390,15 +393,15 @@ BetterLyrics.DOM = {
         let scrollTop = wrapper.scrollTop;
         let currentLyricOffset = parseFloat(lyricsElement.style.top.replace("px", ""));
 
-        if (Math.abs(scrollTop - lyricsHeight) > 2 && BetterLyrics.DOM.scrollPos !== -1) {
+        if (Math.abs(scrollTop - lastMarginTop) > 2 && BetterLyrics.DOM.scrollPos !== -1) {
           // resuming autoscrolling. Autoscroll assumes that scrollTop = 0;
           // however we don't want to animate the scroll there as that'll emit a bunch of scroll event (an amount we can't predict)
           // so instead we instantly scroll there and while also changing the style.top property so the text doesn't appear that its moved.
           // in the next tick it'll be reset to position of the current lyric. (This is animated in css)
           lyricsElement.style.transition = "top 0s ease-in-out 0s";
-          lyricsElement.style.top = `${currentLyricOffset - (scrollTop - lyricsHeight)}px`;
+          lyricsElement.style.top = `${currentLyricOffset - (scrollTop - lastMarginTop)}px`;
 
-          wrapper.scrollTop = lyricsHeight;
+          wrapper.scrollTop = lastMarginTop;
           BetterLyrics.DOM.skipScrolls += 1;
           BetterLyrics.DOM.scrollPos = -1; //force syncing position on the next tick
         } else {
