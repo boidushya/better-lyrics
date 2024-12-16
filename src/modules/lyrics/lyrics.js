@@ -253,7 +253,7 @@ BetterLyrics.Lyrics = {
             item.startTimeMs / 1000
           }, true);player.playVideo();`
         );
-        line.addEventListener("click", (e) => {
+        line.addEventListener("click", e => {
           BetterLyrics.DOM.scrollResumeTime = 0;
         });
       } else {
