@@ -305,7 +305,6 @@ BetterLyrics.DOM = {
     }
 
     currentTime += 0.25; //adjust time to account for scroll time
-
     try {
       const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
       // If lyrics element doesn't exist, clear the interval and return silently
@@ -347,13 +346,13 @@ BetterLyrics.DOM = {
         }
       });
 
+      // lyricsHeight can change slightly due to animations
       const lyricsHeight = lyricsElement.getBoundingClientRect().height;
       const wrapper = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
       const wrapperHeight = wrapper.getBoundingClientRect().height;
 
       let lastMarginTop = parseFloat(lyricsElement.style.marginTop.replace("px", ""));
       if (!lyricsElement.style.marginTop || lyricsElement.style.marginTop === "") {
-        console.log("resetting from nan");
         lastMarginTop = 0;
         BetterLyrics.DOM.minScroll = lyricsHeight;
         BetterLyrics.DOM.maxScroll = lyricsHeight * 2 - wrapperHeight;
@@ -362,14 +361,13 @@ BetterLyrics.DOM = {
       if (Math.abs(lastMarginTop - lyricsHeight) > 5) {
         lyricsElement.style.marginTop = lyricsHeight + "px";
         let marginChange = lyricsHeight - lastMarginTop;
-        console.log("Margin Change", marginChange);
 
         wrapper.scrollTop += marginChange;
         BetterLyrics.DOM.skipScrolls += 1;
         BetterLyrics.DOM.minScroll += marginChange;
         BetterLyrics.DOM.maxScroll += marginChange * 2;
       } else if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
-        let scrollPosOffset = Math.max(0, wrapperHeight * (0.37) - selectedLyricHeight / 2);
+        let scrollPosOffset = Math.max(0, wrapperHeight * 0.37 - selectedLyricHeight / 2);
         let scrollPos = Math.max(0, BetterLyrics.DOM.targetScrollPos - scrollPosOffset);
         scrollPos = Math.min(lyricsHeight - wrapperHeight, scrollPos);
         BetterLyrics.DOM.minScroll = lastMarginTop - scrollPos;
@@ -382,12 +380,14 @@ BetterLyrics.DOM = {
           lyricsElement.style.top = -scrollPos + "px";
           wrapper.scrollTop = lyricsHeight;
           BetterLyrics.DOM.skipScrolls += 1;
-          console.log("force scrolling", scrollPos);
           return;
         }
 
         if (Math.abs(scrollTop - lyricsHeight) > 2 && BetterLyrics.DOM.scrollPos !== -1) {
-          console.log("smooth user scroll", scrollTop, lyricsHeight);
+          // resuming autoscrolling. Autoscroll assumes that scrollTop = 0;
+          // however we don't want to animate the scroll there as that'll emit a bunch of scroll event (an amount we can't predict)
+          // so instead we instantly scroll there and while also changing the style.top property so the text doesn't appear that its moved.
+          // in the next tick it'll be reset to position of the current lyric. (This is animated in css)
           lyricsElement.style.transition = "top 0s ease-in-out 0s";
           lyricsElement.style.top = `${currentLyricOffset - (scrollTop - lyricsHeight)}px`;
 
@@ -398,7 +398,6 @@ BetterLyrics.DOM = {
           lyricsElement.style.transition = "";
 
           if (Math.abs(scrollPos + currentLyricOffset) > 10 || BetterLyrics.DOM.scrollPos === -1) {
-            console.log("lyric scrolling");
             lyricsElement.style.top = -scrollPos + "px";
             BetterLyrics.DOM.scrollPos = scrollPos;
           }
