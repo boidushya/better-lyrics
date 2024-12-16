@@ -318,6 +318,7 @@ BetterLyrics.DOM = {
       const lyrics = [...lyricsElement.children];
       lyrics.pop(); // remove the footer
 
+      let selectedLyricHeight = 0;
       lyrics.every((elem, index) => {
         if (!elem.hasAttribute("data-time")) {
           return true;
@@ -335,6 +336,7 @@ BetterLyrics.DOM = {
           if (elem) {
             let elemBounds = getRelativeBounds(lyricsElement, elem);
             BetterLyrics.DOM.targetScrollPos = elemBounds.y;
+            selectedLyricHeight = elemBounds.height;
             elem.setAttribute("data-scrolled", true);
           }
           return true;
@@ -350,7 +352,8 @@ BetterLyrics.DOM = {
       const wrapperHeight = wrapper.getBoundingClientRect().height;
 
       let lastMarginTop = parseFloat(lyricsElement.style.marginTop.replace("px", ""));
-      if (isNaN(lastMarginTop)) {
+      if (!lyricsElement.style.marginTop || lyricsElement.style.marginTop === "") {
+        console.log("resetting from nan");
         lastMarginTop = 0;
         BetterLyrics.DOM.minScroll = lyricsHeight;
         BetterLyrics.DOM.maxScroll = lyricsHeight * 2 - wrapperHeight;
@@ -366,14 +369,15 @@ BetterLyrics.DOM = {
         BetterLyrics.DOM.minScroll += marginChange;
         BetterLyrics.DOM.maxScroll += marginChange * 2;
       } else if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
-        let scrollPos = Math.max(0, BetterLyrics.DOM.targetScrollPos - wrapperHeight * (1 / 3));
+        let scrollPosOffset = Math.max(0, wrapperHeight * (0.37) - selectedLyricHeight / 2);
+        let scrollPos = Math.max(0, BetterLyrics.DOM.targetScrollPos - scrollPosOffset);
         scrollPos = Math.min(lyricsHeight - wrapperHeight, scrollPos);
-        BetterLyrics.DOM.minScroll = lyricsHeight - scrollPos;
-        BetterLyrics.DOM.maxScroll = lyricsHeight * 2 - scrollPos - wrapperHeight;
+        BetterLyrics.DOM.minScroll = lastMarginTop - scrollPos;
+        BetterLyrics.DOM.maxScroll = lastMarginTop * 2 - scrollPos - wrapperHeight;
 
         let scrollTop = wrapper.scrollTop;
         let currentLyricOffset = parseFloat(lyricsElement.style.top.replace("px", ""));
-        if (isNaN(currentLyricOffset)) {
+        if (lyricsElement.style.top === "") {
           lyricsElement.style.transition = "top 0s ease-in-out 0s";
           lyricsElement.style.top = -scrollPos + "px";
           wrapper.scrollTop = lyricsHeight;
@@ -382,17 +386,18 @@ BetterLyrics.DOM = {
           return;
         }
 
-        if (Math.abs(scrollTop - lyricsHeight) > 2) {
+        if (Math.abs(scrollTop - lyricsHeight) > 2 && BetterLyrics.DOM.scrollPos !== -1) {
           console.log("smooth user scroll", scrollTop, lyricsHeight);
           lyricsElement.style.transition = "top 0s ease-in-out 0s";
           lyricsElement.style.top = `${currentLyricOffset - (scrollTop - lyricsHeight)}px`;
 
           wrapper.scrollTop = lyricsHeight;
           BetterLyrics.DOM.skipScrolls += 1;
+          BetterLyrics.DOM.scrollPos = -1; //force syncing position on the next tick
         } else {
           lyricsElement.style.transition = "";
 
-          if (Math.abs(scrollPos + currentLyricOffset) > 10) {
+          if (Math.abs(scrollPos + currentLyricOffset) > 10 || BetterLyrics.DOM.scrollPos === -1) {
             console.log("lyric scrolling");
             lyricsElement.style.top = -scrollPos + "px";
             BetterLyrics.DOM.scrollPos = scrollPos;

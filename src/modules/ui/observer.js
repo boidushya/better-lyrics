@@ -114,7 +114,7 @@ BetterLyrics.Observer = {
   },
   scrollEventHandler: () => {
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
-    if (tabSelector.getAttribute("aria-selected") !== "true") {
+    if (tabSelector.getAttribute("aria-selected") !== "true" || !BetterLyrics.App.areLyricsTicking) {
       return;
     }
 
