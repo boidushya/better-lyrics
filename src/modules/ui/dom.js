@@ -354,8 +354,6 @@ BetterLyrics.DOM = {
       let lastMarginTop = parseFloat(lyricsElement.style.marginTop.replace("px", ""));
       if (!lyricsElement.style.marginTop || lyricsElement.style.marginTop === "") {
         lastMarginTop = 0;
-        BetterLyrics.DOM.minScroll = lyricsHeight;
-        BetterLyrics.DOM.maxScroll = lyricsHeight * 2 - wrapperHeight;
       }
 
       if (Math.abs(lastMarginTop - lyricsHeight) > 5) {
@@ -375,13 +373,6 @@ BetterLyrics.DOM = {
 
         let scrollTop = wrapper.scrollTop;
         let currentLyricOffset = parseFloat(lyricsElement.style.top.replace("px", ""));
-        if (lyricsElement.style.top === "") {
-          lyricsElement.style.transition = "top 0s ease-in-out 0s";
-          lyricsElement.style.top = -scrollPos + "px";
-          wrapper.scrollTop = lyricsHeight;
-          BetterLyrics.DOM.skipScrolls += 1;
-          return;
-        }
 
         if (Math.abs(scrollTop - lyricsHeight) > 2 && BetterLyrics.DOM.scrollPos !== -1) {
           // resuming autoscrolling. Autoscroll assumes that scrollTop = 0;
