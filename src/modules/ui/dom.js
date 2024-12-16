@@ -161,12 +161,25 @@ BetterLyrics.DOM = {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
       if (loaderWrapper) {
-        return loaderWrapper.hasAttribute("active"); // Math.abs(newMinScroll - BetterLyrics.DOM.minScroll) > 10
+        return loaderWrapper.hasAttribute("active");
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
     return false;
+  },
+
+  getLoaderIfVisible: function () {
+    try {
+      const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
+      if (loaderWrapper && (loaderWrapper.hasAttribute("active") || loaderWrapper.dataset.animatingOut === "true")) {
+        return loaderWrapper;
+      }
+      return null;
+    } catch (err) {
+      BetterLyrics.Utils.log(err);
+    }
+    return null;
   },
 
   clearLyrics: function () {
@@ -345,7 +358,6 @@ BetterLyrics.DOM = {
           return true;
         }
       });
-
       // lyricsHeight can change slightly due to animations
       const lyricsHeight = lyricsElement.getBoundingClientRect().height;
       const wrapper = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
@@ -358,6 +370,10 @@ BetterLyrics.DOM = {
 
       if (Math.abs(lastMarginTop - lyricsHeight) > 5) {
         lyricsElement.style.marginTop = lyricsHeight + "px";
+        let loader = BetterLyrics.DOM.getLoaderIfVisible();
+        if (loader) {
+          loader.style.top = lyricsHeight + "px";
+        }
         let marginChange = lyricsHeight - lastMarginTop;
 
         wrapper.scrollTop += marginChange;
