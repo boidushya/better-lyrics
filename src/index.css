@@ -65,7 +65,11 @@
   line-height: var(--blyrics-line-height);
   position: relative !important;
   z-index: 1;
-  transition: top 0.3s ease 0s;
+  transition-property: top;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 .blyrics-hidden {
