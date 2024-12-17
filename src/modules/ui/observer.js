@@ -129,6 +129,9 @@ BetterLyrics.Observer = {
       BetterLyrics.DOM.skipScrolls--;
       return;
     }
+    if (BetterLyrics.DOM.scrollResumeTime < Date.now()) {
+      BetterLyrics.Utils.log("[BetterLyrics] Disabling Lyrics Autoscroll Due to User Scroll");
+    }
     BetterLyrics.DOM.scrollResumeTime = Date.now() + 6000;
   },
 };
