@@ -308,6 +308,8 @@ BetterLyrics.DOM = {
   scrollPos: 0,
   tickLyrics: function (currentTime) {
     if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
+      const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
+      loaderWrapper.style.top = "";
       return;
     }
 
@@ -398,6 +400,8 @@ BetterLyrics.DOM = {
           // however we don't want to animate the scroll there as that'll emit a bunch of scroll event (an amount we can't predict)
           // so instead we instantly scroll there and while also changing the style.top property so the text doesn't appear that its moved.
           // in the next tick it'll be reset to position of the current lyric. (This is animated in css)
+          BetterLyrics.Utils.log("[BetterLyrics] Resuming Lyrics Autoscroll");
+
           lyricsElement.style.transition = "top 0s ease-in-out 0s";
           lyricsElement.style.top = `${currentLyricOffset - (scrollTop - lastMarginTop)}px`;
 
