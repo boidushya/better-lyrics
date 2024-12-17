@@ -48,7 +48,6 @@
   --blyrics-lyric-transition-duration: 0.3s;
   --blyrics-lyric-transition-timing-function: ease;
 
-
   /* Gradient stops */
   --blyrics-gradient-stops:
     transparent 0%, rgba(0, 0, 0, 0.013) 8.1%,
@@ -92,10 +91,6 @@
 .blyrics-container > div:first-child {
   padding-top: var(--blyrics-padding) !important;
 }
-
-/*.blyrics-container > div:last-child {*/
-/*  padding-bottom: 0 !important;*/
-/*}*/
 
 .blyrics-container > div.blyrics--active {
   transform: scale(var(--blyrics-active-scale));
@@ -183,7 +178,6 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 6rem !important;
 }
 
 .blyrics-footer__discord {
