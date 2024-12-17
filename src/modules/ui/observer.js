@@ -118,20 +118,11 @@ BetterLyrics.Observer = {
       return;
     }
 
-    const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
-    if (tabRenderer.scrollTop > BetterLyrics.DOM.maxScroll) {
-      tabRenderer.scrollTop = BetterLyrics.DOM.maxScroll;
-    } else if (tabRenderer.scrollTop < BetterLyrics.DOM.minScroll) {
-      tabRenderer.scrollTop = BetterLyrics.DOM.minScroll;
-    }
-
     if (BetterLyrics.DOM.skipScrolls > 0) {
       BetterLyrics.DOM.skipScrolls--;
       return;
     }
-    if (BetterLyrics.DOM.scrollResumeTime < Date.now()) {
-      BetterLyrics.Utils.log("[BetterLyrics] Disabling Lyrics Autoscroll Due to User Scroll");
-    }
+
     BetterLyrics.DOM.scrollResumeTime = Date.now() + 6000;
   },
 };
