@@ -170,9 +170,6 @@ BetterLyrics.Lyrics = {
     const lyrics = data.lyrics;
     BetterLyrics.DOM.cleanup();
     let lyricsWrapper = BetterLyrics.DOM.createLyricsWrapper();
-    if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
-      BetterLyrics.DOM.addFooter(data.source, data.sourceHref);
-    }
 
     try {
       lyricsWrapper.innerHTML = "";
@@ -236,6 +233,9 @@ BetterLyrics.Lyrics = {
             item.startTimeMs / 1000
           }, true);player.playVideo();`
         );
+        line.addEventListener("click", _e => {
+          BetterLyrics.DOM.scrollResumeTime = 0;
+        });
       } else {
         line.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
       }
@@ -291,14 +291,18 @@ BetterLyrics.Lyrics = {
             });
           }
         );
-
-        try {
-          document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].appendChild(line);
-        } catch (_err) {
-          BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
-        }
       });
+
+      try {
+        document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].appendChild(line);
+      } catch (_err) {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
+      }
     });
+
+    if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
+      BetterLyrics.DOM.addFooter(data.source, data.sourceHref);
+    }
 
     if (!allZero) {
       BetterLyrics.Lyrics.setupLyricsCheckInterval();

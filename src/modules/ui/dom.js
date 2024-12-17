@@ -1,10 +1,16 @@
 BetterLyrics.DOM = {
   createLyricsWrapper: function () {
     const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+
+    tabRenderer.removeEventListener("scroll", BetterLyrics.Observer.scrollEventHandler);
+    tabRenderer.addEventListener("scroll", BetterLyrics.Observer.scrollEventHandler);
+
     const existingWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_WRAPPER_ID);
 
     if (existingWrapper) {
       existingWrapper.innerHTML = "";
+      existingWrapper.style.top = "";
+      existingWrapper.style.transition = "";
       return existingWrapper;
     }
 
@@ -21,13 +27,15 @@ BetterLyrics.DOM = {
    * @param sourceHref : {string}
    */
   addFooter: function (source, sourceHref) {
-    if (document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS).length === 0) {
-      const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
-      const footer = document.createElement("div");
-      footer.classList.add(BetterLyrics.Constants.FOOTER_CLASS);
-      tabRenderer.appendChild(footer);
-      BetterLyrics.DOM.createFooter();
+    if (document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS).length !== 0) {
+      document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0].remove();
     }
+
+    const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
+    const footer = document.createElement("div");
+    footer.classList.add(BetterLyrics.Constants.FOOTER_CLASS);
+    lyricsElement.appendChild(footer);
+    BetterLyrics.DOM.createFooter();
 
     let footerLink = document.getElementById("betterLyricsFooterLink");
     source = source || "boidu.dev";
@@ -97,6 +105,7 @@ BetterLyrics.DOM = {
   },
 
   renderLoader: function () {
+    BetterLyrics.DOM.cleanup();
     try {
       clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
       const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
@@ -151,12 +160,25 @@ BetterLyrics.DOM = {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
       if (loaderWrapper) {
-        return loaderWrapper.hasAttribute("active") || loaderWrapper.dataset.animatingOut === "true";
+        return loaderWrapper.hasAttribute("active");
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
     return false;
+  },
+
+  getLoaderIfVisible: function () {
+    try {
+      const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
+      if (loaderWrapper && (loaderWrapper.hasAttribute("active") || loaderWrapper.dataset.animatingOut === "true")) {
+        return loaderWrapper;
+      }
+      return null;
+    } catch (err) {
+      BetterLyrics.Utils.log(err);
+    }
+    return null;
   },
 
   clearLyrics: function () {
@@ -229,6 +251,11 @@ BetterLyrics.DOM = {
   },
 
   cleanup: function () {
+    BetterLyrics.DOM.scrollPos = -1;
+    BetterLyrics.DOM.skipScrolls = 2;
+    BetterLyrics.DOM.targetScrollPos = 0;
+    BetterLyrics.DOM.scrollResumeTime = 0;
+
     if (BetterLyrics.App.lyricsObserver) {
       BetterLyrics.App.lyricsObserver.disconnect();
       BetterLyrics.App.lyricsObserver = null;
@@ -269,12 +296,12 @@ BetterLyrics.DOM = {
     };
     (document.head || document.documentElement).appendChild(s);
   },
+  targetScrollPos: 0,
+  skipScrolls: 0,
+  scrollResumeTime: 0,
+  scrollPos: 0,
   tickLyrics: function (currentTime) {
-    if (
-      BetterLyrics.DOM.isLoaderActive() ||
-      !BetterLyrics.App.areLyricsTicking ||
-      document.visibilityState !== "visible"
-    ) {
+    if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
       return;
     }
 
@@ -286,7 +313,6 @@ BetterLyrics.DOM = {
     }
 
     currentTime += 0.25; //adjust time to account for scroll time
-
     try {
       const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
       // If lyrics element doesn't exist, clear the interval and return silently
@@ -297,35 +323,28 @@ BetterLyrics.DOM = {
       }
 
       const lyrics = [...lyricsElement.children];
+      lyrics.pop(); // remove the footer
 
+      let selectedLyricHeight = 0;
       lyrics.every((elem, index) => {
         if (!elem.hasAttribute("data-time")) {
           return true;
         }
 
         const time = parseFloat(elem.getAttribute("data-time"));
-        const nextLyric = lyrics[index + 1];
-        const nextTime = nextLyric ? parseFloat(nextLyric.getAttribute("data-time")) : Infinity;
+        let nextTime = Infinity;
+        if (index + 1 < lyrics.length) {
+          const nextLyric = lyrics[index + 1];
+          nextTime = parseFloat(nextLyric.getAttribute("data-time"));
+        }
 
-        if (currentTime >= time && index + 1 === lyrics.length && elem.getAttribute("data-scrolled") !== "true") {
+        if (currentTime > time && currentTime < nextTime) {
           elem.setAttribute("class", BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
-          elem.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-            inline: "center",
-          });
-          elem.setAttribute("data-scrolled", true);
-          return true;
-        } else if (currentTime > time && currentTime < nextTime) {
-          const current = document.getElementsByClassName(BetterLyrics.Constants.CURRENT_LYRICS_CLASS)[0];
-          elem.setAttribute("class", BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
-          if (current && current.getAttribute("data-scrolled") !== "true") {
-            current.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-              inline: "center",
-            });
-            current.setAttribute("data-scrolled", true);
+          if (elem) {
+            let elemBounds = getRelativeBounds(lyricsElement, elem);
+            BetterLyrics.DOM.targetScrollPos = elemBounds.y;
+            selectedLyricHeight = elemBounds.height;
+            elem.setAttribute("data-scrolled", true);
           }
           return true;
         } else {
@@ -334,6 +353,35 @@ BetterLyrics.DOM = {
           return true;
         }
       });
+      // lyricsHeight can change slightly due to animations
+      const lyricsHeight = lyricsElement.getBoundingClientRect().height;
+      const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+      const tabRendererHeight = tabRenderer.getBoundingClientRect().height;
+      let scrollTop = tabRenderer.scrollTop;
+
+      if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
+        let scrollPosOffset = Math.max(0, tabRendererHeight * 0.37 - selectedLyricHeight / 2);
+        let scrollPos = Math.max(0, BetterLyrics.DOM.targetScrollPos - scrollPosOffset);
+        scrollPos = Math.min(lyricsHeight - tabRendererHeight, scrollPos);
+
+        if (Math.abs(scrollTop - scrollPos) > 2 && BetterLyrics.DOM.scrollPos !== -1) {
+          lyricsElement.style.transition = "top 0s ease-in-out 0s";
+          lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
+          //console.log(` - (${scrollTop} - ${scrollPos})px = `, - (scrollTop - scrollPos));
+
+          scrollTop = scrollPos;
+          BetterLyrics.DOM.scrollPos = -1; //force syncing position on the next tick
+        } else {
+          lyricsElement.style.transition = "";
+          lyricsElement.style.top = "0px";
+          BetterLyrics.DOM.scrollPos = scrollPos;
+        }
+      }
+
+      if (Math.abs(scrollTop - tabRenderer.scrollTop) > 1) {
+        tabRenderer.scrollTop = scrollTop;
+        BetterLyrics.DOM.skipScrolls += 1;
+      }
     } catch (err) {
       if (!(err.message && err.message.includes("undefined"))) {
         BetterLyrics.Utils.log("Error in lyrics check interval:", err);
@@ -365,3 +413,14 @@ BetterLyrics.DOM = {
     mainPanel.appendChild(songInfoWrapper);
   },
 };
+
+/**
+ * Return the position relative to the center of the parent
+ * @param parent {Element}
+ * @param child {Element}
+ */
+function getRelativeBounds(parent, child) {
+  const parentBound = parent.getBoundingClientRect();
+  const childBound = child.getBoundingClientRect();
+  return new DOMRect(childBound.x - parentBound.x, childBound.y - parentBound.y, childBound.width, childBound.height);
+}

@@ -110,4 +110,17 @@ BetterLyrics.Observer = {
       BetterLyrics.DOM.tickLyrics(detail.currentTime);
     });
   },
+  scrollEventHandler: () => {
+    const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+    if (tabSelector.getAttribute("aria-selected") !== "true" || !BetterLyrics.App.areLyricsTicking) {
+      return;
+    }
+
+    if (BetterLyrics.DOM.skipScrolls > 0) {
+      BetterLyrics.DOM.skipScrolls--;
+      return;
+    }
+
+    BetterLyrics.DOM.scrollResumeTime = Date.now() + 6000;
+  },
 };

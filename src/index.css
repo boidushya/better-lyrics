@@ -44,6 +44,10 @@
   --blyrics-background-blur: 100px;
   --blyrics-background-saturate: 2;
 
+  /*Lyric Transition Properties */
+  --blyrics-lyric-transition-duration: 0.3s;
+  --blyrics-lyric-transition-timing-function: ease;
+
   /* Gradient stops */
   --blyrics-gradient-stops:
     transparent 0%, rgba(0, 0, 0, 0.013) 8.1%,
@@ -65,6 +69,9 @@
   line-height: var(--blyrics-line-height);
   position: relative !important;
   z-index: 1;
+  transition: top var(--blyrics-lyric-transition-duration) var(--blyrics-lyric-transition-timing-function) 0s;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 .blyrics-hidden {
@@ -83,10 +90,6 @@
 .blyrics-container > div,
 .blyrics-container > div:first-child {
   padding-top: var(--blyrics-padding) !important;
-}
-
-.blyrics-container > div:last-child {
-  padding-bottom: 0 !important;
 }
 
 .blyrics-container > div.blyrics--active {
@@ -175,8 +178,6 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-top: 2rem;
-  margin-bottom: 4rem;
 }
 
 .blyrics-footer__discord {
