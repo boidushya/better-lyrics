@@ -1,3 +1,5 @@
+const LYRIC_CACHE_VERSION = "1.0.0";
+
 BetterLyrics.Lyrics = {
   createLyrics: async function (detail) {
     let song = detail.song;
@@ -37,7 +39,12 @@ BetterLyrics.Lyrics = {
       try {
         const data = JSON.parse(cachedLyrics);
         // Validate cached data structure
-        if (data && (Array.isArray(data.lyrics) || data.syncedLyrics)) {
+        if (
+          data &&
+          (Array.isArray(data.lyrics) || data.syncedLyrics) &&
+          data.version &&
+          data.version === LYRIC_CACHE_VERSION
+        ) {
           BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_CACHE_FOUND_LOG);
           BetterLyrics.Lyrics.processLyrics(data);
           return;
@@ -99,8 +106,20 @@ BetterLyrics.Lyrics = {
           if (!ytLyrics) {
             ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(waitForLoaderPromise);
           }
+          if (ytLyrics.text !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
+            let lyricText = "";
+            lyrics.lyrics.forEach(lyric => {
+              lyricText += lyric.words + "\n";
+            });
 
-          // TODO compare ytLyrics w/ the returned lyrics and reject if they don't match.
+            let matchAmount = stringSimilarity(lyricText.toLowerCase(), ytLyrics.text.toLowerCase());
+            if (matchAmount < 0.8) {
+              BetterLyrics.Utils.log(
+                `Got lyrics from ${lyrics.source}, but they don't match yt lyrics. Rejecting: Match: ${matchAmount}%`
+              );
+              continue;
+            }
+          }
           break;
         }
       } catch (err) {
@@ -121,6 +140,7 @@ BetterLyrics.Lyrics = {
 
   cacheAndProcessLyrics: function (cacheKey, data) {
     if (data.cacheAllowed === undefined || data.cacheAllowed) {
+      data.version = LYRIC_CACHE_VERSION;
       const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
       BetterLyrics.Storage.setTransientStorage(cacheKey, JSON.stringify(data), oneWeekInMs);
     }
@@ -310,4 +330,43 @@ BetterLyrics.Lyrics = {
   setupLyricsCheckInterval: function () {
     BetterLyrics.App.areLyricsTicking = true;
   },
+};
+
+/**
+ * @author Stephen Brown
+ * Source: https://github.com/stephenjjbrown/string-similarity-js/
+ * @licence MIT License - https://github.com/stephenjjbrown/string-similarity-js/blob/master/LICENSE.md
+ * @param {string} str1 First string to match
+ * @param {string} str2 Second string to match
+ * @param {number} [substringLength=2] Optional. Length of substring to be used in calculating similarity. Default 2.
+ * @param {boolean} [caseSensitive=false] Optional. Whether you want to consider case in string matching. Default false;
+ * @returns Number between 0 and 1, with 0 being a low match score.
+ */
+var stringSimilarity = function (str1, str2, substringLength, caseSensitive) {
+  if (substringLength === void 0) {
+    substringLength = 2;
+  }
+  if (caseSensitive === void 0) {
+    caseSensitive = false;
+  }
+  if (!caseSensitive) {
+    str1 = str1.toLowerCase();
+    str2 = str2.toLowerCase();
+  }
+  if (str1.length < substringLength || str2.length < substringLength) return 0;
+  var map = new Map();
+  for (var i = 0; i < str1.length - (substringLength - 1); i++) {
+    var substr1 = str1.substr(i, substringLength);
+    map.set(substr1, map.has(substr1) ? map.get(substr1) + 1 : 1);
+  }
+  var match = 0;
+  for (var j = 0; j < str2.length - (substringLength - 1); j++) {
+    var substr2 = str2.substr(j, substringLength);
+    var count = map.has(substr2) ? map.get(substr2) : 0;
+    if (count > 0) {
+      map.set(substr2, count - 1);
+      match++;
+    }
+  }
+  return (match * 2) / (str1.length + str2.length - (substringLength - 1) * 2);
 };

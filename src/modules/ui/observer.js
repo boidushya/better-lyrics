@@ -7,6 +7,8 @@ BetterLyrics.Observer = {
       }, 1000);
       return;
     }
+    tabSelector.removeAttribute("disabled");
+    tabSelector.setAttribute("aria-disabled", "false");
     let observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
         if (mutation.attributeName === "disabled") {
