@@ -253,7 +253,10 @@ BetterLyrics.DOM = {
   cleanup: function () {
     BetterLyrics.DOM.scrollPos = -1;
     BetterLyrics.DOM.skipScrolls = 2;
-    BetterLyrics.DOM.targetScrollPos = 0;
+    BetterLyrics.DOM.skipScrollsDecayTimes = [];
+    for (let i = 0; i < BetterLyrics.DOM.skipScrolls; i++) {
+      BetterLyrics.DOM.skipScrollsDecayTimes.push(Date.now() + 2000);
+    }
     BetterLyrics.DOM.scrollResumeTime = 0;
 
     if (BetterLyrics.App.lyricsObserver) {
@@ -296,8 +299,8 @@ BetterLyrics.DOM = {
     };
     (document.head || document.documentElement).appendChild(s);
   },
-  targetScrollPos: 0,
   skipScrolls: 0,
+  skipScrollsDecayTimes: [],
   scrollResumeTime: 0,
   scrollPos: 0,
   tickLyrics: function (currentTime) {
@@ -326,6 +329,7 @@ BetterLyrics.DOM = {
       lyrics.pop(); // remove the footer
 
       let selectedLyricHeight = 0;
+      let targetScrollPos = 0;
       lyrics.every((elem, index) => {
         if (!elem.hasAttribute("data-time")) {
           return true;
@@ -342,7 +346,7 @@ BetterLyrics.DOM = {
           elem.setAttribute("class", BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
           if (elem) {
             let elemBounds = getRelativeBounds(lyricsElement, elem);
-            BetterLyrics.DOM.targetScrollPos = elemBounds.y;
+            targetScrollPos = elemBounds.y;
             selectedLyricHeight = elemBounds.height;
             elem.setAttribute("data-scrolled", true);
           }
@@ -361,13 +365,13 @@ BetterLyrics.DOM = {
 
       if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
         let scrollPosOffset = Math.max(0, tabRendererHeight * 0.37 - selectedLyricHeight / 2);
-        let scrollPos = Math.max(0, BetterLyrics.DOM.targetScrollPos - scrollPosOffset);
+        let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
         scrollPos = Math.min(lyricsHeight - tabRendererHeight, scrollPos);
 
         if (Math.abs(scrollTop - scrollPos) > 2 && BetterLyrics.DOM.scrollPos !== -1) {
           lyricsElement.style.transition = "top 0s ease-in-out 0s";
           lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
-          //console.log(` - (${scrollTop} - ${scrollPos})px = `, - (scrollTop - scrollPos));
+          // console.log(` - (${scrollTop} - ${scrollPos})px = `, - (scrollTop - scrollPos));
 
           scrollTop = scrollPos;
           BetterLyrics.DOM.scrollPos = -1; //force syncing position on the next tick
@@ -381,6 +385,14 @@ BetterLyrics.DOM = {
       if (Math.abs(scrollTop - tabRenderer.scrollTop) > 1) {
         tabRenderer.scrollTop = scrollTop;
         BetterLyrics.DOM.skipScrolls += 1;
+        BetterLyrics.DOM.skipScrollsDecayTimes.push(Date.now() + 2000);
+      }
+      if (BetterLyrics.DOM.skipScrollsDecayTimes.length > 0 && BetterLyrics.DOM.skipScrollsDecayTimes[0] < Date.now()) {
+        BetterLyrics.DOM.skipScrollsDecayTimes.shift();
+        BetterLyrics.DOM.skipScrolls -= 1;
+        if (BetterLyrics.DOM.skipScrolls < 1) {
+          BetterLyrics.DOM.skipScrolls = 1; // Always leave at least one for when the window is refocused.
+        }
       }
     } catch (err) {
       if (!(err.message && err.message.includes("undefined"))) {

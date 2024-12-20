@@ -119,10 +119,15 @@ BetterLyrics.Observer = {
     }
 
     if (BetterLyrics.DOM.skipScrolls > 0) {
+      console.log()
       BetterLyrics.DOM.skipScrolls--;
+      BetterLyrics.DOM.skipScrollsDecayTimes.shift();
+      // BetterLyrics.Utils.log("[BetterLyrics] Skipping Lyrics Scroll");
       return;
     }
-
+    if (BetterLyrics.DOM.scrollResumeTime < Date.now()) {
+      BetterLyrics.Utils.log("[BetterLyrics] Pausing Lyrics Autoscroll Due to User Scroll");
+    }
     BetterLyrics.DOM.scrollResumeTime = Date.now() + 6000;
   },
 };
