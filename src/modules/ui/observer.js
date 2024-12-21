@@ -125,9 +125,11 @@ BetterLyrics.Observer = {
       // BetterLyrics.Utils.log("[BetterLyrics] Skipping Lyrics Scroll");
       return;
     }
-    if (BetterLyrics.DOM.scrollResumeTime < Date.now()) {
-      BetterLyrics.Utils.log("[BetterLyrics] Pausing Lyrics Autoscroll Due to User Scroll");
+    if (!BetterLyrics.DOM.isLoaderActive()) {
+      if (BetterLyrics.DOM.scrollResumeTime < Date.now()) {
+        BetterLyrics.Utils.log("[BetterLyrics] Pausing Lyrics Autoscroll Due to User Scroll");
+      }
+      BetterLyrics.DOM.scrollResumeTime = Date.now() + 15000;
     }
-    BetterLyrics.DOM.scrollResumeTime = Date.now() + 6000;
   },
 };

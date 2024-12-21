@@ -160,25 +160,12 @@ BetterLyrics.DOM = {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
       if (loaderWrapper) {
-        return loaderWrapper.hasAttribute("active");
+        return loaderWrapper.hasAttribute("active") || loaderWrapper.dataset.animatingOut === "true";
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
     return false;
-  },
-
-  getLoaderIfVisible: function () {
-    try {
-      const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
-      if (loaderWrapper && (loaderWrapper.hasAttribute("active") || loaderWrapper.dataset.animatingOut === "true")) {
-        return loaderWrapper;
-      }
-      return null;
-    } catch (err) {
-      BetterLyrics.Utils.log(err);
-    }
-    return null;
   },
 
   clearLyrics: function () {
@@ -252,12 +239,6 @@ BetterLyrics.DOM = {
 
   cleanup: function () {
     BetterLyrics.DOM.scrollPos = -1;
-    BetterLyrics.DOM.skipScrolls = 2;
-    BetterLyrics.DOM.skipScrollsDecayTimes = [];
-    for (let i = 0; i < BetterLyrics.DOM.skipScrolls; i++) {
-      BetterLyrics.DOM.skipScrollsDecayTimes.push(Date.now() + 2000);
-    }
-    BetterLyrics.DOM.scrollResumeTime = 0;
 
     if (BetterLyrics.App.lyricsObserver) {
       BetterLyrics.App.lyricsObserver.disconnect();
@@ -303,6 +284,8 @@ BetterLyrics.DOM = {
   skipScrollsDecayTimes: [],
   scrollResumeTime: 0,
   scrollPos: 0,
+  selectedElementIndex: 0,
+  nextScrollAllowedTime: 0,
   tickLyrics: function (currentTime) {
     if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
       return;
@@ -348,6 +331,7 @@ BetterLyrics.DOM = {
             let elemBounds = getRelativeBounds(lyricsElement, elem);
             targetScrollPos = elemBounds.y;
             selectedLyricHeight = elemBounds.height;
+            BetterLyrics.DOM.selectedElementIndex = index;
             elem.setAttribute("data-scrolled", true);
           }
           return true;
@@ -368,14 +352,18 @@ BetterLyrics.DOM = {
         let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
         scrollPos = Math.min(lyricsHeight - tabRendererHeight, scrollPos);
 
-        if (Math.abs(scrollTop - scrollPos) > 2 && BetterLyrics.DOM.scrollPos !== -1) {
+        if (Math.abs(scrollTop - scrollPos) > 2 && BetterLyrics.DOM.scrollPos !== -1
+          && Date.now() > BetterLyrics.DOM.nextScrollAllowedTime) {
           lyricsElement.style.transition = "top 0s ease-in-out 0s";
           lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
           // console.log(` - (${scrollTop} - ${scrollPos})px = `, - (scrollTop - scrollPos));
 
           scrollTop = scrollPos;
           BetterLyrics.DOM.scrollPos = -1; //force syncing position on the next tick
-        } else {
+        } else if (BetterLyrics.DOM.scrollPos === -1) {
+          if (lyricsElement.style.transition === "top 0s ease-in-out 0s") {
+            BetterLyrics.DOM.nextScrollAllowedTime = toMs(lyricsElement.computedStyleMap().get("transition-duration")) + Date.now();
+          }
           lyricsElement.style.transition = "";
           lyricsElement.style.top = "0px";
           BetterLyrics.DOM.scrollPos = scrollPos;
@@ -387,7 +375,7 @@ BetterLyrics.DOM = {
         BetterLyrics.DOM.skipScrolls += 1;
         BetterLyrics.DOM.skipScrollsDecayTimes.push(Date.now() + 2000);
       }
-      if (BetterLyrics.DOM.skipScrollsDecayTimes.length > 0 && BetterLyrics.DOM.skipScrollsDecayTimes[0] < Date.now()) {
+      while (BetterLyrics.DOM.skipScrollsDecayTimes.length > 0 && BetterLyrics.DOM.skipScrollsDecayTimes[0] < Date.now()) {
         BetterLyrics.DOM.skipScrollsDecayTimes.shift();
         BetterLyrics.DOM.skipScrolls -= 1;
         if (BetterLyrics.DOM.skipScrolls < 1) {
@@ -400,6 +388,19 @@ BetterLyrics.DOM = {
       }
       return true;
     }
+  },
+  lyricsHeightAdjusted: function (index, amount, autoScrollOffset) {
+    const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+    BetterLyrics.DOM.skipScrolls += 1;
+    BetterLyrics.DOM.skipScrollsDecayTimes.push(Date.now() + 2000);
+
+    if (index >= BetterLyrics.DOM.selectedElementIndex) {
+      amount = 0;
+    }
+    if (BetterLyrics.DOM.nextScrollAllowedTime < Date.now()) {
+      tabRenderer.scrollTop += amount - autoScrollOffset;
+    } // else let the browser handle it
+
   },
   injectSongAttributes: function (title, artist) {
     const mainPanel = document.getElementById("main-panel");
@@ -435,4 +436,12 @@ function getRelativeBounds(parent, child) {
   const parentBound = parent.getBoundingClientRect();
   const childBound = child.getBoundingClientRect();
   return new DOMRect(childBound.x - parentBound.x, childBound.y - parentBound.y, childBound.width, childBound.height);
+}
+
+function toMs(cssDuration) {
+  if (cssDuration.unit === "s") {
+    return cssDuration.value * 1000;
+  } else {
+    return cssDuration.value;
+  }
 }
