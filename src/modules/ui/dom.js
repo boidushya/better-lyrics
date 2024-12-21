@@ -449,7 +449,7 @@ BetterLyrics.DOM = {
     if (!elem) {
       let wrapper = document.createElement("div");
       wrapper.id = "autoscroll-resume-wrapper";
-      wrapper.className = "autoscroll-wrapper";
+      wrapper.className = "autoscroll-resume-wrapper";
       elem = document.createElement("button");
       elem.id = "autoscroll-resume-button";
       elem.innerText = "Resume Autoscroll";
