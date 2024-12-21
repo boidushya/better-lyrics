@@ -283,6 +283,11 @@
   transform: translate(-50%, -3em);
 }
 
+.autoscroll-resume-button:focus {
+  outline-color: white;
+  outline-width: 1px;
+}
+
 /* Watermark styles */
 #blyrics-watermark {
   display: none;
