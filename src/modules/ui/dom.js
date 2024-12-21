@@ -298,7 +298,7 @@ BetterLyrics.DOM = {
       return;
     }
 
-    currentTime += 0.25; //adjust time to account for scroll time
+    currentTime += 0.015;
     try {
       const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
       // If lyrics element doesn't exist, clear the interval and return silently
@@ -325,15 +325,15 @@ BetterLyrics.DOM = {
           nextTime = parseFloat(nextLyric.getAttribute("data-time"));
         }
 
-        if (currentTime > time && currentTime < nextTime) {
+        if (currentTime >= time && currentTime < nextTime) {
           elem.setAttribute("class", BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
           if (elem) {
             let elemBounds = getRelativeBounds(lyricsElement, elem);
             targetScrollPos = elemBounds.y;
             selectedLyricHeight = elemBounds.height;
             const timeDelta = currentTime - time;
-            if (BetterLyrics.DOM.selectedElementIndex !== index && timeDelta > 0.05) {
-              BetterLyrics.Utils.log(`[BetterLyrics] Scrolling to new lyric was late, dt: ${(currentTime - time).toFixed(5)}s`);
+            if (BetterLyrics.DOM.selectedElementIndex !== index && timeDelta > 0.05 && index > 0) {
+                BetterLyrics.Utils.log(`[BetterLyrics] Scrolling to new lyric was late, dt: ${(currentTime - time).toFixed(5)}s`);
             }
             BetterLyrics.DOM.selectedElementIndex = index;
             elem.setAttribute("data-scrolled", true);
@@ -382,7 +382,7 @@ BetterLyrics.DOM = {
 
       let j = 0;
       for (;j < BetterLyrics.DOM.skipScrollsDecayTimes; j++) {
-        if (BetterLyrics.DOM.skipScrollsDecayTimes[0] > Date.now()) {
+        if (BetterLyrics.DOM.skipScrollsDecayTimes[j] > Date.now()) {
           break;
         }
       }
