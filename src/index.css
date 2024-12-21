@@ -247,10 +247,11 @@
 }
 
 .autoscroll-resume-button {
+  font-family: var(--blyrics-font-family);
   position: absolute;
   display: block;
-  font-size: var(--blyrics-translated-font-size);
-  font-weight: var(--blyrics-translated-font-weight);
+  font-size: 2rem;
+  font-weight: 600;
   white-space: normal;
   line-height: 1.1;
   margin-top: 8px;
@@ -269,18 +270,22 @@
   backdrop-filter: blur(5px);
   will-change: backdrop-filter;
 
-  pointer-events: auto; /* Ensure the button is clickable */
-  cursor: pointer; /* Change the cursor to a hand on hover */
-  user-select: none; /* Prevent text selection */
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
 
-  transition: opacity 0.1s linear 0.05s, transform 0.15s ease-out;
+  transition: opacity 0.15s linear 0.05s, transform 0.2s cubic-bezier(0.5, 1, 0.89, 1), text-shadow 0.25s ease;
 }
 
 .autoscroll-resume-button[autoscroll-hidden="true"] {
-  transition: opacity 0.1s linear 0.05s, transform 0.15s ease-in;
+  transition: opacity 0.1s linear, transform 0.15s ease-in;
   opacity: 0; /* Make it invisible */
   pointer-events: none; /* Disable click events */
   transform: translate(-50%, -3em);
+}
+
+.autoscroll-resume-button:hover {
+  text-shadow: 0 0 1.5rem var(--blyrics-highlight-color);
 }
 
 .autoscroll-resume-button:focus {
