@@ -21,6 +21,7 @@ const startLyricsTick = () => {
         const { video_id, title, author } = player.getVideoData();
         const audioTrackData = player.getAudioTrack();
         const duration = player.getDuration();
+        const { isPlaying } = player.getPlayerStateObject();
         document.dispatchEvent(
           new CustomEvent("blyrics-send-player-time", {
             detail: {
@@ -30,6 +31,8 @@ const startLyricsTick = () => {
               artist: author,
               duration: duration,
               audioTrackData: audioTrackData,
+              browserTime: Date.now(),
+              playing: isPlaying,
             },
           })
         );

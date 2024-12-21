@@ -331,6 +331,10 @@ BetterLyrics.DOM = {
             let elemBounds = getRelativeBounds(lyricsElement, elem);
             targetScrollPos = elemBounds.y;
             selectedLyricHeight = elemBounds.height;
+            const timeDelta = currentTime - time;
+            if (BetterLyrics.DOM.selectedElementIndex !== index && timeDelta > 0.05) {
+              BetterLyrics.Utils.log(`[BetterLyrics] Scrolling to new lyric was late, dt: ${(currentTime - time).toFixed(5)}s`);
+            }
             BetterLyrics.DOM.selectedElementIndex = index;
             elem.setAttribute("data-scrolled", true);
           }
@@ -375,12 +379,17 @@ BetterLyrics.DOM = {
         BetterLyrics.DOM.skipScrolls += 1;
         BetterLyrics.DOM.skipScrollsDecayTimes.push(Date.now() + 2000);
       }
-      while (BetterLyrics.DOM.skipScrollsDecayTimes.length > 0 && BetterLyrics.DOM.skipScrollsDecayTimes[0] < Date.now()) {
-        BetterLyrics.DOM.skipScrollsDecayTimes.shift();
-        BetterLyrics.DOM.skipScrolls -= 1;
-        if (BetterLyrics.DOM.skipScrolls < 1) {
-          BetterLyrics.DOM.skipScrolls = 1; // Always leave at least one for when the window is refocused.
+
+      let j = 0;
+      for (;j < BetterLyrics.DOM.skipScrollsDecayTimes; j++) {
+        if (BetterLyrics.DOM.skipScrollsDecayTimes[0] > Date.now()) {
+          break;
         }
+      }
+      BetterLyrics.DOM.skipScrollsDecayTimes = BetterLyrics.DOM.skipScrollsDecayTimes.slice(j);
+      BetterLyrics.DOM.skipScrolls -= j;
+      if (BetterLyrics.DOM.skipScrolls < 1) {
+        BetterLyrics.DOM.skipScrolls = 1; // Always leave at least one for when the window is refocused.
       }
     } catch (err) {
       if (!(err.message && err.message.includes("undefined"))) {
