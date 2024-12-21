@@ -381,8 +381,9 @@ BetterLyrics.DOM = {
       }
 
       let j = 0;
-      for (;j < BetterLyrics.DOM.skipScrollsDecayTimes; j++) {
-        if (BetterLyrics.DOM.skipScrollsDecayTimes[j] > Date.now()) {
+      const now = Date.now();
+      for (;j < BetterLyrics.DOM.skipScrollsDecayTimes.length; j++) {
+        if (BetterLyrics.DOM.skipScrollsDecayTimes[j] > now) {
           break;
         }
       }
