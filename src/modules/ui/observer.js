@@ -112,7 +112,7 @@ BetterLyrics.Observer = {
       if (!detail.playing) {
         timeOffset = 0;
       }
-      BetterLyrics.DOM.tickLyrics(detail.currentTime + (timeOffset) / 1000);
+      BetterLyrics.DOM.tickLyrics(detail.currentTime + timeOffset / 1000);
     });
   },
   scrollEventHandler: () => {
@@ -122,7 +122,6 @@ BetterLyrics.Observer = {
     }
 
     if (BetterLyrics.DOM.skipScrolls > 0) {
-      console.log()
       BetterLyrics.DOM.skipScrolls--;
       BetterLyrics.DOM.skipScrollsDecayTimes.shift();
       // BetterLyrics.Utils.log("[BetterLyrics] Skipping Lyrics Scroll");
@@ -132,7 +131,7 @@ BetterLyrics.Observer = {
       if (BetterLyrics.DOM.scrollResumeTime < Date.now()) {
         BetterLyrics.Utils.log("[BetterLyrics] Pausing Lyrics Autoscroll Due to User Scroll");
       }
-      BetterLyrics.DOM.scrollResumeTime = Date.now() + 15000;
+      BetterLyrics.DOM.scrollResumeTime = Date.now() + 25000;
     }
   },
 };

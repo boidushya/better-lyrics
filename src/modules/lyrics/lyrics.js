@@ -284,11 +284,15 @@ BetterLyrics.Lyrics = {
 
                   const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
                   const prevScrollPos = tabRenderer.scrollTop;
-                  const prevHeight = wrapper.clientHeight
+                  const prevHeight = wrapper.clientHeight;
                   line.appendChild(romanizedLine);
                   const currentScrollPos = tabRenderer.scrollTop;
                   const currentHeight = wrapper.clientHeight;
-                  BetterLyrics.DOM.lyricsHeightAdjusted(index, currentHeight - prevHeight, currentScrollPos - prevScrollPos);
+                  BetterLyrics.DOM.lyricsHeightAdjusted(
+                    index,
+                    currentHeight - prevHeight,
+                    currentScrollPos - prevScrollPos
+                  );
                 }
               }
             }
@@ -304,10 +308,9 @@ BetterLyrics.Lyrics = {
                 if (item.words.trim() !== "♪" && item.words.trim() !== "") {
                   const result = await BetterLyrics.Translation.translateText(item.words, target_language);
 
-
                   const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
                   const prevScrollPos = tabRenderer.scrollTop;
-                  const prevHeight = wrapper.clientHeight
+                  const prevHeight = wrapper.clientHeight;
 
                   if (result) {
                     if (result.originalLanguage !== target_language) {
@@ -321,14 +324,17 @@ BetterLyrics.Lyrics = {
                   line.appendChild(translatedLine);
                   const currentScrollPos = tabRenderer.scrollTop;
                   const currentHeight = wrapper.clientHeight;
-                  BetterLyrics.DOM.lyricsHeightAdjusted(index, currentHeight - prevHeight, currentScrollPos - prevScrollPos);
+                  BetterLyrics.DOM.lyricsHeightAdjusted(
+                    index,
+                    currentHeight - prevHeight,
+                    currentScrollPos - prevScrollPos
+                  );
                 }
               }
             });
           }
         );
       });
-
 
       try {
         wrapper.appendChild(line);
