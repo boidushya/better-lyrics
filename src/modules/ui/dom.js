@@ -352,6 +352,7 @@ BetterLyrics.DOM = {
       let scrollTop = tabRenderer.scrollTop;
 
       if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
+        BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
         let scrollPosOffset = Math.max(0, tabRendererHeight * 0.37 - selectedLyricHeight / 2);
         let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
         scrollPos = Math.min(lyricsHeight - tabRendererHeight, scrollPos);
@@ -372,6 +373,8 @@ BetterLyrics.DOM = {
           lyricsElement.style.top = "0px";
           BetterLyrics.DOM.scrollPos = scrollPos;
         }
+      } else {
+        BetterLyrics.DOM.getResumeScrollElement().removeAttribute("autoscroll-hidden");
       }
 
       if (Math.abs(scrollTop - tabRenderer.scrollTop) > 1) {
@@ -435,6 +438,27 @@ BetterLyrics.DOM = {
     songInfoWrapper.appendChild(artistElm);
     mainPanel.appendChild(songInfoWrapper);
   },
+
+  getResumeScrollElement() {
+    let elem = document.getElementById("autoscroll-resume-button");
+    if (!elem) {
+      let wrapper = document.createElement("div");
+      wrapper.id = "autoscroll-resume-wrapper";
+      wrapper.className = "autoscroll-wrapper"
+      elem = document.createElement("button");
+      elem.id = "autoscroll-resume-button";
+      elem.innerText = "Resume Autoscroll";
+      elem.classList.add("autoscroll-resume-button");
+      elem.setAttribute("autoscroll-hidden", "true");
+      elem.addEventListener("click", () => {
+        BetterLyrics.DOM.scrollResumeTime = 0;
+      });
+
+      document.querySelector("#side-panel > tp-yt-paper-tabs").after(wrapper);
+      wrapper.appendChild(elem);
+    }
+    return elem;
+  }
 };
 
 /**
