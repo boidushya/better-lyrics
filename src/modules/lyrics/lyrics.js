@@ -113,7 +113,7 @@ BetterLyrics.Lyrics = {
             });
 
             let matchAmount = stringSimilarity(lyricText.toLowerCase(), ytLyrics.text.toLowerCase());
-            if (matchAmount < 0.8) {
+            if (matchAmount < 0.5) {
               BetterLyrics.Utils.log(
                 `Got lyrics from ${lyrics.source}, but they don't match yt lyrics. Rejecting: Match: ${matchAmount}%`
               );
