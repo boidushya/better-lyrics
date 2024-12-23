@@ -411,7 +411,7 @@ BetterLyrics.DOM = {
   lyricsHeightAdjusted: function (index, amount, autoScrollOffset) {
     const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
 
-    if (index >= BetterLyrics.DOM.selectedElementIndex) {
+    if (index >= BetterLyrics.DOM.selectedElementIndex - 1) { // don't consider the dummy element # t = -1
       amount = 0;
     }
     if (BetterLyrics.DOM.nextScrollAllowedTime < Date.now()) {
