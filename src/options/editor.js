@@ -468,6 +468,8 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 
 const invalidKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Shift", "Enter", "Tab"];
 
+const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+
 const showAlert = message => {
   const status = document.getElementById("status-css");
   status.innerText = message;
@@ -531,12 +533,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!isTheme && isUserTyping) {
       // Only remove theme selection if it's not a theme save and the user is typing
-      chrome.storage.sync.remove("themeName");
+      browserAPI.storage.sync.remove("themeName");
       themeSelector.value = "";
       currentThemeName = null;
     }
 
-    chrome.storage.sync
+    browserAPI.storage.sync
       .set({ customCSS: css })
       .then(() => {
         syncIndicator.innerText = "Saved!";
@@ -549,7 +551,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Send message to all tabs to update CSS
         try {
-          chrome.runtime.sendMessage({ action: "updateCSS", css: css }).catch(error => {
+          browserAPI.runtime.sendMessage({ action: "updateCSS", css: css }).catch(error => {
             console.log("[BetterLyrics] (Safe to ignore) Error sending message:", error);
           });
         } catch (err) {
@@ -583,14 +585,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const themeSelector = document.getElementById("theme-selector");
         themeSelector.value = "";
         currentThemeName = null;
-        chrome.storage.sync.remove("themeName");
+        browserAPI.storage.sync.remove("themeName");
       }
     }
     debounceSave();
   });
 
   // Load saved content
-  chrome.storage.sync.get("customCSS", function (data) {
+  browserAPI.storage.sync.get("customCSS", function (data) {
     if (data.customCSS) {
       editor.setValue(data.customCSS);
     }
@@ -613,7 +615,7 @@ document.addEventListener("DOMContentLoaded", function () {
     themeSelector.appendChild(option);
   });
 
-  chrome.storage.sync.get(["themeName", "customCSS"], function (data) {
+  browserAPI.storage.sync.get(["themeName", "customCSS"], function (data) {
     if (data.themeName) {
       const themeIndex = THEMES.findIndex(theme => theme.name === data.themeName);
       if (themeIndex !== -1) {
@@ -632,7 +634,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (this.value === "") {
       editor.setValue("");
       saveToStorage();
-      chrome.storage.sync.remove("themeName");
+      browserAPI.storage.sync.remove("themeName");
       currentThemeName = null;
       showAlert("Cleared theme");
       return;
@@ -644,7 +646,8 @@ document.addEventListener("DOMContentLoaded", function () {
 ${selectedTheme.css}
 `;
       editor.setValue(themeContent);
-      chrome.storage.sync.set({ themeName: selectedTheme.name });
+
+      browserAPI.storage.sync.set({ themeName: selectedTheme.name });
       currentThemeName = selectedTheme.name;
       isUserTyping = false;
       saveToStorage(true);
@@ -662,11 +665,11 @@ const generateDefaultFilename = () => {
 };
 
 const saveCSSToFile = (css, defaultFilename) => {
-  chrome.permissions.contains({ permissions: ["downloads"] }, hasPermission => {
+  browserAPI.permissions.contains({ permissions: ["downloads"] }, hasPermission => {
     if (hasPermission) {
       downloadFile(css, defaultFilename);
     } else {
-      chrome.permissions.request({ permissions: ["downloads"] }, granted => {
+      browserAPI.permissions.request({ permissions: ["downloads"] }, granted => {
         if (granted) {
           downloadFile(css, defaultFilename);
         } else {
@@ -681,22 +684,25 @@ const downloadFile = (css, defaultFilename) => {
   const blob = new Blob([css], { type: "text/css" });
   const url = URL.createObjectURL(blob);
 
-  chrome.downloads.download(
-    {
-      url: url,
-      filename: defaultFilename,
-      saveAs: true,
-    },
-    () => {
-      if (chrome.runtime.lastError) {
-        console.log(chrome.runtime.lastError);
-        showAlert("Error saving file. Please try again.");
-      } else {
+  if (browserAPI.downloads) {
+    browserAPI.downloads
+      .download({
+        url: url,
+        filename: defaultFilename,
+        saveAs: true,
+      })
+      .then(() => {
         showAlert("CSS file save dialog opened. Choose where to save your file.");
-      }
-      URL.revokeObjectURL(url);
-    }
-  );
+        URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        console.log(error);
+        showAlert("Error saving file. Please try again.");
+        URL.revokeObjectURL(url);
+      });
+  } else {
+    fallbackSaveMethod(css, defaultFilename);
+  }
 };
 
 const fallbackSaveMethod = (css, defaultFilename) => {

@@ -353,9 +353,11 @@ BetterLyrics.DOM = {
       const tabRendererHeight = tabRenderer.getBoundingClientRect().height;
       let scrollTop = tabRenderer.scrollTop;
 
+      const topOffsetMultiplier = 0.5; // 0.5 means the selected lyric will be in the middle of the screen, 0 means top, 1 means bottom
+
       if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
         BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
-        let scrollPosOffset = Math.max(0, tabRendererHeight * 0.37 - selectedLyricHeight / 2);
+        let scrollPosOffset = Math.max(0, tabRendererHeight * topOffsetMultiplier - selectedLyricHeight / 2);
         let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
         scrollPos = Math.min(lyricsHeight - tabRendererHeight, scrollPos);
 
@@ -366,7 +368,6 @@ BetterLyrics.DOM = {
         ) {
           lyricsElement.style.transition = "top 0s ease-in-out 0s";
           lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
-          // console.log(` - (${scrollTop} - ${scrollPos})px = `, - (scrollTop - scrollPos));
 
           scrollTop = scrollPos;
           BetterLyrics.DOM.scrollPos = -1; //force syncing position on the next tick
