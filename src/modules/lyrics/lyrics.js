@@ -113,7 +113,7 @@ BetterLyrics.Lyrics = {
             });
 
             let matchAmount = stringSimilarity(lyricText.toLowerCase(), ytLyrics.text.toLowerCase());
-            if (matchAmount < 0.8) {
+            if (matchAmount < 0.5) {
               BetterLyrics.Utils.log(
                 `Got lyrics from ${lyrics.source}, but they don't match yt lyrics. Rejecting: Match: ${matchAmount}%`
               );
@@ -190,9 +190,6 @@ BetterLyrics.Lyrics = {
     const lyrics = data.lyrics;
     BetterLyrics.DOM.cleanup();
     let lyricsWrapper = BetterLyrics.DOM.createLyricsWrapper();
-    if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
-      BetterLyrics.DOM.addFooter(data.source, data.sourceHref);
-    }
 
     try {
       lyricsWrapper.innerHTML = "";
@@ -241,7 +238,7 @@ BetterLyrics.Lyrics = {
       return resolve(BetterLyrics.App.lang);
     });
 
-    lyrics.forEach(item => {
+    lyrics.forEach((item, index) => {
       let line = document.createElement("div");
       line.dataset.time = item.startTimeMs / 1000;
       line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s;";
@@ -256,6 +253,9 @@ BetterLyrics.Lyrics = {
             item.startTimeMs / 1000
           }, true);player.playVideo();`
         );
+        line.addEventListener("click", _e => {
+          BetterLyrics.DOM.scrollResumeTime = 0;
+        });
       } else {
         line.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
       }
@@ -268,6 +268,8 @@ BetterLyrics.Lyrics = {
         line.appendChild(span);
       });
 
+      const wrapper = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
+
       langPromise.then(source_language => {
         BetterLyrics.Translation.onRomanizationEnabled(
           async () => {
@@ -279,7 +281,18 @@ BetterLyrics.Lyrics = {
                 const result = await BetterLyrics.Translation.translateTextIntoRomaji(source_language, item.words);
                 if (result && result.trim() !== "") {
                   romanizedLine.textContent = result ? "\n" + result : "\n";
+
+                  const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+                  const prevScrollPos = tabRenderer.scrollTop;
+                  const prevHeight = wrapper.clientHeight;
                   line.appendChild(romanizedLine);
+                  const currentScrollPos = tabRenderer.scrollTop;
+                  const currentHeight = wrapper.clientHeight;
+                  BetterLyrics.DOM.lyricsHeightAdjusted(
+                    index,
+                    currentHeight - prevHeight,
+                    currentScrollPos - prevScrollPos
+                  );
                 }
               }
             }
@@ -295,6 +308,10 @@ BetterLyrics.Lyrics = {
                 if (item.words.trim() !== "♪" && item.words.trim() !== "") {
                   const result = await BetterLyrics.Translation.translateText(item.words, target_language);
 
+                  const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+                  const prevScrollPos = tabRenderer.scrollTop;
+                  const prevHeight = wrapper.clientHeight;
+
                   if (result) {
                     if (result.originalLanguage !== target_language) {
                       translatedLine.textContent = "\n" + result.translatedText;
@@ -304,21 +321,38 @@ BetterLyrics.Lyrics = {
                     translatedLine.textContent = "\n" + "—";
                     line.appendChild(translatedLine);
                   }
-
                   line.appendChild(translatedLine);
+                  const currentScrollPos = tabRenderer.scrollTop;
+                  const currentHeight = wrapper.clientHeight;
+                  BetterLyrics.DOM.lyricsHeightAdjusted(
+                    index,
+                    currentHeight - prevHeight,
+                    currentScrollPos - prevScrollPos
+                  );
                 }
               }
             });
           }
         );
-
-        try {
-          document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0].appendChild(line);
-        } catch (_err) {
-          BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
-        }
       });
+
+      try {
+        wrapper.appendChild(line);
+      } catch (_err) {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
+      }
     });
+
+    BetterLyrics.DOM.skipScrolls = 2;
+    BetterLyrics.DOM.skipScrollsDecayTimes = [];
+    for (let i = 0; i < BetterLyrics.DOM.skipScrolls; i++) {
+      BetterLyrics.DOM.skipScrollsDecayTimes.push(Date.now() + 2000);
+    }
+    BetterLyrics.DOM.scrollResumeTime = 0;
+
+    if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
+      BetterLyrics.DOM.addFooter(data.source, data.sourceHref);
+    }
 
     if (!allZero) {
       BetterLyrics.Lyrics.setupLyricsCheckInterval();

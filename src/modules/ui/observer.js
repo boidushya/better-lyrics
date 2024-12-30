@@ -108,8 +108,30 @@ BetterLyrics.Observer = {
           BetterLyrics.App.handleModifications(detail);
         }
       }
-
-      BetterLyrics.DOM.tickLyrics(detail.currentTime);
+      let timeOffset = Date.now() - detail.browserTime;
+      if (!detail.playing) {
+        timeOffset = 0;
+      }
+      BetterLyrics.DOM.tickLyrics(detail.currentTime + timeOffset / 1000);
     });
+  },
+  scrollEventHandler: () => {
+    const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+    if (tabSelector.getAttribute("aria-selected") !== "true" || !BetterLyrics.App.areLyricsTicking) {
+      return;
+    }
+
+    if (BetterLyrics.DOM.skipScrolls > 0) {
+      BetterLyrics.DOM.skipScrolls--;
+      BetterLyrics.DOM.skipScrollsDecayTimes.shift();
+      // BetterLyrics.Utils.log("[BetterLyrics] Skipping Lyrics Scroll");
+      return;
+    }
+    if (!BetterLyrics.DOM.isLoaderActive()) {
+      if (BetterLyrics.DOM.scrollResumeTime < Date.now()) {
+        BetterLyrics.Utils.log("[BetterLyrics] Pausing Lyrics Autoscroll Due to User Scroll");
+      }
+      BetterLyrics.DOM.scrollResumeTime = Date.now() + 25000;
+    }
   },
 };
