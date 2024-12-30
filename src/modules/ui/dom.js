@@ -347,42 +347,42 @@ BetterLyrics.DOM = {
           return true;
         }
       });
-			// lyricsHeight can change slightly due to animations
-			const lyricsHeight = lyricsElement.getBoundingClientRect().height;
-			const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
-			const tabRendererHeight = tabRenderer.getBoundingClientRect().height;
-			let scrollTop = tabRenderer.scrollTop;
+      // lyricsHeight can change slightly due to animations
+      const lyricsHeight = lyricsElement.getBoundingClientRect().height;
+      const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+      const tabRendererHeight = tabRenderer.getBoundingClientRect().height;
+      let scrollTop = tabRenderer.scrollTop;
 
-			const topOffsetMultiplier = 0.5; // 0.5 means the selected lyric will be in the middle of the screen, 0 means top, 1 means bottom
+      const topOffsetMultiplier = 0.5; // 0.5 means the selected lyric will be in the middle of the screen, 0 means top, 1 means bottom
 
-			if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
-				BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
-				let scrollPosOffset = Math.max(0, (tabRendererHeight * topOffsetMultiplier) - selectedLyricHeight / 2);
-				let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
-				scrollPos = Math.min(lyricsHeight - tabRendererHeight, scrollPos);
+      if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
+        BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
+        let scrollPosOffset = Math.max(0, tabRendererHeight * topOffsetMultiplier - selectedLyricHeight / 2);
+        let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
+        scrollPos = Math.min(lyricsHeight - tabRendererHeight, scrollPos);
 
-				if (
-					Math.abs(scrollTop - scrollPos) > 2 &&
-					BetterLyrics.DOM.scrollPos !== -1 &&
-					Date.now() > BetterLyrics.DOM.nextScrollAllowedTime
-				) {
-					lyricsElement.style.transition = "top 0s ease-in-out 0s";
-					lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
+        if (
+          Math.abs(scrollTop - scrollPos) > 2 &&
+          BetterLyrics.DOM.scrollPos !== -1 &&
+          Date.now() > BetterLyrics.DOM.nextScrollAllowedTime
+        ) {
+          lyricsElement.style.transition = "top 0s ease-in-out 0s";
+          lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
 
-					scrollTop = scrollPos;
-					BetterLyrics.DOM.scrollPos = -1; //force syncing position on the next tick
-				} else if (BetterLyrics.DOM.scrollPos === -1) {
-					if (lyricsElement.style.transition === "top 0s ease-in-out 0s") {
-				BetterLyrics.DOM.nextScrollAllowedTime =
-					toMs(lyricsElement.computedStyleMap().get("transition-duration")) + Date.now();
-					}
-					lyricsElement.style.transition = "";
-					lyricsElement.style.top = "0px";
-					BetterLyrics.DOM.scrollPos = scrollPos;
-				}
-			} else {
-				BetterLyrics.DOM.getResumeScrollElement().removeAttribute("autoscroll-hidden");
-			}
+          scrollTop = scrollPos;
+          BetterLyrics.DOM.scrollPos = -1; //force syncing position on the next tick
+        } else if (BetterLyrics.DOM.scrollPos === -1) {
+          if (lyricsElement.style.transition === "top 0s ease-in-out 0s") {
+            BetterLyrics.DOM.nextScrollAllowedTime =
+              toMs(lyricsElement.computedStyleMap().get("transition-duration")) + Date.now();
+          }
+          lyricsElement.style.transition = "";
+          lyricsElement.style.top = "0px";
+          BetterLyrics.DOM.scrollPos = scrollPos;
+        }
+      } else {
+        BetterLyrics.DOM.getResumeScrollElement().removeAttribute("autoscroll-hidden");
+      }
 
       if (Math.abs(scrollTop - tabRenderer.scrollTop) > 1) {
         tabRenderer.scrollTop = scrollTop;

@@ -645,9 +645,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 ${selectedTheme.css}
 `;
-			editor.setValue(themeContent);
+      editor.setValue(themeContent);
 
-			browserAPI.storage.sync.set({ themeName: selectedTheme.name });
+      browserAPI.storage.sync.set({ themeName: selectedTheme.name });
       currentThemeName = selectedTheme.name;
       isUserTyping = false;
       saveToStorage(true);
@@ -681,25 +681,28 @@ const saveCSSToFile = (css, defaultFilename) => {
 };
 
 const downloadFile = (css, defaultFilename) => {
-	const blob = new Blob([css], { type: "text/css" });
-	const url = URL.createObjectURL(blob);
+  const blob = new Blob([css], { type: "text/css" });
+  const url = URL.createObjectURL(blob);
 
-	if (browserAPI.downloads) {
-		browserAPI.downloads.download({
-			url: url,
-			filename: defaultFilename,
-			saveAs: true,
-		}).then(() => {
-			showAlert("CSS file save dialog opened. Choose where to save your file.");
-			URL.revokeObjectURL(url);
-		}).catch(error => {
-			console.log(error);
-			showAlert("Error saving file. Please try again.");
-			URL.revokeObjectURL(url);
-		});
-	} else {
-		fallbackSaveMethod(css, defaultFilename);
-	}
+  if (browserAPI.downloads) {
+    browserAPI.downloads
+      .download({
+        url: url,
+        filename: defaultFilename,
+        saveAs: true,
+      })
+      .then(() => {
+        showAlert("CSS file save dialog opened. Choose where to save your file.");
+        URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        console.log(error);
+        showAlert("Error saving file. Please try again.");
+        URL.revokeObjectURL(url);
+      });
+  } else {
+    fallbackSaveMethod(css, defaultFilename);
+  }
 };
 
 const fallbackSaveMethod = (css, defaultFilename) => {
