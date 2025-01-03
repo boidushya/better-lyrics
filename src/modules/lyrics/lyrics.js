@@ -50,7 +50,7 @@ BetterLyrics.Lyrics = {
           return;
         }
       } catch (cacheError) {
-        BetterLyrics.Utils.log("Cache parsing error:", cacheError);
+        BetterLyrics.Utils.log(BetterLyrics.Constants.CACHE_PARSING_ERROR, cacheError);
         // Invalid cache, continue to fetch fresh data
       }
     }
