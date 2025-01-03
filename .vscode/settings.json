@@ -10,8 +10,8 @@
   "[markdown]": {
     "editor.defaultFormatter": "yzhang.markdown-all-in-one",
     "editor.formatOnSave": true
-	},
-	"[javascript]": {
-		"editor.defaultFormatter": "vscode.typescript-language-features"
-	}
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  }
 }
