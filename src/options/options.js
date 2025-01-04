@@ -1,7 +1,18 @@
 // Function to save user options
+
+const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+
 const saveOptions = () => {
   const options = getOptionsFromForm();
-  saveOptionsToStorage(options);
+  browserAPI.storage.sync.get({ preferredProvider: 0 }, currentOptions => {
+    if (currentOptions.preferredProvider !== options.preferredProvider) {
+      clearTransientLyrics(() => {
+        saveOptionsToStorage(options);
+      });
+    } else {
+      saveOptionsToStorage(options);
+    }
+  });
 };
 
 // Function to get options from form elements
@@ -16,15 +27,16 @@ const getOptionsFromForm = () => {
     translationLanguage: document.getElementById("translationLanguage").value,
     isCursorAutoHideEnabled: document.getElementById("cursorAutoHide").checked,
     isRomanizationEnabled: document.getElementById("isRomanizationEnabled").checked,
+    preferredProvider: Number(document.getElementById("defaultLyricsProvider").value),
   };
 };
 
 // Function to save options to Chrome storage
 const saveOptionsToStorage = options => {
-  chrome.storage.sync.set(options, () => {
-    chrome.tabs.query({ url: "https://music.youtube.com/*" }, function (tabs) {
+  browserAPI.storage.sync.set(options, () => {
+    browserAPI.tabs.query({ url: "https://music.youtube.com/*" }, function (tabs) {
       tabs.forEach(tab => {
-        chrome.tabs.sendMessage(tab.id, { action: "updateSettings", settings: options });
+        browserAPI.tabs.sendMessage(tab.id, { action: "updateSettings", settings: options });
       });
     });
   });
@@ -62,15 +74,27 @@ const showAlert = message => {
 };
 
 // Function to clear transient lyrics
-const clearTransientLyrics = () => {
-  chrome.tabs.query({ url: "https://music.youtube.com/*" }, function (tabs) {
+const clearTransientLyrics = callback => {
+  browserAPI.tabs.query({ url: "https://music.youtube.com/*" }, function (tabs) {
+    if (tabs.length === 0) {
+      updateCacheInfo();
+      showAlert("Cache cleared successfully!");
+      if (callback) callback();
+      return;
+    }
+
+    let completedTabs = 0;
     tabs.forEach(tab => {
-      chrome.tabs.sendMessage(tab.id, { action: "clearCache" }, response => {
-        if (response.success) {
-          updateCacheInfo();
-          showAlert("Cache cleared successfully!");
-        } else {
-          showAlert("Failed to clear cache!");
+      browserAPI.tabs.sendMessage(tab.id, { action: "clearCache" }, response => {
+        completedTabs++;
+        if (completedTabs === tabs.length) {
+          if (response?.success) {
+            updateCacheInfo();
+            showAlert("Cache cleared successfully!");
+          } else {
+            showAlert("Failed to clear cache!");
+          }
+          if (callback) callback();
         }
       });
     });
@@ -91,11 +115,11 @@ const _formatBytes = (bytes, decimals = 2) => {
 
 // Function to subscribe to cache info updates
 const subscribeToCacheInfo = () => {
-  chrome.storage.sync.get("cacheInfo", items => {
+  browserAPI.storage.sync.get("cacheInfo", items => {
     updateCacheInfo(items);
   });
 
-  chrome.storage.onChanged.addListener((changes, area) => {
+  browserAPI.storage.onChanged.addListener((changes, area) => {
     if (area === "sync" && changes.cacheInfo) {
       updateCacheInfo({ cacheInfo: changes.cacheInfo.newValue });
     }
@@ -130,9 +154,10 @@ const restoreOptions = () => {
     isTranslateEnabled: false,
     translationLanguage: "en",
     isRomanizationEnabled: false,
+    preferredProvider: 0,
   };
 
-  chrome.storage.sync.get(defaultOptions, setOptionsInForm);
+  browserAPI.storage.sync.get(defaultOptions, setOptionsInForm);
 
   document.getElementById("clear-cache").addEventListener("click", clearTransientLyrics);
 };
@@ -148,6 +173,7 @@ const setOptionsInForm = items => {
   document.getElementById("translate").checked = items.isTranslateEnabled;
   document.getElementById("translationLanguage").value = items.translationLanguage;
   document.getElementById("isRomanizationEnabled").checked = items.isRomanizationEnabled;
+  document.getElementById("defaultLyricsProvider").value = items.preferredProvider;
 };
 
 // Event listeners

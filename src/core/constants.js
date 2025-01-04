@@ -96,6 +96,7 @@ BetterLyrics.Constants = {
   LYRICS_LEGACY_LOG: "[BetterLyrics] Using legacy method to fetch song info",
   LRCLIB_LYRICS_FOUND_LOG: "[BetterLyrics] Lyrics found from LRCLIB",
   NO_LRCLIB_LYRICS_FOUND_LOG: "[BetterLyrics] No lyrics found on LRCLIB",
+  PROVIDER_SWITCHED_LOG: "[BetterLyrics] Switching to provider: ",
 
   // UI State Logs
   LYRICS_TAB_HIDDEN_LOG: "[BetterLyrics] (Safe to ignore) Lyrics tab is hidden, skipping lyrics fetch",
@@ -114,6 +115,10 @@ BetterLyrics.Constants = {
   SKIPPING_LOAD_WITH_META: "[BetterLyrics] Skipping Reload From Metadata Available: Already Loaded",
   LOADER_TRANSITION_ENDED: "[BetterLyrics] Loader Transition Ended",
   LOADER_ANIMATION_END_FAILED: "[BetterLyrics] Loader Animation Didn't End",
+  LOADER_FOUND_LOG: "[BetterLyrics] Found Loader, waiting for completion",
+  LOADER_NOT_FOUND_LOG: "[BetterLyrics] Timed out waiting for loader",
+  LOADER_FINISHED_LOG: "[BetterLyrics] Loader completed successfully",
+  PAUSING_LYRICS_SCROLL_LOG: "[BetterLyrics] Pausing Lyrics Autoscroll Due to User Scroll",
 
   // Feature State Logs
   AUTO_SWITCH_ENABLED_LOG: "[BetterLyrics] Auto switch enabled, switching to lyrics tab",
@@ -139,6 +144,8 @@ BetterLyrics.Constants = {
   LRCLIB_TIMEOUT_LOG: "[BetterLyrics] LRCLIB request timed out",
   NO_VALID_LRCLIB_LYRICS_LOG: "[BetterLyrics] No valid lyrics returned from LRCLIB",
   INVALID_CACHE_DATA_LOG: "[BetterLyrics] Invalid data structure in cache",
+  CACHE_PARSING_ERROR: "[BetterLyrics] Error parsing cached data",
+  LYRICS_CHECK_INTERVAL_ERROR: "[BetterLyrics] Error in lyrics check interval:",
 
   NO_LYRICS_TEXT: "No lyrics found for this song",
   MUSIC_NOTES: "♪𝅘𝅥𝅮𝅘𝅥𝅯𝅘𝅥𝅰𝅘𝅥𝅱𝅘𝅥𝅲",

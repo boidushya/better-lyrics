@@ -217,7 +217,7 @@ BetterLyrics.DOM = {
     const layout = document.getElementById("layout");
     if (layout) {
       layout.style.removeProperty("--blyrics-background-img");
-      BetterLyrics.Utils.log("Album art removed from layout");
+      BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_REMOVED_LOG);
     }
   },
 
@@ -353,7 +353,7 @@ BetterLyrics.DOM = {
       const tabRendererHeight = tabRenderer.getBoundingClientRect().height;
       let scrollTop = tabRenderer.scrollTop;
 
-      const topOffsetMultiplier = 0.5; // 0.5 means the selected lyric will be in the middle of the screen, 0 means top, 1 means bottom
+      const topOffsetMultiplier = 0.37; // 0.5 means the selected lyric will be in the middle of the screen, 0 means top, 1 means bottom
 
       if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
         BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
@@ -404,7 +404,7 @@ BetterLyrics.DOM = {
       }
     } catch (err) {
       if (!(err.message && err.message.includes("undefined"))) {
-        BetterLyrics.Utils.log("Error in lyrics check interval:", err);
+        BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_CHECK_INTERVAL_ERROR, err);
       }
       return true;
     }

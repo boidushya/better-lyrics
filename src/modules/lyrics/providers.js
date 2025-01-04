@@ -300,11 +300,39 @@ BetterLyrics.LyricProviders = {
     });
     return { lyrics: lyricsArray, language: langCode, source: "Youtube Captions", sourceHref: "" };
   },
+
   initProviders: function () {
-    BetterLyrics.LyricProviders.providersList = [
-      BetterLyrics.LyricProviders.ytCaptions,
-      BetterLyrics.LyricProviders.bLyrics,
-      BetterLyrics.LyricProviders.lyricLib,
-    ];
+    const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+
+    const updateProvidersList = preferredProvider => {
+      BetterLyrics.LyricProviders.providersList = [BetterLyrics.LyricProviders.ytCaptions];
+
+      const providerMap = {
+        0: BetterLyrics.LyricProviders.bLyrics,
+        1: BetterLyrics.LyricProviders.lyricLib,
+      };
+
+      BetterLyrics.Utils.log(BetterLyrics.Constants.PROVIDER_SWITCHED_LOG, preferredProvider);
+
+      if (providerMap[preferredProvider]) {
+        BetterLyrics.LyricProviders.providersList.push(providerMap[preferredProvider]);
+      }
+
+      Object.entries(providerMap).forEach(([index, provider]) => {
+        if (parseInt(index) !== preferredProvider) {
+          BetterLyrics.LyricProviders.providersList.push(provider);
+        }
+      });
+    };
+
+    browserAPI.storage.onChanged.addListener((changes, area) => {
+      if (area === "sync" && changes.preferredProvider) {
+        updateProvidersList(changes.preferredProvider.newValue);
+      }
+    });
+
+    browserAPI.storage.sync.get({ preferredProvider: 0 }, function (items) {
+      updateProvidersList(items.preferredProvider);
+    });
   },
 };

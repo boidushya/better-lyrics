@@ -129,7 +129,7 @@ BetterLyrics.Observer = {
     }
     if (!BetterLyrics.DOM.isLoaderActive()) {
       if (BetterLyrics.DOM.scrollResumeTime < Date.now()) {
-        BetterLyrics.Utils.log("[BetterLyrics] Pausing Lyrics Autoscroll Due to User Scroll");
+        BetterLyrics.Utils.log(BetterLyrics.Constants.PAUSING_LYRICS_SCROLL_LOG);
       }
       BetterLyrics.DOM.scrollResumeTime = Date.now() + 25000;
     }
