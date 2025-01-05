@@ -268,6 +268,7 @@ BetterLyrics.DOM = {
     if (existingFooter && existingFooter.classList.contains("blyrics--fallback")) {
       existingFooter.classList.remove("blyrics--fallback");
     }
+    BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
 
     BetterLyrics.DOM.clearLyrics();
   },
@@ -461,6 +462,7 @@ BetterLyrics.DOM = {
       elem.setAttribute("autoscroll-hidden", "true");
       elem.addEventListener("click", () => {
         BetterLyrics.DOM.scrollResumeTime = 0;
+        elem.setAttribute("autoscroll-hidden", "true");
       });
 
       document.querySelector("#side-panel > tp-yt-paper-tabs").after(wrapper);

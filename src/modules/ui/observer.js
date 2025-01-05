@@ -27,6 +27,7 @@ BetterLyrics.Observer = {
 
     if (tab1 !== undefined && tab2 !== undefined && tab3 !== undefined) {
       tab2.addEventListener("click", function () {
+        BetterLyrics.DOM.getResumeScrollElement().classList.remove("blyrics-hidden");
         if (!BetterLyrics.App.areLyricsLoaded) {
           BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_CLICKED_LOG);
           BetterLyrics.DOM.cleanup();
@@ -34,6 +35,10 @@ BetterLyrics.Observer = {
           BetterLyrics.App.reloadLyrics();
         }
       });
+
+      let hideAutoscrollResume = () => BetterLyrics.DOM.getResumeScrollElement().classList.add("blyrics-hidden");
+      tab1.addEventListener("click", hideAutoscrollResume);
+      tab3.addEventListener("click", hideAutoscrollResume);
     } else {
       setTimeout(() => BetterLyrics.Observer.lyricReloader(), 1000);
     }
