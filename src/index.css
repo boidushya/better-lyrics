@@ -110,6 +110,7 @@
   cursor: default;
   opacity: var(--blyrics-active-opacity);
   animation: blyrics-glow var(--blyrics-glow-duration) forwards, blyrics-wobble var(--blyrics-wobble-duration) forwards;
+  animation-timing-function: ease, ease;
 }
 
 .blyrics-container > div.blyrics--active > span.blyrics--translated,
@@ -523,7 +524,7 @@ ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--ac
   from {
     transform: translateY(0px);
   }
-  33.33% {
+  15% {
     transform: translateY(1.75px);
   }
   66.66% {
