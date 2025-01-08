@@ -9,6 +9,9 @@
   --blyrics-footer-text-color: #aaa;
   --blyrics-footer-link-color: #fff;
   --blyrics-discord-hover-color: #5865f2;
+  --blyrics-active-color: color(display-p3 1 1 1 /1);
+  --blyrics-inactive-color: color(display-p3 1 1 1 /0.3);;
+
 
   /* Typography */
   --blyrics-font-family: Satoshi, Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
@@ -25,8 +28,6 @@
   /* Animations */
   --blyrics-transition-duration: 0.166s;
   --blyrics-opacity-transition: 0.33s;
-  --blyrics-glow-duration: var(--blyrics-duration, 2s);
-  --blyrics-wobble-duration: calc(var(--blyrics-duration, 2s) / 2);
 
   /* Layout */
   --blyrics-padding: 2rem;
@@ -37,8 +38,6 @@
   --blyrics-blur-amount: 30px;
   --blyrics-scale: 0.95;
   --blyrics-active-scale: 1;
-  --blyrics-inactive-opacity: 0.33;
-  --blyrics-active-opacity: 1;
   --blyrics-translated-opacity: 0.6;
   --blyrics-error-opacity: 0.33;
   --blyrics-background-blur: 100px;
@@ -92,13 +91,42 @@
   padding-top: var(--blyrics-padding) !important;
 }
 
-.blyrics-container > div.blyrics--active {
+.blyrics--active {
   transform: scale(var(--blyrics-active-scale));
+  cursor: default;
+  animation-timing-function: ease, ease;
+  animation: blyrics-wobble calc(max(var(--blyrics-duration, 0s), 1s) * 1.5) forwards;
 }
 
+.blyrics-container > div > span.blyrics--animating {
+  background-position: 0 100%;
+  transition-property: background-position;
+  background: linear-gradient(to right, var(--blyrics-active-color), var(--blyrics-active-color) 50%, var(--blyrics-inactive-color) 50%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 100%;
+}
+
+.blyrics-container > div > span.blyrics--active:not(.blyrics--animating) {
+  background-position: 100%;
+  transition: none;
+  color: var(--blyrics-active-color);
+}
+
+/*.blyrics-container > div > span:not(.blyrics--active):not() {*/
+/*}*/
+
+
 .blyrics-container > div > span {
-  opacity: var(--blyrics-inactive-opacity);
-  transition: opacity var(--blyrics-opacity-transition);
+  color: var(--blyrics-inactive-color);
+  text-decoration: none;
+  display: inline-block;
+
+  background-position: 100%;
+  transition-timing-function: ease;
+  transition-property: color;
+  transition-duration: 0.3s; !important;
 }
 
 .blyrics-container > div > span:not(:empty):not(.blyrics--translated):not(.blyrics--romanized) {
@@ -106,17 +134,6 @@
   white-space: pre-wrap;
 }
 
-.blyrics-container > div.blyrics--active > span:not(:empty):not(.blyrics--translated):not(.blyrics--romanized) {
-  cursor: default;
-  opacity: var(--blyrics-active-opacity);
-  animation: blyrics-glow var(--blyrics-glow-duration) forwards, blyrics-wobble var(--blyrics-wobble-duration) forwards;
-  animation-timing-function: ease, ease;
-}
-
-.blyrics-container > div.blyrics--active > span.blyrics--translated,
-.blyrics-container > div.blyrics--active > span.blyrics--romanized {
-  opacity: var(--blyrics-translated-opacity);
-}
 
 /* RTL support */
 #layout[blyrics-rtl-enabled] .blyrics-container > div {
@@ -351,14 +368,13 @@
 
 /* Player page styles */
 ytmusic-player-page:before {
-  background: linear-gradient(to right, var(--blyrics-background-color), var(--blyrics-background-color)),
-    var(--blyrics-background-img);
+  background: var(--blyrics-background-img);
   background-position: 50% !important;
   background-repeat: no-repeat;
   background-size: cover;
   bottom: 0;
   content: "";
-  filter: blur(var(--blyrics-background-blur)) saturate(var(--blyrics-background-saturate));
+  filter: saturate(var(--blyrics-background-saturate)) brightness(25%) blur(var(--blyrics-background-blur));
   left: 0;
   position: absolute;
   right: 0;
@@ -379,6 +395,7 @@ ytmusic-player-bar,
   display: block;
   font-size: var(--blyrics-translated-font-size);
   font-weight: var(--blyrics-translated-font-weight);
+  color: var(--blyrics-inactive-color);
   white-space: normal;
   line-height: 1.1;
   margin-top: 8px;
@@ -513,20 +530,16 @@ ytmusic-message-renderer.ytmusic-tab-renderer {
   display: none !important;
 }
 
-ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--active > span:not(:empty) {
-  animation: none !important;
-}
-
 /* Animations */
 @keyframes blyrics-wobble {
   from {
     transform: translateY(0px);
   }
   15% {
-    transform: translateY(1.75px);
+    transform: translateY(-0.1em);
   }
-  66.66% {
-    transform: translateY(-1.75px);
+  67% {
+    transform: translateY(-0.1em);
   }
   to {
     transform: translateY(0px);
