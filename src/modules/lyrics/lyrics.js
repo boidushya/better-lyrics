@@ -214,9 +214,12 @@ BetterLyrics.Lyrics = {
     });
 
     const allZero = lyrics.every(item => item.startTimeMs === "0");
-    if (lyrics[lyrics.length - 1].words === "") {
-      lyrics.pop();
-    }
+
+    // Disabled since we want to show the last line even if it's nothing as that ends syncing for the second last line
+    //
+    // if (lyrics[lyrics.length - 1].words === "") {
+    //   lyrics.pop();
+    // }
 
     const langPromise = new Promise(async resolve => {
       if (!BetterLyrics.App.lang || BetterLyrics.App.lang === "") {
@@ -241,7 +244,14 @@ BetterLyrics.Lyrics = {
     lyrics.forEach((item, index) => {
       let line = document.createElement("div");
       line.dataset.time = item.startTimeMs / 1000;
-      line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s;";
+
+      // If the item is the last line and it is empty, set the padding to 0 !important to prevent
+      // the last line from being shown while keeping the second last line in sync.
+      if (index === lyrics.length - 1 && item.words === "") {
+        line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s; padding: 0 !important;";
+      } else {
+        line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s;";
+      }
 
       const words = item.words.split(" ");
 

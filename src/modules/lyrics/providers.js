@@ -107,16 +107,20 @@ BetterLyrics.LyricProviders = {
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      const match = line.match(/^\[(\d{2}):(\d{2}\.\d{2})\](.*)/);
+      const match = line.match(/^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/);
+
       if (match) {
         const minutes = parseInt(match[1]);
-        const seconds = parseFloat(match[2]);
-        const words = match[3].trim();
-        const startTimeMs = Math.floor((minutes * 60 + seconds) * 1000);
+        const seconds = parseInt(match[2]);
+        const milliseconds = match[3].length === 3 ? parseInt(match[3]) : parseInt(match[3]) * 10;
+
+        const words = match[4];
+
+        const startTimeMs = Math.floor(minutes * 60 * 1000 + seconds * 1000 + milliseconds);
 
         lyricsArray.push({
           startTimeMs: startTimeMs.toString(),
-          words: words,
+          words: words.trim(),
           durationMs: "0", // Will calculate later
         });
       }

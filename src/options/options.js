@@ -79,7 +79,7 @@ const clearTransientLyrics = callback => {
     if (tabs.length === 0) {
       updateCacheInfo();
       showAlert("Cache cleared successfully!");
-      if (callback) callback();
+      if (callback && typeof callback === "function") callback();
       return;
     }
 
@@ -94,7 +94,7 @@ const clearTransientLyrics = callback => {
           } else {
             showAlert("Failed to clear cache!");
           }
-          if (callback) callback();
+          if (callback && typeof callback === "function") callback();
         }
       });
     });
