@@ -248,13 +248,15 @@ BetterLyrics.Lyrics = {
         item.parts = [];
           const words = item.words.split(" ");
 
-
+        let len = 0;
         words.forEach((word, index) => {
+          word = word.trim().length < 1 ? word : word + " ";
           item.parts.push({
-            startTimeMs: item.startTimeMs + index * 100,
-            words: word.trim().length < 1 ? word : word + " ",
-            durationMs: 100
+            startTimeMs: item.startTimeMs + len * 25,
+            words: word,
+            durationMs: word.length * 25
           });
+          len += word.length;
         });
       }
 
