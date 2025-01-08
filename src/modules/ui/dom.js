@@ -290,11 +290,11 @@ BetterLyrics.DOM = {
   /**
    * Time in seconds to offset lyric highlighting by
    */
-  lyricTimeOffset: 0.115,
+  lyricTimeOffset: 0.015,
   /**
    * Time in seconds before lyric highlight to begin scroll to the next lyric
    */
-  lyricScrollTimeOffset: 0.2,
+  lyricScrollTimeOffset: 0.3,
   tickLyrics: function (currentTime) {
     if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
       return;
@@ -352,15 +352,48 @@ BetterLyrics.DOM = {
         }
 
         if (currentTime >= time && currentTime < nextTime) {
-          const timeDelta = currentTime - time;
-          if (!elem.classList.contains(BetterLyrics.Constants.CURRENT_LYRICS_CLASS) && timeDelta > 0.05 && index > 0) {
-            BetterLyrics.Utils.log(
-              `[BetterLyrics] Highlighting next lyric was late, dt: ${(currentTime - time).toFixed(5)}s`
-            );
-          }
-          elem.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
+          elem.dataset.selected = true;
+          elem.dataset.removedAnimation = false;
+          let children = [...elem.children];
+          children.forEach((el, index) => {
+            let elTime = parseFloat(el.dataset.time);
+            let elDuration = parseFloat(el.dataset.duration);
+            if (elTime < currentTime) {
+              const timeDelta = currentTime - elTime;
+              if (!el.classList.contains(BetterLyrics.Constants.CURRENT_LYRICS_CLASS) && timeDelta > 0.05 && index > 0) {
+                BetterLyrics.Utils.log(
+                  `[BetterLyrics] Highlighting next lyric was late, dt: ${(currentTime - elTime).toFixed(5)}s`
+                );
+              }
+              if ((currentTime < elTime + elDuration)) {
+                el.classList.add("blyrics--animating");
+              } else if (!el.classList.contains("blyrics--animating") && !el.classList.contains("blyrics--animating-missed")) {
+                console.log("Missed adding animation at index: " + index)
+                el.classList.add("blyrics--animating-missed");
+              }
+              el.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
+            }
+          })
+
         } else {
-          elem.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
+          let selected = elem.dataset.selected === "true";
+          if (selected) {
+            let removedAnimation = elem.dataset.removedAnimation === "true";
+            let children = [...elem.children];
+            children.forEach((el) => {
+              if (!removedAnimation) {
+                el.classList.remove("blyrics--animating");
+                el.classList.remove("blyrics--animating-missed");
+              } else {
+                el.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
+              }
+            })
+            if (!removedAnimation) {
+              elem.dataset.removedAnimation = true;
+            } else {
+              elem.dataset.selected = false;
+            }
+          }
         }
 
         return true;
