@@ -1,7 +1,7 @@
 :root {
   /* Colors */
   --blyrics-text-color: #fff;
-  --blyrics-background-color: rgba(0, 0, 0, 0.75);
+  --blyrics-background-color: color(display-p3 0 0 0 /0.75);
   --blyrics-highlight-color: rgba(255, 255, 255, 0.5);
   --blyrics-error-color: #fee2e2;
   --blyrics-footer-bg-color: hsla(0, 0%, 100%, 0.1);
@@ -94,13 +94,14 @@
 .blyrics--active {
   transform: scale(var(--blyrics-active-scale));
   cursor: default;
-  animation-timing-function: ease, ease;
-  animation: blyrics-wobble calc(max(var(--blyrics-duration, 0s), 1s) * 1.5) forwards;
+  animation-name: blyrics-wobble;
+  animation-duration: 1s;
 }
 
 .blyrics-container > div > span.blyrics--animating {
-  background-position: 0 100%;
+  background-position: 100%;
   transition-property: background-position;
+  transition-timing-function: linear;
   background: linear-gradient(to right, var(--blyrics-active-color), var(--blyrics-active-color) 50%, var(--blyrics-inactive-color) 50%);
   background-clip: text;
   -webkit-background-clip: text;
@@ -126,7 +127,10 @@
   background-position: 100%;
   transition-timing-function: ease;
   transition-property: color;
-  transition-duration: 0.3s; !important;
+}
+
+.blyrics-container > div > span:not(.blyrics--active) {
+  transition-duration: 0.3s !important;
 }
 
 .blyrics-container > div > span:not(:empty):not(.blyrics--translated):not(.blyrics--romanized) {
@@ -533,15 +537,15 @@ ytmusic-message-renderer.ytmusic-tab-renderer {
 /* Animations */
 @keyframes blyrics-wobble {
   from {
+    animation-timing-function: ease-out;
     transform: translateY(0px);
   }
-  15% {
-    transform: translateY(-0.1em);
-  }
-  67% {
+  25% {
+    animation-timing-function: ease-in-out;
     transform: translateY(-0.1em);
   }
   to {
+    animation-timing-function: ease-in;
     transform: translateY(0px);
   }
 }
