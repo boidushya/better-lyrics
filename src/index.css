@@ -99,10 +99,9 @@
 }
 
 .blyrics-container > div > span.blyrics--animating {
-  background-position: 100%;
   transition-property: background-position;
   transition-timing-function: linear;
-  background: linear-gradient(to right, var(--blyrics-active-color), var(--blyrics-active-color) 50%, var(--blyrics-inactive-color) 50%);
+  background: linear-gradient(to right, var(--blyrics-active-color), var(--blyrics-active-color) 50%, green 50%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -121,7 +120,6 @@
 
 .blyrics-container > div > span {
   color: var(--blyrics-inactive-color);
-  text-decoration: none;
   display: inline-block;
 
   background-position: 100%;
