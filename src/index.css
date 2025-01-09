@@ -99,6 +99,7 @@
 }
 
 .blyrics-container > div > span.blyrics--animating {
+  background-position: 0 100%;
   transition-property: background-position;
   transition-timing-function: linear;
   background: linear-gradient(to right, var(--blyrics-active-color), var(--blyrics-active-color) 50%, green 50%);
