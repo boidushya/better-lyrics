@@ -243,7 +243,7 @@ BetterLyrics.Lyrics = {
 
     lyrics.forEach((item, index) => {
       let line = document.createElement("div");
-      line.dataset.time = item.startTimeMs / 1000;
+      line.dataset.time = parseFloat(item.startTimeMs) / 1000;
       if (!item.parts || item.parts.length <= 1) {
         item.parts = [];
           const words = item.words.split(" ");
@@ -252,7 +252,7 @@ BetterLyrics.Lyrics = {
         words.forEach((word, index) => {
           word = word.trim().length < 1 ? word : word + " ";
           item.parts.push({
-            startTimeMs: item.startTimeMs + len * 25,
+            startTimeMs: parseFloat(item.startTimeMs) + len * 25,
             words: word,
             durationMs: word.length * 25
           });
