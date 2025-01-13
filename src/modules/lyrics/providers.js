@@ -45,15 +45,49 @@ BetterLyrics.LyricProviders = {
 
   providersList: [],
 
-  local: async function(song, artist, duration){
-    const  url = new URL("http://localhost:5000/getLyrics");
+
+  cubey: async function(song, artist, duration, videoId, _audioTrackData){
+    const  url = new URL("https://lyrics.api.dacubeking.com/");
     url.searchParams.append("song", song);
     url.searchParams.append("artist", artist);
     url.searchParams.append("duration", duration);
-    let lrc = await fetch(url).then(r => r.json());
-    let lyrics = BetterLyrics.LyricProviders.parseLRC(lrc.lyrics, duration);
-    console.log(lrc);
+    url.searchParams.append("videoId", videoId);
+    url.searchParams.append("enhanced", true);
+    let response = await fetch(url).then(r => r.json());
+    if (response.album) {
+      BetterLyrics.Utils.log("Found Album: " + response.album);
+    }
+    let lyrics= null;
+    try {
+      if (response.lyrics) {
+        lyrics = BetterLyrics.LyricProviders.parseLRC(response.lyrics, duration);
+      }
+    } catch (err) {
+      BetterLyrics.Utils.log(err);
+    }
 
+    return {
+      lyrics: lyrics,
+      source: "DaCubeKing",
+      album: response.album,
+      cacheAllowed: true,
+      sourceHref: "https://dacubeking.com",
+    };
+  },
+
+  local: async function(song, artist, duration, videoId, _audioTrackData){
+    const  url = new URL("http://127.0.0.1:5000");
+    url.searchParams.append("videoId", videoId);
+    let response = await fetch(url).then(r => r.json());
+
+    let lyrics= null;
+    try {
+      if (response.lyrics) {
+        lyrics = BetterLyrics.LyricProviders.parseLRC(response.lyrics, duration);
+      }
+    } catch (err) {
+      BetterLyrics.Utils.log(err);
+    }
 
     return {
       lyrics: lyrics,
@@ -88,10 +122,13 @@ BetterLyrics.LyricProviders = {
     return data;
   },
 
-  lyricLib: async function (song, artist, duration) {
+  lyricLib: async function (song, artist, duration, _videoId, _audioTrackData, album) {
     const url = new URL(BetterLyrics.Constants.LRCLIB_API_URL);
     url.searchParams.append("track_name", song);
     url.searchParams.append("artist_name", artist);
+    if (album) {
+      url.searchParams.append("album_name", album);
+    }
     url.searchParams.append("duration", duration);
 
     const response = await fetch(url.toString(), {
@@ -289,7 +326,7 @@ BetterLyrics.LyricProviders = {
     const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
     const updateProvidersList = preferredProvider => {
-      BetterLyrics.LyricProviders.providersList = [BetterLyrics.LyricProviders.local, BetterLyrics.LyricProviders.ytCaptions];
+      BetterLyrics.LyricProviders.providersList = [BetterLyrics.LyricProviders.local, BetterLyrics.LyricProviders.cubey, BetterLyrics.LyricProviders.ytCaptions];
 
       const providerMap = {
         0: BetterLyrics.LyricProviders.bLyrics,
@@ -402,24 +439,27 @@ BetterLyrics.LyricProviders = {
         words: plainText.trim(),
         durationMs: duration,
         parts:
-          parts.length > 0
-            ? parts
-            : [
-              {
-                startTimeMs: startTime,
-                words: lyricPart,
-                durationMs: duration,
-              },
-            ],
+          parts.length > 0 ? parts : null
       });
     });
     result.forEach((lyric, index) => {
       if (index + 1 < result.length) {
-        const lastPart = lyric.parts[lyric.parts.length - 1];
-        lastPart.durationMs = result[index + 1].startTimeMs - lastPart.startTimeMs;
-        lyric.durationMs = lastPart.startTimeMs - lyric.startTimeMs;
+        const nextLyric = result[index + 1];
+        if (lyric.parts && lyric.parts.length > 0) {
+          const lastPartInLyric = lyric.parts[lyric.parts.length - 1];
+          lastPartInLyric.durationMs = nextLyric.startTimeMs - lastPartInLyric.startTimeMs;
+        }
+        if (lyric.durationMs === 0) {
+          lyric.durationMs = nextLyric.startTimeMs - lyric.startTimeMs;
+        }
       } else {
-        lyric.durationMs = songDuration - lyric.durationMs;
+        if (lyric.parts && lyric.parts.length > 0) {
+          const lastPartInLyric = lyric.parts[lyric.parts.length - 1];
+          lastPartInLyric.durationMs = songDuration - lastPartInLyric.startTimeMs;
+        }
+        if (lyric.durationMs === 0) {
+          lyric.durationMs = songDuration - lyric.startTimeMs;
+        }
       }
     });
 

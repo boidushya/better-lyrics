@@ -1,4 +1,4 @@
-const LYRIC_CACHE_VERSION = "1.0.0";
+const LYRIC_CACHE_VERSION = "1.1.0";
 
 BetterLyrics.Lyrics = {
   createLyrics: async function (detail) {
@@ -93,13 +93,19 @@ BetterLyrics.Lyrics = {
      */
     let requestCache = BetterLyrics.App.requestCache;
 
+
+    let album = null;
     for (let provider of BetterLyrics.LyricProviders.providersList) {
       try {
         if (requestCache.has(provider)) {
           lyrics = requestCache.get(provider);
         } else {
-          lyrics = await provider(song, artist, duration, videoId, audioTrackData);
+          lyrics = await provider(song, artist, duration, videoId, audioTrackData, album);
           requestCache.set(provider, lyrics);
+        }
+
+        if (lyrics && lyrics.album) {
+          album = lyrics.album;
         }
 
         if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
@@ -244,7 +250,7 @@ BetterLyrics.Lyrics = {
     lyrics.forEach((item, index) => {
       let line = document.createElement("div");
       line.dataset.time = parseFloat(item.startTimeMs) / 1000;
-      if (!item.parts || item.parts.length <= 1) {
+      if (!item.parts || item.parts.length === 0) {
         item.parts = [];
           const words = item.words.split(" ");
 
@@ -252,9 +258,9 @@ BetterLyrics.Lyrics = {
         words.forEach((word, index) => {
           word = word.trim().length < 1 ? word : word + " ";
           item.parts.push({
-            startTimeMs: parseFloat(item.startTimeMs) + len * 25,
+            startTimeMs: parseFloat(item.startTimeMs) + len * 15,
             words: word,
-            durationMs: word.length * 25
+            durationMs: word.length * 15
           });
           len += word.length;
         });
