@@ -92,7 +92,7 @@
 }
 
 .blyrics--active {
-  transform: scale(var(--blyrics-active-scale));
+  /*transform: scale(var(--blyrics-active-scale));*/
   cursor: default;
   animation-name: blyrics-wobble;
   animation-duration: 1s;
@@ -102,11 +102,10 @@
   background-position: 0 100%;
   transition-property: background-position;
   transition-timing-function: linear;
-  background: linear-gradient(to right, var(--blyrics-active-color), var(--blyrics-active-color) 50%, green 50%);
+  color: transparent;
+  background: linear-gradient(to right, var(--blyrics-active-color), var(--blyrics-active-color) 50%, var(--blyrics-inactive-color) 50%);
   background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-size: 200% 100%;
+  background-size: 201% 101%;
 }
 
 .blyrics-container > div > span.blyrics--active:not(.blyrics--animating) {
