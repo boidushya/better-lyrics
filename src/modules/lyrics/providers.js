@@ -326,7 +326,7 @@ BetterLyrics.LyricProviders = {
     const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
     const updateProvidersList = preferredProvider => {
-      BetterLyrics.LyricProviders.providersList = [BetterLyrics.LyricProviders.local, BetterLyrics.LyricProviders.cubey, BetterLyrics.LyricProviders.ytCaptions];
+      BetterLyrics.LyricProviders.providersList = [BetterLyrics.LyricProviders.cubey, BetterLyrics.LyricProviders.ytCaptions];
 
       const providerMap = {
         0: BetterLyrics.LyricProviders.bLyrics,

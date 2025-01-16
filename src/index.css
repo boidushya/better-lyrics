@@ -94,37 +94,32 @@
 .blyrics--active {
   /*transform: scale(var(--blyrics-active-scale));*/
   cursor: default;
-  animation-name: blyrics-wobble;
-  animation-duration: 1s;
 }
 
 .blyrics-container > div > span.blyrics--animating {
   background-position: 0 100%;
   transition-property: background-position;
   transition-timing-function: linear;
-  color: transparent;
-  background: linear-gradient(to right, var(--blyrics-active-color), var(--blyrics-active-color) 50%, var(--blyrics-inactive-color) 50%);
-  background-clip: text;
-  background-size: 201% 101%;
+  background-image: linear-gradient(to right, var(--blyrics-active-color), var(--blyrics-active-color) 50%, var(--blyrics-inactive-color) 50%);
+  background-color: transparent;
+  animation-name: blyrics-wobble;
+  animation-duration: 1s;
 }
 
 .blyrics-container > div > span.blyrics--active:not(.blyrics--animating) {
-  background-position: 100%;
+  background-color: var(--blyrics-active-color);
   transition: none;
-  color: var(--blyrics-active-color);
 }
 
-/*.blyrics-container > div > span:not(.blyrics--active):not() {*/
-/*}*/
-
-
 .blyrics-container > div > span {
-  color: var(--blyrics-inactive-color);
+  color: transparent;
+  background-color: var(--blyrics-inactive-color);
+  background-clip: text;
+  background-size: 201% 101%;
   display: inline-block;
 
   background-position: 100%;
-  transition-timing-function: ease;
-  transition-property: color;
+  transition: background-color 0.3s ease;
 }
 
 .blyrics-container > div > span:not(.blyrics--active) {

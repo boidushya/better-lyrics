@@ -376,7 +376,7 @@ BetterLyrics.DOM = {
                   isPlaying) {
                   // timing of animation is too wrong. reset and reflow so we can recalculate them
                   el.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
-                  el.classList.remove("blyrics--animating");
+                  el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
                   reflow(el);
                   el.dataset.animationStartTimeMs = "";
                 }
@@ -388,14 +388,14 @@ BetterLyrics.DOM = {
                 }
 
                 if ((currentTime < elTime + elDuration)) {
-                  el.classList.add("blyrics--animating");
+                  el.classList.add(BetterLyrics.Constants.ANIMATING_CLASS);
                 }
                 el.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
 
             } else {
               el.style.transitionDelay = "";
               el.style.animationDelay = "";
-              el.classList.remove("blyrics--animating");
+              el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
               if (el.dataset.animationStartTimeMs && Date.now() > parseFloat(el.dataset.animationStartTimeMs)) {
                 // the reflow will allow the color to transition smoothly
                 reflow(el);
@@ -412,12 +412,10 @@ BetterLyrics.DOM = {
             children.forEach((el) => {
               el.style.transitionDelay = "";
               el.style.animationDelay = "";
-              el.classList.remove("blyrics--animating");
-              el.classList.remove("blyrics--animating-missed");
+              el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
               if (el.dataset.animationStartTimeMs && Date.now() > parseFloat(el.dataset.animationStartTimeMs)) {
                 // the reflow will allow the color to transition smoothly
                 reflow(el);
-                el.dataset.animationStartTimeMs = "";
               }
               el.dataset.animationStartTimeMs = "";
               el.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
@@ -441,7 +439,7 @@ BetterLyrics.DOM = {
         BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
         let scrollPosOffset = Math.max(0, tabRendererHeight * topOffsetMultiplier - selectedLyricHeight / 2);
         let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
-        scrollPos = Math.min(lyricsHeight - tabRendererHeight, scrollPos);
+        scrollPos = Math.max(Math.min(lyricsHeight - tabRendererHeight, scrollPos), 0);
 
         if (
           Math.abs(scrollTop - scrollPos) > 2 &&
