@@ -374,10 +374,9 @@ BetterLyrics.DOM = {
                 if (el.dataset.animationStartTimeMs &&
                   Math.abs((Date.now() - parseFloat(el.dataset.animationStartTimeMs)) / 1000 - timeDelta) > 0.02 &&
                   isPlaying) {
-                  // timing of animation is too wrong. reset and reflow so we can recalculate them
+                  // timing of animation is too wrong. reset so we can recalculate them
                   el.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
                   el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
-                  reflow(el);
                   el.dataset.animationStartTimeMs = "";
                 }
 
@@ -388,6 +387,8 @@ BetterLyrics.DOM = {
                 }
 
                 if ((currentTime < elTime + elDuration)) {
+                  el.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
+                  reflow(el);
                   el.classList.add(BetterLyrics.Constants.ANIMATING_CLASS);
                 }
                 el.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
@@ -396,11 +397,8 @@ BetterLyrics.DOM = {
               el.style.transitionDelay = "";
               el.style.animationDelay = "";
               el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
-              if (el.dataset.animationStartTimeMs && Date.now() > parseFloat(el.dataset.animationStartTimeMs)) {
-                // the reflow will allow the color to transition smoothly
-                reflow(el);
-                el.dataset.animationStartTimeMs = "";
-              }
+              el.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
+              el.dataset.animationStartTimeMs = "";
               el.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
             }
           })
@@ -413,10 +411,7 @@ BetterLyrics.DOM = {
               el.style.transitionDelay = "";
               el.style.animationDelay = "";
               el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
-              if (el.dataset.animationStartTimeMs && Date.now() > parseFloat(el.dataset.animationStartTimeMs)) {
-                // the reflow will allow the color to transition smoothly
-                reflow(el);
-              }
+              el.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               el.dataset.animationStartTimeMs = "";
               el.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
             })
