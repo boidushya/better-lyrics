@@ -10,6 +10,7 @@ BetterLyrics.Constants = {
   LYRICS_CLASS: "blyrics-container",
   CURRENT_LYRICS_CLASS: "blyrics--active",
   ANIMATING_CLASS: "blyrics--animating",
+  PRE_ANIMATING_CLASS: "blyrics--pre-animating",
   TRANSLATED_LYRICS_CLASS: "blyrics--translated",
   ROMANIZED_LYRICS_CLASS: "blyrics--romanized",
   ERROR_LYRICS_CLASS: "blyrics--error",
