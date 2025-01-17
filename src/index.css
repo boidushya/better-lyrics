@@ -144,29 +144,30 @@
 }
 
 .blyrics-container > div > span::before {
-  position: absolute;
+  position: fixed;
   content: attr(data-content);
   top: -1rem;
   left: -1rem;
   white-space: nowrap;
   transition-property: none;
-  transition-duration: var(--blyrics-duration);
+  transition-duration: calc(var(--blyrics-duration) * 1.2);
   transition-delay: inherit;
   transition-timing-function: linear;
-  width: 0;
   overflow-x: hidden;
   padding-left: 1rem;
   padding-top:1rem;
   padding-bottom: 1rem;
   color: transparent;
+  width: 0;
   overflow-clip-margin: 1rem;
 }
 
 
 .blyrics-container > div > span.blyrics--animating::before {
   transition-property: width;
-  width: 100%;
-  animation: blyrics-glow 1s forwards ease;
+  width: 120%;
+
+  animation: blyrics-glow max(calc(var(--blyrics-duration) * 1.2), 1.2s) forwards ease;
   animation-delay: inherit;
 }
 
