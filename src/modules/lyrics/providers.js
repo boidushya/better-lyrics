@@ -215,6 +215,10 @@ BetterLyrics.LyricProviders = {
       lyricText = existingLyrics.innerText;
     }
 
+    if (lyricText.includes("Only the music you like in YouTube Music will show here.")) {
+      throw new Error("Lyrics didn't load properly");
+    }
+
     const source = document.querySelector(
       "#contents > ytmusic-description-shelf-renderer > yt-formatted-string.footer.style-scope.ytmusic-description-shelf-renderer"
     );

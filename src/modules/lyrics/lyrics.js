@@ -123,6 +123,7 @@ BetterLyrics.Lyrics = {
               BetterLyrics.Utils.log(
                 `Got lyrics from ${lyrics.source}, but they don't match yt lyrics. Rejecting: Match: ${matchAmount}%`
               );
+              lyrics = null;
               continue;
             }
           }
