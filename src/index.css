@@ -1,7 +1,7 @@
 :root {
   /* Colors */
   --blyrics-text-color: #fff;
-  --blyrics-background-color: rgba(0, 0, 0, 0.75);
+  --blyrics-background-color: color(display-p3 0 0 0 /0.75);
   --blyrics-highlight-color: rgba(255, 255, 255, 0.5);
   --blyrics-error-color: #fee2e2;
   --blyrics-footer-bg-color: hsla(0, 0%, 100%, 0.1);
@@ -9,6 +9,9 @@
   --blyrics-footer-text-color: #aaa;
   --blyrics-footer-link-color: #fff;
   --blyrics-discord-hover-color: #5865f2;
+  --blyrics-active-color: color(display-p3 1 1 1 /1);
+  --blyrics-inactive-color: color(display-p3 1 1 1 /0.3);;
+
 
   /* Typography */
   --blyrics-font-family: Satoshi, Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
@@ -25,8 +28,6 @@
   /* Animations */
   --blyrics-transition-duration: 0.166s;
   --blyrics-opacity-transition: 0.33s;
-  --blyrics-glow-duration: var(--blyrics-duration, 2s);
-  --blyrics-wobble-duration: calc(var(--blyrics-duration, 2s) / 2);
 
   /* Layout */
   --blyrics-padding: 2rem;
@@ -37,8 +38,6 @@
   --blyrics-blur-amount: 30px;
   --blyrics-scale: 0.95;
   --blyrics-active-scale: 1;
-  --blyrics-inactive-opacity: 0.33;
-  --blyrics-active-opacity: 1;
   --blyrics-translated-opacity: 0.6;
   --blyrics-error-opacity: 0.33;
   --blyrics-background-blur: 100px;
@@ -92,31 +91,86 @@
   padding-top: var(--blyrics-padding) !important;
 }
 
-.blyrics-container > div.blyrics--active {
-  transform: scale(var(--blyrics-active-scale));
+.blyrics--active {
+  /*transform: scale(var(--blyrics-active-scale));*/
+  cursor: default;
 }
 
-.blyrics-container > div > span {
-  opacity: var(--blyrics-inactive-opacity);
-  transition: opacity var(--blyrics-opacity-transition);
+@property --blyrics-animate-active-color {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
 }
+
+.blyrics-container > div > span.blyrics--animating {
+  background-position: 0 100%;
+  transition-property: background-position;
+  transition-timing-function: linear;
+  --blyrics-animate-active-color: 1;
+  animation: blyrics-wobble 1s forwards ease;
+}
+
+
+.blyrics-container > div > span.blyrics--pre-animating:not(.blyrics--animating) {
+  /*The transition is purposely very long for the background position when we deselect a lyric, so here we need to reset the background position
+  to zero so that the lyric is in a valid state for the karaoke transition to play*/
+  background-position: 100%;
+  --blyrics-animate-active-color: 1;
+  transition: none;
+}
+
+
+.blyrics-container > div > span {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, var(--blyrics-animate-active-color)), rgba(255, 255, 255 , var(--blyrics-animate-active-color)) 50%, var(--blyrics-inactive-color) 50%);
+  color: transparent;
+  background-clip: text;
+  background-size: 201% 101%;
+  display: inline-block;
+
+  background-position: 100%;
+  --blyrics-animate-active-color: 0.3;
+  transition: background-position 1s linear 1000s, --blyrics-animate-active-color ease;
+}
+
+.blyrics-container > div > span:not(.blyrics--animating) {
+  /*Controls the fade out time*/
+  transition-duration: 0.5s !important;
+}
+
+.blyrics-container > div > span::before {
+  position: fixed;
+  content: attr(data-content);
+  top: -1rem;
+  left: -1rem;
+  white-space: nowrap;
+  transition-property: none;
+  transition-duration: calc(var(--blyrics-duration) * 1.2);
+  transition-delay: inherit;
+  transition-timing-function: linear;
+  overflow-x: hidden;
+  padding-left: 1rem;
+  padding-top:1rem;
+  padding-bottom: 1rem;
+  color: transparent;
+  width: 0;
+  overflow-clip-margin: 1rem;
+}
+
+
+.blyrics-container > div > span.blyrics--animating::before {
+  transition-property: width;
+  width: 120%;
+
+  animation: blyrics-glow max(calc(var(--blyrics-duration) * 1.2), 1.2s) forwards ease;
+  animation-delay: inherit;
+}
+
 
 .blyrics-container > div > span:not(:empty):not(.blyrics--translated):not(.blyrics--romanized) {
   display: inline-block;
   white-space: pre-wrap;
 }
 
-.blyrics-container > div.blyrics--active > span:not(:empty):not(.blyrics--translated):not(.blyrics--romanized) {
-  cursor: default;
-  opacity: var(--blyrics-active-opacity);
-  animation: blyrics-glow var(--blyrics-glow-duration) forwards, blyrics-wobble var(--blyrics-wobble-duration) forwards;
-  animation-timing-function: ease, ease;
-}
-
-.blyrics-container > div.blyrics--active > span.blyrics--translated,
-.blyrics-container > div.blyrics--active > span.blyrics--romanized {
-  opacity: var(--blyrics-translated-opacity);
-}
 
 /* RTL support */
 #layout[blyrics-rtl-enabled] .blyrics-container > div {
@@ -351,14 +405,13 @@
 
 /* Player page styles */
 ytmusic-player-page:before {
-  background: linear-gradient(to right, var(--blyrics-background-color), var(--blyrics-background-color)),
-    var(--blyrics-background-img);
+  background: var(--blyrics-background-img);
   background-position: 50% !important;
   background-repeat: no-repeat;
   background-size: cover;
   bottom: 0;
   content: "";
-  filter: blur(var(--blyrics-background-blur)) saturate(var(--blyrics-background-saturate));
+  filter: saturate(var(--blyrics-background-saturate)) brightness(25%) blur(var(--blyrics-background-blur));
   left: 0;
   position: absolute;
   right: 0;
@@ -380,6 +433,7 @@ ytmusic-player-bar,
   display: block;
   font-size: var(--blyrics-translated-font-size);
   font-weight: var(--blyrics-translated-font-weight);
+  color: var(--blyrics-inactive-color);
   white-space: normal;
   line-height: 1.1;
   margin-top: 8px;
@@ -515,22 +569,18 @@ ytmusic-message-renderer.ytmusic-tab-renderer {
   display: none !important;
 }
 
-ytmusic-player-page:not([blyrics-stylized]) .blyrics-container > div.blyrics--active > span:not(:empty) {
-  animation: none !important;
-}
-
 /* Animations */
 @keyframes blyrics-wobble {
   from {
+    animation-timing-function: ease-out;
     transform: translateY(0px);
   }
-  15% {
-    transform: translateY(1.75px);
-  }
-  66.66% {
-    transform: translateY(-1.75px);
+  25% {
+    animation-timing-function: ease-in-out;
+    transform: translateY(-0.1em);
   }
   to {
+    animation-timing-function: ease-in;
     transform: translateY(0px);
   }
 }

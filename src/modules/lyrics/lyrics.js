@@ -1,4 +1,4 @@
-const LYRIC_CACHE_VERSION = "1.0.0";
+const LYRIC_CACHE_VERSION = "1.1.0";
 
 BetterLyrics.Lyrics = {
   createLyrics: async function (detail) {
@@ -93,13 +93,19 @@ BetterLyrics.Lyrics = {
      */
     let requestCache = BetterLyrics.App.requestCache;
 
+
+    let album = null;
     for (let provider of BetterLyrics.LyricProviders.providersList) {
       try {
         if (requestCache.has(provider)) {
           lyrics = requestCache.get(provider);
         } else {
-          lyrics = await provider(song, artist, duration, videoId, audioTrackData);
+          lyrics = await provider(song, artist, duration, videoId, audioTrackData, album);
           requestCache.set(provider, lyrics);
+        }
+
+        if (lyrics && lyrics.album) {
+          album = lyrics.album;
         }
 
         if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
@@ -117,6 +123,7 @@ BetterLyrics.Lyrics = {
               BetterLyrics.Utils.log(
                 `Got lyrics from ${lyrics.source}, but they don't match yt lyrics. Rejecting: Match: ${matchAmount}%`
               );
+              lyrics = null;
               continue;
             }
           }
@@ -243,17 +250,33 @@ BetterLyrics.Lyrics = {
 
     lyrics.forEach((item, index) => {
       let line = document.createElement("div");
-      line.dataset.time = item.startTimeMs / 1000;
+      line.dataset.time = parseFloat(item.startTimeMs) / 1000;
+      if (!item.parts || item.parts.length === 0) {
+        item.parts = [];
+          const words = item.words.split(" ");
 
-      // If the item is the last line and it is empty, set the padding to 0 !important to prevent
-      // the last line from being shown while keeping the second last line in sync.
-      if (index === lyrics.length - 1 && item.words === "") {
-        line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s; padding: 0 !important;";
-      } else {
-        line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s;";
+        let len = 0;
+        words.forEach((word, index) => {
+          word = word.trim().length < 1 ? word : word + " ";
+          item.parts.push({
+            startTimeMs: parseFloat(item.startTimeMs) + len * 15,
+            words: word,
+            durationMs: word.length * 15
+          });
+          len += word.length;
+        });
       }
 
-      const words = item.words.split(" ");
+      item.parts.forEach(part => {
+        let span = document.createElement("span");
+        span.textContent = part.words;
+        span.dataset.time = part.startTimeMs / 1000;
+        span.dataset.duration = part.durationMs / 1000;
+        span.dataset.content = part.words;
+        span.style.transitionDuration = part.durationMs + "ms";
+        span.style.setProperty("--blyrics-duration", (part.durationMs / 1000) + "s");
+        line.appendChild(span);
+      });
 
       if (!allZero) {
         line.setAttribute("data-scrolled", false);
@@ -270,20 +293,12 @@ BetterLyrics.Lyrics = {
         line.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
       }
 
-      words.forEach((word, index) => {
-        let span = document.createElement("span");
-        span.style.transitionDelay = `${index * 0.05}s`;
-        span.style.animationDelay = `${index * 0.05}s`;
-        span.textContent = words.length <= 1 ? word : word + " ";
-        line.appendChild(span);
-      });
-
       const wrapper = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
 
       langPromise.then(source_language => {
         BetterLyrics.Translation.onRomanizationEnabled(
           async () => {
-            let romanizedLine = document.createElement("span");
+            let romanizedLine = document.createElement("div");
             romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
 
             if (BetterLyrics.Constants.romanizationLanguages.includes(source_language)) {
@@ -309,7 +324,7 @@ BetterLyrics.Lyrics = {
           },
           async () => {
             BetterLyrics.Translation.onTranslationEnabled(async items => {
-              let translatedLine = document.createElement("span");
+              let translatedLine = document.createElement("div");
               translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
 
               let target_language = items.translationLanguage || "en";

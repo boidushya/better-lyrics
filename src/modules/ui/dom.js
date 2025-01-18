@@ -290,12 +290,12 @@ BetterLyrics.DOM = {
   /**
    * Time in seconds to offset lyric highlighting by
    */
-  lyricTimeOffset: 0.115,
+  lyricTimeOffset: 0.015,
   /**
    * Time in seconds before lyric highlight to begin scroll to the next lyric
    */
   lyricScrollTimeOffset: 0.2,
-  tickLyrics: function (currentTime) {
+  tickLyrics: function (currentTime, isPlaying = true) {
     if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
       return;
     }
@@ -347,20 +347,71 @@ BetterLyrics.DOM = {
           }
           BetterLyrics.DOM.selectedElementIndex = index;
           elem.setAttribute("data-scrolled", true);
-        } else {
-          elem.setAttribute("data-scrolled", false);
-        }
-
-        if (currentTime >= time && currentTime < nextTime) {
-          const timeDelta = currentTime - time;
-          if (!elem.classList.contains(BetterLyrics.Constants.CURRENT_LYRICS_CLASS) && timeDelta > 0.05 && index > 0) {
-            BetterLyrics.Utils.log(
-              `[BetterLyrics] Highlighting next lyric was late, dt: ${(currentTime - time).toFixed(5)}s`
-            );
-          }
           elem.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
         } else {
+          elem.setAttribute("data-scrolled", false);
           elem.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
+        }
+
+
+        /**
+         * Time in seconds to set up animations. This shouldn't affect any visible effects, just help when the browser stutters
+         * @type {number}
+         */
+        let setUpAnimationEarlyTime = 2;
+
+        if (!isPlaying) {
+          setUpAnimationEarlyTime = 0;
+        }
+        if (currentTime + setUpAnimationEarlyTime >= time && currentTime < nextTime) {
+          elem.dataset.selected = true;
+          let children = [...elem.children];
+          children.forEach((el, index) => {
+            let elTime = parseFloat(el.dataset.time);
+            let elDuration = parseFloat(el.dataset.duration);
+
+            if (currentTime + setUpAnimationEarlyTime >= elTime) {
+              const timeDelta = currentTime - elTime;
+
+                if (el.dataset.animationStartTimeMs &&
+                  Math.abs((Date.now() - parseFloat(el.dataset.animationStartTimeMs)) / 1000 - timeDelta) > 0.02 &&
+                  isPlaying) {
+                  // timing of animation is too wrong. reset so we can recalculate them
+                  el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
+                  el.dataset.animationStartTimeMs = "";
+                }
+
+                if (!el.classList.contains(BetterLyrics.Constants.ANIMATING_CLASS)) {
+                  el.style.transitionDelay = -timeDelta + "s";
+                  el.style.animationDelay = -timeDelta + "s";
+                  el.dataset.animationStartTimeMs = Date.now() - timeDelta * 1000;
+                  el.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
+                  reflow(el);
+                  el.classList.add(BetterLyrics.Constants.ANIMATING_CLASS);
+                }
+            } else {
+              el.style.transitionDelay = "";
+              el.style.animationDelay = "";
+              el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
+              el.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
+              el.dataset.animationStartTimeMs = "";
+            }
+          })
+
+        } else {
+          let selected = elem.dataset.selected === "true";
+          if (selected) {
+            let children = [...elem.children];
+            children.forEach((el) => {
+              el.style.transitionDelay = "";
+              el.style.animationDelay = "";
+              el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
+              el.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
+              el.dataset.animationStartTimeMs = "";
+            })
+            elem.dataset.selected = false;
+
+          }
         }
 
         return true;
@@ -377,7 +428,7 @@ BetterLyrics.DOM = {
         BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
         let scrollPosOffset = Math.max(0, tabRendererHeight * topOffsetMultiplier - selectedLyricHeight / 2);
         let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
-        scrollPos = Math.min(lyricsHeight - tabRendererHeight, scrollPos);
+        scrollPos = Math.max(Math.min(lyricsHeight - tabRendererHeight, scrollPos), 0);
 
         if (
           Math.abs(scrollTop - scrollPos) > 2 &&
@@ -506,4 +557,8 @@ function toMs(cssDuration) {
   } else {
     return cssDuration.value;
   }
+}
+
+function reflow(elt){
+  void(elt.offsetHeight);
 }
