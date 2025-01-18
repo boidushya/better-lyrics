@@ -294,7 +294,7 @@ BetterLyrics.DOM = {
   /**
    * Time in seconds before lyric highlight to begin scroll to the next lyric
    */
-  lyricScrollTimeOffset: 0.3,
+  lyricScrollTimeOffset: 0.2,
   tickLyrics: function (currentTime, isPlaying = true) {
     if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
       return;
@@ -347,8 +347,10 @@ BetterLyrics.DOM = {
           }
           BetterLyrics.DOM.selectedElementIndex = index;
           elem.setAttribute("data-scrolled", true);
+          elem.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
         } else {
           elem.setAttribute("data-scrolled", false);
+          elem.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
         }
 
 
@@ -375,31 +377,24 @@ BetterLyrics.DOM = {
                   Math.abs((Date.now() - parseFloat(el.dataset.animationStartTimeMs)) / 1000 - timeDelta) > 0.02 &&
                   isPlaying) {
                   // timing of animation is too wrong. reset so we can recalculate them
-                  el.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
                   el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
                   el.dataset.animationStartTimeMs = "";
                 }
 
-                if (!el.classList.contains(BetterLyrics.Constants.CURRENT_LYRICS_CLASS)) {
+                if (!el.classList.contains(BetterLyrics.Constants.ANIMATING_CLASS)) {
                   el.style.transitionDelay = -timeDelta + "s";
                   el.style.animationDelay = -timeDelta + "s";
                   el.dataset.animationStartTimeMs = Date.now() - timeDelta * 1000;
-                }
-
-                if ((currentTime < elTime + elDuration)) {
                   el.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
                   reflow(el);
                   el.classList.add(BetterLyrics.Constants.ANIMATING_CLASS);
                 }
-                el.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
-
             } else {
               el.style.transitionDelay = "";
               el.style.animationDelay = "";
               el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
               el.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               el.dataset.animationStartTimeMs = "";
-              el.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
             }
           })
 
@@ -413,7 +408,6 @@ BetterLyrics.DOM = {
               el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
               el.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               el.dataset.animationStartTimeMs = "";
-              el.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
             })
             elem.dataset.selected = false;
 
