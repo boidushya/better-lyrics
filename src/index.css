@@ -110,14 +110,8 @@
   animation: blyrics-wobble 1s forwards ease;
 }
 
-.blyrics-container > div > span.blyrics--active:not(.blyrics--animating) {
-  /*Force highlight something without playing any animation*/
-  background-position: 0 100%;
-  --blyrics-animate-active-color: 1;
-  transition: none;
-}
 
-.blyrics-container > div > span.blyrics--pre-animating:not(.blyrics--active) {
+.blyrics-container > div > span.blyrics--pre-animating:not(.blyrics--animating) {
   /*The transition is purposely very long for the background position when we deselect a lyric, so here we need to reset the background position
   to zero so that the lyric is in a valid state for the karaoke transition to play*/
   background-position: 100%;
@@ -138,7 +132,7 @@
   transition: background-position 1s linear 1000s, --blyrics-animate-active-color ease;
 }
 
-.blyrics-container > div > span:not(.blyrics--active) {
+.blyrics-container > div > span:not(.blyrics--animating) {
   /*Controls the fade out time*/
   transition-duration: 0.5s !important;
 }
