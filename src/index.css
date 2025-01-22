@@ -370,7 +370,6 @@ ytmusic-player-page:before {
 /* Player bar styles */
 ytmusic-player-bar,
 #player-bar-background {
-  /* width: 100% !important; */
   backdrop-filter: blur(var(--blyrics-blur-amount));
 }
 
