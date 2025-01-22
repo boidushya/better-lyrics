@@ -60,6 +60,7 @@
 	- [How do I translate lyrics?](#how-do-i-translate-lyrics)
 	- [Can I contribute to Better Lyrics?](#can-i-contribute-to-better-lyrics)
 	- [Some lyrics are out of sync/missing/incorrect. What can I do?](#some-lyrics-are-out-of-syncmissingincorrect-what-can-i-do)
+	- [How do I contribute lyrics?](#how-do-i-contribute-lyrics)
 	- [How do I report a bug?](#how-do-i-report-a-bug)
 	- [I don't like the new update. Can I revert to the old version?](#i-dont-like-the-new-update-can-i-revert-to-the-old-version)
 	- [How do I support the project?](#how-do-i-support-the-project)
@@ -201,7 +202,22 @@ Yes you can! Please follow the contributing guidelines below.
 
 ### Some lyrics are out of sync/missing/incorrect. What can I do?
 
-Right now, the extension uses a wrapper around a third-party API to fetch lyrics. Unfortunately, this API is not always accurate. I have plans in my [roadmap](https://github.com/boidushya/better-lyrics/issues/4) to improve this, but it will take some time. If you'd like to help / have any ideas, please consider contributing to the project!
+If you find any issues with lyrics, you now have two options:
+
+1. Switch to a different lyrics provider in the extension settings to see if the lyrics are better there
+2. Contribute your own lyrics using our new LRCLib upload tool at [https://lrclibup.boidu.dev](https://lrclibup.boidu.dev)
+
+The LRCLib upload tool allows you to submit correct, properly synchronized lyrics that will be available to all users who use the LRCLib provider. This is a community-driven approach to improving lyrics quality.
+
+### How do I contribute lyrics?
+
+You can now contribute lyrics using our new LRCLib upload tool:
+
+1. Visit [https://lrclibup.boidu.dev](https://lrclibup.boidu.dev)
+2. Follow the tool's interface to upload and synchronize lyrics
+3. Submit your contribution
+
+This helps improve the lyrics database for all Better Lyrics users who use the LRCLib provider.
 
 ### How do I report a bug?
 
@@ -230,7 +246,15 @@ Better Lyrics is currently only available for desktop browsers. However, if you 
 
 ### Can I use a different lyrics provider?
 
-No, Better Lyrics uses a custom backend to fetch lyrics. This is to ensure a smooth, reliable & consistent experience for all users. The backend is open-source and maintained by the author and cannot be changed yet. If you'd like to help / have any ideas, please consider contributing to the project!
+Yes! Better Lyrics now supports switching between different lyrics providers. You can change your provider in the extension settings:
+
+1. Click on the Better Lyrics icon in the extensions toolbar
+2. Go to "General" settings
+3. Under "Default Lyrics Provider", you can choose between:
+   - Better Lyrics (default)
+   - LRCLib
+
+However, right now, adding a custom lyrics provider is not supported.
 
 ### Can I use Better Lyrics on other browsers?
 
