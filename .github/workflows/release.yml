@@ -122,7 +122,7 @@ jobs:
     if: needs.build.outputs.RELEASE_EXISTS == 'false'
     env:
       CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
-      CLIENT_SECRET: ${{ secrets.EDGE_CLIENT_SECRET }}
+      API_KEY: ${{ secrets.EDGE_API_KEY }}
       PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
 
     steps:
