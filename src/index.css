@@ -451,7 +451,6 @@ ytmusic-app[blyrics-stylized] #layout[player-ui-state="PLAYER_PAGE_OPEN"] #playe
 ytmusic-app[blyrics-stylized] ytmusic-player-bar,
 ytmusic-app[blyrics-stylized] #player-bar-background {
   backdrop-filter: blur(var(--blyrics-blur-amount));
-  /* width: 100% !important; */
 }
 
 /* Utility classes and overrides */
