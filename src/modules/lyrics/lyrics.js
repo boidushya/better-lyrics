@@ -249,11 +249,9 @@ BetterLyrics.Lyrics = {
     });
 
     lyrics.forEach((item, index) => {
-      let line = document.createElement("div");
-      line.dataset.time = parseFloat(item.startTimeMs) / 1000;
       if (!item.parts || item.parts.length === 0) {
         item.parts = [];
-          const words = item.words.split(" ");
+        const words = item.words.split(" ");
 
         let len = 0;
         words.forEach((word, index) => {
@@ -267,6 +265,9 @@ BetterLyrics.Lyrics = {
         });
       }
 
+      let line = document.createElement("div");
+      line.dataset.time = parseFloat(item.startTimeMs) / 1000;
+
       item.parts.forEach(part => {
         let span = document.createElement("span");
         span.textContent = part.words;
@@ -274,7 +275,7 @@ BetterLyrics.Lyrics = {
         span.dataset.duration = part.durationMs / 1000;
         span.dataset.content = part.words;
         span.style.transitionDuration = part.durationMs + "ms";
-        span.style.setProperty("--blyrics-duration", (part.durationMs / 1000) + "s");
+        span.style.setProperty("--blyrics-duration", part.durationMs + "ms");
         line.appendChild(span);
       });
 
