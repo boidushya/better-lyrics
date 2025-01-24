@@ -367,7 +367,7 @@ BetterLyrics.DOM = {
           elem.dataset.selected = true;
           let children = [...elem.children];
           children.forEach((el, index) => {
-            let elTime = parseFloat(el.dataset.time);
+            let elTime = parseFloat(el.dataset.time) - el.dataset.duration * 0.2; //correct for the animation not starting at 0% and instead at -20%
             let elDuration = parseFloat(el.dataset.duration);
 
             if (currentTime + setUpAnimationEarlyTime >= elTime) {

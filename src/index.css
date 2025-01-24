@@ -108,7 +108,13 @@
   transform: translateY(0px);
 }
 
-@property --lyric-transition-amount {
+@property --lyric-transition-amount-start {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --lyric-transition-amount-end {
   syntax: "<number>";
   inherits: false;
   initial-value: 0;
@@ -124,12 +130,13 @@
   padding: 2em;
   color: transparent;
   box-sizing: content-box;
-  mask-image: linear-gradient(90deg, white calc(100% * var(--lyric-transition-amount) - 4em * var(--lyric-transition-amount) + 2em), black calc(100% * var(--lyric-transition-amount) - 4em * var(--lyric-transition-amount) + 2em + 1px));
+  mask-image: linear-gradient(90deg, white calc(100% * var(--lyric-transition-amount-start) - 4em * var(--lyric-transition-amount-start) + 2em), black calc(100% * var(--lyric-transition-amount-end) - 4em * var(--lyric-transition-amount-end) + 2em + 1px));
   mask-mode: luminance;
   width: 100%;
 
-  --lyric-transition-amount: -0.01;
-  transition: color 0.5s ease, --lyric-transition-amount 1s linear 1000s;
+  --lyric-transition-amount-start: -0.20;
+  --lyric-transition-amount-end: -0.10;
+  transition: color 0.5s ease, --lyric-transition-amount-start 1s linear 1000s, --lyric-transition-amount-end 1s linear 1000s;
 
 }
 
@@ -137,7 +144,9 @@
   /*The transition is purposely very long for the background position when we deselect a lyric, so here we need to reset the background position
   to zero so that the lyric is in a valid state for the karaoke transition to play*/
   transition: none;
-  --lyric-transition-amount: -0.01;
+  --lyric-transition-amount-start: -0.20;
+  --lyric-transition-amount-end: -0.10;
+
   color: var(--blyrics-active-color);
 }
 
@@ -147,9 +156,10 @@
   animation: blyrics-glow max(calc(var(--blyrics-duration) * 1.2), 1.2s) forwards ease;
   animation-delay: inherit;
 
-  --lyric-transition-amount: 1;
-  transition-property: --lyric-transition-amount;
-  transition-duration: calc(var(--blyrics-duration) * 1.2);
+  --lyric-transition-amount-start: 1.4;
+  --lyric-transition-amount-end: 1.5;
+  transition-property: --lyric-transition-amount-start, --lyric-transition-amount-end;
+  transition-duration: calc(var(--blyrics-duration) * 1.4);
   transition-delay: inherit;
   transition-timing-function: linear;
 }
