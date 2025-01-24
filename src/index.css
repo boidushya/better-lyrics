@@ -108,40 +108,50 @@
   transform: translateY(0px);
 }
 
+@property --lyric-transition-amount {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
 .blyrics-container > div > span::after {
   transform: translateY(0px);
   position: absolute;
   content: attr(data-content);
-  top: -1rem;
-  left: -1rem;
+  top: -2em;
+  left: -2em;
   white-space: pre;
-  overflow-x: hidden;
-  padding-left: 1rem;
-  padding-top:1rem;
-  padding-bottom: 1rem;
+  padding: 2em;
   color: transparent;
-  transition: color 0.5s ease, width 1s linear 1000s;
+  box-sizing: content-box;
+  mask-image: linear-gradient(90deg, white calc(100% * var(--lyric-transition-amount) - 4em * var(--lyric-transition-amount) + 2em), black calc(100% * var(--lyric-transition-amount) - 4em * var(--lyric-transition-amount) + 2em + 1px));
+  mask-mode: luminance;
   width: 100%;
+
+  --lyric-transition-amount: -0.01;
+  transition: color 0.5s ease, --lyric-transition-amount 1s linear 1000s;
+
 }
 
 .blyrics-container > div > span.blyrics--pre-animating:not(.blyrics--animating)::after {
   /*The transition is purposely very long for the background position when we deselect a lyric, so here we need to reset the background position
   to zero so that the lyric is in a valid state for the karaoke transition to play*/
-  width: 0;
   transition: none;
+  --lyric-transition-amount: -0.01;
   color: var(--blyrics-active-color);
 }
 
 .blyrics-container > div > span.blyrics--animating::after {
-  transition-property: width;
-  width: 120%;
   color: var(--blyrics-active-color);
 
+  animation: blyrics-glow max(calc(var(--blyrics-duration) * 1.2), 1.2s) forwards ease;
+  animation-delay: inherit;
+
+  --lyric-transition-amount: 1;
+  transition-property: --lyric-transition-amount;
   transition-duration: calc(var(--blyrics-duration) * 1.2);
   transition-delay: inherit;
   transition-timing-function: linear;
-  animation: blyrics-glow max(calc(var(--blyrics-duration) * 1.2), 1.2s) forwards ease;
-  animation-delay: inherit;
 }
 
 
