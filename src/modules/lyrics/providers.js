@@ -45,9 +45,8 @@ BetterLyrics.LyricProviders = {
 
   providersList: [],
 
-
-  cubey: async function(song, artist, duration, videoId, _audioTrackData){
-    const  url = new URL("https://lyrics.api.dacubeking.com/");
+  cubey: async function (song, artist, duration, videoId, _audioTrackData) {
+    const url = new URL("https://lyrics.api.dacubeking.com/");
     url.searchParams.append("song", song);
     url.searchParams.append("artist", artist);
     url.searchParams.append("duration", duration);
@@ -57,7 +56,7 @@ BetterLyrics.LyricProviders = {
     if (response.album) {
       BetterLyrics.Utils.log("Found Album: " + response.album);
     }
-    let lyrics= null;
+    let lyrics = null;
     try {
       if (response.lyrics) {
         lyrics = BetterLyrics.LyricProviders.parseLRC(response.lyrics, duration);
@@ -75,12 +74,13 @@ BetterLyrics.LyricProviders = {
     };
   },
 
-  local: async function(song, artist, duration, videoId, _audioTrackData){
-    const  url = new URL("http://127.0.0.1:5000");
+  // biome-ignore lint: useful for local debugging
+  local: async function (song, artist, duration, videoId, _audioTrackData) {
+    const url = new URL("http://127.0.0.1:5000");
     url.searchParams.append("videoId", videoId);
     let response = await fetch(url).then(r => r.json());
 
-    let lyrics= null;
+    let lyrics = null;
     try {
       if (response.lyrics) {
         lyrics = BetterLyrics.LyricProviders.parseLRC(response.lyrics, duration);
@@ -104,7 +104,7 @@ BetterLyrics.LyricProviders = {
     url.searchParams.append("a", artist);
     url.searchParams.append("d", duration);
 
-    const response = await fetch(url.toString(), {signal: AbortSignal.timeout(10000)});
+    const response = await fetch(url.toString(), { signal: AbortSignal.timeout(10000) });
 
     if (!response.ok) {
       throw new Error(`${BetterLyrics.Constants.HTTP_ERROR_LOG} ${response.status}`);
@@ -323,14 +323,17 @@ BetterLyrics.LyricProviders = {
         durationMs: event.dDurationMs,
       });
     });
-    return {lyrics: lyricsArray, language: langCode, source: "Youtube Captions", sourceHref: ""};
+    return { lyrics: lyricsArray, language: langCode, source: "Youtube Captions", sourceHref: "" };
   },
 
   initProviders: function () {
     const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
     const updateProvidersList = preferredProvider => {
-      BetterLyrics.LyricProviders.providersList = [BetterLyrics.LyricProviders.cubey, BetterLyrics.LyricProviders.ytCaptions];
+      BetterLyrics.LyricProviders.providersList = [
+        BetterLyrics.LyricProviders.cubey,
+        BetterLyrics.LyricProviders.ytCaptions,
+      ];
 
       const providerMap = {
         0: BetterLyrics.LyricProviders.bLyrics,
@@ -356,12 +359,12 @@ BetterLyrics.LyricProviders = {
       }
     });
 
-    browserAPI.storage.sync.get({preferredProvider: 0}, function (items) {
+    browserAPI.storage.sync.get({ preferredProvider: 0 }, function (items) {
       updateProvidersList(items.preferredProvider);
     });
   },
   parseLRC: function (lrcText, songDuration) {
-    const lines = lrcText.split('\n');
+    const lines = lrcText.split("\n");
     const result = [];
     const idTags = {};
     const possibleIdTags = ["ti", "ar", "al", "au", "lr", "length", "by", "offset", "re", "tool", "ve", "#"];
@@ -398,20 +401,20 @@ BetterLyrics.LyricProviders = {
 
       if (timeTags.length === 0) return; // Skip lines without time tags
 
-      const lyricPart = line.replace(timeTagRegex, '').trim();
+      const lyricPart = line.replace(timeTagRegex, "").trim();
 
       // Extract enhanced lyrics (if available)
       const parts = [];
       let lastTime = null;
-      let plainText = '';
+      let plainText = "";
 
       lyricPart.split(enhancedWordRegex).forEach((fragment, index) => {
         if (index % 2 === 0) {
           // This is a word or plain text segment
-          if (fragment.length > 0 && fragment[0] === ' ') {
+          if (fragment.length > 0 && fragment[0] === " ") {
             fragment = fragment.substring(1);
           }
-          if (fragment.length > 0 && fragment[fragment.length - 1] === ' ') {
+          if (fragment.length > 0 && fragment[fragment.length - 1] === " ") {
             fragment = fragment.substring(0, fragment.length - 1);
           }
           plainText += fragment;
@@ -426,7 +429,7 @@ BetterLyrics.LyricProviders = {
           }
           parts.push({
             startTimeMs: startTime,
-            words: '',
+            words: "",
             durationMs: 0,
           });
           lastTime = startTime;
@@ -442,8 +445,7 @@ BetterLyrics.LyricProviders = {
         startTimeMs: startTime,
         words: plainText.trim(),
         durationMs: duration,
-        parts:
-          parts.length > 0 ? parts : null
+        parts: parts.length > 0 ? parts : null,
       });
     });
     result.forEach((lyric, index) => {

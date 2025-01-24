@@ -353,7 +353,6 @@ BetterLyrics.DOM = {
           elem.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
         }
 
-
         /**
          * Time in seconds to set up animations. This shouldn't affect any visible effects, just help when the browser stutters
          * @type {number}
@@ -373,22 +372,24 @@ BetterLyrics.DOM = {
             if (currentTime + setUpAnimationEarlyTime >= elTime) {
               const timeDelta = currentTime - elTime;
 
-                if (el.dataset.animationStartTimeMs &&
-                  Math.abs((Date.now() - parseFloat(el.dataset.animationStartTimeMs)) / 1000 - timeDelta) > 0.02 &&
-                  isPlaying) {
-                  // timing of animation is too wrong. reset so we can recalculate them
-                  el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
-                  el.dataset.animationStartTimeMs = "";
-                }
+              if (
+                el.dataset.animationStartTimeMs &&
+                Math.abs((Date.now() - parseFloat(el.dataset.animationStartTimeMs)) / 1000 - timeDelta) > 0.02 &&
+                isPlaying
+              ) {
+                // timing of animation is too wrong. reset so we can recalculate them
+                el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
+                el.dataset.animationStartTimeMs = "";
+              }
 
-                if (!el.classList.contains(BetterLyrics.Constants.ANIMATING_CLASS)) {
-                  el.style.transitionDelay = -timeDelta + "s";
-                  el.style.animationDelay = -timeDelta + "s";
-                  el.dataset.animationStartTimeMs = Date.now() - timeDelta * 1000;
-                  el.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
-                  reflow(el);
-                  el.classList.add(BetterLyrics.Constants.ANIMATING_CLASS);
-                }
+              if (!el.classList.contains(BetterLyrics.Constants.ANIMATING_CLASS)) {
+                el.style.transitionDelay = -timeDelta + "s";
+                el.style.animationDelay = -timeDelta + "s";
+                el.dataset.animationStartTimeMs = Date.now() - timeDelta * 1000;
+                el.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
+                reflow(el);
+                el.classList.add(BetterLyrics.Constants.ANIMATING_CLASS);
+              }
             } else {
               el.style.transitionDelay = "";
               el.style.animationDelay = "";
@@ -396,21 +397,19 @@ BetterLyrics.DOM = {
               el.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               el.dataset.animationStartTimeMs = "";
             }
-          })
-
+          });
         } else {
           let selected = elem.dataset.selected === "true";
           if (selected) {
             let children = [...elem.children];
-            children.forEach((el) => {
+            children.forEach(el => {
               el.style.transitionDelay = "";
               el.style.animationDelay = "";
               el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
               el.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               el.dataset.animationStartTimeMs = "";
-            })
+            });
             elem.dataset.selected = false;
-
           }
         }
 
@@ -559,6 +558,7 @@ function toMs(cssDuration) {
   }
 }
 
-function reflow(elt){
+function reflow(elt) {
+  // biome-ignore lint: auto-formater does incorrect stuff
   void(elt.offsetHeight);
 }

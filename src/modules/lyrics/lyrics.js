@@ -93,7 +93,6 @@ BetterLyrics.Lyrics = {
      */
     let requestCache = BetterLyrics.App.requestCache;
 
-
     let album = null;
     for (let provider of BetterLyrics.LyricProviders.providersList) {
       try {
@@ -259,7 +258,7 @@ BetterLyrics.Lyrics = {
           item.parts.push({
             startTimeMs: parseFloat(item.startTimeMs) + len * 15,
             words: word,
-            durationMs: word.length * 15
+            durationMs: word.length * 15,
           });
           len += word.length;
         });
