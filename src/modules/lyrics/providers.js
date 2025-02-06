@@ -51,7 +51,7 @@ BetterLyrics.LyricProviders = {
     url.searchParams.append("artist", artist);
     url.searchParams.append("duration", duration);
     url.searchParams.append("videoId", videoId);
-    url.searchParams.append("enhanced", true);
+    url.searchParams.append("enhanced", false);
     let response = await fetch(url).then(r => r.json());
     if (response.album) {
       BetterLyrics.Utils.log("Found Album: " + response.album);
