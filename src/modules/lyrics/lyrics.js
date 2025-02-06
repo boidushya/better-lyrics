@@ -91,7 +91,14 @@ BetterLyrics.Lyrics = {
 
         if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
           if (!ytLyrics) {
-            ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(song, artist, duration, videoId, audioTrackData, album);
+            ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(
+              song,
+              artist,
+              duration,
+              videoId,
+              audioTrackData,
+              album
+            );
           }
           if (ytLyrics.text !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
             let lyricText = "";
@@ -118,7 +125,7 @@ BetterLyrics.Lyrics = {
     }
 
     if (!ytLyrics) {
-      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(song, artist,duration, videoId, audioTrackData, album);
+      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(song, artist, duration, videoId, audioTrackData, album);
     }
 
     if (!lyrics) {
@@ -238,15 +245,13 @@ BetterLyrics.Lyrics = {
         item.parts = [];
         const words = item.words.split(" ");
 
-        let len = 0;
         words.forEach((word, index) => {
           word = word.trim().length < 1 ? word : word + " ";
           item.parts.push({
-            startTimeMs: parseFloat(item.startTimeMs) + len * 50,
+            startTimeMs: parseFloat(item.startTimeMs) + index * 50,
             words: word,
             durationMs: 0,
           });
-          len += 1;
         });
       }
 

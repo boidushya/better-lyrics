@@ -8,9 +8,8 @@
   --blyrics-footer-text-color: #aaa;
   --blyrics-footer-link-color: #fff;
   --blyrics-discord-hover-color: #5865f2;
-  --blyrics-active-color: color(display-p3 1 1 1 /1);
-  --blyrics-inactive-color: color(display-p3 1 1 1 /0.3);
-
+  --blyrics-active-color: color(display-p3 1 1 1 / 1);
+  --blyrics-inactive-color: color(display-p3 1 1 1 / 0.3);
 
   /* Typography */
   --blyrics-font-family: Satoshi, Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
@@ -46,7 +45,6 @@
   /*Lyric Transition Properties */
   --blyrics-lyric-transition-duration: 0.3s;
   --blyrics-lyric-transition-timing-function: ease;
-
 
   /* Gradient stops */
   --blyrics-gradient-stops:
@@ -139,23 +137,27 @@
   padding: 2rem;
   color: var(--blyrics-active-color);
   box-sizing: content-box;
-  mask-image: linear-gradient(90deg, white calc(100% * var(--lyric-transition-amount-start) - 4rem * var(--lyric-transition-amount-start) + 2rem), black calc(100% * var(--lyric-transition-amount-end) - 4rem * var(--lyric-transition-amount-end) + 2rem + 1px));
+  mask-image: linear-gradient(
+    90deg,
+    white calc(100% * var(--lyric-transition-amount-start) - 4rem * var(--lyric-transition-amount-start) + 2rem),
+    black calc(100% * var(--lyric-transition-amount-end) - 4rem * var(--lyric-transition-amount-end) + 2rem + 1px)
+  );
   mask-mode: luminance;
   width: 100%;
 
   opacity: 0;
-  --lyric-transition-amount-start: -0.20;
-  --lyric-transition-amount-end: -0.10;
-  transition: opacity 0.5s ease, --lyric-transition-amount-start 1s linear 1000s, --lyric-transition-amount-end 1s linear 1000s;
-
+  --lyric-transition-amount-start: -0.2;
+  --lyric-transition-amount-end: -0.1;
+  transition: opacity 0.5s ease, --lyric-transition-amount-start 1s linear 1000s, --lyric-transition-amount-end 1s
+    linear 1000s;
 }
 
 .blyrics-container > div > span.blyrics--pre-animating:not(.blyrics--animating)::after {
   /*The transition is purposely very long for the background position when we deselect a lyric, so here we need to reset the background position
   to zero so that the lyric is in a valid state for the karaoke transition to play*/
   transition: none;
-  --lyric-transition-amount-start: -0.20;
-  --lyric-transition-amount-end: -0.10;
+  --lyric-transition-amount-start: -0.2;
+  --lyric-transition-amount-end: -0.1;
   opacity: 0;
 }
 
@@ -171,17 +173,16 @@
   --lyric-transition-amount-start: 1.4;
   --lyric-transition-amount-end: 1.5;
   transition-property: opacity, --lyric-transition-amount-start, --lyric-transition-amount-end;
-  transition-duration: var(--blyrics-opacity-transition), calc(var(--blyrics-duration) * 1.6), calc(var(--blyrics-duration) * 1.6);
+  transition-duration: var(--blyrics-opacity-transition), calc(var(--blyrics-duration) * 1.6),
+    calc(var(--blyrics-duration) * 1.6);
   transition-timing-function: ease, linear, linear;
   transition-delay: inherit;
 }
-
 
 .blyrics-container > div > span:not(:empty):not(.blyrics--translated):not(.blyrics--romanized) {
   display: inline-block;
   white-space: pre-wrap;
 }
-
 
 /* RTL support */
 #layout[blyrics-rtl-enabled] .blyrics-container > div {

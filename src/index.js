@@ -62,7 +62,7 @@ BetterLyrics.App = {
   },
 
   init: function () {
-      document.addEventListener("DOMContentLoaded", BetterLyrics.App.modify);
+    document.addEventListener("DOMContentLoaded", BetterLyrics.App.modify);
   },
 };
 

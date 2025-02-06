@@ -366,7 +366,7 @@ BetterLyrics.DOM = {
         if (currentTime + setUpAnimationEarlyTime >= time && currentTime < nextTime) {
           elem.dataset.selected = true;
           let children = [elem, ...elem.children];
-          children.forEach((el, index) => {
+          children.forEach(el => {
             let elDuration = parseFloat(el.dataset.duration);
             let elTime = parseFloat(el.dataset.time);
 
@@ -385,7 +385,7 @@ BetterLyrics.DOM = {
 
               if (!el.classList.contains(BetterLyrics.Constants.ANIMATING_CLASS)) {
                 //correct for the animation not starting at 0% and instead at -20%
-                let swipeAnimationDelay = (-timeDelta - elDuration * 0.2) + "s";
+                let swipeAnimationDelay = -timeDelta - elDuration * 0.2 + "s";
                 let everythingElseDelay = -timeDelta + "s";
                 el.style.transitionDelay = `${everythingElseDelay}, ${swipeAnimationDelay}, ${swipeAnimationDelay}`;
                 el.style.animationDelay = everythingElseDelay;
@@ -429,7 +429,7 @@ BetterLyrics.DOM = {
 
       if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
         BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
-        lyricsElement.classList.remove(BetterLyrics.DOM.USER_SCROLLING_CLASS)
+        lyricsElement.classList.remove(BetterLyrics.DOM.USER_SCROLLING_CLASS);
 
         let scrollPosOffset = Math.max(0, tabRendererHeight * topOffsetMultiplier - selectedLyricHeight / 2);
         let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
@@ -456,7 +456,7 @@ BetterLyrics.DOM = {
         }
       } else {
         BetterLyrics.DOM.getResumeScrollElement().removeAttribute("autoscroll-hidden");
-        lyricsElement.classList.add(BetterLyrics.DOM.USER_SCROLLING_CLASS)
+        lyricsElement.classList.add(BetterLyrics.DOM.USER_SCROLLING_CLASS);
       }
 
       if (Math.abs(scrollTop - tabRenderer.scrollTop) > 1) {
@@ -565,6 +565,5 @@ function toMs(cssDuration) {
 }
 
 function reflow(elt) {
-  // biome-ignore lint: auto-formater does incorrect stuff
-  void(elt.offsetHeight);
+  void elt.offsetHeight;
 }

@@ -74,7 +74,6 @@ BetterLyrics.LyricProviders = {
     };
   },
 
-  // biome-ignore lint: useful for local debugging
   local: async function (song, artist, duration, videoId, _audioTrackData) {
     const url = new URL("http://127.0.0.1:8787");
     url.searchParams.append("song", song);
@@ -162,14 +161,14 @@ BetterLyrics.LyricProviders = {
   /**
    * @type{function(song: string, artist: string, duration:number, videoId: string)}
    */
-  ytLyrics: async function (_song, _artist, _duration, videoId, audioTrackData, album) {
+  ytLyrics: async function (_song, _artist, _duration, videoId, _audioTrackData, _album) {
     let lyricsObj = await BetterLyrics.RequestSniffing.getLyrics(videoId);
-    let lyricsText = BetterLyrics.Constants.NO_LYRICS_TEXT
+    let lyricsText = BetterLyrics.Constants.NO_LYRICS_TEXT;
     let sourceText = "Unknown";
     const lyricsArray = [];
     if (lyricsObj.hasLyrics) {
       lyricsText = lyricsObj.lyrics;
-      sourceText = lyricsObj.sourceText.substring(8) + " (via YT)"
+      sourceText = lyricsObj.sourceText.substring(8) + " (via YT)";
     }
 
     lyricsText.split("\n").forEach(words => {
@@ -407,17 +406,15 @@ BetterLyrics.LyricProviders = {
       }
     });
 
-
     if (idTags["offset"]) {
       let offset = idTags["offset"];
       console.log("Lyrics have a time offset: " + offset);
-      result.forEach((lyric) => {
+      result.forEach(lyric => {
         lyric.startTimeMs -= offset;
-        lyric.parts.forEach((part) => {
+        lyric.parts.forEach(part => {
           part.startTimeMs -= offset;
         });
-        }
-      );
+      });
     }
 
     return result;
