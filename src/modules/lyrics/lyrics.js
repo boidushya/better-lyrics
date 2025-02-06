@@ -13,24 +13,6 @@ BetterLyrics.Lyrics = {
       return;
     }
 
-    const spinner = document.querySelector("#tab-renderer > tp-yt-paper-spinner-lite");
-    let waitForLoaderPromise;
-    if (spinner) {
-      waitForLoaderPromise = new Promise(resolve => {
-        if (spinner.style.display !== "none") {
-          resolve(true);
-          return;
-        }
-        let observer = new MutationObserver(() => {
-          observer.disconnect();
-          resolve(true);
-        });
-        observer.observe(spinner, {
-          attributes: true,
-        });
-      });
-    }
-
     // Try to get lyrics from cache with validation
     const cacheKey = `blyrics_${videoId}`;
 
@@ -109,7 +91,7 @@ BetterLyrics.Lyrics = {
 
         if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
           if (!ytLyrics) {
-            ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(waitForLoaderPromise);
+            ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(song, artist, duration, videoId, audioTrackData, album);
           }
           if (ytLyrics.text !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
             let lyricText = "";
@@ -134,7 +116,7 @@ BetterLyrics.Lyrics = {
     }
 
     if (!ytLyrics) {
-      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(waitForLoaderPromise);
+      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(undefined, undefined, undefined, undefined, audioTrackData, album);
     }
 
     if (!lyrics) {

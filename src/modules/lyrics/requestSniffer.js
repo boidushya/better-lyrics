@@ -13,6 +13,28 @@ const videoIdToLyricsMap = new Map()
 let firstRequestMissedVideoId = null;
 
 BetterLyrics.RequestSniffing = {
+  getLyrics: function (videoId) {
+    if (videoIdToLyricsMap.has(videoId)) {
+      return Promise.resolve(videoIdToLyricsMap.get(videoId));
+    } else {
+      let checkCount = 0;
+      return new Promise((resolve, reject) => {
+        const checkInterval = setInterval(() => {
+          console.log("waiting for yt lyrics")
+          if (videoIdToLyricsMap.has(videoId)) {
+            clearInterval(checkInterval);
+            resolve(videoIdToLyricsMap.get(videoId));
+          }
+          if (checkCount > 50) {
+            clearInterval(checkInterval);
+            resolve({hasLyrics: false, lyrics: "", sourceText: ""});
+          }
+          checkCount += 1;
+        }, 100);
+      });
+    }
+  },
+
   setupRequestSniffer: function () {
     let url = new URL(window.location)
     console.log(url)

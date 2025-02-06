@@ -155,100 +155,28 @@ BetterLyrics.LyricProviders = {
       throw new Error(BetterLyrics.Constants.NO_LRCLIB_LYRICS_FOUND_LOG);
     }
   },
-  ytLyrics: async function (waitForLoaderPromise) {
-    const spinner = document.querySelector("#tab-renderer > tp-yt-paper-spinner-lite");
-
-    if (!spinner || !waitForLoaderPromise) {
-      throw new Error("Lyrics not ready yet!");
-    }
-
-    const delay = ms => new Promise(resolve => setTimeout(() => resolve(false), ms));
-
-    if (await Promise.race([delay(2000), waitForLoaderPromise])) {
-      BetterLyrics.Utils.log("Found Loader, waiting for completion");
+  /**
+   * @type{function(song: string, artist: string, duration:number, videoId: string)}
+   */
+  ytLyrics: async function (_song, _artist, _duration, videoId, audioTrackData, album) {
+    let lyrics = await BetterLyrics.RequestSniffing.getLyrics(videoId);
+    if (lyrics.hasLyrics) {
+      return {
+        lyrics: lyrics.lyrics,
+        source: lyrics.source + " (via YT)",
+        sourceHref: "",
+        cacheAllowed: false,
+        text: null,
+      };
     } else {
-      BetterLyrics.Utils.log("Timed out waiting for loader");
+      return {
+        lyrics: BetterLyrics.Constants.NO_LYRICS_TEXT,
+        source: "Unknown",
+        sourceHref: "",
+        cacheAllowed: false,
+        text: null,
+      };
     }
-
-    let waitForLoaderFinishPromise = new Promise(resolve => {
-      if (spinner.style.display === "none") {
-        resolve(true);
-        return;
-      }
-      let observer = new MutationObserver(() => {
-        if (spinner.style.display === "none") {
-          observer.disconnect();
-          resolve(true);
-        }
-      });
-      observer.observe(spinner, {
-        attributes: true,
-      });
-    });
-
-    if (await Promise.race([delay(10000), waitForLoaderFinishPromise])) {
-      BetterLyrics.Utils.log("Loader finished successfully");
-    } else {
-      throw new Error("Timed out waiting for ytLyrics");
-    }
-
-    let lyricText;
-
-    const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
-    if (tabSelector.getAttribute("aria-selected") !== "true") {
-      throw new Error("Lyrics aren't ready yet");
-    }
-
-    if (
-      !document.querySelector("#tab-renderer > ytmusic-section-list-renderer") ||
-      document.querySelector("#tab-renderer > ytmusic-section-list-renderer").style.display === "none"
-    ) {
-      lyricText = BetterLyrics.Constants.NO_LYRICS_TEXT;
-    } else {
-      let existingLyrics;
-      if (document.getElementById("bLyrics-yt-lyrics")) {
-        existingLyrics = document.getElementById("bLyrics-yt-lyrics");
-      } else {
-        existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS)[0];
-        existingLyrics.id = "bLyrics-yt-lyrics";
-      }
-      lyricText = existingLyrics.innerText;
-    }
-
-    if (lyricText.includes("Only the music you like in YouTube Music will show here.")) {
-      throw new Error("Lyrics didn't load properly");
-    }
-
-    const source = document.querySelector(
-      "#contents > ytmusic-description-shelf-renderer > yt-formatted-string.footer.style-scope.ytmusic-description-shelf-renderer"
-    );
-    let sourceText;
-    if (!source) {
-      sourceText = "Unknown";
-    } else {
-      sourceText = source.innerText.substring(8);
-    }
-
-    /**
-     *
-     * @type {startTimeMs: number, words: string, durationMs: number, {parts: {startTimeMs: number, words: string, durationMs: number}[]}[]}
-     */
-    const lyricsArray = [];
-    lyricText.split("\n").forEach(words => {
-      lyricsArray.push({
-        startTimeMs: "0",
-        words: words,
-        durationMs: "0",
-      });
-    });
-
-    return {
-      lyrics: lyricsArray,
-      source: sourceText + " (via YT)",
-      sourceHref: "",
-      cacheAllowed: false,
-      text: lyricText,
-    };
   },
 
   /**
