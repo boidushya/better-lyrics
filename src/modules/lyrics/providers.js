@@ -180,7 +180,6 @@ BetterLyrics.LyricProviders = {
       });
     });
 
-    console.log(lyricsText, lyricsArray);
     return {
       lyrics: lyricsArray,
       source: sourceText,

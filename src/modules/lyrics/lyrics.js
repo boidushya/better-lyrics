@@ -1,4 +1,4 @@
-const LYRIC_CACHE_VERSION = "1.1.0";
+const LYRIC_CACHE_VERSION = "1.1.1";
 
 BetterLyrics.Lyrics = {
   createLyrics: async function (detail) {
