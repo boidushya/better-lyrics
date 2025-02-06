@@ -75,7 +75,6 @@ window.fetch = async function (request, init) {
           timestamp: Date.now(),
         },
       });
-      console.log("dispatched Event");
       document.dispatchEvent(event);
     });
     return response;
