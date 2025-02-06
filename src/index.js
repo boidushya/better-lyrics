@@ -14,8 +14,9 @@ BetterLyrics.App = {
   requestCache: null,
 
   modify: function () {
-    BetterLyrics.Utils.setUpLog();
     BetterLyrics.DOM.injectGetSongInfo();
+    BetterLyrics.RequestSniffing.setupRequestSniffer();
+    BetterLyrics.Utils.setUpLog();
     BetterLyrics.DOM.injectHeadTags();
     BetterLyrics.Observer.enableLyricsTab();
     BetterLyrics.Settings.hideCursorOnIdle();

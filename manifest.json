@@ -36,6 +36,7 @@
         "src/modules/lyrics/translation.js",
         "src/modules/lyrics/lyrics.js",
         "src/modules/lyrics/providers.js",
+        "src/modules/lyrics/requestSniffer.js",
         "src/modules/ui/dom.js",
         "src/modules/ui/observer.js",
         "src/modules/settings/settings.js",
