@@ -25,12 +25,12 @@ BetterLyrics.RequestSniffing = {
             clearInterval(checkInterval);
             resolve(videoIdToLyricsMap.get(videoId));
           }
-          if (checkCount > 50) {
+          if (checkCount > 250) {
             clearInterval(checkInterval);
             resolve({hasLyrics: false, lyrics: "", sourceText: ""});
           }
           checkCount += 1;
-        }, 100);
+        }, 20);
       });
     }
   },
