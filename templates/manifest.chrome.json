@@ -43,7 +43,7 @@
         "src/index.js"
       ],
       "css": ["src/index.css"],
-      "run_at": "document_end"
+      "run_at": "document_start"
     },
     {
       "matches": ["<all_urls>"],

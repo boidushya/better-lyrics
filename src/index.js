@@ -14,8 +14,6 @@ BetterLyrics.App = {
   requestCache: null,
 
   modify: function () {
-    BetterLyrics.DOM.injectGetSongInfo();
-    BetterLyrics.RequestSniffing.setupRequestSniffer();
     BetterLyrics.Utils.setUpLog();
     BetterLyrics.DOM.injectHeadTags();
     BetterLyrics.Observer.enableLyricsTab();
@@ -64,17 +62,12 @@ BetterLyrics.App = {
   },
 
   init: function () {
-    try {
-      if (document.readyState !== "loading") {
-        BetterLyrics.App.modify();
-      } else {
-        document.addEventListener("DOMContentLoaded", this.modify.bind(this));
-      }
-    } catch (err) {
-      BetterLyrics.Utils.log(BetterLyrics.GENERAL_ERROR_LOG, err);
-    }
+      document.addEventListener("DOMContentLoaded", BetterLyrics.App.modify);
   },
 };
 
 // Initialize the application
 BetterLyrics.App.init();
+
+BetterLyrics.DOM.injectGetSongInfo();
+BetterLyrics.RequestSniffing.setupRequestSniffer();
