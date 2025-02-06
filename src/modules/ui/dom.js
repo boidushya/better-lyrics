@@ -429,6 +429,8 @@ BetterLyrics.DOM = {
 
       if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
         BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
+        lyricsElement.classList.remove(BetterLyrics.DOM.USER_SCROLLING_CLASS)
+
         let scrollPosOffset = Math.max(0, tabRendererHeight * topOffsetMultiplier - selectedLyricHeight / 2);
         let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
         scrollPos = Math.max(Math.min(lyricsHeight - tabRendererHeight, scrollPos), 0);
@@ -454,6 +456,7 @@ BetterLyrics.DOM = {
         }
       } else {
         BetterLyrics.DOM.getResumeScrollElement().removeAttribute("autoscroll-hidden");
+        lyricsElement.classList.add(BetterLyrics.DOM.USER_SCROLLING_CLASS)
       }
 
       if (Math.abs(scrollTop - tabRenderer.scrollTop) > 1) {
