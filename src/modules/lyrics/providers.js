@@ -169,7 +169,7 @@ BetterLyrics.LyricProviders = {
     const lyricsArray = [];
     if (lyricsObj.hasLyrics) {
       lyricsText = lyricsObj.lyrics;
-      sourceText = lyricsObj.sourceText + " (via YT)"
+      sourceText = lyricsObj.sourceText.substring(8) + " (via YT)"
     }
 
     lyricsText.split("\n").forEach(words => {

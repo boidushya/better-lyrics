@@ -9,6 +9,7 @@ BetterLyrics.Constants = {
   TAB_CONTENT_CLASS: "tab-content style-scope tp-yt-paper-tab",
   LYRICS_CLASS: "blyrics-container",
   CURRENT_LYRICS_CLASS: "blyrics--active",
+  ZERO_DURATION_ANIMATION_CLASS: "blyrics-zero-dur-animate",
   ANIMATING_CLASS: "blyrics--animating",
   PRE_ANIMATING_CLASS: "blyrics--pre-animating",
   TRANSLATED_LYRICS_CLASS: "blyrics--translated",

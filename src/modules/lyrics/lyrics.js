@@ -245,7 +245,7 @@ BetterLyrics.Lyrics = {
           item.parts.push({
             startTimeMs: parseFloat(item.startTimeMs) + len * 50,
             words: word,
-            durationMs: 50,
+            durationMs: 0,
           });
           len += 1;
         });
@@ -256,6 +256,10 @@ BetterLyrics.Lyrics = {
 
       item.parts.forEach(part => {
         let span = document.createElement("span");
+        if (part.durationMs < 20) {
+          span.classList.add(BetterLyrics.Constants.ZERO_DURATION_ANIMATION_CLASS);
+          part.durationMs = 0;
+        }
         span.textContent = part.words;
         span.dataset.time = part.startTimeMs / 1000;
         span.dataset.duration = part.durationMs / 1000;
@@ -263,6 +267,10 @@ BetterLyrics.Lyrics = {
         span.style.setProperty("--blyrics-duration", part.durationMs + "ms");
         line.appendChild(span);
       });
+
+      line.dataset.time = item.startTimeMs / 1000;
+      line.dataset.duration = item.durationMs / 1000;
+      line.style.setProperty("--blyrics-duration", item.durationMs + "ms");
 
       if (!allZero) {
         line.setAttribute("data-scrolled", false);

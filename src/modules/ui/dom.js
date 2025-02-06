@@ -365,7 +365,7 @@ BetterLyrics.DOM = {
         }
         if (currentTime + setUpAnimationEarlyTime >= time && currentTime < nextTime) {
           elem.dataset.selected = true;
-          let children = [...elem.children];
+          let children = [elem, ...elem.children];
           children.forEach((el, index) => {
             let elDuration = parseFloat(el.dataset.duration);
             let elTime = parseFloat(el.dataset.time);
@@ -385,8 +385,10 @@ BetterLyrics.DOM = {
 
               if (!el.classList.contains(BetterLyrics.Constants.ANIMATING_CLASS)) {
                 //correct for the animation not starting at 0% and instead at -20%
-                el.style.transitionDelay = (-timeDelta - elDuration * 0.2) + "s";
-                el.style.animationDelay = -timeDelta + "s";
+                let swipeAnimationDelay = (-timeDelta - elDuration * 0.2) + "s";
+                let everythingElseDelay = -timeDelta + "s";
+                el.style.transitionDelay = `${everythingElseDelay}, ${swipeAnimationDelay}, ${swipeAnimationDelay}`;
+                el.style.animationDelay = everythingElseDelay;
                 el.dataset.animationStartTimeMs = now - timeDelta * 1000;
                 el.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
                 reflow(el);
@@ -403,7 +405,7 @@ BetterLyrics.DOM = {
         } else {
           let selected = elem.dataset.selected === "true";
           if (selected) {
-            let children = [...elem.children];
+            let children = [elem, ...elem.children];
             children.forEach(el => {
               el.style.transitionDelay = "";
               el.style.animationDelay = "";

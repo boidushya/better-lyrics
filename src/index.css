@@ -27,6 +27,7 @@
 
   /* Animations */
   --blyrics-transition-duration: 0.166s;
+  --blyrics-opacity-fade-out-duration: 0.5s;
   --blyrics-opacity-transition: 0.33s;
 
   /* Layout */
@@ -46,6 +47,7 @@
   /*Lyric Transition Properties */
   --blyrics-lyric-transition-duration: 0.3s;
   --blyrics-lyric-transition-timing-function: ease;
+
 
   /* Gradient stops */
   --blyrics-gradient-stops:
@@ -92,14 +94,22 @@
 }
 
 .blyrics--active {
-  /*transform: scale(var(--blyrics-active-scale));*/
   cursor: default;
+}
+
+.blyrics-container > div {
+  transform: scale(var(--blyrics-scale));
+  transition-property: transform;
+  transition-duration: var(--blyrics-transition-duration);
+}
+
+.blyrics-container > div.blyrics--animating {
+  transform: scale(var(--blyrics-active-scale));
 }
 
 .blyrics-container > div > span.blyrics--animating {
   animation: blyrics-wobble 1s forwards ease;
 }
-
 
 .blyrics-container > div > span {
   color: var(--blyrics-inactive-color);
@@ -127,15 +137,16 @@
   left: -2rem;
   white-space: pre;
   padding: 2rem;
-  color: transparent;
+  color: var(--blyrics-active-color);
   box-sizing: content-box;
   mask-image: linear-gradient(90deg, white calc(100% * var(--lyric-transition-amount-start) - 4rem * var(--lyric-transition-amount-start) + 2rem), black calc(100% * var(--lyric-transition-amount-end) - 4rem * var(--lyric-transition-amount-end) + 2rem + 1px));
   mask-mode: luminance;
   width: 100%;
 
+  opacity: 0;
   --lyric-transition-amount-start: -0.20;
   --lyric-transition-amount-end: -0.10;
-  transition: color 0.5s ease, --lyric-transition-amount-start 1s linear 1000s, --lyric-transition-amount-end 1s linear 1000s;
+  transition: opacity 0.5s ease, --lyric-transition-amount-start 1s linear 1000s, --lyric-transition-amount-end 1s linear 1000s;
 
 }
 
@@ -145,22 +156,24 @@
   transition: none;
   --lyric-transition-amount-start: -0.20;
   --lyric-transition-amount-end: -0.10;
+  opacity: 0;
+}
 
-  color: var(--blyrics-active-color);
+.blyrics-container > div > span.blyrics--pre-animating:not(.blyrics--animating):not(.blyrics-zero-dur-animate)::after {
+  opacity: 1;
 }
 
 .blyrics-container > div > span.blyrics--animating::after {
-  color: var(--blyrics-active-color);
-
+  opacity: 1;
   animation: blyrics-glow max(calc(var(--blyrics-duration) * 1.2), 1.2s) forwards ease;
   animation-delay: inherit;
 
   --lyric-transition-amount-start: 1.4;
   --lyric-transition-amount-end: 1.5;
-  transition-property: --lyric-transition-amount-start, --lyric-transition-amount-end;
-  transition-duration: calc(var(--blyrics-duration) * 1.4);
+  transition-property: opacity, --lyric-transition-amount-start, --lyric-transition-amount-end;
+  transition-duration: var(--blyrics-opacity-transition), calc(var(--blyrics-duration) * 1.6), calc(var(--blyrics-duration) * 1.6);
+  transition-timing-function: ease, linear, linear;
   transition-delay: inherit;
-  transition-timing-function: linear;
 }
 
 
