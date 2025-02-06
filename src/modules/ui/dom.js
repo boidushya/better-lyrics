@@ -296,6 +296,7 @@ BetterLyrics.DOM = {
    */
   lyricScrollTimeOffset: 0.2,
   tickLyrics: function (currentTime, isPlaying = true) {
+    const now = Date.now();
     if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
       return;
     }
@@ -366,15 +367,15 @@ BetterLyrics.DOM = {
           elem.dataset.selected = true;
           let children = [...elem.children];
           children.forEach((el, index) => {
-            let elTime = parseFloat(el.dataset.time) - el.dataset.duration * 0.2; //correct for the animation not starting at 0% and instead at -20%
             let elDuration = parseFloat(el.dataset.duration);
+            let elTime = parseFloat(el.dataset.time) - elDuration * 0.2; //correct for the animation not starting at 0% and instead at -20%
 
             if (currentTime + setUpAnimationEarlyTime >= elTime) {
               const timeDelta = currentTime - elTime;
 
               if (
                 el.dataset.animationStartTimeMs &&
-                Math.abs((Date.now() - parseFloat(el.dataset.animationStartTimeMs)) / 1000 - timeDelta) > 0.02 &&
+                Math.abs((now - parseFloat(el.dataset.animationStartTimeMs)) / 1000 - timeDelta) > 0.02 &&
                 isPlaying
               ) {
                 // timing of animation is too wrong. reset so we can recalculate them
@@ -385,7 +386,7 @@ BetterLyrics.DOM = {
               if (!el.classList.contains(BetterLyrics.Constants.ANIMATING_CLASS)) {
                 el.style.transitionDelay = -timeDelta + "s";
                 el.style.animationDelay = -timeDelta + "s";
-                el.dataset.animationStartTimeMs = Date.now() - timeDelta * 1000;
+                el.dataset.animationStartTimeMs = now - timeDelta * 1000;
                 el.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
                 reflow(el);
                 el.classList.add(BetterLyrics.Constants.ANIMATING_CLASS);
@@ -459,7 +460,6 @@ BetterLyrics.DOM = {
       }
 
       let j = 0;
-      const now = Date.now();
       for (; j < BetterLyrics.DOM.skipScrollsDecayTimes.length; j++) {
         if (BetterLyrics.DOM.skipScrollsDecayTimes[j] > now) {
           break;
