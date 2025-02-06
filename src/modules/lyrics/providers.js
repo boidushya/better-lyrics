@@ -76,10 +76,13 @@ BetterLyrics.LyricProviders = {
 
   // biome-ignore lint: useful for local debugging
   local: async function (song, artist, duration, videoId, _audioTrackData) {
-    const url = new URL("http://127.0.0.1:5000");
+    const url = new URL("http://127.0.0.1:8787");
+    url.searchParams.append("song", song);
+    url.searchParams.append("artist", artist);
+    url.searchParams.append("duration", duration);
     url.searchParams.append("videoId", videoId);
+    url.searchParams.append("enhanced", true);
     let response = await fetch(url).then(r => r.json());
-
     let lyrics = null;
     try {
       if (response.lyrics) {
@@ -92,8 +95,9 @@ BetterLyrics.LyricProviders = {
     return {
       lyrics: lyrics,
       source: "Local Lyrics",
-      cacheAllowed: true,
-      sourceHref: "https://lrclib.net/",
+      album: response.album,
+      cacheAllowed: false,
+      sourceHref: "https://dacubeking.com",
     };
   },
 
@@ -159,24 +163,31 @@ BetterLyrics.LyricProviders = {
    * @type{function(song: string, artist: string, duration:number, videoId: string)}
    */
   ytLyrics: async function (_song, _artist, _duration, videoId, audioTrackData, album) {
-    let lyrics = await BetterLyrics.RequestSniffing.getLyrics(videoId);
-    if (lyrics.hasLyrics) {
-      return {
-        lyrics: lyrics.lyrics,
-        source: lyrics.source + " (via YT)",
-        sourceHref: "",
-        cacheAllowed: false,
-        text: null,
-      };
-    } else {
-      return {
-        lyrics: BetterLyrics.Constants.NO_LYRICS_TEXT,
-        source: "Unknown",
-        sourceHref: "",
-        cacheAllowed: false,
-        text: null,
-      };
+    let lyricsObj = await BetterLyrics.RequestSniffing.getLyrics(videoId);
+    let lyricsText = BetterLyrics.Constants.NO_LYRICS_TEXT
+    let sourceText = "Unknown";
+    const lyricsArray = [];
+    if (lyricsObj.hasLyrics) {
+      lyricsText = lyricsObj.lyrics;
+      sourceText = lyricsObj.sourceText + " (via YT)"
     }
+
+    lyricsText.split("\n").forEach(words => {
+      lyricsArray.push({
+        startTimeMs: "0",
+        words: words,
+        durationMs: "0",
+      });
+    });
+
+    console.log(lyricsText, lyricsArray);
+    return {
+      lyrics: lyricsArray,
+      source: sourceText,
+      sourceHref: "",
+      cacheAllowed: false,
+      text: lyricsText,
+    };
   },
 
   /**

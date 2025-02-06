@@ -113,15 +113,20 @@ BetterLyrics.Lyrics = {
       } catch (err) {
         BetterLyrics.Utils.log(err);
       }
+      // lyrics didn't pass validation; don't pass it down
+      lyrics = null;
     }
 
     if (!ytLyrics) {
-      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(undefined, undefined, undefined, undefined, audioTrackData, album);
+      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(song, artist,duration, videoId, audioTrackData, album);
     }
 
     if (!lyrics) {
       lyrics = ytLyrics;
     }
+
+    console.log(lyrics);
+    BetterLyrics.Utils.log("Got Lyrics from " + lyrics.source);
 
     this.cacheAndProcessLyrics(cacheKey, lyrics);
   },
