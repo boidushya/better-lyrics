@@ -125,7 +125,6 @@ BetterLyrics.Lyrics = {
       lyrics = ytLyrics;
     }
 
-    console.log(lyrics);
     BetterLyrics.Utils.log("Got Lyrics from " + lyrics.source);
 
     this.cacheAndProcessLyrics(cacheKey, lyrics);

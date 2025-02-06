@@ -17,6 +17,7 @@
     "*://translate.googleapis.com/*",
     "*://lrclib.net/*"
   ],
+  "run_at": "document_start",
   "options_ui": {
     "page": "src/options/options.html",
     "open_in_tab": false

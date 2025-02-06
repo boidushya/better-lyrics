@@ -1,7 +1,6 @@
 :root {
   /* Colors */
   --blyrics-text-color: #fff;
-  --blyrics-background-color: color(display-p3 0 0 0 /0.75);
   --blyrics-highlight-color: rgba(255, 255, 255, 0.5);
   --blyrics-error-color: #fee2e2;
   --blyrics-footer-bg-color: hsla(0, 0%, 100%, 0.1);
@@ -101,6 +100,7 @@
   transform: scale(var(--blyrics-scale));
   transition-property: transform;
   transition-duration: var(--blyrics-transition-duration);
+  transition-timing-function: ease;
 }
 
 .blyrics-container > div.blyrics--animating {
