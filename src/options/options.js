@@ -5,7 +5,10 @@ const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 const saveOptions = () => {
   const options = getOptionsFromForm();
   browserAPI.storage.sync.get({ preferredProvider: 0 }, currentOptions => {
-    if (currentOptions.preferredProvider !== options.preferredProvider) {
+    if (
+      currentOptions.preferredProvider !== options.preferredProvider ||
+      currentOptions.shouldUseKaraokeLyrics !== options.shouldUseKaraokeLyrics
+    ) {
       clearTransientLyrics(() => {
         saveOptionsToStorage(options);
       });
@@ -23,6 +26,7 @@ const getOptionsFromForm = () => {
     isAlbumArtEnabled: document.getElementById("albumArt").checked,
     isFullScreenDisabled: document.getElementById("isFullScreenDisabled").checked,
     isStylizedAnimationsEnabled: document.getElementById("isStylizedAnimationsEnabled").checked,
+    shouldUseKaraokeLyrics: document.getElementById("shouldUseKaraokeLyrics").checked,
     isTranslateEnabled: document.getElementById("translate").checked,
     translationLanguage: document.getElementById("translationLanguage").value,
     isCursorAutoHideEnabled: document.getElementById("cursorAutoHide").checked,
@@ -151,6 +155,7 @@ const restoreOptions = () => {
     isCursorAutoHideEnabled: true,
     isFullScreenDisabled: false,
     isStylizedAnimationsEnabled: true,
+    shouldUseKaraokeLyrics: false,
     isTranslateEnabled: false,
     translationLanguage: "en",
     isRomanizationEnabled: false,
@@ -170,6 +175,7 @@ const setOptionsInForm = items => {
   document.getElementById("cursorAutoHide").checked = items.isCursorAutoHideEnabled;
   document.getElementById("isFullScreenDisabled").checked = items.isFullScreenDisabled;
   document.getElementById("isStylizedAnimationsEnabled").checked = items.isStylizedAnimationsEnabled;
+  document.getElementById("shouldUseKaraokeLyrics").checked = items.shouldUseKaraokeLyrics;
   document.getElementById("translate").checked = items.isTranslateEnabled;
   document.getElementById("translationLanguage").value = items.translationLanguage;
   document.getElementById("isRomanizationEnabled").checked = items.isRomanizationEnabled;
