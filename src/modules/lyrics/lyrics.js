@@ -243,11 +243,11 @@ BetterLyrics.Lyrics = {
         words.forEach((word, index) => {
           word = word.trim().length < 1 ? word : word + " ";
           item.parts.push({
-            startTimeMs: parseFloat(item.startTimeMs) + len * 15,
+            startTimeMs: parseFloat(item.startTimeMs) + len * 50,
             words: word,
-            durationMs: word.length * 15,
+            durationMs: 50,
           });
-          len += word.length;
+          len += 1;
         });
       }
 
@@ -260,7 +260,6 @@ BetterLyrics.Lyrics = {
         span.dataset.time = part.startTimeMs / 1000;
         span.dataset.duration = part.durationMs / 1000;
         span.dataset.content = part.words;
-        span.style.transitionDuration = part.durationMs + "ms";
         span.style.setProperty("--blyrics-duration", part.durationMs + "ms");
         line.appendChild(span);
       });

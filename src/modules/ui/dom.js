@@ -368,7 +368,7 @@ BetterLyrics.DOM = {
           let children = [...elem.children];
           children.forEach((el, index) => {
             let elDuration = parseFloat(el.dataset.duration);
-            let elTime = parseFloat(el.dataset.time) - elDuration * 0.2; //correct for the animation not starting at 0% and instead at -20%
+            let elTime = parseFloat(el.dataset.time);
 
             if (currentTime + setUpAnimationEarlyTime >= elTime) {
               const timeDelta = currentTime - elTime;
@@ -384,7 +384,8 @@ BetterLyrics.DOM = {
               }
 
               if (!el.classList.contains(BetterLyrics.Constants.ANIMATING_CLASS)) {
-                el.style.transitionDelay = -timeDelta + "s";
+                //correct for the animation not starting at 0% and instead at -20%
+                el.style.transitionDelay = (-timeDelta - elDuration * 0.2) + "s";
                 el.style.animationDelay = -timeDelta + "s";
                 el.dataset.animationStartTimeMs = now - timeDelta * 1000;
                 el.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
