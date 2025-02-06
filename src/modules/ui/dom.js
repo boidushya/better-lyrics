@@ -303,8 +303,10 @@ BetterLyrics.DOM = {
 
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     console.assert(tabSelector != null);
+
+    const isPlayerOpen = document.getElementById("player-page").getAttribute("player-ui-state") === "PLAYER_PAGE_OPEN";
     // Don't tick lyrics if they're not visible
-    if (tabSelector.getAttribute("aria-selected") !== "true") {
+    if (tabSelector.getAttribute("aria-selected") !== "true" || !isPlayerOpen) {
       return;
     }
 
