@@ -259,8 +259,8 @@ BetterLyrics.LyricProviders = {
 
     const updateProvidersList = preferredProvider => {
       BetterLyrics.LyricProviders.providersList = [
-        BetterLyrics.LyricProviders.cubey,
         BetterLyrics.LyricProviders.ytCaptions,
+        BetterLyrics.LyricProviders.cubey,
       ];
 
       const providerMap = {
@@ -396,6 +396,19 @@ BetterLyrics.LyricProviders = {
         }
       }
     });
+
+
+    if (idTags["offset"]) {
+      let offset = idTags["offset"];
+      console.log("Lyrics have a time offset: " + offset);
+      result.forEach((lyric) => {
+        lyric.startTimeMs -= offset;
+        lyric.parts.forEach((part) => {
+          part.startTimeMs -= offset;
+        });
+        }
+      );
+    }
 
     return result;
   },
