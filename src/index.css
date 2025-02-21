@@ -153,7 +153,8 @@
   opacity: 0;
   --lyric-transition-amount-start: -0.2;
   --lyric-transition-amount-end: -0.1;
-  transition: --lyric-transition-amount-start 1s linear 1000s, --lyric-transition-amount-end 1s linear 1000s, opacity 0.5s ease;
+  transition: --lyric-transition-amount-start 1s linear 1000s, --lyric-transition-amount-end 1s linear 1000s, opacity
+    0.5s ease;
 }
 
 .blyrics-container > div > span.blyrics--pre-animating:not(.blyrics--animating)::after {
@@ -178,7 +179,7 @@
   --lyric-transition-amount-end: 1.5;
   transition-property: --lyric-transition-amount-start, --lyric-transition-amount-end, opacity;
   transition-duration: calc(var(--blyrics-duration) * 1.6), calc(var(--blyrics-duration) * 1.6),
-  var(--blyrics-lyric-highlight-fade-in-duration);
+    var(--blyrics-lyric-highlight-fade-in-duration);
   transition-timing-function: linear, linear, ease;
   transition-delay: inherit;
 }
