@@ -385,11 +385,17 @@ BetterLyrics.DOM = {
                 el.dataset.animationStartTimeMs = "";
               }
 
+              if (isPlaying) {
+                el.style.animationPlayState = "";
+              } else {
+                el.style.animationPlayState = "paused";
+              }
+
               if (!el.classList.contains(BetterLyrics.Constants.ANIMATING_CLASS)) {
                 //correct for the animation not starting at 0% and instead at -20%
                 let swipeAnimationDelay = -timeDelta - elDuration * 0.2 + "s";
                 let everythingElseDelay = -timeDelta + "s";
-                el.style.transitionDelay = `${everythingElseDelay}, ${swipeAnimationDelay}, ${swipeAnimationDelay}`;
+                el.style.transitionDelay = `${swipeAnimationDelay}, ${swipeAnimationDelay}, ${everythingElseDelay}`;
                 el.style.animationDelay = everythingElseDelay;
                 el.dataset.animationStartTimeMs = now - timeDelta * 1000;
                 el.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
@@ -399,6 +405,7 @@ BetterLyrics.DOM = {
             } else {
               el.style.transitionDelay = "";
               el.style.animationDelay = "";
+              el.style.animationPlayState = "";
               el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
               el.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               el.dataset.animationStartTimeMs = "";
@@ -411,6 +418,7 @@ BetterLyrics.DOM = {
             children.forEach(el => {
               el.style.transitionDelay = "";
               el.style.animationDelay = "";
+              el.style.animationPlayState = "";
               el.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
               el.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               el.dataset.animationStartTimeMs = "";

@@ -207,9 +207,10 @@ The following CSS sets up the basic appearance and transition parameters for eac
 ```css
 .blyrics-container > div {
   transform: scale(var(--blyrics-scale));
-	transition-property: transform;
-	transition-duration: var(--blyrics-scale-transition-duration);
-	transition-timing-function: ease;
+    transition-property: --dummy, --dummy, transform;
+    transition-duration: 0s, 0s, var(--blyrics-scale-transition-duration);
+    transition-timing-function: linear, linear, ease;
+
 }
 ```
 
@@ -219,6 +220,7 @@ The following CSS sets up the basic appearance and transition parameters for eac
 - **Transition Setup:**
   The transition properties are defined individually (instead of using the shorthand) to allow later insertion of
   a `transition-delay`.
+  The first two properties are reserved for the lyric swipe animation and shouldn't be used for other effects.
 
 ---
 
@@ -323,22 +325,26 @@ its parent and uses a mask image for the swipe effect:
 	opacity: 0;
 	--lyric-transition-amount-start: -0.2;
 	--lyric-transition-amount-end: -0.1;
-	transition: opacity 0.5s ease, --lyric-transition-amount-start 1s linear 1000s, --lyric-transition-amount-end 1s linear 1000s;
+    transition: --lyric-transition-amount-start 1s linear 1000s, --lyric-transition-amount-end 1s linear 1000s, opacity 0.5s ease;
 }
 ```
 
 - **Content & Positioning:**
   The pseudo-element copies the text via `content: attr(data-content)` and is positioned (offset by -2rem) so that it
-  completely overlaps its parent.
+  completely overlaps its parent (accounting for padding).
 
 - **Active Color & Mask:**
   The swipe effect uses `--blyrics-lyric-active-color` and a linear gradient mask. The gradient’s stops are calculated
-  using the custom properties, controlling how soft or sharp the swipe edge appears.
+  using the custom properties, which are transitioned to create the swipe effect.
 
 - **Opacity & Transition Delays:**
-  Initially, the opacity is set to 0. The long transition delays (1000s) on the custom properties effectively “pause”
-  their transitions when the lyric fades out. The starting values of these properties (set to negative numbers) help
-  correct minor visual inconsistencies. The code later adjusts these values slightly earlier if any timing issues arise.
+  The opacity is set to 0 whenever the lyric isn't active.
+
+  The long transition delays (1000s) on the custom properties effectively “pause”
+  the swipe transition while the lyric fades out.
+  The starting values of these properties (set to negative numbers) help
+  correct minor visual inconsistencies.
+  The code accounts for these negative values by starting these transition slightly early to prevent timing issues.
 
 ---
 
@@ -348,7 +354,7 @@ Before the final swipe effect is applied, there is a brief pre-animation state t
 handle this:
 
 1. **Reset State:**
-   This rule is applied to pre-animating spans that are not actively animating:
+   This rule is applied to spans in their pre-animating state:
    ```css
    .blyrics-container > div > span.blyrics--pre-animating:not(.blyrics--animating)::after {
      /* Reset background position for the karaoke transition to play correctly */
@@ -358,6 +364,7 @@ handle this:
      opacity: 0;
    }
    ```
+   This state is needed to reset transitions that may be partially complete (i.e., if it was paused earlier)
 
 2. **Opacity Override (Conditional):**
    This rule forces the pseudo-element’s opacity to 1, but only if the `.blyrics-zero-dur-animate` class is **not**
@@ -368,9 +375,9 @@ handle this:
    }
    ```
 	- **Note on `.blyrics-zero-dur-animate`:**
-	  The `.blyrics-zero-dur-animate` class is applied when there is no swipe animation (i.e. its duration is 0s). In
-	  such cases, we want a fade-in effect for the opacity instead of an instant highlight of the entire word. By
-	  omitting the override (opacity set to 1) when `.blyrics-zero-dur-animate` is present, we allow the opacity to
+	  The `.blyrics-zero-dur-animate` class is applied when there is no swipe animation (i.e., its duration is 0s).
+      In such cases, we want a fade-in effect for the opacity instead of an instant highlight of the entire word.
+      By omitting the override (opacity set to 1) when `.blyrics-zero-dur-animate` is present, we allow the opacity to
 	  transition smoothly.
 
 ---
@@ -387,9 +394,9 @@ When a lyric is finally selected, the pseudo-element is animated to reveal the s
 
 	--lyric-transition-amount-start: 1.4;
 	--lyric-transition-amount-end: 1.5;
-	transition-property: opacity, --lyric-transition-amount-start, --lyric-transition-amount-end;
-	transition-duration: var(--blyrics-lyric-highlight-fade-in-duration), calc(var(--blyrics-duration) * 1.6), calc(var(--blyrics-duration) * 1.6);
-	transition-timing-function: ease, linear, linear;
+    transition-property: --lyric-transition-amount-start, --lyric-transition-amount-end, opacity;
+    transition-duration: calc(var(--blyrics-duration) * 1.6), calc(var(--blyrics-duration) * 1.6), var(--blyrics-lyric-highlight-fade-in-duration);
+    transition-timing-function: linear, linear, ease;
 	transition-delay: inherit;
 }
 ```
@@ -400,9 +407,8 @@ When a lyric is finally selected, the pseudo-element is animated to reveal the s
 
 - **Swipe Transition:**
   The custom properties are transitioned to their final values (1.4 and 1.5), which produces the swipe effect. **The
-  order and timing of the transitions (opacity first, then the custom properties) are critical so that the swipe effect
-  and fade-in occur at the intended times**.
-
+  order and timing of the transitions (the custom properties first, then the opacity) are critical so that the swipe effect
+  and fade-in occur at the intended times. The delay applied to the two custom properties is slightly shorter to account for the animation starting from -20%.**
 ## 6. Creating Animation Effects
 
 The CSS defines two main animations: `blyrics-wobble` and `blyrics-glow`:
