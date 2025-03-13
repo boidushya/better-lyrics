@@ -260,9 +260,8 @@ BetterLyrics.Lyrics = {
 
       item.parts.forEach(part => {
         let span = document.createElement("span");
-        if (part.durationMs < 20) {
+        if (Number(part.durationMs) === 0) {
           span.classList.add(BetterLyrics.Constants.ZERO_DURATION_ANIMATION_CLASS);
-          part.durationMs = 0;
         }
         span.textContent = part.words;
         span.dataset.time = part.startTimeMs / 1000;

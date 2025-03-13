@@ -43,6 +43,11 @@ BetterLyrics.LyricProviders = {
    * @property {string} captionsInitialState
    */
 
+
+  /**
+   * @typedef {{startTimeMs: number, words: string, durationMs: number, parts: ({startTimeMs: number, words: string, durationMs: number}[] | null)}[]} LyricsArray
+   */
+
   providersList: [],
 
   cubey: async function (song, artist, duration, videoId, _audioTrackData) {
@@ -60,6 +65,7 @@ BetterLyrics.LyricProviders = {
     try {
       if (response.lyrics) {
         lyrics = BetterLyrics.LyricProviders.parseLRC(response.lyrics, duration);
+        BetterLyrics.LyricProviders.lrcFixers(lyrics)
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
@@ -300,6 +306,12 @@ BetterLyrics.LyricProviders = {
       updateProvidersList(items.preferredProvider);
     });
   },
+  /**
+   *
+   * @param lrcText {string}
+   * @param songDuration {number}
+   * @return {LyricsArray}
+   */
   parseLRC: function (lrcText, songDuration) {
     const lines = lrcText.split("\n");
     const result = [];
@@ -419,4 +431,86 @@ BetterLyrics.LyricProviders = {
 
     return result;
   },
+
+  /**
+   * @param lyrics {LyricsArray}
+   */
+  lrcFixers: function (lyrics) {
+    // if the duration of the space after a word is a similar duration to the word,
+    // move the duration of the space into the word.
+    for (let lyric of lyrics) {
+      if (lyric.parts !== null && lyric.parts.length > 0) {
+        for (let i = 1; i < lyric.parts.length; i++) {
+          let thisPart = lyric.parts[i];
+          let prevPart = lyric.parts[i - 1];
+          if (thisPart.words === " " && prevPart.words !== " ") {
+            let deltaTime = thisPart.durationMs - prevPart.durationMs;
+            if (Math.abs(deltaTime) <= 0.01) {
+              let durationChange = thisPart.durationMs;
+              prevPart.durationMs += durationChange;
+              thisPart.durationMs -= durationChange;
+              thisPart.startTimeMs += durationChange;
+            }
+          }
+        }
+      }
+    }
+
+    // check if we have very short duration for most lyrics,
+    // if we do, calculate the duration of the next lyric
+    let shortDurationCount = 0;
+    let durationCount = 0;
+    for (let lyric of lyrics) {
+      // skipping the last two parts is on purpose
+      // (weather they have a valid duration seems uncorrelated with the rest of them being correct)
+      if (!lyric.parts || lyric.parts.length === 0) {continue;}
+
+      for (let i = 0; i < lyric.parts.length - 2; i++) {
+        let part = lyric.parts[i];
+        if (part.words !== " ") {
+          if (part.durationMs <= 0.02) {
+            shortDurationCount++;
+          }
+          durationCount++;
+        }
+      }
+    }
+
+    if (durationCount > 0 && (shortDurationCount / durationCount) > 0.7 ) {
+      console.log("Found a lot of short duration lyrics, fudging durations");
+      for (let i = 0; i < lyrics.length; i++) {
+        let lyric = lyrics[i];
+        if (!lyric.parts || lyric.parts.length === 0) {continue;}
+
+        for (let j = 0; j < lyric.parts.length; j++) {
+          let part = lyric.parts[j];
+          if (part.words === " ") {
+            continue;
+          }
+          if (part.durationMs <= 0.03) {
+            let k = j + 1;
+            let nextNonSpace = part.parts[k];
+            while (nextNonSpace.words === " ") {
+              k++;
+              if (k >= lyric.parts.length) {
+                if (i + 1 >= lyric.parts.length) {
+                  nextNonSpace = null;
+                } else {
+                  nextNonSpace = lyrics[i + 1];
+                }
+                break;
+              }
+              nextNonSpace = part.parts[k];
+            }
+
+            if (nextNonSpace === null) {
+              part.durationMs = 0.3;
+            } else {
+              part.durationMs = nextNonSpace.startTimeMs - part.startTimeMs;
+            }
+          }
+        }
+      }
+    }
+  }
 };
