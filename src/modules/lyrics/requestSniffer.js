@@ -26,6 +26,7 @@ BetterLyrics.RequestSniffing = {
           }
           if (checkCount > 250) {
             clearInterval(checkInterval);
+            BetterLyrics.Utils.log("Failed to sniff lyrics");
             resolve({ hasLyrics: false, lyrics: "", sourceText: "" });
           }
           checkCount += 1;

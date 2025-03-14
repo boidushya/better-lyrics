@@ -438,14 +438,15 @@ BetterLyrics.LyricProviders = {
   lrcFixers: function (lyrics) {
     // if the duration of the space after a word is a similar duration to the word,
     // move the duration of the space into the word.
+    // or if it's short, remove the break to improve smoothness
     for (let lyric of lyrics) {
-      if (lyric.parts !== null && lyric.parts.length > 0) {
+      if (lyric.parts !== null) {
         for (let i = 1; i < lyric.parts.length; i++) {
           let thisPart = lyric.parts[i];
           let prevPart = lyric.parts[i - 1];
           if (thisPart.words === " " && prevPart.words !== " ") {
             let deltaTime = thisPart.durationMs - prevPart.durationMs;
-            if (Math.abs(deltaTime) <= 0.01) {
+            if (Math.abs(deltaTime) <= 15 || thisPart.durationMs <= 100) {
               let durationChange = thisPart.durationMs;
               prevPart.durationMs += durationChange;
               thisPart.durationMs -= durationChange;
@@ -468,7 +469,7 @@ BetterLyrics.LyricProviders = {
       for (let i = 0; i < lyric.parts.length - 2; i++) {
         let part = lyric.parts[i];
         if (part.words !== " ") {
-          if (part.durationMs <= 0.02) {
+          if (part.durationMs <= 20) {
             shortDurationCount++;
           }
           durationCount++;
@@ -487,7 +488,7 @@ BetterLyrics.LyricProviders = {
           if (part.words === " ") {
             continue;
           }
-          if (part.durationMs <= 0.03) {
+          if (part.durationMs <= 30) {
             let k = j + 1;
             let nextNonSpace = part.parts[k];
             while (nextNonSpace.words === " ") {
@@ -504,7 +505,7 @@ BetterLyrics.LyricProviders = {
             }
 
             if (nextNonSpace === null) {
-              part.durationMs = 0.3;
+              part.durationMs = 300;
             } else {
               part.durationMs = nextNonSpace.startTimeMs - part.startTimeMs;
             }
