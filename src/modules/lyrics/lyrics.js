@@ -286,8 +286,6 @@ BetterLyrics.Lyrics = {
         line.addEventListener("click", _e => {
           BetterLyrics.DOM.scrollResumeTime = 0;
         });
-      } else {
-        line.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
       }
 
       const wrapper = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];

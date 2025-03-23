@@ -469,16 +469,15 @@ BetterLyrics.LyricProviders = {
       for (let i = 0; i < lyric.parts.length - 2; i++) {
         let part = lyric.parts[i];
         if (part.words !== " ") {
-          if (part.durationMs <= 20) {
+          if (part.durationMs <= 100) {
             shortDurationCount++;
           }
           durationCount++;
         }
       }
     }
-
-    if (durationCount > 0 && (shortDurationCount / durationCount) > 0.7 ) {
-      console.log("Found a lot of short duration lyrics, fudging durations");
+    if (durationCount > 0 && (shortDurationCount / durationCount) > 0.5 ) {
+      BetterLyrics.Utils.log("Found a lot of short duration lyrics, fudging durations");
       for (let i = 0; i < lyrics.length; i++) {
         let lyric = lyrics[i];
         if (!lyric.parts || lyric.parts.length === 0) {continue;}
@@ -488,26 +487,27 @@ BetterLyrics.LyricProviders = {
           if (part.words === " ") {
             continue;
           }
-          if (part.durationMs <= 30) {
-            let k = j + 1;
-            let nextNonSpace = part.parts[k];
-            while (nextNonSpace.words === " ") {
-              k++;
-              if (k >= lyric.parts.length) {
-                if (i + 1 >= lyric.parts.length) {
-                  nextNonSpace = null;
-                } else {
-                  nextNonSpace = lyrics[i + 1];
-                }
-                break;
-              }
-              nextNonSpace = part.parts[k];
+          if (part.durationMs <= 400) {
+            let nextPart;
+            if (j + 1 < lyric.parts.length) {
+              nextPart = lyric.parts[j + 1];
+            } else if (i + 1 < lyric.parts.length && lyrics[i].parts.length > 0) {
+              nextPart = lyrics[i].parts[0];
+            } else {
+              nextPart = null;
             }
 
-            if (nextNonSpace === null) {
+
+            if (nextPart === null) {
               part.durationMs = 300;
             } else {
-              part.durationMs = nextNonSpace.startTimeMs - part.startTimeMs;
+              if (nextPart.words === " ") {
+                part.durationMs += nextPart.durationMs;
+                nextPart.startTimeMs += nextPart.durationMs;
+                nextPart.durationMs = 0;
+              } else {
+                part.durationMs = nextPart.startTimeMs - part.startTimeMs;
+              }
             }
           }
         }
