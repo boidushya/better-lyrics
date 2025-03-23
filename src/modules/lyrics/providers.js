@@ -274,6 +274,7 @@ BetterLyrics.LyricProviders = {
 
     const updateProvidersList = preferredProvider => {
       BetterLyrics.LyricProviders.providersList = [
+        // BetterLyrics.LyricProviders.local,
         BetterLyrics.LyricProviders.ytCaptions,
         BetterLyrics.LyricProviders.cubey,
       ];

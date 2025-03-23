@@ -392,8 +392,8 @@ BetterLyrics.DOM = {
               }
 
               if (!el.classList.contains(BetterLyrics.Constants.ANIMATING_CLASS)) {
-                //correct for the animation not starting at 0% and instead at -20%
-                let swipeAnimationDelay = -timeDelta - elDuration * 0.2 + "s";
+                //correct for the animation not starting at 0% and instead at -10%
+                let swipeAnimationDelay = -timeDelta - elDuration * 0.1 + "s";
                 let everythingElseDelay = -timeDelta + "s";
                 el.style.transitionDelay = `${swipeAnimationDelay}, ${swipeAnimationDelay}, ${everythingElseDelay}`;
                 el.style.animationDelay = everythingElseDelay;
