@@ -76,6 +76,7 @@ BetterLyrics.LyricProviders = {
       source: "DaCubeKing",
       album: response.album,
       song: response.song,
+      duration: response.duration,
       artist: response.artist,
       cacheAllowed: true,
       sourceHref: "https://dacubeking.com",

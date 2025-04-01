@@ -118,44 +118,46 @@ BetterLyrics.RequestSniffing = {
           browseIdToVideoIdMap.set(browseId, videoId);
         }
 
+        if (playlistPanelRendererContents) {
+          for (let playlistPanelRendererContent of playlistPanelRendererContents) {
+            let counterpartId = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.counterpartRenderer?.playlistPanelVideoRenderer?.videoId;
+            let primaryId = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.primaryRenderer?.playlistPanelVideoRenderer?.videoId;
 
-        for (let playlistPanelRendererContent of playlistPanelRendererContents) {
-          let counterpartId = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.counterpartRenderer?.playlistPanelVideoRenderer?.videoId;
-          let primaryId = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.primaryRenderer?.playlistPanelVideoRenderer?.videoId;
+            /**
+             * @type {SegmentMap}
+             */
+            let segmentMap = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.segmentMap;
 
-          /**
-           * @type {SegmentMap}
-           */
-          let segmentMap = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.segmentMap;
+            if (counterpartId && primaryId) {
+              let reversedSegmentMap = null;
 
-          if (counterpartId && primaryId) {
-            let reversedSegmentMap = null;
+              if (segmentMap && segmentMap.segment) {
+                for (let segment of segmentMap.segment) {
+                  segment.counterpartVideoStartTimeMilliseconds = Number(segment.counterpartVideoStartTimeMilliseconds);
+                  segment.primaryVideoStartTimeMilliseconds = Number(segment.primaryVideoStartTimeMilliseconds);
+                  segment.durationMilliseconds = Number(segment.durationMilliseconds);
+                }
 
-            if (segmentMap && segmentMap.segment) {
-              for (let segment of segmentMap.segment) {
-                segment.counterpartVideoStartTimeMilliseconds = Number(segment.counterpartVideoStartTimeMilliseconds);
-                segment.primaryVideoStartTimeMilliseconds = Number(segment.primaryVideoStartTimeMilliseconds);
-                segment.durationMilliseconds = Number(segment.durationMilliseconds);
+                /**
+                 * @type {SegmentMap}
+                 */
+                reversedSegmentMap = {segment: [], reversed: true};
+                for (let segment of segmentMap.segment) {
+                  reversedSegmentMap.segment.push({
+                    primaryVideoStartTimeMilliseconds: segment.counterpartVideoStartTimeMilliseconds,
+                    counterpartVideoStartTimeMilliseconds: segment.primaryVideoStartTimeMilliseconds,
+                    durationMilliseconds: segment.durationMilliseconds,
+                  })
+                }
               }
 
-              /**
-               * @type {SegmentMap}
-               */
-              reversedSegmentMap = {...segmentMap, reversed: true};
-              for (let segment of reversedSegmentMap.segment) {
-                let counterpartVideoStartTimeMilliseconds = segment.counterpartVideoStartTimeMilliseconds;
-                let primaryVideoStartTimeMilliseconds = segment.primaryVideoStartTimeMilliseconds;
-                segment.counterpartVideoStartTimeMilliseconds = primaryVideoStartTimeMilliseconds;
-                segment.primaryVideoStartTimeMilliseconds = counterpartVideoStartTimeMilliseconds;
+              counterpartVideoIdMap.set(primaryId, {counterpartVideoId: counterpartId, segmentMap});
+              counterpartVideoIdMap.set(counterpartId, {counterpartVideoId: primaryId, segmentMap: reversedSegmentMap});
+            } else {
+              let primaryId = playlistPanelRendererContent?.playlistPanelVideoRenderer?.videoId;
+              if (primaryId) {
+                counterpartVideoIdMap.set(primaryId, {counterpartVideoId: null, segmentMap: null});
               }
-            }
-
-            counterpartVideoIdMap.set(primaryId, {counterpartVideoId: counterpartId, segmentMap});
-            counterpartVideoIdMap.set(counterpartId, {counterpartVideoId: primaryId, segmentMap: reversedSegmentMap});
-          } else {
-            let primaryId = playlistPanelRendererContent?.playlistPanelVideoRenderer?.videoId;
-            if (primaryId) {
-              counterpartVideoIdMap.set(primaryId, {counterpartVideoId: null, segmentMap: null});
             }
           }
         }

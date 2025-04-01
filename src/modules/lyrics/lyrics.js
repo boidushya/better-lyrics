@@ -5,7 +5,7 @@ BetterLyrics.Lyrics = {
     let song = detail.song;
     let artist = detail.artist;
     let videoId = detail.videoId;
-    const duration = detail.duration;
+    let duration = detail.duration;
     const audioTrackData = detail.audioTrackData;
     const isMusicVideo = detail.contentRect.width !== 0 && detail.contentRect.height !== 0;
 
@@ -43,9 +43,9 @@ BetterLyrics.Lyrics = {
     /**
      * @type SegmentMap
      */
-    let segmentMap;
+    let segmentMap = null;
     let matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId, 1);
-    if (!matchingSong || !matchingSong.counterpartVideoId || matchingSong.counterpartVideoId !== BetterLyrics.App.lastLoadedVideoId) {
+    if (!matchingSong || !matchingSong.counterpartVideoId || (matchingSong.counterpartVideoId !== BetterLyrics.App.lastLoadedVideoId && BetterLyrics.App.lastLoadedVideoId !== videoId)) {
       BetterLyrics.DOM.renderLoader(); // Only render the loader after we've checked the cache & we're not switching between audio and video
       matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId);
     } else {
@@ -84,36 +84,28 @@ BetterLyrics.Lyrics = {
 
     let lyrics;
     let ytLyrics;
-    if (!BetterLyrics.App.requestCache || BetterLyrics.App.requestCache.get("id") !== detail.videoId) {
-      BetterLyrics.App.requestCache = new Map();
-      BetterLyrics.App.requestCache.set("id", detail.videoId);
-    }
-    /**
-     * @type {Map<Function, {}>}
-     */
-    let requestCache = BetterLyrics.App.requestCache;
+
 
     let album = null;
     for (let provider of BetterLyrics.LyricProviders.providersList) {
       try {
-        if (requestCache.has(provider)) {
-          lyrics = requestCache.get(provider);
-        } else {
-          lyrics = await provider(song, artist, duration, videoId, audioTrackData, album);
-          requestCache.set(provider, lyrics);
-        }
-
+        lyrics = await provider(song, artist, duration, videoId, audioTrackData, album);
         if (lyrics && lyrics.album) {
           album = lyrics.album;
         }
         if (isMusicVideo && lyrics && lyrics.song && lyrics.song.length > 0 && song !== lyrics.song) {
-          BetterLyrics.Utils.log("Using " + lyrics.song + " for song instead of " + song);
+          BetterLyrics.Utils.log("Using '" + lyrics.song + "' for song instead of '" + song + "'");
           song = lyrics.song;
         }
 
         if (isMusicVideo && lyrics && lyrics.artist && lyrics.artist.length > 0 && artist !== lyrics.artist) {
-          BetterLyrics.Utils.log("Using " + lyrics.artist + " for artist instead of " + artist);
+          BetterLyrics.Utils.log("Using '" + lyrics.artist + "' for artist instead of '" + artist + "'");
           artist = lyrics.artist;
+        }
+
+        if (isMusicVideo && lyrics && lyrics.duration && lyrics.duration.length > 0 && duration !== lyrics.duration) {
+          BetterLyrics.Utils.log("Using '" + lyrics.duration + "' for duration instead of '" + duration + "'");
+          duration = Number(lyrics.duration);
         }
 
         if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
@@ -176,7 +168,6 @@ BetterLyrics.Lyrics = {
               }
             }
           }
-
           lyric.startTimeMs = Number(lyric.startTimeMs) + lastTimeChange;
           if (lyric.parts) {
             lyric.parts.forEach(part => {
