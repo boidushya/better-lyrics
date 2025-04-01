@@ -5,11 +5,14 @@
 const browseIdToVideoIdMap = new Map();
 
 
+/**
+ * @typedef {object} Segment
+ * @property {number} primaryVideoStartTimeMilliseconds
+ * @property {number} counterpartVideoStartTimeMilliseconds
+ * @property {number} durationMilliseconds
+ */
 /** @typedef {object} SegmentMap
- * @property {object[]} segment
- * @property {string} segment.primaryVideoStartTimeMilliseconds
- * @property {string} segment.counterpartVideoStartTimeMilliseconds
- * @property {string} segment.durationMilliseconds
+ * @property {Segment[]} segment
  */
 
 /**
@@ -19,7 +22,7 @@ const browseIdToVideoIdMap = new Map();
 const videoIdToLyricsMap = new Map();
 /**
  *
- * @type {Map<string, {counterpartVideoId: string, segmentMap: SegmentMap}>}
+ * @type {Map<string, {counterpartVideoId: string, segmentMap: SegmentMap | null}>}
  */
 const counterpartVideoIdMap = new Map();
 
@@ -37,17 +40,40 @@ BetterLyrics.RequestSniffing = {
             clearInterval(checkInterval);
             resolve(videoIdToLyricsMap.get(videoId));
           }
-          if (counterpartVideoIdMap.has(videoId)) {
-            let counterpart = counterpartVideoIdMap.get(videoId)
-            if (videoIdToLyricsMap.has(counterpart.counterpartVideoId)) {
+          if (counterpartVideoIdMap.get(videoId)) {
+            let counterpart = counterpartVideoIdMap.get(videoId).counterpartVideoId;
+            if (videoIdToLyricsMap.has(counterpart)) {
               clearInterval(checkInterval);
-              resolve(videoIdToLyricsMap.get(counterpart.counterpartVideoId));
+              resolve(videoIdToLyricsMap.get(counterpart));
             }
           }
           if (checkCount > 250) {
             clearInterval(checkInterval);
             BetterLyrics.Utils.log("Failed to sniff lyrics");
             resolve({ hasLyrics: false, lyrics: "", sourceText: "" });
+          }
+          checkCount += 1;
+        }, 20);
+      });
+    }
+  },
+
+  getMatchingSong: function (videoId, maxCheckCount = 250) {
+    if (counterpartVideoIdMap.has(videoId)) {
+      return Promise.resolve(counterpartVideoIdMap.get(videoId));
+    } else {
+      let checkCount = 0;
+      return new Promise((resolve, reject) => {
+        const checkInterval = setInterval(() => {
+          if (counterpartVideoIdMap.has(videoId)) {
+            let counterpart = counterpartVideoIdMap.get(videoId);
+            clearInterval(checkInterval);
+            resolve(counterpart);
+          }
+          if (checkCount > maxCheckCount) {
+            clearInterval(checkInterval);
+            BetterLyrics.Utils.log("Failed to find Segment Map for video");
+            resolve(null);
           }
           checkCount += 1;
         }, 20);
@@ -76,7 +102,6 @@ BetterLyrics.RequestSniffing = {
           if (requestJson.watchNextType === "WATCH_NEXT_TYPE_GET_QUEUE") {
             videoId = responseJson.currentVideoEndpoint.watchEndpoint.videoId;
             playlistId = responseJson.currentVideoEndpoint.watchEndpoint.playlistId;
-
           } else {
             return;
           }
@@ -96,7 +121,7 @@ BetterLyrics.RequestSniffing = {
 
         for (let playlistPanelRendererContent of playlistPanelRendererContents) {
           let counterpartId = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.counterpartRenderer?.playlistPanelVideoRenderer?.videoId;
-          let primaryId = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer.primaryRenderer.playlistPanelVideoRenderer.videoId;
+          let primaryId = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.primaryRenderer?.playlistPanelVideoRenderer?.videoId;
 
           /**
            * @type {SegmentMap}
@@ -104,15 +129,33 @@ BetterLyrics.RequestSniffing = {
           let segmentMap = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.segmentMap;
 
           if (counterpartId && primaryId) {
+            let reversedSegmentMap = null;
 
-            if (segmentMap) {
-              counterpartVideoIdMap.set(primaryId, {counterpartVideoId: counterpartId, segmentMap});
+            if (segmentMap && segmentMap.segment) {
+              for (let segment of segmentMap.segment) {
+                segment.counterpartVideoStartTimeMilliseconds = Number(segment.counterpartVideoStartTimeMilliseconds);
+                segment.primaryVideoStartTimeMilliseconds = Number(segment.primaryVideoStartTimeMilliseconds);
+                segment.durationMilliseconds = Number(segment.durationMilliseconds);
+              }
 
               /**
                * @type {SegmentMap}
                */
-              let reversedSegmentMap = segmentMap; //TODO
-              counterpartVideoIdMap.set(counterpartId, {counterpartVideoId: primaryId, reversedSegmentMap});
+              reversedSegmentMap = {...segmentMap, reversed: true};
+              for (let segment of reversedSegmentMap.segment) {
+                let counterpartVideoStartTimeMilliseconds = segment.counterpartVideoStartTimeMilliseconds;
+                let primaryVideoStartTimeMilliseconds = segment.primaryVideoStartTimeMilliseconds;
+                segment.counterpartVideoStartTimeMilliseconds = primaryVideoStartTimeMilliseconds;
+                segment.primaryVideoStartTimeMilliseconds = counterpartVideoStartTimeMilliseconds;
+              }
+            }
+
+            counterpartVideoIdMap.set(primaryId, {counterpartVideoId: counterpartId, segmentMap});
+            counterpartVideoIdMap.set(counterpartId, {counterpartVideoId: primaryId, segmentMap: reversedSegmentMap});
+          } else {
+            let primaryId = playlistPanelRendererContent?.playlistPanelVideoRenderer?.videoId;
+            if (primaryId) {
+              counterpartVideoIdMap.set(primaryId, {counterpartVideoId: null, segmentMap: null});
             }
           }
         }

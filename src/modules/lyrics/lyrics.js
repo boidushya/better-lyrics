@@ -4,9 +4,10 @@ BetterLyrics.Lyrics = {
   createLyrics: async function (detail) {
     let song = detail.song;
     let artist = detail.artist;
-    const videoId = detail.videoId;
+    let videoId = detail.videoId;
     const duration = detail.duration;
     const audioTrackData = detail.audioTrackData;
+    const isMusicVideo = detail.contentRect.width !== 0 && detail.contentRect.height !== 0;
 
     if (!videoId || typeof videoId !== "string") {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid video id");
@@ -38,7 +39,24 @@ BetterLyrics.Lyrics = {
     }
 
     // We should get recalled if we were executed without a valid song/artist and aren't able to get lyrics
-    BetterLyrics.DOM.renderLoader(); // Only render the loader after we've checked the cache
+
+    /**
+     * @type SegmentMap
+     */
+    let segmentMap;
+    let matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId, 1);
+    if (!matchingSong || !matchingSong.counterpartVideoId || matchingSong.counterpartVideoId !== BetterLyrics.App.lastLoadedVideoId) {
+      BetterLyrics.DOM.renderLoader(); // Only render the loader after we've checked the cache & we're not switching between audio and video
+      matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId);
+    } else {
+      BetterLyrics.Utils.log("Switching between audio/video: Skipping Loader");
+    }
+    if (isMusicVideo && matchingSong && matchingSong.counterpartVideoId && matchingSong.segmentMap) {
+      BetterLyrics.Utils.log("Switching VideoId to Audio Id")
+      videoId = matchingSong.counterpartVideoId;
+      segmentMap = matchingSong.segmentMap;
+    }
+
 
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     console.assert(tabSelector != null);
@@ -66,9 +84,9 @@ BetterLyrics.Lyrics = {
 
     let lyrics;
     let ytLyrics;
-    if (!BetterLyrics.App.requestCache || BetterLyrics.App.requestCache.get("id") !== videoId) {
+    if (!BetterLyrics.App.requestCache || BetterLyrics.App.requestCache.get("id") !== detail.videoId) {
       BetterLyrics.App.requestCache = new Map();
-      BetterLyrics.App.requestCache.set("id", videoId);
+      BetterLyrics.App.requestCache.set("id", detail.videoId);
     }
     /**
      * @type {Map<Function, {}>}
@@ -87,6 +105,15 @@ BetterLyrics.Lyrics = {
 
         if (lyrics && lyrics.album) {
           album = lyrics.album;
+        }
+        if (isMusicVideo && lyrics && lyrics.song && lyrics.song.length > 0 && song !== lyrics.song) {
+          BetterLyrics.Utils.log("Using " + lyrics.song + " for song instead of " + song);
+          song = lyrics.song;
+        }
+
+        if (isMusicVideo && lyrics && lyrics.artist && lyrics.artist.length > 0 && artist !== lyrics.artist) {
+          BetterLyrics.Utils.log("Using " + lyrics.artist + " for artist instead of " + artist);
+          artist = lyrics.artist;
         }
 
         if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
@@ -132,8 +159,39 @@ BetterLyrics.Lyrics = {
       lyrics = ytLyrics;
     }
 
+    if (isMusicVideo && lyrics.musicVideoSynced !== true && segmentMap) {
+      BetterLyrics.Utils.log(segmentMap);
+      // We're in a music video and need to sync lyrics to the music video
+      const allZero = lyrics.lyrics.every(item => item.startTimeMs === "0" || item.startTimeMs === 0);
+
+      if (!allZero) {
+        for (let lyricKey in lyrics.lyrics) {
+          let lyric = lyrics.lyrics[lyricKey];
+          let lastTimeChange = 0;
+          for (let segment of segmentMap.segment) {
+            if (lyric.startTimeMs >= segment.counterpartVideoStartTimeMilliseconds) {
+              lastTimeChange = segment.primaryVideoStartTimeMilliseconds - segment.counterpartVideoStartTimeMilliseconds;
+              if (lyric.startTimeMs <= segment.counterpartVideoStartTimeMilliseconds + segment.durationMilliseconds) {
+                break;
+              }
+            }
+          }
+
+          lyric.startTimeMs = Number(lyric.startTimeMs) + lastTimeChange;
+          if (lyric.parts) {
+            lyric.parts.forEach(part => {
+              part.startTimeMs = Number(part.startTimeMs) + lastTimeChange;
+            })
+          }
+        }
+      }
+
+
+    }
+
     BetterLyrics.Utils.log("Got Lyrics from " + lyrics.source);
 
+    BetterLyrics.App.lastLoadedVideoId = detail.videoId;
     this.cacheAndProcessLyrics(cacheKey, lyrics);
   },
 
@@ -212,7 +270,7 @@ BetterLyrics.Lyrics = {
       BetterLyrics.Utils.log(BetterLyrics.Constants.TRANSLATION_ENABLED_LOG, items.translationLanguage);
     });
 
-    const allZero = lyrics.every(item => item.startTimeMs === "0");
+    const allZero = lyrics.every(item => item.startTimeMs === "0" || item.startTimeMs === 0);
 
     // Disabled since we want to show the last line even if it's nothing as that ends syncing for the second last line
     //

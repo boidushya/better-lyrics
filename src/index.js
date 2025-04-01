@@ -12,6 +12,7 @@ BetterLyrics.App = {
   queueSongDetailsInjection: false,
   loaderAnimationEndTimeout: null,
   requestCache: null,
+  lastLoadedVideoId: null,
 
   modify: function () {
     BetterLyrics.Utils.setUpLog();
@@ -69,5 +70,5 @@ BetterLyrics.App = {
 // Initialize the application
 BetterLyrics.App.init();
 
-BetterLyrics.DOM.injectGetSongInfo();
 BetterLyrics.RequestSniffing.setupRequestSniffer();
+BetterLyrics.DOM.injectGetSongInfo();

@@ -75,6 +75,8 @@ BetterLyrics.LyricProviders = {
       lyrics: lyrics,
       source: "DaCubeKing",
       album: response.album,
+      song: response.song,
+      artist: response.artist,
       cacheAllowed: true,
       sourceHref: "https://dacubeking.com",
     };
@@ -266,7 +268,7 @@ BetterLyrics.LyricProviders = {
         durationMs: event.dDurationMs,
       });
     });
-    return { lyrics: lyricsArray, language: langCode, source: "Youtube Captions", sourceHref: "" };
+    return { lyrics: lyricsArray, language: langCode, source: "Youtube Captions", sourceHref: "", musicVideoSynced: true };
   },
 
   initProviders: function () {
@@ -275,7 +277,6 @@ BetterLyrics.LyricProviders = {
     const updateProvidersList = preferredProvider => {
       BetterLyrics.LyricProviders.providersList = [
         // BetterLyrics.LyricProviders.local,
-        BetterLyrics.LyricProviders.ytCaptions,
         BetterLyrics.LyricProviders.cubey,
       ];
 
@@ -306,6 +307,8 @@ BetterLyrics.LyricProviders = {
     browserAPI.storage.sync.get({ preferredProvider: 0 }, function (items) {
       updateProvidersList(items.preferredProvider);
     });
+
+    BetterLyrics.LyricProviders.providersList.push(BetterLyrics.LyricProviders.ytCaptions);
   },
   /**
    *
