@@ -1,6 +1,7 @@
 BetterLyrics.App = {
   lang: "en",
   areLyricsTicking: false,
+  lyricData: null,
   areLyricsLoaded: false,
   lyricInjectionFailed: false,
   lastVideoId: null,

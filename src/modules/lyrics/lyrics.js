@@ -288,6 +288,32 @@ BetterLyrics.Lyrics = {
       }
       return resolve(BetterLyrics.App.lang);
     });
+    /**
+     *
+     * @typedef {object} PartData
+     * @property {number} time
+     * @property {number} duration
+     * @property {number} animationStartTimeMs
+     * @property {Element} lyricElement
+     */
+
+    /**
+     * @typedef {object} LineData
+     * @property {Element} lyricElement
+     * @property {number} time
+     * @property {number} duration
+     * @property {PartData[]} parts
+     * @property {boolean} isScrolled
+     * @property {number} animationStartTimeMs
+     * @property {boolean} isAnimationPlayStatePlaying
+     * @property {boolean} hasAnimatingClass
+     * @property {boolean} isSelected
+     */
+
+    /**
+     * @type {LineData[]}
+     */
+    let lyricsData = []
 
     lyrics.forEach((item, index) => {
       if (!item.parts || item.parts.length === 0) {
@@ -305,27 +331,55 @@ BetterLyrics.Lyrics = {
       }
 
       let line = document.createElement("div");
-      line.dataset.time = parseFloat(item.startTimeMs) / 1000;
+
+      /**
+       *
+       * @type LineData
+       */
+      let lineData = {
+        lyricElement: line,
+        time: parseFloat(item.startTimeMs) / 1000,
+        duration: parseFloat(item.durationMs) / 1000,
+        parts: [],
+        isScrolled: false,
+        animationStartTimeMs: Infinity,
+        isAnimationPlayStatePlaying: false,
+        hasAnimatingClass: false,
+        isSelected: false
+      }
 
       item.parts.forEach(part => {
         let span = document.createElement("span");
         if (Number(part.durationMs) === 0) {
           span.classList.add(BetterLyrics.Constants.ZERO_DURATION_ANIMATION_CLASS);
         }
+
+        /**
+         *
+         * @type {PartData}
+         */
+        let partData = {
+          time: parseFloat(part.startTimeMs) / 1000,
+          duration: parseFloat(part.durationMs) / 1000,
+          animationStartTimeMs: Infinity,
+          lyricElement: span
+        }
+
         span.textContent = part.words;
-        span.dataset.time = part.startTimeMs / 1000;
-        span.dataset.duration = part.durationMs / 1000;
+        span.dataset.time = partData.time;
+        span.dataset.duration = partData.duration;
         span.dataset.content = part.words;
         span.style.setProperty("--blyrics-duration", part.durationMs + "ms");
+
+        lineData.parts.push(partData);
         line.appendChild(span);
       });
 
-      line.dataset.time = item.startTimeMs / 1000;
-      line.dataset.duration = item.durationMs / 1000;
+      line.dataset.time = lineData.time;
+      line.dataset.duration = lineData.duration;
       line.style.setProperty("--blyrics-duration", item.durationMs + "ms");
 
       if (!allZero) {
-        line.setAttribute("data-scrolled", false);
         line.setAttribute(
           "onClick",
           `const player = document.getElementById("movie_player"); player.seekTo(${
@@ -406,6 +460,7 @@ BetterLyrics.Lyrics = {
       });
 
       try {
+        lyricsData.push(lineData);
         wrapper.appendChild(line);
       } catch (_err) {
         BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
@@ -424,14 +479,12 @@ BetterLyrics.Lyrics = {
     }
 
     if (!allZero) {
-      BetterLyrics.Lyrics.setupLyricsCheckInterval();
+      BetterLyrics.App.lyricData = lyricsData;
+      BetterLyrics.App.areLyricsTicking = true;
     } else {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SYNC_DISABLED_LOG);
     }
     BetterLyrics.App.areLyricsLoaded = true;
-  },
-  setupLyricsCheckInterval: function () {
-    BetterLyrics.App.areLyricsTicking = true;
   },
 };
 
