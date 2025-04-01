@@ -45,18 +45,22 @@ BetterLyrics.Lyrics = {
      */
     let segmentMap = null;
     let matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId, 1);
-    if (!matchingSong || !matchingSong.counterpartVideoId || (matchingSong.counterpartVideoId !== BetterLyrics.App.lastLoadedVideoId && BetterLyrics.App.lastLoadedVideoId !== videoId)) {
+    if (
+      !matchingSong ||
+      !matchingSong.counterpartVideoId ||
+      (matchingSong.counterpartVideoId !== BetterLyrics.App.lastLoadedVideoId &&
+        BetterLyrics.App.lastLoadedVideoId !== videoId)
+    ) {
       BetterLyrics.DOM.renderLoader(); // Only render the loader after we've checked the cache & we're not switching between audio and video
       matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId);
     } else {
       BetterLyrics.Utils.log("Switching between audio/video: Skipping Loader");
     }
     if (isMusicVideo && matchingSong && matchingSong.counterpartVideoId && matchingSong.segmentMap) {
-      BetterLyrics.Utils.log("Switching VideoId to Audio Id")
+      BetterLyrics.Utils.log("Switching VideoId to Audio Id");
       videoId = matchingSong.counterpartVideoId;
       segmentMap = matchingSong.segmentMap;
     }
-
 
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     console.assert(tabSelector != null);
@@ -84,7 +88,6 @@ BetterLyrics.Lyrics = {
 
     let lyrics;
     let ytLyrics;
-
 
     let album = null;
     for (let provider of BetterLyrics.LyricProviders.providersList) {
@@ -162,7 +165,8 @@ BetterLyrics.Lyrics = {
           let lastTimeChange = 0;
           for (let segment of segmentMap.segment) {
             if (lyric.startTimeMs >= segment.counterpartVideoStartTimeMilliseconds) {
-              lastTimeChange = segment.primaryVideoStartTimeMilliseconds - segment.counterpartVideoStartTimeMilliseconds;
+              lastTimeChange =
+                segment.primaryVideoStartTimeMilliseconds - segment.counterpartVideoStartTimeMilliseconds;
               if (lyric.startTimeMs <= segment.counterpartVideoStartTimeMilliseconds + segment.durationMilliseconds) {
                 break;
               }
@@ -172,12 +176,10 @@ BetterLyrics.Lyrics = {
           if (lyric.parts) {
             lyric.parts.forEach(part => {
               part.startTimeMs = Number(part.startTimeMs) + lastTimeChange;
-            })
+            });
           }
         }
       }
-
-
     }
 
     BetterLyrics.Utils.log("Got Lyrics from " + lyrics.source);
@@ -312,7 +314,7 @@ BetterLyrics.Lyrics = {
     /**
      * @type {LineData[]}
      */
-    let lyricsData = []
+    let lyricsData = [];
 
     lyrics.forEach((item, index) => {
       if (!item.parts || item.parts.length === 0) {
@@ -344,8 +346,8 @@ BetterLyrics.Lyrics = {
         animationStartTimeMs: Infinity,
         isAnimationPlayStatePlaying: false,
         isAnimating: false,
-        isSelected: false
-      }
+        isSelected: false,
+      };
 
       item.parts.forEach(part => {
         let span = document.createElement("span");
@@ -360,8 +362,8 @@ BetterLyrics.Lyrics = {
         let partData = {
           time: parseFloat(part.startTimeMs) / 1000,
           duration: parseFloat(part.durationMs) / 1000,
-          lyricElement: span
-        }
+          lyricElement: span,
+        };
 
         span.textContent = part.words;
         span.dataset.time = partData.time;

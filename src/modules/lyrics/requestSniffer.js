@@ -4,7 +4,6 @@
  */
 const browseIdToVideoIdMap = new Map();
 
-
 /**
  * @typedef {object} Segment
  * @property {number} primaryVideoStartTimeMilliseconds
@@ -63,7 +62,7 @@ BetterLyrics.RequestSniffing = {
       return Promise.resolve(counterpartVideoIdMap.get(videoId));
     } else {
       let checkCount = 0;
-      return new Promise((resolve, reject) => {
+      return new Promise(resolve => {
         const checkInterval = setInterval(() => {
           if (counterpartVideoIdMap.has(videoId)) {
             let counterpart = counterpartVideoIdMap.get(videoId);
@@ -94,9 +93,10 @@ BetterLyrics.RequestSniffing = {
         let videoId = requestJson.videoId;
         let playlistId = requestJson.playlistId;
 
-        let playlistPanelRendererContents = responseJson.contents?.singleColumnMusicWatchNextResultsRenderer?.tabbedRenderer?.
-          watchNextTabbedResultsRenderer?.tabs?.[0]?.tabRenderer?.content?.musicQueueRenderer?.content?.playlistPanelRenderer?.contents;
-
+        let playlistPanelRendererContents =
+          responseJson.contents?.singleColumnMusicWatchNextResultsRenderer?.tabbedRenderer
+            ?.watchNextTabbedResultsRenderer?.tabs?.[0]?.tabRenderer?.content?.musicQueueRenderer?.content
+            ?.playlistPanelRenderer?.contents;
 
         if (!videoId && !playlistId) {
           if (requestJson.watchNextType === "WATCH_NEXT_TYPE_GET_QUEUE") {
@@ -120,13 +120,18 @@ BetterLyrics.RequestSniffing = {
 
         if (playlistPanelRendererContents) {
           for (let playlistPanelRendererContent of playlistPanelRendererContents) {
-            let counterpartId = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.counterpartRenderer?.playlistPanelVideoRenderer?.videoId;
-            let primaryId = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.primaryRenderer?.playlistPanelVideoRenderer?.videoId;
+            let counterpartId =
+              playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.counterpartRenderer
+                ?.playlistPanelVideoRenderer?.videoId;
+            let primaryId =
+              playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.primaryRenderer
+                ?.playlistPanelVideoRenderer?.videoId;
 
             /**
              * @type {SegmentMap}
              */
-            let segmentMap = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.segmentMap;
+            let segmentMap =
+              playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.segmentMap;
 
             if (counterpartId && primaryId) {
               let reversedSegmentMap = null;
@@ -141,22 +146,25 @@ BetterLyrics.RequestSniffing = {
                 /**
                  * @type {SegmentMap}
                  */
-                reversedSegmentMap = {segment: [], reversed: true};
+                reversedSegmentMap = { segment: [], reversed: true };
                 for (let segment of segmentMap.segment) {
                   reversedSegmentMap.segment.push({
                     primaryVideoStartTimeMilliseconds: segment.counterpartVideoStartTimeMilliseconds,
                     counterpartVideoStartTimeMilliseconds: segment.primaryVideoStartTimeMilliseconds,
                     durationMilliseconds: segment.durationMilliseconds,
-                  })
+                  });
                 }
               }
 
-              counterpartVideoIdMap.set(primaryId, {counterpartVideoId: counterpartId, segmentMap});
-              counterpartVideoIdMap.set(counterpartId, {counterpartVideoId: primaryId, segmentMap: reversedSegmentMap});
+              counterpartVideoIdMap.set(primaryId, { counterpartVideoId: counterpartId, segmentMap });
+              counterpartVideoIdMap.set(counterpartId, {
+                counterpartVideoId: primaryId,
+                segmentMap: reversedSegmentMap,
+              });
             } else {
               let primaryId = playlistPanelRendererContent?.playlistPanelVideoRenderer?.videoId;
               if (primaryId) {
-                counterpartVideoIdMap.set(primaryId, {counterpartVideoId: null, segmentMap: null});
+                counterpartVideoIdMap.set(primaryId, { counterpartVideoId: null, segmentMap: null });
               }
             }
           }

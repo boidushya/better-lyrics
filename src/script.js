@@ -34,7 +34,7 @@ const startLyricsTick = () => {
               audioTrackData: audioTrackData,
               browserTime: Date.now(),
               playing: isPlaying && !isBuffering,
-              contentRect
+              contentRect,
             },
           })
         );

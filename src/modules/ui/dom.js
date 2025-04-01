@@ -199,7 +199,7 @@ BetterLyrics.DOM = {
       } else {
         BetterLyrics.DOM.injectAlbumArt(albumArt.src);
       }
-    }
+    };
 
     let albumArt = document.querySelector(BetterLyrics.Constants.SONG_IMAGE_SELECTOR);
     const observer = new MutationObserver(() => {
@@ -212,7 +212,6 @@ BetterLyrics.DOM = {
 
     injectAlbumArt();
     BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_LOG);
-
   },
 
   injectAlbumArt: function (src) {
@@ -348,7 +347,6 @@ BetterLyrics.DOM = {
         return;
       }
 
-
       let selectedLyricHeight = 0;
       let targetScrollPos = 0;
       lyricsData.every((lineData, index) => {
@@ -394,9 +392,11 @@ BetterLyrics.DOM = {
           lineData.selected = true;
 
           const timeDelta = currentTime - time;
-          if (lineData.isAnimating &&
+          if (
+            lineData.isAnimating &&
             Math.abs((now - lineData.animationStartTimeMs) / 1000 - timeDelta) > 0.02 &&
-            isPlaying) {
+            isPlaying
+          ) {
             // Our sync is off for some reason
             lineData.isAnimating = false;
           }
@@ -432,7 +432,6 @@ BetterLyrics.DOM = {
               lineData.lyricElement.animationPlayState = "paused";
             }
           }
-
         } else {
           if (lineData.selected) {
             let children = [lineData, ...lineData.parts];

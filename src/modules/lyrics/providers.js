@@ -43,7 +43,6 @@ BetterLyrics.LyricProviders = {
    * @property {string} captionsInitialState
    */
 
-
   /**
    * @typedef {{startTimeMs: number, words: string, durationMs: number, parts: ({startTimeMs: number, words: string, durationMs: number}[] | null)}[]} LyricsArray
    */
@@ -65,7 +64,7 @@ BetterLyrics.LyricProviders = {
     try {
       if (response.lyrics) {
         lyrics = BetterLyrics.LyricProviders.parseLRC(response.lyrics, duration);
-        BetterLyrics.LyricProviders.lrcFixers(lyrics)
+        BetterLyrics.LyricProviders.lrcFixers(lyrics);
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
@@ -269,7 +268,13 @@ BetterLyrics.LyricProviders = {
         durationMs: event.dDurationMs,
       });
     });
-    return { lyrics: lyricsArray, language: langCode, source: "Youtube Captions", sourceHref: "", musicVideoSynced: true };
+    return {
+      lyrics: lyricsArray,
+      language: langCode,
+      source: "Youtube Captions",
+      sourceHref: "",
+      musicVideoSynced: true,
+    };
   },
 
   initProviders: function () {
@@ -469,7 +474,9 @@ BetterLyrics.LyricProviders = {
     for (let lyric of lyrics) {
       // skipping the last two parts is on purpose
       // (weather they have a valid duration seems uncorrelated with the rest of them being correct)
-      if (!lyric.parts || lyric.parts.length === 0) {continue;}
+      if (!lyric.parts || lyric.parts.length === 0) {
+        continue;
+      }
 
       for (let i = 0; i < lyric.parts.length - 2; i++) {
         let part = lyric.parts[i];
@@ -481,11 +488,13 @@ BetterLyrics.LyricProviders = {
         }
       }
     }
-    if (durationCount > 0 && (shortDurationCount / durationCount) > 0.5 ) {
+    if (durationCount > 0 && shortDurationCount / durationCount > 0.5) {
       BetterLyrics.Utils.log("Found a lot of short duration lyrics, fudging durations");
       for (let i = 0; i < lyrics.length; i++) {
         let lyric = lyrics[i];
-        if (!lyric.parts || lyric.parts.length === 0) {continue;}
+        if (!lyric.parts || lyric.parts.length === 0) {
+          continue;
+        }
 
         for (let j = 0; j < lyric.parts.length; j++) {
           let part = lyric.parts[j];
@@ -502,7 +511,6 @@ BetterLyrics.LyricProviders = {
               nextPart = null;
             }
 
-
             if (nextPart === null) {
               part.durationMs = 300;
             } else {
@@ -518,5 +526,5 @@ BetterLyrics.LyricProviders = {
         }
       }
     }
-  }
+  },
 };
