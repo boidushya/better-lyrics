@@ -4,11 +4,24 @@
  */
 const browseIdToVideoIdMap = new Map();
 
+
+/** @typedef {object} SegmentMap
+ * @property {object[]} segment
+ * @property {string} segment.primaryVideoStartTimeMilliseconds
+ * @property {string} segment.counterpartVideoStartTimeMilliseconds
+ * @property {string} segment.durationMilliseconds
+ */
+
 /**
  *
  * @type {Map<string, {hasLyrics: boolean, lyrics: string, sourceText: string}>}
  */
 const videoIdToLyricsMap = new Map();
+/**
+ *
+ * @type {Map<string, {counterpartVideoId: string, segmentMap: SegmentMap}>}
+ */
+const counterpartVideoIdMap = new Map();
 
 let firstRequestMissedVideoId = null;
 
@@ -23,6 +36,13 @@ BetterLyrics.RequestSniffing = {
           if (videoIdToLyricsMap.has(videoId)) {
             clearInterval(checkInterval);
             resolve(videoIdToLyricsMap.get(videoId));
+          }
+          if (counterpartVideoIdMap.has(videoId)) {
+            let counterpart = counterpartVideoIdMap.get(videoId)
+            if (videoIdToLyricsMap.has(counterpart.counterpartVideoId)) {
+              clearInterval(checkInterval);
+              resolve(videoIdToLyricsMap.get(counterpart.counterpartVideoId));
+            }
           }
           if (checkCount > 250) {
             clearInterval(checkInterval);
@@ -47,10 +67,16 @@ BetterLyrics.RequestSniffing = {
       if (url.includes("https://music.youtube.com/youtubei/v1/next")) {
         let videoId = requestJson.videoId;
         let playlistId = requestJson.playlistId;
+
+        let playlistPanelRendererContents = responseJson.contents?.singleColumnMusicWatchNextResultsRenderer?.tabbedRenderer?.
+          watchNextTabbedResultsRenderer?.tabs?.[0]?.tabRenderer?.content?.musicQueueRenderer?.content?.playlistPanelRenderer?.contents;
+
+
         if (!videoId && !playlistId) {
           if (requestJson.watchNextType === "WATCH_NEXT_TYPE_GET_QUEUE") {
             videoId = responseJson.currentVideoEndpoint.watchEndpoint.videoId;
             playlistId = responseJson.currentVideoEndpoint.watchEndpoint.playlistId;
+
           } else {
             return;
           }
@@ -65,6 +91,30 @@ BetterLyrics.RequestSniffing = {
         } else {
           let browseId = lyricsTab.endpoint.browseEndpoint.browseId;
           browseIdToVideoIdMap.set(browseId, videoId);
+        }
+
+
+        for (let playlistPanelRendererContent of playlistPanelRendererContents) {
+          let counterpartId = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.counterpartRenderer?.playlistPanelVideoRenderer?.videoId;
+          let primaryId = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer.primaryRenderer.playlistPanelVideoRenderer.videoId;
+
+          /**
+           * @type {SegmentMap}
+           */
+          let segmentMap = playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.segmentMap;
+
+          if (counterpartId && primaryId) {
+
+            if (segmentMap) {
+              counterpartVideoIdMap.set(primaryId, {counterpartVideoId: counterpartId, segmentMap});
+
+              /**
+               * @type {SegmentMap}
+               */
+              let reversedSegmentMap = segmentMap; //TODO
+              counterpartVideoIdMap.set(counterpartId, {counterpartVideoId: primaryId, reversedSegmentMap});
+            }
+          }
         }
       } else if (url.includes("https://music.youtube.com/youtubei/v1/browse")) {
         let browseId = requestJson.browseId;
