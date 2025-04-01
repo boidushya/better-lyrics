@@ -186,24 +186,33 @@ BetterLyrics.DOM = {
   },
   /** @type {MutationObserver | null} */
   backgroundChangeObserver: null,
-  addAlbumArtToLayout: function () {
+  addAlbumArtToLayout: function (videoId) {
+    if (!videoId) return;
+
     if (BetterLyrics.DOM.backgroundChangeObserver) {
       BetterLyrics.DOM.backgroundChangeObserver.disconnect();
     }
 
+    let injectAlbumArt = () => {
+      if (albumArt.src.startsWith("data:image")) {
+        BetterLyrics.DOM.injectAlbumArt("https://img.youtube.com/vi/" + videoId + "/0.jpg");
+      } else {
+        BetterLyrics.DOM.injectAlbumArt(albumArt.src);
+      }
+    }
+
     let albumArt = document.querySelector(BetterLyrics.Constants.SONG_IMAGE_SELECTOR);
     const observer = new MutationObserver(() => {
-      BetterLyrics.DOM.injectAlbumArt(albumArt.src);
+      injectAlbumArt();
       BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_FROM_MUTATION_LOG);
     });
 
     observer.observe(albumArt, { attributes: true });
     BetterLyrics.DOM.backgroundChangeObserver = observer;
 
-    if (!albumArt.src !== BetterLyrics.Constants.EMPTY_THUMBNAIL_SRC) {
-      BetterLyrics.DOM.injectAlbumArt(albumArt.src);
-      BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_LOG);
-    }
+    injectAlbumArt();
+    BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_LOG);
+
   },
 
   injectAlbumArt: function (src) {
