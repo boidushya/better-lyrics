@@ -293,7 +293,6 @@ BetterLyrics.Lyrics = {
      * @typedef {object} PartData
      * @property {number} time
      * @property {number} duration
-     * @property {number} animationStartTimeMs
      * @property {Element} lyricElement
      */
 
@@ -306,7 +305,7 @@ BetterLyrics.Lyrics = {
      * @property {boolean} isScrolled
      * @property {number} animationStartTimeMs
      * @property {boolean} isAnimationPlayStatePlaying
-     * @property {boolean} hasAnimatingClass
+     * @property {boolean} isAnimating
      * @property {boolean} isSelected
      */
 
@@ -344,7 +343,7 @@ BetterLyrics.Lyrics = {
         isScrolled: false,
         animationStartTimeMs: Infinity,
         isAnimationPlayStatePlaying: false,
-        hasAnimatingClass: false,
+        isAnimating: false,
         isSelected: false
       }
 
@@ -361,7 +360,6 @@ BetterLyrics.Lyrics = {
         let partData = {
           time: parseFloat(part.startTimeMs) / 1000,
           duration: parseFloat(part.durationMs) / 1000,
-          animationStartTimeMs: Infinity,
           lyricElement: span
         }
 

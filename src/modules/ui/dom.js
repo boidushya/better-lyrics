@@ -383,33 +383,24 @@ BetterLyrics.DOM = {
         }
         if (currentTime + setUpAnimationEarlyTime >= time && currentTime < nextTime) {
           lineData.selected = true;
-          let children = [lineData, ...lineData.parts];
-          children.forEach(part => {
-            let elDuration = part.duration;
-            let elTime = part.time;
-            const timeDelta = currentTime - elTime;
 
-            if (
-              (part.animationStartTimeMs !== Infinity) &&
-              Math.abs((now - part.animationStartTimeMs) / 1000 - timeDelta) > 0.02 &&
-              isPlaying
-            ) {
-              // the timing of animation is too wrong. reset so we can recalculate them
+          const timeDelta = currentTime - time;
+          if (lineData.isAnimating &&
+            Math.abs((now - lineData.animationStartTimeMs) / 1000 - timeDelta) > 0.02 &&
+            isPlaying) {
+            // Our sync is off for some reason
+            lineData.isAnimating = false;
+          }
+
+          if (!lineData.isAnimating) {
+            let children = [lineData, ...lineData.parts];
+            children.forEach(part => {
+              let elDuration = part.duration;
+              let elTime = part.time;
+              const timeDelta = currentTime - elTime;
+
               part.lyricElement.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
-              part.hasAnimatingClass = false;
-              part.animationStartTimeMs = Infinity;
-            }
 
-            if (isPlaying !== part.isAnimationPlayStatePlaying) {
-              part.isAnimationPlayStatePlaying = isPlaying;
-              if (isPlaying) {
-                part.lyricElement.animationPlayState = "";
-              } else {
-                part.lyricElement.animationPlayState = "paused";
-              }
-            }
-
-            if (!part.hasAnimatingClass) {
               //correct for the animation not starting at 0% and instead at -10%
               let swipeAnimationDelay = -timeDelta - elDuration * 0.1 + "s";
               let everythingElseDelay = -timeDelta + "s";
@@ -418,14 +409,23 @@ BetterLyrics.DOM = {
               part.lyricElement.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               reflow(part.lyricElement);
               part.lyricElement.classList.add(BetterLyrics.Constants.ANIMATING_CLASS);
+            });
 
-              part.animationStartTimeMs = now - timeDelta * 1000;
-              part.hasAnimatingClass = true;
+            lineData.animationStartTimeMs = now - timeDelta * 1000;
+            lineData.isAnimating = true;
+          }
+
+          if (isPlaying !== lineData.isAnimationPlayStatePlaying) {
+            lineData.isAnimationPlayStatePlaying = isPlaying;
+            if (isPlaying) {
+              lineData.lyricElement.animationPlayState = "";
+            } else {
+              lineData.lyricElement.animationPlayState = "paused";
             }
-          });
+          }
+
         } else {
-          let selected = lineData.selected;
-          if (selected) {
+          if (lineData.selected) {
             let children = [lineData, ...lineData.parts];
             children.forEach(part => {
               part.lyricElement.style.transitionDelay = "";
@@ -433,13 +433,12 @@ BetterLyrics.DOM = {
               part.lyricElement.style.animationPlayState = "";
               part.lyricElement.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
               part.lyricElement.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
-              part.hasAnimatingClass = false;
+              part.isAnimating = false;
               part.animationStartTimeMs = Infinity;
             });
             lineData.selected = false;
           }
         }
-
         return true;
       });
 
