@@ -297,7 +297,7 @@ BetterLyrics.DOM = {
   lyricScrollTimeOffset: 0.2,
   tickLyrics: function (currentTime, isPlaying = true) {
     const now = Date.now();
-    if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
+    if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking || (currentTime === 0 && !isPlaying)) {
       return;
     }
 
