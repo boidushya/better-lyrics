@@ -468,9 +468,12 @@ BetterLyrics.DOM = {
         ) {
           lyricsElement.style.transition = "top 0s ease-in-out 0s";
           lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
-
+          reflow(lyricsElement);
+          lyricsElement.style.transition = "";
+          lyricsElement.style.top = "0px";
           scrollTop = scrollPos;
-          BetterLyrics.DOM.scrollPos = -1; //force syncing position on the next tick
+
+          BetterLyrics.DOM.scrollPos = scrollPos;
         } else if (BetterLyrics.DOM.scrollPos === -1) {
           if (lyricsElement.style.transition === "top 0s ease-in-out 0s") {
             BetterLyrics.DOM.nextScrollAllowedTime =
