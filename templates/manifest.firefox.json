@@ -41,12 +41,8 @@
       "css": ["src/index.css"]
     },
     {
-      "matches": [
-        "*://music.youtube.com/*"
-      ],
-      "js": [
-        "src/earlyInject.js"
-      ],
+      "matches": ["*://music.youtube.com/*"],
+      "js": ["src/earlyInject.js"],
       "run_at": "document_start",
       "world": "MAIN"
     },

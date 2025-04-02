@@ -11,9 +11,7 @@
   },
   "update_url": "https://clients2.google.com/service/update2/crx",
   "host_permissions": ["*://music.youtube.com/*"],
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage"],
   "optional_permissions": ["downloads"],
   "options_ui": {
     "page": "src/options/options.html",
@@ -48,12 +46,8 @@
       "run_at": "document_start"
     },
     {
-      "matches": [
-        "*://music.youtube.com/*"
-      ],
-      "js": [
-        "src/earlyInject.js"
-      ],
+      "matches": ["*://music.youtube.com/*"],
+      "js": ["src/earlyInject.js"],
       "run_at": "document_start",
       "world": "MAIN"
     },
