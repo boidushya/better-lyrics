@@ -46,10 +46,10 @@ BetterLyrics.Lyrics = {
     let segmentMap = null;
     let matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId, 1);
     if (
-      !matchingSong ||
-      !matchingSong.counterpartVideoId ||
-      (matchingSong.counterpartVideoId !== BetterLyrics.App.lastLoadedVideoId &&
-        BetterLyrics.App.lastLoadedVideoId !== videoId)
+      (!matchingSong ||
+        !matchingSong.counterpartVideoId ||
+        matchingSong.counterpartVideoId !== BetterLyrics.App.lastLoadedVideoId) &&
+      BetterLyrics.App.lastLoadedVideoId !== videoId
     ) {
       BetterLyrics.DOM.renderLoader(); // Only render the loader after we've checked the cache & we're not switching between audio and video
       matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId);
