@@ -41,6 +41,16 @@
       "css": ["src/index.css"]
     },
     {
+      "matches": [
+        "*://music.youtube.com/*"
+      ],
+      "js": [
+        "src/earlyInject.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
       "matches": ["<all_urls>"],
       "js": [
         "src/libs/codemirror/codemirror.min.js",
