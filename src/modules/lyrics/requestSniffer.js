@@ -88,34 +88,15 @@ BetterLyrics.RequestSniffing = {
 
     document.addEventListener("blyrics-send-response", event => {
       let { /** @type string */ url, requestJson, responseJson } = event.detail;
-
       if (url.includes("https://music.youtube.com/youtubei/v1/next")) {
-        let videoId = requestJson.videoId;
-        let playlistId = requestJson.playlistId;
-
         let playlistPanelRendererContents =
           responseJson.contents?.singleColumnMusicWatchNextResultsRenderer?.tabbedRenderer
             ?.watchNextTabbedResultsRenderer?.tabs?.[0]?.tabRenderer?.content?.musicQueueRenderer?.content
             ?.playlistPanelRenderer?.contents;
-
-        if (!videoId && !playlistId) {
-          if (requestJson.watchNextType === "WATCH_NEXT_TYPE_GET_QUEUE") {
-            videoId = responseJson.currentVideoEndpoint.watchEndpoint.videoId;
-            playlistId = responseJson.currentVideoEndpoint.watchEndpoint.playlistId;
-          } else {
-            return;
-          }
-        } else if (!videoId) {
-          return;
-        }
-        let lyricsTab =
-          responseJson.contents.singleColumnMusicWatchNextResultsRenderer.tabbedRenderer.watchNextTabbedResultsRenderer
-            .tabs[1].tabRenderer;
-        if (lyricsTab.unselectable) {
-          videoIdToLyricsMap.set(videoId, { hasLyrics: false, lyrics: "", sourceText: "" });
-        } else {
-          let browseId = lyricsTab.endpoint.browseEndpoint.browseId;
-          browseIdToVideoIdMap.set(browseId, videoId);
+        if (!playlistPanelRendererContents) {
+          playlistPanelRendererContents =
+            responseJson.onResponseReceivedEndpoints?.[0]?.queueUpdateCommand?.inlineContents?.playlistPanelRenderer
+              ?.contents;
         }
 
         if (playlistPanelRendererContents) {
@@ -169,6 +150,30 @@ BetterLyrics.RequestSniffing = {
             }
           }
         }
+
+        let videoId = requestJson.videoId;
+        let playlistId = requestJson.playlistId;
+
+        if (!videoId) {
+          videoId = responseJson.currentVideoEndpoint?.watchEndpoint?.videoId;
+        }
+        if (!playlistId) {
+          playlistId = responseJson.currentVideoEndpoint?.watchEndpoint?.playlistId;
+        }
+
+        if (!videoId) {
+          return;
+        }
+
+        let lyricsTab =
+          responseJson.contents.singleColumnMusicWatchNextResultsRenderer.tabbedRenderer.watchNextTabbedResultsRenderer
+            .tabs[1].tabRenderer;
+        if (lyricsTab.unselectable) {
+          videoIdToLyricsMap.set(videoId, { hasLyrics: false, lyrics: "", sourceText: "" });
+        } else {
+          let browseId = lyricsTab.endpoint.browseEndpoint.browseId;
+          browseIdToVideoIdMap.set(browseId, videoId);
+        }
       } else if (url.includes("https://music.youtube.com/youtubei/v1/browse")) {
         let browseId = requestJson.browseId;
         let videoId = browseIdToVideoIdMap.get(browseId);
@@ -180,15 +185,19 @@ BetterLyrics.RequestSniffing = {
 
         if (videoId !== undefined) {
           let lyrics =
-            responseJson.contents.sectionListRenderer.contents[0].musicDescriptionShelfRenderer.description.runs[0]
-              .text;
+            responseJson.contents?.sectionListRenderer?.contents?.[0]?.musicDescriptionShelfRenderer?.description
+              ?.runs?.[0]?.text;
           let sourceText =
-            responseJson.contents.sectionListRenderer.contents[0].musicDescriptionShelfRenderer.footer.runs[0].text;
-
-          videoIdToLyricsMap.set(videoId, { hasLyrics: true, lyrics, sourceText });
-          if (videoId === firstRequestMissedVideoId) {
-            browseIdToVideoIdMap.set(browseId, videoId);
-            firstRequestMissedVideoId = null;
+            responseJson.contents?.sectionListRenderer?.contents?.[0]?.musicDescriptionShelfRenderer?.footer?.runs?.[0]
+              ?.text;
+          if (lyrics && sourceText) {
+            videoIdToLyricsMap.set(videoId, { hasLyrics: true, lyrics, sourceText });
+            if (videoId === firstRequestMissedVideoId) {
+              browseIdToVideoIdMap.set(browseId, videoId);
+              firstRequestMissedVideoId = null;
+            }
+          } else {
+            videoIdToLyricsMap.set(videoId, { hasLyrics: false, lyrics: null, sourceText: null });
           }
         }
       }
