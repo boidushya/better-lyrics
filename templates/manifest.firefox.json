@@ -15,7 +15,8 @@
     "*://music.youtube.com/*",
     "*://lyrics-api.boidu.dev/*",
     "*://translate.googleapis.com/*",
-    "*://lrclib.net/*"
+    "*://lrclib.net/*",
+    "*://lyrics.api.dacubeking.com/*"
   ],
   "run_at": "document_start",
   "options_ui": {
