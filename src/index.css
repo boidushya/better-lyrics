@@ -587,17 +587,20 @@ ytmusic-message-renderer.ytmusic-tab-renderer {
 
 /* Animations */
 @keyframes blyrics-wobble {
-  from {
-    animation-timing-function: ease-out;
-    transform: translateY(0px);
+
+  0% {
+    transform: scale(1);
   }
-  25% {
+  12.5% {
+    transform: translateX(0.05em);
     animation-timing-function: ease-in-out;
-    transform: translateY(-0.1em);
   }
-  to {
-    animation-timing-function: ease-in;
-    transform: translateY(0px);
+  75% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: scale(1);
+    animation-timing-function: ease-out;
   }
 }
 
