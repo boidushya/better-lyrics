@@ -427,10 +427,8 @@ BetterLyrics.DOM = {
 
           if (isPlaying !== lineData.isAnimationPlayStatePlaying) {
             lineData.isAnimationPlayStatePlaying = isPlaying;
-            if (isPlaying) {
-              lineData.lyricElement.animationPlayState = "";
-            } else {
-              lineData.lyricElement.animationPlayState = "paused";
+            if (!isPlaying) {
+              lineData.selected = false;
               let children = [lineData, ...lineData.parts];
               children.forEach(part => {
                 if (part.animationStartTimeMs > now) {
