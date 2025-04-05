@@ -296,6 +296,7 @@ BetterLyrics.Lyrics = {
      * @property {number} time
      * @property {number} duration
      * @property {Element} lyricElement
+     * @property {number} animationStartTimeMs
      */
 
     /**
@@ -363,6 +364,7 @@ BetterLyrics.Lyrics = {
           time: parseFloat(part.startTimeMs) / 1000,
           duration: parseFloat(part.durationMs) / 1000,
           lyricElement: span,
+          animationStartTimeMs: Infinity,
         };
 
         span.textContent = part.words;

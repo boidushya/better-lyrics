@@ -419,9 +419,9 @@ BetterLyrics.DOM = {
               part.lyricElement.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               reflow(part.lyricElement);
               part.lyricElement.classList.add(BetterLyrics.Constants.ANIMATING_CLASS);
+              part.animationStartTimeMs = now - timeDelta * 1000;
             });
 
-            lineData.animationStartTimeMs = now - timeDelta * 1000;
             lineData.isAnimating = true;
           }
 
@@ -431,6 +431,13 @@ BetterLyrics.DOM = {
               lineData.lyricElement.animationPlayState = "";
             } else {
               lineData.lyricElement.animationPlayState = "paused";
+              let children = [lineData, ...lineData.parts];
+              children.forEach(part => {
+                if (part.animationStartTimeMs > now) {
+                  part.lyricElement.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
+                  part.lyricElement.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
+                }
+              });
             }
           }
         } else {
