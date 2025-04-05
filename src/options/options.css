@@ -540,6 +540,7 @@ hr {
   gap: 0.2rem;
   margin-block-start: 0;
   margin-block-end: 0;
+  align-self: end;
 }
 
 .sortable-item {
@@ -550,9 +551,10 @@ hr {
   cursor: grab;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: left;
   font-size: 0.875rem;
   font-weight: bold;
+  width: 15em;
 }
 
 .sortable-item:active {
