@@ -20,6 +20,12 @@ const saveOptions = () => {
 
 // Function to get options from form elements
 const getOptionsFromForm = () => {
+  let preferredProviderList = [];
+  let providerElems = document.getElementById("providers-list").children;
+  for (let i = 0; i < providerElems.length; i++) {
+    preferredProviderList.push(providerElems[i].id);
+  }
+
   return {
     isLogsEnabled: document.getElementById("logs").checked,
     isAutoSwitchEnabled: document.getElementById("autoSwitch").checked,
@@ -31,7 +37,8 @@ const getOptionsFromForm = () => {
     translationLanguage: document.getElementById("translationLanguage").value,
     isCursorAutoHideEnabled: document.getElementById("cursorAutoHide").checked,
     isRomanizationEnabled: document.getElementById("isRomanizationEnabled").checked,
-    preferredProvider: Number(document.getElementById("defaultLyricsProvider").value),
+    preferredProviderList: preferredProviderList
+
   };
 };
 
@@ -159,7 +166,7 @@ const restoreOptions = () => {
     isTranslateEnabled: false,
     translationLanguage: "en",
     isRomanizationEnabled: false,
-    preferredProvider: 0,
+    preferredProviderList: ["p-dacubeking", "p-better-lyrics", "p-lrclib", "p-yt-captions"]
   };
 
   browserAPI.storage.sync.get(defaultOptions, setOptionsInForm);
@@ -179,7 +186,13 @@ const setOptionsInForm = items => {
   document.getElementById("translate").checked = items.isTranslateEnabled;
   document.getElementById("translationLanguage").value = items.translationLanguage;
   document.getElementById("isRomanizationEnabled").checked = items.isRomanizationEnabled;
-  document.getElementById("defaultLyricsProvider").value = items.preferredProvider;
+
+  let providersListElem = document.getElementById("providers-list");
+  for (let i = 0; i < items.preferredProviderList.length; i++) {
+    let providerElem = document.getElementById(items.preferredProviderList[i]);
+    providerElem.remove()
+    providersListElem.appendChild(providerElem);
+  }
 };
 
 // Event listeners
@@ -187,6 +200,7 @@ document.addEventListener("DOMContentLoaded", restoreOptions);
 document.querySelectorAll("#options input, #options select").forEach(element => {
   element.addEventListener("change", saveOptions);
 });
+
 
 // Tab switcher
 const tabButtons = document.querySelectorAll(".tab");
@@ -200,4 +214,12 @@ tabButtons.forEach(button => {
     button.classList.add("active");
     document.querySelector(button.getAttribute("data-target")).classList.add("active");
   });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  new Sortable(document.getElementById('providers-list'), {
+    animation: 150,
+    ghostClass: 'dragging',
+    onUpdate: saveOptions
+  })
 });

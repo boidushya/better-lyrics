@@ -16,6 +16,7 @@
     <script src="../libs/codemirror/closebrackets.min.js"></script>
     <script src="../libs/codemirror/lint.min.js"></script>
     <script src="../libs/codemirror/autorefresh.min.js"></script>
+	  <script src="../libs/codemirror/Sortable.min.js"></script>
   </head>
   <body>
     <nav>
@@ -108,14 +109,26 @@
 						<span class="checkmark"></span>
 						</label>
 					</div>
-					<div class="container" style="margin-bottom:1rem;">
-						<span>Default Lyrics Provider</span>
-						<div class="select">
-							<select id="defaultLyricsProvider">
-								<option value="0">Better Lyrics API (Default)</option>
-								<option value="1">LRCLib</option>
-							</select>
-						</div>
+					<div class="container" style="margin-bottom: 0.2rem">
+						<span style="align-self: start; padding-top: 0.2rem">Lyric Provider Priority:</span>
+						<ul id="providers-list" class="sortable-list">
+							<li class="sortable-item" id="p-dacubeking">
+								<span class="sortable-handle"></span>
+								DaCubeKing
+							</li>
+							<li class="sortable-item" id="p-better-lyrics">
+								<span class="sortable-handle"></span>
+								Better Lyrics API
+							</li>
+							<li class="sortable-item" id="p-lrclib">
+								<span class="sortable-handle"></span>
+								LRCLib
+							</li>
+							<li class="sortable-item" id="p-yt-captions">
+								<span class="sortable-handle"></span>
+								Youtube Captions
+							</li>
+						</ul>
 					</div>
 					<div class="container container--small">
 						<p>

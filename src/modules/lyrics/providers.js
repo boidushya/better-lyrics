@@ -56,7 +56,7 @@ BetterLyrics.LyricProviders = {
     url.searchParams.append("duration", duration);
     url.searchParams.append("videoId", videoId);
     url.searchParams.append("enhanced", await BetterLyrics.Settings.shouldUseKaraokeLyrics());
-    let response = await fetch(url).then(r => r.json());
+    let response = await fetch(url, {signal: AbortSignal.timeout(10000)}).then(r => r.json());
     if (response.album) {
       BetterLyrics.Utils.log("Found Album: " + response.album);
     }
@@ -83,7 +83,7 @@ BetterLyrics.LyricProviders = {
   },
 
   local: async function (song, artist, duration, videoId, _audioTrackData) {
-    const url = new URL("http://127.0.0.1:8787");
+    const url = new URL("http://127.0.0.1:8787", {signal: AbortSignal.timeout(1000)});
     url.searchParams.append("song", song);
     url.searchParams.append("artist", artist);
     url.searchParams.append("duration", duration);
@@ -280,41 +280,44 @@ BetterLyrics.LyricProviders = {
   initProviders: function () {
     const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
-    const updateProvidersList = preferredProvider => {
-      BetterLyrics.LyricProviders.providersList = [
-        // BetterLyrics.LyricProviders.local,
-        BetterLyrics.LyricProviders.cubey,
-      ];
+    const updateProvidersList = preferredProviderList => {
+      BetterLyrics.LyricProviders.providersList = [];
 
-      const providerMap = {
-        0: BetterLyrics.LyricProviders.bLyrics,
-        1: BetterLyrics.LyricProviders.lyricLib,
-      };
-
-      BetterLyrics.Utils.log(BetterLyrics.Constants.PROVIDER_SWITCHED_LOG, preferredProvider);
-
-      if (providerMap[preferredProvider]) {
-        BetterLyrics.LyricProviders.providersList.push(providerMap[preferredProvider]);
+      if (!preferredProviderList) {
+        preferredProviderList = ["p-dacubeking", "p-better-lyrics", "p-lrclib", "p-yt-captions"]
       }
 
-      Object.entries(providerMap).forEach(([index, provider]) => {
-        if (parseInt(index) !== preferredProvider) {
+
+      const providerMap = {
+        "p-dacubeking": BetterLyrics.LyricProviders.cubey,
+        "p-better-lyrics": BetterLyrics.LyricProviders.bLyrics,
+        "p-lrclib": BetterLyrics.LyricProviders.lyricLib,
+        "p-yt-captions": BetterLyrics.LyricProviders.ytCaptions
+      };
+
+      BetterLyrics.Utils.log(BetterLyrics.Constants.PROVIDER_SWITCHED_LOG, preferredProviderList);
+
+      preferredProviderList.forEach(providerString => {
+        let provider = providerMap[providerString];
+        if (provider) {
           BetterLyrics.LyricProviders.providersList.push(provider);
+
+        } else {
+          console.error("Invalid Provider string supplied: ", providerString);
         }
       });
     };
 
     browserAPI.storage.onChanged.addListener((changes, area) => {
-      if (area === "sync" && changes.preferredProvider) {
-        updateProvidersList(changes.preferredProvider.newValue);
+      if (area === "sync" && changes.preferredProviderList) {
+        updateProvidersList(changes.preferredProviderList.newValue);
       }
     });
 
-    browserAPI.storage.sync.get({ preferredProvider: 0 }, function (items) {
-      updateProvidersList(items.preferredProvider);
+    browserAPI.storage.sync.get({preferredProviderList: null}, function (items) {
+      updateProvidersList(items.preferredProviderList);
     });
 
-    BetterLyrics.LyricProviders.providersList.push(BetterLyrics.LyricProviders.ytCaptions);
   },
   /**
    *

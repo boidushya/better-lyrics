@@ -62,7 +62,8 @@
         "src/libs/codemirror/show-hint.min.js",
         "src/libs/codemirror/closebrackets.min.js",
         "src/libs/codemirror/lint.min.js",
-        "src/libs/codemirror/autorefresh.min.js"
+        "src/libs/codemirror/autorefresh.min.js",
+        "src/libs/codemirror/Sortable.min.js"
       ],
       "css": [
         "src/libs/codemirror/codemirror.min.css",
