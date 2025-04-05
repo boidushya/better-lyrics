@@ -165,14 +165,14 @@ BetterLyrics.RequestSniffing = {
           return;
         }
 
-        let lyricsTab =
-          responseJson.contents.singleColumnMusicWatchNextResultsRenderer.tabbedRenderer.watchNextTabbedResultsRenderer
-            .tabs[1].tabRenderer;
-        if (lyricsTab.unselectable) {
+        let lyricsTab = responseJson.contents?.singleColumnMusicWatchNextResultsRenderer?.tabbedRenderer?.watchNextTabbedResultsRenderer?.tabs[1]?.tabRenderer;
+        if (lyricsTab && lyricsTab.unselectable) {
           videoIdToLyricsMap.set(videoId, { hasLyrics: false, lyrics: "", sourceText: "" });
         } else {
-          let browseId = lyricsTab.endpoint.browseEndpoint.browseId;
-          browseIdToVideoIdMap.set(browseId, videoId);
+          let browseId = lyricsTab.endpoint?.browseEndpoint?.browseId;
+          if (browseId) {
+            browseIdToVideoIdMap.set(browseId, videoId);
+          }
         }
       } else if (url.includes("https://music.youtube.com/youtubei/v1/browse")) {
         let browseId = requestJson.browseId;
