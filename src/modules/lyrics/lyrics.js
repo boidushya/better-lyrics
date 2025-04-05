@@ -124,7 +124,7 @@ BetterLyrics.Lyrics = {
           lyrics = await provider(song, artist, duration, videoId, audioTrackData, album);
         }
 
-        if (lyrics && Array.isArray(lyrics.lyrics``) && lyrics.lyrics.length > 0) {
+        if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
           if (!ytLyrics) {
             ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(
               song,
