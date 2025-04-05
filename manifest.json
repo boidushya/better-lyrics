@@ -12,12 +12,7 @@
   "update_url": "https://clients2.google.com/service/update2/crx",
   "host_permissions": ["*://music.youtube.com/*"],
   "permissions": [
-    "storage",
-    "*://music.youtube.com/*",
-    "*://lyrics-api.boidu.dev/*",
-    "*://translate.googleapis.com/*",
-    "*://lrclib.net/*",
-    "*://lyrics.api.dacubeking.com/*"
+    "storage"
   ],
   "optional_permissions": ["downloads"],
   "options_ui": {
