@@ -102,19 +102,30 @@ BetterLyrics.Lyrics = {
         song = cubyLyrics.song;
       }
 
-      if (isMusicVideo && cubyLyrics && cubyLyrics.artist && cubyLyrics.artist.length > 0 && artist !== cubyLyrics.artist) {
+      if (
+        isMusicVideo &&
+        cubyLyrics &&
+        cubyLyrics.artist &&
+        cubyLyrics.artist.length > 0 &&
+        artist !== cubyLyrics.artist
+      ) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.artist + "' for artist instead of '" + artist + "'");
         artist = cubyLyrics.artist;
       }
 
-      if (isMusicVideo && cubyLyrics && cubyLyrics.duration && cubyLyrics.duration.length > 0 && duration !== cubyLyrics.duration) {
+      if (
+        isMusicVideo &&
+        cubyLyrics &&
+        cubyLyrics.duration &&
+        cubyLyrics.duration.length > 0 &&
+        duration !== cubyLyrics.duration
+      ) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.duration + "' for duration instead of '" + duration + "'");
         duration = Number(cubyLyrics.duration);
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
-
 
     for (let provider of BetterLyrics.LyricProviders.providersList) {
       try {

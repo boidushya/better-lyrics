@@ -165,7 +165,9 @@ BetterLyrics.RequestSniffing = {
           return;
         }
 
-        let lyricsTab = responseJson.contents?.singleColumnMusicWatchNextResultsRenderer?.tabbedRenderer?.watchNextTabbedResultsRenderer?.tabs[1]?.tabRenderer;
+        let lyricsTab =
+          responseJson.contents?.singleColumnMusicWatchNextResultsRenderer?.tabbedRenderer
+            ?.watchNextTabbedResultsRenderer?.tabs[1]?.tabRenderer;
         if (lyricsTab && lyricsTab.unselectable) {
           videoIdToLyricsMap.set(videoId, { hasLyrics: false, lyrics: "", sourceText: "" });
         } else {

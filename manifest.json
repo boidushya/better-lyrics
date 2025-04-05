@@ -11,9 +11,7 @@
   },
   "update_url": "https://clients2.google.com/service/update2/crx",
   "host_permissions": ["*://music.youtube.com/*"],
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage"],
   "optional_permissions": ["downloads"],
   "options_ui": {
     "page": "src/options/options.html",

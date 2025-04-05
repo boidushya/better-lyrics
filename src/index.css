@@ -587,7 +587,6 @@ ytmusic-message-renderer.ytmusic-tab-renderer {
 
 /* Animations */
 @keyframes blyrics-wobble {
-
   0% {
     transform: scale(1);
   }

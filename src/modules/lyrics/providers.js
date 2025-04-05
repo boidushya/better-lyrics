@@ -56,7 +56,7 @@ BetterLyrics.LyricProviders = {
     url.searchParams.append("duration", duration);
     url.searchParams.append("videoId", videoId);
     url.searchParams.append("enhanced", await BetterLyrics.Settings.shouldUseKaraokeLyrics());
-    let response = await fetch(url, {signal: AbortSignal.timeout(10000)}).then(r => r.json());
+    let response = await fetch(url, { signal: AbortSignal.timeout(10000) }).then(r => r.json());
     if (response.album) {
       BetterLyrics.Utils.log("Found Album: " + response.album);
     }
@@ -83,7 +83,7 @@ BetterLyrics.LyricProviders = {
   },
 
   local: async function (song, artist, duration, videoId, _audioTrackData) {
-    const url = new URL("http://127.0.0.1:8787", {signal: AbortSignal.timeout(1000)});
+    const url = new URL("http://127.0.0.1:8787", { signal: AbortSignal.timeout(1000) });
     url.searchParams.append("song", song);
     url.searchParams.append("artist", artist);
     url.searchParams.append("duration", duration);
@@ -284,15 +284,14 @@ BetterLyrics.LyricProviders = {
       BetterLyrics.LyricProviders.providersList = [];
 
       if (!preferredProviderList) {
-        preferredProviderList = ["p-dacubeking", "p-better-lyrics", "p-lrclib", "p-yt-captions"]
+        preferredProviderList = ["p-dacubeking", "p-better-lyrics", "p-lrclib", "p-yt-captions"];
       }
-
 
       const providerMap = {
         "p-dacubeking": BetterLyrics.LyricProviders.cubey,
         "p-better-lyrics": BetterLyrics.LyricProviders.bLyrics,
         "p-lrclib": BetterLyrics.LyricProviders.lyricLib,
-        "p-yt-captions": BetterLyrics.LyricProviders.ytCaptions
+        "p-yt-captions": BetterLyrics.LyricProviders.ytCaptions,
       };
 
       BetterLyrics.Utils.log(BetterLyrics.Constants.PROVIDER_SWITCHED_LOG, preferredProviderList);
@@ -301,7 +300,6 @@ BetterLyrics.LyricProviders = {
         let provider = providerMap[providerString];
         if (provider) {
           BetterLyrics.LyricProviders.providersList.push(provider);
-
         } else {
           console.error("Invalid Provider string supplied: ", providerString);
         }
@@ -314,10 +312,9 @@ BetterLyrics.LyricProviders = {
       }
     });
 
-    browserAPI.storage.sync.get({preferredProviderList: null}, function (items) {
+    browserAPI.storage.sync.get({ preferredProviderList: null }, function (items) {
       updateProvidersList(items.preferredProviderList);
     });
-
   },
   /**
    *

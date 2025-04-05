@@ -37,8 +37,7 @@ const getOptionsFromForm = () => {
     translationLanguage: document.getElementById("translationLanguage").value,
     isCursorAutoHideEnabled: document.getElementById("cursorAutoHide").checked,
     isRomanizationEnabled: document.getElementById("isRomanizationEnabled").checked,
-    preferredProviderList: preferredProviderList
-
+    preferredProviderList: preferredProviderList,
   };
 };
 
@@ -166,7 +165,7 @@ const restoreOptions = () => {
     isTranslateEnabled: false,
     translationLanguage: "en",
     isRomanizationEnabled: false,
-    preferredProviderList: ["p-dacubeking", "p-better-lyrics", "p-lrclib", "p-yt-captions"]
+    preferredProviderList: ["p-dacubeking", "p-better-lyrics", "p-lrclib", "p-yt-captions"],
   };
 
   browserAPI.storage.sync.get(defaultOptions, setOptionsInForm);
@@ -190,7 +189,7 @@ const setOptionsInForm = items => {
   let providersListElem = document.getElementById("providers-list");
   for (let i = 0; i < items.preferredProviderList.length; i++) {
     let providerElem = document.getElementById(items.preferredProviderList[i]);
-    providerElem.remove()
+    providerElem.remove();
     providersListElem.appendChild(providerElem);
   }
 };
@@ -200,7 +199,6 @@ document.addEventListener("DOMContentLoaded", restoreOptions);
 document.querySelectorAll("#options input, #options select").forEach(element => {
   element.addEventListener("change", saveOptions);
 });
-
 
 // Tab switcher
 const tabButtons = document.querySelectorAll(".tab");
@@ -217,9 +215,9 @@ tabButtons.forEach(button => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  new Sortable(document.getElementById('providers-list'), {
+  new Sortable(document.getElementById("providers-list"), {
     animation: 150,
-    ghostClass: 'dragging',
-    onUpdate: saveOptions
-  })
+    ghostClass: "dragging",
+    onUpdate: saveOptions,
+  });
 });
