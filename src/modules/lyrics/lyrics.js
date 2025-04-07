@@ -396,6 +396,9 @@ BetterLyrics.Lyrics = {
         span.dataset.duration = partData.duration;
         span.dataset.content = part.words;
         span.style.setProperty("--blyrics-duration", part.durationMs + "ms");
+        if (part.words.trim().length === 0) {
+          span.style.display = "inline";
+        }
 
         lineData.parts.push(partData);
         line.appendChild(span);
