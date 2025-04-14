@@ -89,7 +89,7 @@ BetterLyrics.Observer = {
 
       if (BetterLyrics.App.queueAlbumArtInjection === true && BetterLyrics.App.shouldInjectAlbumArt === true) {
         BetterLyrics.App.queueAlbumArtInjection = false;
-        BetterLyrics.DOM.addAlbumArtToLayout();
+        BetterLyrics.DOM.addAlbumArtToLayout(currentVideoId);
       }
 
       if (BetterLyrics.App.lyricInjectionFailed) {
@@ -117,7 +117,7 @@ BetterLyrics.Observer = {
       if (!detail.playing) {
         timeOffset = 0;
       }
-      BetterLyrics.DOM.tickLyrics(detail.currentTime + timeOffset / 1000);
+      BetterLyrics.DOM.tickLyrics(detail.currentTime + timeOffset / 1000, detail.playing);
     });
   },
   scrollEventHandler: () => {

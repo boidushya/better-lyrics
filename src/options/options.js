@@ -5,7 +5,10 @@ const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 const saveOptions = () => {
   const options = getOptionsFromForm();
   browserAPI.storage.sync.get({ preferredProvider: 0 }, currentOptions => {
-    if (currentOptions.preferredProvider !== options.preferredProvider) {
+    if (
+      currentOptions.preferredProvider !== options.preferredProvider ||
+      currentOptions.shouldUseKaraokeLyrics !== options.shouldUseKaraokeLyrics
+    ) {
       clearTransientLyrics(() => {
         saveOptionsToStorage(options);
       });
@@ -17,17 +20,24 @@ const saveOptions = () => {
 
 // Function to get options from form elements
 const getOptionsFromForm = () => {
+  let preferredProviderList = [];
+  let providerElems = document.getElementById("providers-list").children;
+  for (let i = 0; i < providerElems.length; i++) {
+    preferredProviderList.push(providerElems[i].id);
+  }
+
   return {
     isLogsEnabled: document.getElementById("logs").checked,
     isAutoSwitchEnabled: document.getElementById("autoSwitch").checked,
     isAlbumArtEnabled: document.getElementById("albumArt").checked,
     isFullScreenDisabled: document.getElementById("isFullScreenDisabled").checked,
     isStylizedAnimationsEnabled: document.getElementById("isStylizedAnimationsEnabled").checked,
+    shouldUseKaraokeLyrics: document.getElementById("shouldUseKaraokeLyrics").checked,
     isTranslateEnabled: document.getElementById("translate").checked,
     translationLanguage: document.getElementById("translationLanguage").value,
     isCursorAutoHideEnabled: document.getElementById("cursorAutoHide").checked,
     isRomanizationEnabled: document.getElementById("isRomanizationEnabled").checked,
-    preferredProvider: Number(document.getElementById("defaultLyricsProvider").value),
+    preferredProviderList: preferredProviderList,
   };
 };
 
@@ -151,10 +161,11 @@ const restoreOptions = () => {
     isCursorAutoHideEnabled: true,
     isFullScreenDisabled: false,
     isStylizedAnimationsEnabled: true,
+    shouldUseKaraokeLyrics: false,
     isTranslateEnabled: false,
     translationLanguage: "en",
     isRomanizationEnabled: false,
-    preferredProvider: 0,
+    preferredProviderList: ["p-dacubeking", "p-better-lyrics", "p-lrclib", "p-yt-captions"],
   };
 
   browserAPI.storage.sync.get(defaultOptions, setOptionsInForm);
@@ -170,10 +181,17 @@ const setOptionsInForm = items => {
   document.getElementById("cursorAutoHide").checked = items.isCursorAutoHideEnabled;
   document.getElementById("isFullScreenDisabled").checked = items.isFullScreenDisabled;
   document.getElementById("isStylizedAnimationsEnabled").checked = items.isStylizedAnimationsEnabled;
+  document.getElementById("shouldUseKaraokeLyrics").checked = items.shouldUseKaraokeLyrics;
   document.getElementById("translate").checked = items.isTranslateEnabled;
   document.getElementById("translationLanguage").value = items.translationLanguage;
   document.getElementById("isRomanizationEnabled").checked = items.isRomanizationEnabled;
-  document.getElementById("defaultLyricsProvider").value = items.preferredProvider;
+
+  let providersListElem = document.getElementById("providers-list");
+  for (let i = 0; i < items.preferredProviderList.length; i++) {
+    let providerElem = document.getElementById(items.preferredProviderList[i]);
+    providerElem.remove();
+    providersListElem.appendChild(providerElem);
+  }
 };
 
 // Event listeners
@@ -193,5 +211,13 @@ tabButtons.forEach(button => {
 
     button.classList.add("active");
     document.querySelector(button.getAttribute("data-target")).classList.add("active");
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  new Sortable(document.getElementById("providers-list"), {
+    animation: 150,
+    ghostClass: "dragging",
+    onUpdate: saveOptions,
   });
 });

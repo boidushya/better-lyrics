@@ -1,34 +1,17 @@
-const LYRIC_CACHE_VERSION = "1.0.0";
+const LYRIC_CACHE_VERSION = "1.1.1";
 
 BetterLyrics.Lyrics = {
   createLyrics: async function (detail) {
     let song = detail.song;
     let artist = detail.artist;
-    const videoId = detail.videoId;
-    const duration = detail.duration;
+    let videoId = detail.videoId;
+    let duration = detail.duration;
     const audioTrackData = detail.audioTrackData;
+    const isMusicVideo = detail.contentRect.width !== 0 && detail.contentRect.height !== 0;
 
     if (!videoId || typeof videoId !== "string") {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SERVER_ERROR_LOG, "Invalid video id");
       return;
-    }
-
-    const spinner = document.querySelector("#tab-renderer > tp-yt-paper-spinner-lite");
-    let waitForLoaderPromise;
-    if (spinner) {
-      waitForLoaderPromise = new Promise(resolve => {
-        if (spinner.style.display !== "none") {
-          resolve(true);
-          return;
-        }
-        let observer = new MutationObserver(() => {
-          observer.disconnect();
-          resolve(true);
-        });
-        observer.observe(spinner, {
-          attributes: true,
-        });
-      });
     }
 
     // Try to get lyrics from cache with validation
@@ -56,7 +39,28 @@ BetterLyrics.Lyrics = {
     }
 
     // We should get recalled if we were executed without a valid song/artist and aren't able to get lyrics
-    BetterLyrics.DOM.renderLoader(); // Only render the loader after we've checked the cache
+
+    /**
+     * @type SegmentMap
+     */
+    let segmentMap = null;
+    let matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId, 1);
+    if (
+      (!matchingSong ||
+        !matchingSong.counterpartVideoId ||
+        matchingSong.counterpartVideoId !== BetterLyrics.App.lastLoadedVideoId) &&
+      BetterLyrics.App.lastLoadedVideoId !== videoId
+    ) {
+      BetterLyrics.DOM.renderLoader(); // Only render the loader after we've checked the cache & we're not switching between audio and video
+      matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId);
+    } else {
+      BetterLyrics.Utils.log("Switching between audio/video: Skipping Loader");
+    }
+    if (isMusicVideo && matchingSong && matchingSong.counterpartVideoId && matchingSong.segmentMap) {
+      BetterLyrics.Utils.log("Switching VideoId to Audio Id");
+      videoId = matchingSong.counterpartVideoId;
+      segmentMap = matchingSong.segmentMap;
+    }
 
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     console.assert(tabSelector != null);
@@ -84,27 +88,63 @@ BetterLyrics.Lyrics = {
 
     let lyrics;
     let ytLyrics;
-    if (!BetterLyrics.App.requestCache || BetterLyrics.App.requestCache.get("id") !== videoId) {
-      BetterLyrics.App.requestCache = new Map();
-      BetterLyrics.App.requestCache.set("id", videoId);
+    let album = null;
+
+    // We depend on the cubey lyrics to fetch certain metadata, so we always call it even if it isn't the top priority
+    let cubyLyrics = null;
+    try {
+      cubyLyrics = await BetterLyrics.LyricProviders.cubey(song, artist, duration, videoId, audioTrackData, album);
+      if (cubyLyrics && cubyLyrics.album) {
+        album = cubyLyrics.album;
+      }
+      if (isMusicVideo && cubyLyrics && cubyLyrics.song && cubyLyrics.song.length > 0 && song !== cubyLyrics.song) {
+        BetterLyrics.Utils.log("Using '" + cubyLyrics.song + "' for song instead of '" + song + "'");
+        song = cubyLyrics.song;
+      }
+
+      if (
+        isMusicVideo &&
+        cubyLyrics &&
+        cubyLyrics.artist &&
+        cubyLyrics.artist.length > 0 &&
+        artist !== cubyLyrics.artist
+      ) {
+        BetterLyrics.Utils.log("Using '" + cubyLyrics.artist + "' for artist instead of '" + artist + "'");
+        artist = cubyLyrics.artist;
+      }
+
+      if (
+        isMusicVideo &&
+        cubyLyrics &&
+        cubyLyrics.duration &&
+        cubyLyrics.duration.length > 0 &&
+        duration !== cubyLyrics.duration
+      ) {
+        BetterLyrics.Utils.log("Using '" + cubyLyrics.duration + "' for duration instead of '" + duration + "'");
+        duration = Number(cubyLyrics.duration);
+      }
+    } catch (err) {
+      BetterLyrics.Utils.log(err);
     }
-    /**
-     * @type {Map<Function, {}>}
-     */
-    let requestCache = BetterLyrics.App.requestCache;
 
     for (let provider of BetterLyrics.LyricProviders.providersList) {
       try {
-        if (requestCache.has(provider)) {
-          lyrics = requestCache.get(provider);
+        if (provider === BetterLyrics.LyricProviders.cubey) {
+          lyrics = cubyLyrics;
         } else {
-          lyrics = await provider(song, artist, duration, videoId, audioTrackData);
-          requestCache.set(provider, lyrics);
+          lyrics = await provider(song, artist, duration, videoId, audioTrackData, album);
         }
 
         if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
           if (!ytLyrics) {
-            ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(waitForLoaderPromise);
+            ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(
+              song,
+              artist,
+              duration,
+              videoId,
+              audioTrackData,
+              album
+            );
           }
           if (ytLyrics.text !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
             let lyricText = "";
@@ -117,6 +157,7 @@ BetterLyrics.Lyrics = {
               BetterLyrics.Utils.log(
                 `Got lyrics from ${lyrics.source}, but they don't match yt lyrics. Rejecting: Match: ${matchAmount}%`
               );
+              lyrics = null;
               continue;
             }
           }
@@ -125,16 +166,49 @@ BetterLyrics.Lyrics = {
       } catch (err) {
         BetterLyrics.Utils.log(err);
       }
+      // lyrics didn't pass validation; don't pass it down
+      lyrics = null;
     }
 
     if (!ytLyrics) {
-      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(waitForLoaderPromise);
+      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(song, artist, duration, videoId, audioTrackData, album);
     }
 
     if (!lyrics) {
       lyrics = ytLyrics;
     }
 
+    if (isMusicVideo && lyrics.musicVideoSynced !== true && segmentMap) {
+      BetterLyrics.Utils.log(segmentMap);
+      // We're in a music video and need to sync lyrics to the music video
+      const allZero = lyrics.lyrics.every(item => item.startTimeMs === "0" || item.startTimeMs === 0);
+
+      if (!allZero) {
+        for (let lyricKey in lyrics.lyrics) {
+          let lyric = lyrics.lyrics[lyricKey];
+          let lastTimeChange = 0;
+          for (let segment of segmentMap.segment) {
+            if (lyric.startTimeMs >= segment.counterpartVideoStartTimeMilliseconds) {
+              lastTimeChange =
+                segment.primaryVideoStartTimeMilliseconds - segment.counterpartVideoStartTimeMilliseconds;
+              if (lyric.startTimeMs <= segment.counterpartVideoStartTimeMilliseconds + segment.durationMilliseconds) {
+                break;
+              }
+            }
+          }
+          lyric.startTimeMs = Number(lyric.startTimeMs) + lastTimeChange;
+          if (lyric.parts) {
+            lyric.parts.forEach(part => {
+              part.startTimeMs = Number(part.startTimeMs) + lastTimeChange;
+            });
+          }
+        }
+      }
+    }
+
+    BetterLyrics.Utils.log("Got Lyrics from " + lyrics.source);
+
+    BetterLyrics.App.lastLoadedVideoId = detail.videoId;
     this.cacheAndProcessLyrics(cacheKey, lyrics);
   },
 
@@ -213,7 +287,7 @@ BetterLyrics.Lyrics = {
       BetterLyrics.Utils.log(BetterLyrics.Constants.TRANSLATION_ENABLED_LOG, items.translationLanguage);
     });
 
-    const allZero = lyrics.every(item => item.startTimeMs === "0");
+    const allZero = lyrics.every(item => item.startTimeMs === "0" || item.startTimeMs === 0);
 
     // Disabled since we want to show the last line even if it's nothing as that ends syncing for the second last line
     //
@@ -240,23 +314,101 @@ BetterLyrics.Lyrics = {
       }
       return resolve(BetterLyrics.App.lang);
     });
+    /**
+     *
+     * @typedef {object} PartData
+     * @property {number} time
+     * @property {number} duration
+     * @property {Element} lyricElement
+     * @property {number} animationStartTimeMs
+     */
+
+    /**
+     * @typedef {object} LineData
+     * @property {Element} lyricElement
+     * @property {number} time
+     * @property {number} duration
+     * @property {PartData[]} parts
+     * @property {boolean} isScrolled
+     * @property {number} animationStartTimeMs
+     * @property {boolean} isAnimationPlayStatePlaying
+     * @property {boolean} isAnimating
+     * @property {boolean} isSelected
+     */
+
+    /**
+     * @type {LineData[]}
+     */
+    let lyricsData = [];
 
     lyrics.forEach((item, index) => {
-      let line = document.createElement("div");
-      line.dataset.time = item.startTimeMs / 1000;
+      if (!item.parts || item.parts.length === 0) {
+        item.parts = [];
+        const words = item.words.split(" ");
 
-      // If the item is the last line and it is empty, set the padding to 0 !important to prevent
-      // the last line from being shown while keeping the second last line in sync.
-      if (index === lyrics.length - 1 && item.words === "") {
-        line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s; padding: 0 !important;";
-      } else {
-        line.style = "--blyrics-duration: " + item.durationMs / 1000 + "s;";
+        words.forEach((word, index) => {
+          word = word.trim().length < 1 ? word : word + " ";
+          item.parts.push({
+            startTimeMs: parseFloat(item.startTimeMs) + index * 50,
+            words: word,
+            durationMs: 0,
+          });
+        });
       }
 
-      const words = item.words.split(" ");
+      let line = document.createElement("div");
+
+      /**
+       *
+       * @type LineData
+       */
+      let lineData = {
+        lyricElement: line,
+        time: parseFloat(item.startTimeMs) / 1000,
+        duration: parseFloat(item.durationMs) / 1000,
+        parts: [],
+        isScrolled: false,
+        animationStartTimeMs: Infinity,
+        isAnimationPlayStatePlaying: false,
+        isAnimating: false,
+        isSelected: false,
+      };
+
+      item.parts.forEach(part => {
+        let span = document.createElement("span");
+        if (Number(part.durationMs) === 0) {
+          span.classList.add(BetterLyrics.Constants.ZERO_DURATION_ANIMATION_CLASS);
+        }
+
+        /**
+         *
+         * @type {PartData}
+         */
+        let partData = {
+          time: parseFloat(part.startTimeMs) / 1000,
+          duration: parseFloat(part.durationMs) / 1000,
+          lyricElement: span,
+          animationStartTimeMs: Infinity,
+        };
+
+        span.textContent = part.words;
+        span.dataset.time = partData.time;
+        span.dataset.duration = partData.duration;
+        span.dataset.content = part.words;
+        span.style.setProperty("--blyrics-duration", part.durationMs + "ms");
+        if (part.words.trim().length === 0) {
+          span.style.display = "inline";
+        }
+
+        lineData.parts.push(partData);
+        line.appendChild(span);
+      });
+
+      line.dataset.time = lineData.time;
+      line.dataset.duration = lineData.duration;
+      line.style.setProperty("--blyrics-duration", item.durationMs + "ms");
 
       if (!allZero) {
-        line.setAttribute("data-scrolled", false);
         line.setAttribute(
           "onClick",
           `const player = document.getElementById("movie_player"); player.seekTo(${
@@ -266,24 +418,14 @@ BetterLyrics.Lyrics = {
         line.addEventListener("click", _e => {
           BetterLyrics.DOM.scrollResumeTime = 0;
         });
-      } else {
-        line.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
       }
-
-      words.forEach((word, index) => {
-        let span = document.createElement("span");
-        span.style.transitionDelay = `${index * 0.05}s`;
-        span.style.animationDelay = `${index * 0.05}s`;
-        span.textContent = words.length <= 1 ? word : word + " ";
-        line.appendChild(span);
-      });
 
       const wrapper = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
 
       langPromise.then(source_language => {
         BetterLyrics.Translation.onRomanizationEnabled(
           async () => {
-            let romanizedLine = document.createElement("span");
+            let romanizedLine = document.createElement("div");
             romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
 
             if (BetterLyrics.Constants.romanizationLanguages.includes(source_language)) {
@@ -309,7 +451,7 @@ BetterLyrics.Lyrics = {
           },
           async () => {
             BetterLyrics.Translation.onTranslationEnabled(async items => {
-              let translatedLine = document.createElement("span");
+              let translatedLine = document.createElement("div");
               translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
 
               let target_language = items.translationLanguage || "en";
@@ -347,6 +489,7 @@ BetterLyrics.Lyrics = {
       });
 
       try {
+        lyricsData.push(lineData);
         wrapper.appendChild(line);
       } catch (_err) {
         BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
@@ -365,14 +508,12 @@ BetterLyrics.Lyrics = {
     }
 
     if (!allZero) {
-      BetterLyrics.Lyrics.setupLyricsCheckInterval();
+      BetterLyrics.App.lyricData = lyricsData;
+      BetterLyrics.App.areLyricsTicking = true;
     } else {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SYNC_DISABLED_LOG);
     }
     BetterLyrics.App.areLyricsLoaded = true;
-  },
-  setupLyricsCheckInterval: function () {
-    BetterLyrics.App.areLyricsTicking = true;
   },
 };
 

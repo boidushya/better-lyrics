@@ -60,45 +60,105 @@ At the beginning of the file, you'll see a `:root` selector with custom properti
 
 These define CSS custom properties (also known as CSS variables) used throughout the stylesheet. They allow for easy customization of colors, sizes, and other properties.
 
-| Variable                           | Default Value                                                                                                                            | Description                                   |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| `--blyrics-text-color`             | `#fff`                                                                                                                                   | Main text color for lyrics                    |
-| `--blyrics-background-color`       | `rgba(0, 0, 0, 0.75)`                                                                                                                    | Background color for the lyrics container     |
-| `--blyrics-highlight-color`        | `rgba(255, 255, 255, 0.5)`                                                                                                               | Color used for highlighting active lyrics     |
-| `--blyrics-error-color`            | `#fee2e2`                                                                                                                                | Color used for error messages                 |
-| `--blyrics-footer-bg-color`        | `hsla(0, 0%, 100%, 0.1)`                                                                                                                 | Background color for the footer               |
-| `--blyrics-footer-border-color`    | `hsla(0, 0%, 100%, 0.1)`                                                                                                                 | Border color for the footer                   |
-| `--blyrics-footer-text-color`      | `#aaa`                                                                                                                                   | Text color for the footer                     |
-| `--blyrics-footer-link-color`      | `#fff`                                                                                                                                   | Color for links in the footer                 |
-| `--blyrics-discord-hover-color`    | `#5865F2`                                                                                                                                | Hover color for the Discord button            |
-| `--blyrics-font-family`            | `Satoshi, Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif` | Main font family for lyrics                   |
-| `--blyrics-font-size`              | `3rem`                                                                                                                                   | Font size for lyrics                          |
-| `--blyrics-font-weight`            | `700`                                                                                                                                    | Font weight for lyrics                        |
-| `--blyrics-line-height`            | `1.333`                                                                                                                                  | Line height for lyrics                        |
-| `--blyrics-translated-font-size`   | `2rem`                                                                                                                                   | Font size for translated lyrics               |
-| `--blyrics-translated-font-weight` | `600`                                                                                                                                    | Font weight for translated lyrics             |
-| `--blyrics-footer-font-family`     | `Roboto, Noto Naskh Arabic UI, Arial, sans-serif`                                                                                        | Font family for the footer                    |
-| `--blyrics-footer-font-size`       | `14px`                                                                                                                                   | Font size for the footer                      |
-| `--blyrics-footer-font-weight`     | `400`                                                                                                                                    | Font weight for the footer                    |
-| `--blyrics-transition-duration`    | `0.166s`                                                                                                                                 | Duration for general transitions              |
-| `--blyrics-opacity-transition`     | `0.33s`                                                                                                                                  | Duration for opacity transitions              |
-| `--blyrics-glow-duration`          | `var(--blyrics-duration, 2s)`                                                                                                            | Duration for the glow animation               |
-| `--blyrics-wobble-duration`        | `calc(var(--blyrics-duration, 2s) / 2)`                                                                                                  | Duration for the wobble animation             |
-| `--blyrics-padding`                | `2rem`                                                                                                                                   | Padding for lyrics container                  |
-| `--blyrics-margin`                 | `2rem`                                                                                                                                   | Margin for lyrics container                   |
-| `--blyrics-border-radius`          | `1000rem`                                                                                                                                | Border radius for rounded elements            |
-| `--blyrics-blur-amount`            | `30px`                                                                                                                                   | Amount of blur for various effects            |
-| `--blyrics-scale`                  | `0.95`                                                                                                                                   | Scale factor for inactive lyrics              |
-| `--blyrics-active-scale`           | `1`                                                                                                                                      | Scale factor for active lyrics                |
-| `--blyrics-inactive-opacity`       | `0.33`                                                                                                                                   | Opacity for inactive lyrics                   |
-| `--blyrics-active-opacity`         | `1`                                                                                                                                      | Opacity for active lyrics                     |
-| `--blyrics-translated-opacity`     | `0.6`                                                                                                                                    | Opacity for translated lyrics                 |
-| `--blyrics-error-opacity`          | `0.33`                                                                                                                                   | Opacity for error messages                    |
-| `--blyrics-background-blur`        | `100px`                                                                                                                                  | Blur amount for background elements           |
-| `--blyrics-background-saturate`    | `2`                                                                                                                                      | Saturation level for background elements      |
-| `--blyrics-gradient-stops`         | Complex gradient (see [file](https://github.com/boidushya/better-lyrics/blob/master/src/index.css))                                      | Gradient stops for various background effects |
+### Colors:
+
+| Variable                         | Default Value                                                  | Description                                     | Deprecated                                                                                              |
+|----------------------------------|----------------------------------------------------------------|-------------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| `--blyrics-text-color`           | ``                                                             | Main color of text used thoughout Better Lyrics | Use `--blyrics-ui-text-color`, `--blyrics-lyric-active-color`, `--blyrics-lyric-inactive-color` instead |
+| `--blyrics-ui-text-color`        | `color(display-p3 1 1 1 / 1)` (white)                          | Color of non-lyric UI text                      |                                                                                                         |
+| `--blyrics-active-opacity`       | ``                                                             | Controls opacity of active lyrics               | Use `--blyrics-lyric-active-color` instead                                                              |
+| `--blyrics-lyric-active-color`   | `color(display-p3 1 1 1 / 1)` (white)                          | Color of active lyrics                          |                                                                                                         |
+| `--blyrics-inactive-opacity`     | ``                                                             | Controls opacity of inactive lyrics             |                                                                                                         |
+| `--blyrics-lyric-inactive-color` | `color(display-p3 1 1 1 / 0.3)` (semi-transparent white)       | Color of inactive lyrics                        | Use `--blyrics-lyric-inactive-color` instead                                                            |
+| `--blyrics-highlight-color`      | ``                                                             | Color of glow effect                            | Use `--blyrics-glow-color` instead                                                                      |
+| `--blyrics-glow-color`           | `color(display-p3 1 1 1 / 0.5)`  (semi-transparent white)      | Color of glow effect                            |                                                                                                         |
+| `--blyrics-error-color`          | `color(display-p3 0.992 0.882 0.882)` (slightly red off-white) | Color used in error conditions                  |                                                                                                         |
+| `--blyrics-footer-bg-color`      | `hsla(0, 0%, 100%, 0.1)`                                       |                                                 |                                                                                                         |
+| `--blyrics-footer-border-color`  | `hsla(0, 0%, 100%, 0.1);`                                      |                                                 |                                                                                                         |
+| `--blyrics-footer-text-color`    | `#aaa`                                                         |                                                 |                                                                                                         |
+| `--blyrics-footer-link-color`    | `#fff`                                                         |                                                 |                                                                                                         |
+| `--blyrics-discord-hover-color`  | `#5865f2` (Burple)                                             |                                                 |                                                                                                         |
+
+### Typography
+
+| Variable                           | Default Value                                           | Description                                | Deprecated                               |
+|------------------------------------|---------------------------------------------------------|--------------------------------------------|------------------------------------------|
+| `--blyrics-font-family`            | *                                                       | Font family to use in lyrics               |                                          |
+| `--blyrics-font-size`              | `3rem`                                                  | Font size to use for lyrics                |                                          |
+| `--blyrics-font-weight`            | `700`                                                   | Font weight to use for lyrics              |                                          |
+| `--blyrics-line-height`            | `1.333`                                                 | Line height to use for lyrics              |                                          |
+|                                    |                                                         |                                            |                                          |
+| `--blyrics-translated-font-size`   | `2rem`                                                  | Font size of translated/romanized lyrics   |                                          |
+| `--blyrics-translated-font-weight` | `600`                                                   | Font weight of translated/romanized lyrics |                                          |
+| `--blyrics-translated-font-family` | Inherits `--blyrics-font-family`                        | Font family of translated/romanized lyrics |                                          |
+| `--blyrics-translated-opacity`     | ``                                                      | Opacity of translated/romanized lyrics     | Use `--blyrics-translated-color` instead |
+| `--blyrics-translated-color`       | `color(display-p3 1 1 1 /0.6)` (semi-transparent white) | Color of translated/romanized lyrics       |                                          |
+|                                    |                                                         |                                            |                                          |
+| `--blyrics-footer-font-family:`    | `Roboto, Noto Naskh Arabic UI, Arial, sans-serif`       | Font family of footer                      |                                          |
+| `--blyrics-footer-font-size`       | `14px`                                                  | Font size of footer                        |                                          |
+| `--blyrics-footer-font-weight`     | `400`                                                   | Font weight of footer                      |                                          |
+
+\* `Satoshi, Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif;`
+
+### Animations
+
+| Variable                                      | Default Value | Description                                 | Deprecated                                                                                                |
+|-----------------------------------------------|---------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------|
+| `--blyrics-transition-duration`               | ``            | Transition duration of scale effect         | Use `--blyrics-scale-transition-duration`  instead                                                        |
+| `--blyrics-scale-transition-duration`         | `0.166s`      | Transition duration of scale effect         |                                                                                                           |
+| `--blyrics-opacity-transition`                | ``            | Controls duration of fade in/out transition | Use `--blyrics-lyric-highlight-fade-in-duration` / `--blyrics-lyric-highlight-fade-out-duration`  instead |
+| `--blyrics-lyric-highlight-fade-in-duration`  | `0.33s`       | Controls duration of fade in transition     |                                                                                                           |
+| `--blyrics-lyric-highlight-fade-out-duration` | `0.5s`        | Controls duration of fade out transition    |                                                                                                           |
+| `--blyrics-wobble-duration`                   | `1s`          | Controls duration of wobble animation       |                                                                                                           |
+
+### Layout
+
+These aren't really used anywhere relevant
+
+| Variable                  | Default Value | Description | Deprecated |
+|---------------------------|---------------|-------------|------------|
+| `--blyrics-padding`       | `2rem`        |             |            |
+| `--blyrics-margin`        | `2rem`        |             |            |
+| `--blyrics-border-radius` | `1000rem`     |             |            |
+
+### Lyric Transition
+
+| Variable                                     | Default Value | Description                                      | Deprecated                                                |
+|----------------------------------------------|---------------|--------------------------------------------------|-----------------------------------------------------------|
+| `--blyrics-lyric-scroll-duration`            |               | Duration for scrolling lyric transitions.        | Use `--blyrics-lyric-transition-duration` instead.        |
+| `--blyrics-lyric-transition-duration`        | `0.3s`        | Duration for scrolling lyric transitions.        |                                                           |
+| `--blyrics-lyric-scroll-timing-function`     |               | Timing function for scrolling lyric transitions. | Use `--blyrics-lyric-transition-timing-function` instead. |
+| `--blyrics-lyric-transition-timing-function` | `ease`        | Timing function for scrolling lyric transitions. |                                                           |
+
+### Effects
+
+| Variable                        | Default Value | Description                                                        |
+|---------------------------------|---------------|--------------------------------------------------------------------|
+| `--blyrics-blur-amount`         | `30px`        | Amount of blur applied to elements for visual effects.             |
+| `--blyrics-scale`               | `0.95`        | Scale factor applied to inactive elements.                         |
+| `--blyrics-active-scale`        | `1`           | Scale factor applied to active elements.                           |
+| `--blyrics-error-opacity`       | `0.33`        | Opacity value used for error messages.                             |
+| `--blyrics-background-blur`     | `100px`       | Amount of blur applied to background elements for depth.           |
+| `--blyrics-background-saturate` | `2`           | Saturation multiplier for background elements to enhance vibrancy. |
+
+### `--blyrics-gradient-stops`
+
+```css
+{
+    --blyrics-gradient-stops:
+		transparent 0%, rgba(0, 0, 0, 0.013) 8.1%,
+		rgba(0, 0, 0, 0.049) 15.5%, rgba(0, 0, 0, 0.104) 22.5%,
+		rgba(0, 0, 0, 0.175) 29%, rgba(0, 0, 0, 0.259) 35.3%,
+		rgba(0, 0, 0, 0.352) 41.2%, rgba(0, 0, 0, 0.45) 47.1%,
+		rgba(0, 0, 0, 0.55) 52.9%, rgba(0, 0, 0, 0.648) 58.8%,
+		rgba(0, 0, 0, 0.741) 64.7%, rgba(0, 0, 0, 0.825) 71%,
+		rgba(0, 0, 0, 0.896) 77.5%, rgba(0, 0, 0, 0.951) 84.5%,
+		rgba(0, 0, 0, 0.987) 91.9%, #000 100%  ;
+}
+```
 
 `--blyrics-duration` is a special custom property that is set dynamically by the extension's main script. It's used to ensure that animations are in sync with the music playback. Learn more about this [here](#5-styling-individual-lyric-lines).
+
 
 To learn more about CSS custom properties, check out the [MDN Web Docs on Using CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
 
@@ -119,44 +179,236 @@ The main container for the lyrics is styled using the `.blyrics-container` class
 
 This sets the overall appearance of the lyrics container. You can modify these properties to change the font, size, or positioning of the lyrics.
 
+Below is a revised version of your documentation. I’ve reorganized the content for clarity and incorporated the detail
+about the `.blyrics-zero-dur-animate` class. All the original details are preserved:
+
+---
+
 ## 5. Styling Individual Lyric Lines
 
-Each line of lyrics is a `<div>` inside the main container, with individual words wrapped in `<span>` elements:
+Animating lyrics is a multi-step process. Various classes and properties work together to ensure smooth, timed
+transitions—even if the browser stutters. Remember that when a div or span has an active or animating class, it doesn’t
+necessarily mean it’s currently “active” or animating. Instead, these classes are applied early, and the code later
+inserts specific animation/transition delays to trigger the effects at the correct time.
+
+---
+
+### Base Structure
+
+- **Container & Word Structure:**
+  Each lyric is wrapped in a `<div>`, and every word within that lyric is enclosed in a `<span>` inside the div.
+
+---
+
+### Base Styling for Each Lyric
+
+The following CSS sets up the basic appearance and transition parameters for each lyric container:
 
 ```css
 .blyrics-container > div {
-  cursor: pointer;
-  padding-bottom: var(--blyrics-padding) !important;
   transform: scale(var(--blyrics-scale));
-  transition: transform var(--blyrics-transition-duration);
-}
+    transition-property: --dummy, --dummy, transform;
+    transition-duration: 0s, 0s, var(--blyrics-scale-transition-duration);
+    transition-timing-function: linear, linear, ease;
 
-.blyrics-container > div > span {
-  opacity: var(--blyrics-inactive-opacity);
-  transition: opacity var(--blyrics-opacity-transition);
 }
 ```
 
-The active line has additional styles:
+- **Inactive Scale:**
+  The element is scaled by the value of `--blyrics-scale` (for inactive lyrics).
+
+- **Transition Setup:**
+  The transition properties are defined individually (instead of using the shorthand) to allow later insertion of
+  a `transition-delay`.
+  The first two properties are reserved for the lyric swipe animation and shouldn't be used for other effects.
+
+---
+
+### Activating a Lyric
+
+When a lyric becomes active, the container div gets the `.blyrics--animating` class:
 
 ```css
-.blyrics-container > div.blyrics--active {
-  transform: scale(var(--blyrics-active-scale));
-}
-
-.blyrics-container > div.blyrics--active > span:not(:empty):not(.blyrics--translated) {
-  opacity: var(--blyrics-active-opacity);
-  animation: blyrics-glow var(--blyrics-glow-duration) forwards,
-             blyrics-wobble var(--blyrics-wobble-duration) forwards;
+.blyrics-container > div.blyrics--animating {
+	transform: scale(var(--blyrics-active-scale));
 }
 ```
 
-This makes the active line full-sized and fully opaque, and applies animations to make it stand out. The animations are applied to each word (span) individually, creating a dynamic effect as the lyrics are sung.
+- **Active Scale:**
+  This rule changes the scale to `--blyrics-active-scale`, triggering the transition defined above.
 
-Understanding this structure (lines as divs, words as spans) is crucial if you want to modify the lyrics display. For example, if you wanted to create a karaoke-style effect where words light up one by one, you would focus on styling the individual spans within the active line.
+---
 
-The `--blyrics-duration` custom property is used to control the duration of the animations. It is defined in the extension's main javascript file and should not be modified here since it's critical for the animations to "sync" or give the illusion of syncing with the music. However, if you want to experiment with different durations, you can adjust/replace this property.
+### Styling Each Word
 
+Every word (span) in the lyric has the following base styles:
+
+```css
+.blyrics-container > div > span {
+	color: var(--blyrics-lyric-inactive-color);
+	display: inline-block;
+	white-space: pre;
+	transform: translateY(0px);
+}
+```
+
+- **Color & Display:**
+  The word’s color is set to `--blyrics-lyric-inactive-color` (its color is later changed during animation),
+  and `inline-block` ensures the spacing and layout are preserved.
+
+- **Transform:**
+  The `translateY(0px)` is necessary—even though it appears redundant—because removing it causes layout issues.
+
+---
+
+### Applying the Wobble Animation
+
+When a word is animating in, it receives the `.blyrics--animating` class, triggering the wobble animation:
+
+```css
+.blyrics-container > div > span.blyrics--animating {
+	animation: blyrics-wobble var(--blyrics-wobble-duration) forwards ease;
+}
+```
+
+- **Animation Details:**
+  Each word is animated with `blyrics-wobble`, and a unique `animation-delay` is applied by the code to control the
+  timing of the animation.
+
+---
+
+### Implementing the Swipe (Karaoke) Transition
+
+#### Defining Custom Properties
+
+Two custom properties control the swipe transition’s start and end points (which affect the softness of the swipe edge):
+
+```css
+@property --lyric-transition-amount-start {
+	syntax: "<number>";
+	inherits: false;
+	initial-value: 0;
+}
+
+@property --lyric-transition-amount-end {
+	syntax: "<number>";
+	inherits: false;
+	initial-value: 0;
+}
+```
+
+---
+
+#### The `::after` Pseudo-element
+
+The swipe effect is created using each word’s `::after` pseudo-element. This element is positioned to perfectly overlap
+its parent and uses a mask image for the swipe effect:
+
+```css
+.blyrics-container > div > span::after {
+	position: absolute;
+	content: attr(data-content);
+	top: -2rem;
+	left: -2rem;
+	white-space: pre;
+	padding: 2rem;
+	color: var(--blyrics-lyric-active-color);
+	box-sizing: content-box;
+	mask-image: linear-gradient(
+			90deg,
+			white calc(100% * var(--lyric-transition-amount-start) - 4rem * var(--lyric-transition-amount-start) + 2rem),
+			black calc(100% * var(--lyric-transition-amount-end) - 4rem * var(--lyric-transition-amount-end) + 2rem + 1px)
+	);
+	mask-mode: luminance;
+	width: 100%;
+
+	opacity: 0;
+	--lyric-transition-amount-start: -0.2;
+	--lyric-transition-amount-end: -0.1;
+    transition: --lyric-transition-amount-start 1s linear 1000s, --lyric-transition-amount-end 1s linear 1000s, opacity 0.5s ease;
+}
+```
+
+- **Content & Positioning:**
+  The pseudo-element copies the text via `content: attr(data-content)` and is positioned (offset by -2rem) so that it
+  completely overlaps its parent (accounting for padding).
+
+- **Active Color & Mask:**
+  The swipe effect uses `--blyrics-lyric-active-color` and a linear gradient mask. The gradient’s stops are calculated
+  using the custom properties, which are transitioned to create the swipe effect.
+
+- **Opacity & Transition Delays:**
+  The opacity is set to 0 whenever the lyric isn't active.
+
+  The long transition delays (1000s) on the custom properties effectively “pause”
+  the swipe transition while the lyric fades out.
+  The starting values of these properties (set to negative numbers) help
+  correct minor visual inconsistencies.
+  The code accounts for these negative values by starting these transition slightly early to prevent timing issues.
+
+---
+
+#### Pre-animation States and the Role of `.blyrics-zero-dur-animate`
+
+Before the final swipe effect is applied, there is a brief pre-animation state to reset the pseudo-element. Two rules
+handle this:
+
+1. **Reset State:**
+   This rule is applied to spans in their pre-animating state:
+   ```css
+   .blyrics-container > div > span.blyrics--pre-animating:not(.blyrics--animating)::after {
+     /* Reset background position for the karaoke transition to play correctly */
+     transition: none;
+     --lyric-transition-amount-start: -0.2;
+     --lyric-transition-amount-end: -0.1;
+     opacity: 0;
+   }
+   ```
+   This state is needed to reset transitions that may be partially complete (i.e., if it was paused earlier)
+
+2. **Opacity Override (Conditional):**
+   This rule forces the pseudo-element’s opacity to 1, but only if the `.blyrics-zero-dur-animate` class is **not**
+   present:
+   ```css
+   .blyrics-container > div > span.blyrics--pre-animating:not(.blyrics--animating):not(.blyrics-zero-dur-animate)::after {
+     opacity: 1;
+   }
+   ```
+	- **Note on `.blyrics-zero-dur-animate`:**
+	  The `.blyrics-zero-dur-animate` class is applied when there is no swipe animation (i.e., its duration is 0s).
+      In such cases, we want a fade-in effect for the opacity instead of an instant highlight of the entire word.
+      By omitting the override (opacity set to 1) when `.blyrics-zero-dur-animate` is present, we allow the opacity to
+	  transition smoothly.
+
+---
+
+#### Final State: Lyric Selection
+
+When a lyric is finally selected, the pseudo-element is animated to reveal the swipe effect:
+
+```css
+.blyrics-container > div > span.blyrics--animating::after {
+	opacity: 1;
+	animation: blyrics-glow max(calc(var(--blyrics-duration) * 1.2), 1.2s) forwards ease;
+	animation-delay: inherit;
+
+	--lyric-transition-amount-start: 1.4;
+	--lyric-transition-amount-end: 1.5;
+    transition-property: --lyric-transition-amount-start, --lyric-transition-amount-end, opacity;
+    transition-duration: calc(var(--blyrics-duration) * 1.6), calc(var(--blyrics-duration) * 1.6), var(--blyrics-lyric-highlight-fade-in-duration);
+    transition-timing-function: linear, linear, ease;
+	transition-delay: inherit;
+}
+```
+
+- **Opacity & Glow Animation:**
+  The pseudo-element’s opacity is set to 1. A glow animation (`blyrics-glow`) is triggered with its duration calculated
+  as the maximum of `calc(var(--blyrics-duration) * 1.2)` and `1.2s`, and the `animation-delay` is inherited.
+
+- **Swipe Transition:**
+  The custom properties are transitioned to their final values (1.4 and 1.5), which produces the swipe effect. **The
+  order and timing of the transitions (the custom properties first, then the opacity) are critical so that the swipe effect
+  and fade-in occur at the intended times. The delay applied to the two custom properties is slightly shorter to account for the animation starting from -20%.**
 ## 6. Creating Animation Effects
 
 The CSS defines two main animations: `blyrics-wobble` and `blyrics-glow`:

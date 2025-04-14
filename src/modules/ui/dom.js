@@ -103,9 +103,10 @@ BetterLyrics.DOM = {
       }
     }
   },
-
+  loaderMayBeActive: false,
   renderLoader: function () {
     BetterLyrics.DOM.cleanup();
+    BetterLyrics.DOM.loaderMayBeActive = true;
     try {
       clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
       const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
@@ -142,12 +143,14 @@ BetterLyrics.DOM = {
         loaderWrapper.addEventListener("transitionend", function handleTransitionEnd(_event) {
           clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
           loaderWrapper.dataset.animatingOut = false;
+          BetterLyrics.DOM.loaderMayBeActive = false;
           loaderWrapper.removeEventListener("transitionend", handleTransitionEnd);
           BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_TRANSITION_ENDED);
         });
 
         BetterLyrics.App.loaderAnimationEndTimeout = setTimeout(() => {
           loaderWrapper.dataset.animatingOut = false;
+          BetterLyrics.DOM.loaderMayBeActive = false;
           BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_ANIMATION_END_FAILED);
         }, 1000);
       }
@@ -158,6 +161,9 @@ BetterLyrics.DOM = {
 
   isLoaderActive: function () {
     try {
+      if (!BetterLyrics.DOM.loaderMayBeActive) {
+        return false;
+      }
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
       if (loaderWrapper) {
         return loaderWrapper.hasAttribute("active") || loaderWrapper.dataset.animatingOut === "true";
@@ -180,24 +186,32 @@ BetterLyrics.DOM = {
   },
   /** @type {MutationObserver | null} */
   backgroundChangeObserver: null,
-  addAlbumArtToLayout: function () {
+  addAlbumArtToLayout: function (videoId) {
+    if (!videoId) return;
+
     if (BetterLyrics.DOM.backgroundChangeObserver) {
       BetterLyrics.DOM.backgroundChangeObserver.disconnect();
     }
 
+    let injectAlbumArt = () => {
+      if (albumArt.src.startsWith("data:image")) {
+        BetterLyrics.DOM.injectAlbumArt("https://img.youtube.com/vi/" + videoId + "/0.jpg");
+      } else {
+        BetterLyrics.DOM.injectAlbumArt(albumArt.src);
+      }
+    };
+
     let albumArt = document.querySelector(BetterLyrics.Constants.SONG_IMAGE_SELECTOR);
     const observer = new MutationObserver(() => {
-      BetterLyrics.DOM.injectAlbumArt(albumArt.src);
+      injectAlbumArt();
       BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_FROM_MUTATION_LOG);
     });
 
     observer.observe(albumArt, { attributes: true });
     BetterLyrics.DOM.backgroundChangeObserver = observer;
 
-    if (!albumArt.src !== BetterLyrics.Constants.EMPTY_THUMBNAIL_SRC) {
-      BetterLyrics.DOM.injectAlbumArt(albumArt.src);
-      BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_LOG);
-    }
+    injectAlbumArt();
+    BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_LOG);
   },
 
   injectAlbumArt: function (src) {
@@ -290,20 +304,25 @@ BetterLyrics.DOM = {
   /**
    * Time in seconds to offset lyric highlighting by
    */
-  lyricTimeOffset: 0.115,
+  lyricTimeOffset: 0.015,
   /**
    * Time in seconds before lyric highlight to begin scroll to the next lyric
    */
   lyricScrollTimeOffset: 0.2,
-  tickLyrics: function (currentTime) {
-    if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking) {
+  wasUserScrolling: false,
+  tickLyrics: function (currentTime, isPlaying = true) {
+    const now = Date.now();
+    if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking || (currentTime === 0 && !isPlaying)) {
       return;
     }
 
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     console.assert(tabSelector != null);
+
+    let playerState = document.getElementById("player-page").getAttribute("player-ui-state");
+    const isPlayerOpen = playerState === "PLAYER_PAGE_OPEN" || playerState === "FULLSCREEN";
     // Don't tick lyrics if they're not visible
-    if (tabSelector.getAttribute("aria-selected") !== "true") {
+    if (tabSelector.getAttribute("aria-selected") !== "true" || !isPlayerOpen) {
       return;
     }
 
@@ -318,25 +337,29 @@ BetterLyrics.DOM = {
         return;
       }
 
-      const lyrics = [...lyricsElement.children];
-      lyrics.pop(); // remove the footer
+      /**
+       * @type {LineData[]}
+       */
+      const lyricsData = BetterLyrics.App.lyricData;
+
+      if (!lyricsData) {
+        BetterLyrics.App.areLyricsTicking = false;
+        BetterLyrics.Utils.log("Lyrics are ticking, but lyricsData is null!");
+        return;
+      }
 
       let selectedLyricHeight = 0;
       let targetScrollPos = 0;
-      lyrics.every((elem, index) => {
-        if (!elem.hasAttribute("data-time")) {
-          return true;
-        }
-
-        const time = parseFloat(elem.getAttribute("data-time"));
+      lyricsData.every((lineData, index) => {
+        const time = lineData.time;
         let nextTime = Infinity;
-        if (index + 1 < lyrics.length) {
-          const nextLyric = lyrics[index + 1];
-          nextTime = parseFloat(nextLyric.getAttribute("data-time"));
+        if (index + 1 < lyricsData.length) {
+          const nextLyric = lyricsData[index + 1];
+          nextTime = nextLyric.time;
         }
 
         if (lyricScrollTime >= time && lyricScrollTime < nextTime) {
-          let elemBounds = getRelativeBounds(lyricsElement, elem);
+          let elemBounds = getRelativeBounds(lyricsElement, lineData.lyricElement);
           targetScrollPos = elemBounds.y;
           selectedLyricHeight = elemBounds.height;
           const timeDelta = lyricScrollTime - time;
@@ -346,25 +369,93 @@ BetterLyrics.DOM = {
             );
           }
           BetterLyrics.DOM.selectedElementIndex = index;
-          elem.setAttribute("data-scrolled", true);
-        } else {
-          elem.setAttribute("data-scrolled", false);
-        }
-
-        if (currentTime >= time && currentTime < nextTime) {
-          const timeDelta = currentTime - time;
-          if (!elem.classList.contains(BetterLyrics.Constants.CURRENT_LYRICS_CLASS) && timeDelta > 0.05 && index > 0) {
-            BetterLyrics.Utils.log(
-              `[BetterLyrics] Highlighting next lyric was late, dt: ${(currentTime - time).toFixed(5)}s`
-            );
+          if (!lineData.isScrolled) {
+            lineData.lyricElement.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
+            lineData.isScrolled = true;
           }
-          elem.classList.add(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
         } else {
-          elem.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
+          if (lineData.isScrolled) {
+            lineData.lyricElement.classList.remove(BetterLyrics.Constants.CURRENT_LYRICS_CLASS);
+            lineData.isScrolled = false;
+          }
         }
 
+        /**
+         * Time in seconds to set up animations. This shouldn't affect any visible effects, just help when the browser stutters
+         * @type {number}
+         */
+        let setUpAnimationEarlyTime = 2;
+
+        if (!isPlaying) {
+          setUpAnimationEarlyTime = 0;
+        }
+        if (currentTime + setUpAnimationEarlyTime >= time && currentTime < nextTime) {
+          lineData.selected = true;
+
+          const timeDelta = currentTime - time;
+          if (
+            lineData.isAnimating &&
+            Math.abs((now - lineData.animationStartTimeMs) / 1000 - timeDelta) > 0.02 &&
+            isPlaying
+          ) {
+            // Our sync is off for some reason
+            lineData.isAnimating = false;
+          }
+
+          if (!lineData.isAnimating) {
+            let children = [lineData, ...lineData.parts];
+            children.forEach(part => {
+              let elDuration = part.duration;
+              let elTime = part.time;
+              const timeDelta = currentTime - elTime;
+
+              part.lyricElement.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
+
+              //correct for the animation not starting at 0% and instead at -10%
+              let swipeAnimationDelay = -timeDelta - elDuration * 0.1 + "s";
+              let everythingElseDelay = -timeDelta + "s";
+              part.lyricElement.style.transitionDelay = `${swipeAnimationDelay}, ${swipeAnimationDelay}, ${everythingElseDelay}`;
+              part.lyricElement.style.animationDelay = everythingElseDelay;
+              part.lyricElement.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
+              reflow(part.lyricElement);
+              part.lyricElement.classList.add(BetterLyrics.Constants.ANIMATING_CLASS);
+              part.animationStartTimeMs = now - timeDelta * 1000;
+            });
+
+            lineData.isAnimating = true;
+          }
+
+          if (isPlaying !== lineData.isAnimationPlayStatePlaying) {
+            lineData.isAnimationPlayStatePlaying = isPlaying;
+            if (!isPlaying) {
+              lineData.selected = false;
+              let children = [lineData, ...lineData.parts];
+              children.forEach(part => {
+                if (part.animationStartTimeMs > now) {
+                  part.lyricElement.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
+                  part.lyricElement.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
+                }
+              });
+            }
+          }
+        } else {
+          if (lineData.selected) {
+            let children = [lineData, ...lineData.parts];
+            children.forEach(part => {
+              part.lyricElement.style.transitionDelay = "";
+              part.lyricElement.style.animationDelay = "";
+              part.lyricElement.style.animationPlayState = "";
+              part.lyricElement.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
+              part.lyricElement.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
+              part.isAnimating = false;
+              part.animationStartTimeMs = Infinity;
+            });
+            lineData.selected = false;
+          }
+        }
         return true;
       });
+
       // lyricsHeight can change slightly due to animations
       const lyricsHeight = lyricsElement.getBoundingClientRect().height;
       const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
@@ -374,10 +465,15 @@ BetterLyrics.DOM = {
       const topOffsetMultiplier = 0.37; // 0.5 means the selected lyric will be in the middle of the screen, 0 means top, 1 means bottom
 
       if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
-        BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
+        if (BetterLyrics.DOM.wasUserScrolling) {
+          BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
+          lyricsElement.classList.remove(BetterLyrics.DOM.USER_SCROLLING_CLASS);
+          BetterLyrics.DOM.wasUserScrolling = false;
+        }
+
         let scrollPosOffset = Math.max(0, tabRendererHeight * topOffsetMultiplier - selectedLyricHeight / 2);
         let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
-        scrollPos = Math.min(lyricsHeight - tabRendererHeight, scrollPos);
+        scrollPos = Math.max(Math.min(lyricsHeight - tabRendererHeight, scrollPos), 0);
 
         if (
           Math.abs(scrollTop - scrollPos) > 2 &&
@@ -386,9 +482,12 @@ BetterLyrics.DOM = {
         ) {
           lyricsElement.style.transition = "top 0s ease-in-out 0s";
           lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
-
+          reflow(lyricsElement);
+          lyricsElement.style.transition = "";
+          lyricsElement.style.top = "0px";
           scrollTop = scrollPos;
-          BetterLyrics.DOM.scrollPos = -1; //force syncing position on the next tick
+
+          BetterLyrics.DOM.scrollPos = scrollPos;
         } else if (BetterLyrics.DOM.scrollPos === -1) {
           if (lyricsElement.style.transition === "top 0s ease-in-out 0s") {
             BetterLyrics.DOM.nextScrollAllowedTime =
@@ -399,7 +498,11 @@ BetterLyrics.DOM = {
           BetterLyrics.DOM.scrollPos = scrollPos;
         }
       } else {
-        BetterLyrics.DOM.getResumeScrollElement().removeAttribute("autoscroll-hidden");
+        if (!BetterLyrics.DOM.wasUserScrolling) {
+          BetterLyrics.DOM.getResumeScrollElement().removeAttribute("autoscroll-hidden");
+          lyricsElement.classList.add(BetterLyrics.DOM.USER_SCROLLING_CLASS);
+          BetterLyrics.DOM.wasUserScrolling = true;
+        }
       }
 
       if (Math.abs(scrollTop - tabRenderer.scrollTop) > 1) {
@@ -409,7 +512,6 @@ BetterLyrics.DOM = {
       }
 
       let j = 0;
-      const now = Date.now();
       for (; j < BetterLyrics.DOM.skipScrollsDecayTimes.length; j++) {
         if (BetterLyrics.DOM.skipScrollsDecayTimes[j] > now) {
           break;
@@ -506,4 +608,8 @@ function toMs(cssDuration) {
   } else {
     return cssDuration.value;
   }
+}
+
+function reflow(elt) {
+  void elt.offsetHeight;
 }
