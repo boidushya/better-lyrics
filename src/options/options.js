@@ -4,9 +4,16 @@ const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
 const saveOptions = () => {
   const options = getOptionsFromForm();
-  browserAPI.storage.sync.get({ preferredProvider: 0 }, currentOptions => {
+
+  function arrayEqual(a, b) {
+    return Array.isArray(a) && Array.isArray(b)
+        && a.length === b.length
+        && a.every((element, index) => element === b[index]);
+  }
+
+  browserAPI.storage.sync.get({ preferredProviderList: null, shouldUseKaraokeLyrics: false }, currentOptions => {
     if (
-      currentOptions.preferredProvider !== options.preferredProvider ||
+      !arrayEqual(currentOptions.preferredProviderList, options.preferredProviderList) ||
       currentOptions.shouldUseKaraokeLyrics !== options.shouldUseKaraokeLyrics
     ) {
       clearTransientLyrics(() => {
