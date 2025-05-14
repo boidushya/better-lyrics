@@ -320,7 +320,7 @@ BetterLyrics.DOM = {
     console.assert(tabSelector != null);
 
     let playerState = document.getElementById("player-page").getAttribute("player-ui-state");
-    const isPlayerOpen = playerState === "PLAYER_PAGE_OPEN" || playerState === "FULLSCREEN";
+    const isPlayerOpen = playerState === "PLAYER_PAGE_OPEN" || playerState === "FULLSCREEN" || playerState === "MINIPLAYER_IN_PLAYER_PAGE";
     // Don't tick lyrics if they're not visible
     if (tabSelector.getAttribute("aria-selected") !== "true" || !isPlayerOpen) {
       return;
