@@ -37,12 +37,26 @@ BetterLyrics.Observer = {
     observer.observe(panelElem, { attributes: true });
     panelElem.removeAttribute("inert");
   },
+
+  currentTab: 0,
+  scrollPositions: [0, 0, 0],
   lyricReloader: function () {
     const tabs = document.getElementsByClassName(BetterLyrics.Constants.TAB_CONTENT_CLASS);
 
     const [tab1, tab2, tab3] = tabs;
 
     if (tab1 !== undefined && tab2 !== undefined && tab3 !== undefined) {
+      for (let i = 0; i < tabs.length; i++) {
+        tabs[i].addEventListener("click", () => {
+          console.log(BetterLyrics.Observer.currentTab, BetterLyrics.Observer.scrollPositions)
+          const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+          BetterLyrics.Observer.scrollPositions[BetterLyrics.Observer.currentTab] = tabRenderer.scrollTop;
+          tabRenderer.scrollTop = BetterLyrics.Observer.scrollPositions[i];
+          BetterLyrics.Observer.currentTab = i;
+          console.log(BetterLyrics.Observer.currentTab, BetterLyrics.Observer.scrollPositions)
+        });
+      }
+
       tab2.addEventListener("click", function () {
         BetterLyrics.DOM.getResumeScrollElement().classList.remove("blyrics-hidden");
         if (!BetterLyrics.App.areLyricsLoaded) {
