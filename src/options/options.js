@@ -6,9 +6,9 @@ const saveOptions = () => {
   const options = getOptionsFromForm();
 
   function arrayEqual(a, b) {
-    return Array.isArray(a) && Array.isArray(b)
-        && a.length === b.length
-        && a.every((element, index) => element === b[index]);
+    return (
+      Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((element, index) => element === b[index])
+    );
   }
 
   browserAPI.storage.sync.get({ preferredProviderList: null, shouldUseKaraokeLyrics: false }, currentOptions => {
