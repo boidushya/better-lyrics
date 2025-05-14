@@ -27,6 +27,7 @@ BetterLyrics.App = {
     BetterLyrics.Settings.listenForPopupMessages();
     BetterLyrics.Observer.lyricReloader();
     BetterLyrics.Observer.initializeLyrics();
+    BetterLyrics.Observer.disableInertWhenFullscreen();
     BetterLyrics.LyricProviders.initProviders();
 
     BetterLyrics.Utils.log(

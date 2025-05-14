@@ -19,7 +19,24 @@ BetterLyrics.Observer = {
     });
     observer.observe(tabSelector, { attributes: true });
   },
-
+  disableInertWhenFullscreen: function () {
+    let panelElem = document.getElementById("side-panel")
+    if (!panelElem) {
+      setTimeout(() => {
+        BetterLyrics.Observer.disableInertWhenFullscreen();
+      }, 1000);
+      return;
+    }
+    let observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        if (mutation.attributeName === "inert") {
+          mutation.target.removeAttribute("inert")
+        }
+      })
+    })
+    observer.observe(panelElem, { attributes: true });
+    panelElem.removeAttribute("inert");
+  },
   lyricReloader: function () {
     const tabs = document.getElementsByClassName(BetterLyrics.Constants.TAB_CONTENT_CLASS);
 
