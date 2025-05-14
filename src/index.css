@@ -144,10 +144,10 @@
   box-sizing: content-box;
   mask-image: linear-gradient(
     90deg,
-    white calc(100% * var(--lyric-transition-amount-start) - 4rem * var(--lyric-transition-amount-start) + 2rem),
-    black calc(100% * var(--lyric-transition-amount-end) - 4rem * var(--lyric-transition-amount-end) + 2rem + 1px)
+    #FFFFFFFF calc(100% * var(--lyric-transition-amount-start) - 4rem * var(--lyric-transition-amount-start) + 2rem),
+    #FFFFFF00 calc(100% * var(--lyric-transition-amount-end) - 4rem * var(--lyric-transition-amount-end) + 2rem + 1px)
   );
-  mask-mode: luminance;
+  mask-mode: alpha;
   width: 100%;
 
   opacity: 0;
