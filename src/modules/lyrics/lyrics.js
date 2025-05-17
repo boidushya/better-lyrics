@@ -208,6 +208,10 @@ BetterLyrics.Lyrics = {
 
     BetterLyrics.Utils.log("Got Lyrics from " + lyrics.source);
 
+    // Preserve song and artist information in the lyrics data for the "Add Lyrics" button
+    lyrics.song = song;
+    lyrics.artist = artist;
+
     BetterLyrics.App.lastLoadedVideoId = detail.videoId;
     this.cacheAndProcessLyrics(cacheKey, lyrics);
   },
@@ -227,7 +231,6 @@ BetterLyrics.Lyrics = {
 
     const lyrics = data.lyrics;
     if (!lyrics || lyrics.length === 0) {
-      console.log(data);
       throw new Error(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
     }
 
@@ -505,6 +508,8 @@ BetterLyrics.Lyrics = {
 
     if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
       BetterLyrics.DOM.addFooter(data.source, data.sourceHref);
+    } else {
+      BetterLyrics.DOM.addNoLyricsButton(data.song, data.artist);
     }
 
     if (!allZero) {

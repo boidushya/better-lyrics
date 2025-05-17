@@ -235,6 +235,29 @@ BetterLyrics.DOM = {
     }
   },
 
+  addNoLyricsButton: function (song, artist) {
+    const lyricsWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_WRAPPER_ID);
+    if (!lyricsWrapper) return;
+
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "blyrics-no-lyrics-button-container";
+
+    const addLyricsButton = document.createElement("button");
+    addLyricsButton.className = "blyrics-add-lyrics-button";
+    addLyricsButton.textContent = "Add Lyrics";
+
+    const url = new URL(BetterLyrics.Constants.LRCLIB_UPLOAD_URL);
+    if (song) url.searchParams.append("title", song);
+    if (artist) url.searchParams.append("artist", artist);
+
+    addLyricsButton.addEventListener("click", () => {
+      window.open(url.toString(), "_blank");
+    });
+
+    buttonContainer.appendChild(addLyricsButton);
+    lyricsWrapper.appendChild(buttonContainer);
+  },
+
   injectHeadTags: function () {
     const imgURL = "https://better-lyrics.boidu.dev/icon-512.png";
 
@@ -283,6 +306,11 @@ BetterLyrics.DOM = {
       existingFooter.classList.remove("blyrics--fallback");
     }
     BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
+
+    const buttonContainer = document.querySelector(".blyrics-no-lyrics-button-container");
+    if (buttonContainer) {
+      buttonContainer.remove();
+    }
 
     BetterLyrics.DOM.clearLyrics();
   },

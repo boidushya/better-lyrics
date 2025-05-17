@@ -245,6 +245,38 @@
   display: none !important;
 }
 
+/* No lyrics button styles */
+.blyrics-no-lyrics-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 4rem;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.blyrics-add-lyrics-button {
+  background-color: var(--blyrics-footer-bg-color);
+  border: 1px solid var(--blyrics-footer-border-color);
+  border-radius: var(--blyrics-border-radius);
+  color: var(--blyrics-ui-text-color);
+  cursor: pointer;
+  font-family: var(--blyrics-font-family);
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  transition: all 0.3s ease;
+}
+
+.blyrics-add-lyrics-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.blyrics-add-lyrics-button:active {
+  transform: translateY(0);
+}
+
 /* Footer styles */
 .blyrics-footer {
   display: flex;
