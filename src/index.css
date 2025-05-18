@@ -248,7 +248,7 @@
 /* No lyrics button styles */
 .blyrics-no-lyrics-button-container {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   opacity: 0.9;
   transition: opacity 0.3s ease;
 }
