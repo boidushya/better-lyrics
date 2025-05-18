@@ -249,7 +249,6 @@
 .blyrics-no-lyrics-button-container {
   display: flex;
   justify-content: center;
-  margin-top: 4rem;
   opacity: 0.9;
   transition: opacity 0.3s ease;
 }
