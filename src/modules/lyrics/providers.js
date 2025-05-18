@@ -155,16 +155,29 @@ BetterLyrics.LyricProviders = {
 
     const data = await response.json();
 
-    if (data && data.syncedLyrics && typeof data.duration === "number") {
-      BetterLyrics.Utils.log(BetterLyrics.Constants.LRCLIB_LYRICS_FOUND_LOG);
-      return {
-        lyrics: BetterLyrics.LyricProviders.parseLRC(data.syncedLyrics, data.duration),
-        source: "LRCLib",
-        sourceHref: "https://lrclib.net/",
-      };
-    } else {
-      throw new Error(BetterLyrics.Constants.NO_LRCLIB_LYRICS_FOUND_LOG);
+    if (data) {
+      // First try synced lyrics
+      if (data.syncedLyrics && typeof data.duration === "number") {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.LRCLIB_LYRICS_FOUND_LOG);
+        return {
+          lyrics: BetterLyrics.LyricProviders.parseLRC(data.syncedLyrics, data.duration),
+          source: "LRCLib",
+          sourceHref: "https://lrclib.net/",
+        };
+      }
+      // Fall back to plain lyrics if available
+      else if (data.plainLyrics) {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.LRCLIB_LYRICS_FOUND_LOG + " (plain lyrics)");
+        return {
+          lyrics: BetterLyrics.LyricProviders.formatPlainLyrics(data.plainLyrics),
+          source: "LRCLib (Plain)",
+          sourceHref: "https://lrclib.net/",
+          isPlainLyrics: true,
+        };
+      }
     }
+    
+    throw new Error(BetterLyrics.Constants.NO_LRCLIB_LYRICS_FOUND_LOG);
   },
   /**
    * @type{function(song: string, artist: string, duration:number, videoId: string)}
@@ -275,6 +288,21 @@ BetterLyrics.LyricProviders = {
       sourceHref: "",
       musicVideoSynced: true,
     };
+  },
+
+  formatPlainLyrics: function (plainLyrics) {
+    const lines = plainLyrics.split('\n').filter(line => line.trim().length > 0);
+    const lyricsArray = [];
+    
+    lines.forEach((line) => {
+      lyricsArray.push({
+        startTimeMs: 0,
+        words: line.trim(),
+        durationMs: 0,
+      });
+    });
+    
+    return lyricsArray;
   },
 
   initProviders: function () {
