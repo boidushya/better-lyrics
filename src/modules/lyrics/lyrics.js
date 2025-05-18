@@ -358,6 +358,11 @@ BetterLyrics.Lyrics = {
 
       let line = document.createElement("div");
 
+      // Detect Arabic text
+      const containsArabic = text => /[\u0600-\u06FF]/.test(text);
+      const hasArabicContent = item.parts.some(part => containsArabic(part.words));  
+      if (hasArabicContent) line.setAttribute('dir', 'rtl');
+
       /**
        *
        * @type LineData
