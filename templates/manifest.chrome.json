@@ -52,7 +52,7 @@
       "world": "MAIN"
     },
     {
-      "matches": ["*://music.youtube.com/*"],
+      "matches": ["<all_urls>"],
       "js": [
         "src/libs/codemirror/codemirror.min.js",
         "src/libs/codemirror/css.min.js",
