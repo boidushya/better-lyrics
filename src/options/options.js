@@ -42,6 +42,7 @@ const getOptionsFromForm = () => {
     shouldUseKaraokeLyrics: document.getElementById("shouldUseKaraokeLyrics").checked,
     isTranslateEnabled: document.getElementById("translate").checked,
     translationLanguage: document.getElementById("translationLanguage").value,
+    excludedLanguages: document.getElementById("excludedLanguages").value,
     isCursorAutoHideEnabled: document.getElementById("cursorAutoHide").checked,
     isRomanizationEnabled: document.getElementById("isRomanizationEnabled").checked,
     preferredProviderList: preferredProviderList,
@@ -171,6 +172,7 @@ const restoreOptions = () => {
     shouldUseKaraokeLyrics: false,
     isTranslateEnabled: false,
     translationLanguage: "en",
+    excludedLanguages: "",
     isRomanizationEnabled: false,
     preferredProviderList: ["p-dacubeking", "p-better-lyrics", "p-lrclib", "p-yt-captions"],
   };
@@ -191,6 +193,7 @@ const setOptionsInForm = items => {
   document.getElementById("shouldUseKaraokeLyrics").checked = items.shouldUseKaraokeLyrics;
   document.getElementById("translate").checked = items.isTranslateEnabled;
   document.getElementById("translationLanguage").value = items.translationLanguage;
+  document.getElementById("excludedLanguages").value = items.excludedLanguages;
   document.getElementById("isRomanizationEnabled").checked = items.isRomanizationEnabled;
 
   let providersListElem = document.getElementById("providers-list");
@@ -227,4 +230,12 @@ document.addEventListener("DOMContentLoaded", () => {
     ghostClass: "dragging",
     onUpdate: saveOptions,
   });
+});
+
+//copy languages from translationLanguage to excludedLanguages.
+document.addEventListener("DOMContentLoaded", () => {
+  var source = document.getElementById("translationLanguage").cloneNode(true);
+  var destination = document.getElementById("excludedLanguages");
+  source.options.add(new Option); //add value for none;
+  destination.append(...source.options);
 });
