@@ -28,11 +28,21 @@ BetterLyrics.Observer = {
       return;
     }
     let observer = new MutationObserver(function (mutations) {
-      mutations.forEach(function (mutation) {
-        if (mutation.attributeName === "inert") {
-          mutation.target.removeAttribute("inert");
-        }
-      });
+      BetterLyrics.Settings.onFullScreenDisabled(
+        () => {},
+        () =>
+          mutations.forEach(function (mutation) {
+            if (mutation.attributeName === "inert") {
+              // entering fullscreen mode
+              mutation.target.removeAttribute("inert");
+              const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+              if (tabSelector && tabSelector.getAttribute("aria-selected") !== "true") {
+                // ensure lyrics tab is selected
+                tabSelector.click();
+              }
+            }
+          })
+      );
     });
     observer.observe(panelElem, { attributes: true });
     panelElem.removeAttribute("inert");
