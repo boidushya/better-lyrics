@@ -36,7 +36,9 @@ sed -i.bak 's/src="editor\.js"/src="editor.min.js"/' src/options/options.html &&
 sed -i.bak 's/src="options\.js"/src="options.min.js"/' src/options/options.html && rm src/options/options.html.bak
 
 # Minify CSS files
-postcss src/index.css --use autoprefixer cssnano -o src/index.min.css && rm src/index.css
+postcss src/css/ytmusic.css --use autoprefixer cssnano -o src/css/ytmusic.min.css && rm src/css/ytmusic.css
+postcss src/css/themesong.css --use autoprefixer cssnano -o src/css/themesong.min.css && rm src/css/themesong.css
+postcss src/css/blyrics.css --use autoprefixer cssnano -o src/css/blyrics.min.css && rm src/css/blyrics.css
 postcss src/options/options.css --use autoprefixer cssnano -o src/options/options.min.css && rm src/options/options.css
 
 # Update HTML file to use minified CSS
@@ -56,7 +58,11 @@ jq '.content_scripts[0].js = [
   "src/modules/ui/observer.min.js",
   "src/modules/settings/settings.min.js",
   "src/index.min.js"
-] | .content_scripts[0].css = ["src/index.min.css"] | .background.service_worker = "src/background.min.js"' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
+] | .content_scripts[0].css = [
+  "src/css/ytmusic.min.css",
+  "src/css/themesong.min.css",
+  "src/css/blyrics.min.css"
+] | .background.service_worker = "src/background.min.js"' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
 
 # Create zip file
 zip -r better-lyrics.zip ./* -x "./dist/*" "LICENSE" "README.md" "./templates/*" "*.DS_Store" "${SCRIPT_DIR}/*"
