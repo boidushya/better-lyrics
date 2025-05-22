@@ -47,7 +47,11 @@
         "src/modules/settings/settings.js",
         "src/index.js"
       ],
-      "css": ["src/index.css"],
+      "css": [
+        "src/css/ytmusic.css",
+        "src/css/blyrics.css",
+        "src/css/themesong.css"
+      ],
       "run_at": "document_start"
     },
     {
