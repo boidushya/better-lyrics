@@ -131,12 +131,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-    // Load saved content
-    browserAPI.storage.sync.get("customCSS", function (data) {
-      if (data.customCSS) {
-        editor.setValue(data.customCSS);
-      }
-    });
+  // Load saved content
+  browserAPI.storage.sync.get("customCSS", function (data) {
+    if (data.customCSS) {
+      editor.setValue(data.customCSS);
+    }
+  });
 
   editor.on("keydown", function (cm, event) {
     const isInvalidKey = invalidKeys.includes(event.key);
