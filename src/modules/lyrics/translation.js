@@ -30,7 +30,7 @@ BetterLyrics.Translation = {
       });
   },
 
-  onRomanizationEnabled: async function (callback, next = () => {}) {
+  onRomanizationEnabled: async function (callback, next = () => { }) {
     BetterLyrics.Storage.getStorage(["isRomanizationEnabled"], async items => {
       if (items.isRomanizationEnabled) {
         await callback(items);
@@ -40,7 +40,7 @@ BetterLyrics.Translation = {
   },
 
   onTranslationEnabled: function (callback) {
-    BetterLyrics.Storage.getStorage(["isTranslateEnabled", "translationLanguage"], items => {
+    BetterLyrics.Storage.getStorage(["isTranslateEnabled", "translationLanguage", "excludedLanguages"], items => {
       if (items.isTranslateEnabled) {
         callback(items);
       }
