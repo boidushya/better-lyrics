@@ -213,9 +213,8 @@ BetterLyrics.Lyrics = {
       // Thaana Characters: U+0780..U+07BF
 
       const testRtl = text => /[\u0600-\u06FF]|[\ufb50-\ufdff]|[\u0590-\u05ff]|[\u0780-\u07bf]/.test(text);
-      lyrics.isRtlLanguage = lyrics.lyrics.some(({words}) => testRtl(words));
+      lyrics.isRtlLanguage = lyrics.lyrics.some(({ words }) => testRtl(words));
     }
-
 
     BetterLyrics.Utils.log("Got Lyrics from " + lyrics.source);
 
