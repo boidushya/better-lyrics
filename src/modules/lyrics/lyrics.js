@@ -458,27 +458,22 @@ BetterLyrics.Lyrics = {
                 if (item.words.trim() !== "♪" && item.words.trim() !== "") {
                   const result = await BetterLyrics.Translation.translateText(item.words, target_language);
 
-                  const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
-                  const prevScrollPos = tabRenderer.scrollTop;
-                  const prevHeight = wrapper.clientHeight;
+                  if (result && result.originalLanguage !== target_language) {
+                    const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+                    const prevScrollPos = tabRenderer.scrollTop;
+                    const prevHeight = wrapper.clientHeight;
 
-                  if (result) {
-                    if (result.originalLanguage !== target_language) {
-                      translatedLine.textContent = "\n" + result.translatedText;
-                      line.appendChild(translatedLine);
-                    }
-                  } else {
-                    translatedLine.textContent = "\n" + "—";
+                    translatedLine.textContent = "\n" + result.translatedText;
                     line.appendChild(translatedLine);
+
+                    const currentScrollPos = tabRenderer.scrollTop;
+                    const currentHeight = wrapper.clientHeight;
+                    BetterLyrics.DOM.lyricsHeightAdjusted(
+                      index,
+                      currentHeight - prevHeight,
+                      currentScrollPos - prevScrollPos
+                    );
                   }
-                  line.appendChild(translatedLine);
-                  const currentScrollPos = tabRenderer.scrollTop;
-                  const currentHeight = wrapper.clientHeight;
-                  BetterLyrics.DOM.lyricsHeightAdjusted(
-                    index,
-                    currentHeight - prevHeight,
-                    currentScrollPos - prevScrollPos
-                  );
                 }
               }
             });
