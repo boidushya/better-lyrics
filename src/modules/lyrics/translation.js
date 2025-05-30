@@ -22,7 +22,15 @@ BetterLyrics.Translation = {
     return fetch(url)
       .then(response => response.json())
       .then(data => {
-        return data[0][1][3];
+        let romanizedText = data[0][1][3];
+        if (romanizedText === undefined) {
+          romanizedText = data[0][1][2];
+        }
+        if (text.toLowerCase() === romanizedText.toLowerCase()) {
+          return null;
+        } else {
+          return romanizedText;
+        }
       })
       .catch(error => {
         BetterLyrics.Utils.log(BetterLyrics.Constants.TRANSLATION_ERROR_LOG, error);
