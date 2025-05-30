@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "1.10.3",
   "name": "Better Lyrics (Lyrics for Youtube Music)",
   "description": "Enhance YouTube Music with beautiful time-synced lyrics, multilingual support, real-time translations and more",
@@ -9,19 +9,27 @@
     "48": "images/icons/icon-48.png",
     "512": "images/icons/icon-512.png"
   },
-  "permissions": [
-    "storage",
-    "downloads",
-    "*://music.youtube.com/*",
-    "*://lyrics-api.boidu.dev/*",
-    "*://translate.googleapis.com/*",
-    "*://lrclib.net/*",
-    "*://lyrics.api.dacubeking.com/*"
-  ],
-  "run_at": "document_start",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "better-lyrics@boidu.dev",
+      "strict_min_version": "100.0"
+    }
+  },
+  "host_permissions": ["*://music.youtube.com/*"],
+  "permissions": ["storage"],
+  "optional_permissions": ["downloads"],
   "options_ui": {
     "page": "src/options/options.html",
     "open_in_tab": false
+  },
+  "web_accessible_resources": [
+    {
+      "matches": ["*://music.youtube.com/*"],
+      "resources": ["src/script.js"]
+    }
+  ],
+  "background": {
+    "scripts": ["src/background.js"]
   },
   "content_scripts": [
     {
@@ -39,7 +47,8 @@
         "src/modules/settings/settings.js",
         "src/index.js"
       ],
-      "css": ["src/index.css"]
+      "css": ["src/css/ytmusic.css", "src/css/blyrics.css", "src/css/themesong.css"],
+      "run_at": "document_start"
     },
     {
       "matches": ["*://music.youtube.com/*"],
@@ -66,17 +75,7 @@
       ]
     }
   ],
-  "web_accessible_resources": ["src/script.js"],
-  "background": {
-    "scripts": ["src/background.js"]
-  },
-  "browser_action": {
+  "action": {
     "default_popup": "src/options/options.html"
-  },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "betterlyrics@boidu.dev",
-      "strict_min_version": "109.0"
-    }
   }
 }
