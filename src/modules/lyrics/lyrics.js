@@ -206,6 +206,17 @@ BetterLyrics.Lyrics = {
       }
     }
 
+    if (lyrics.isRtlLanguage === undefined) {
+      // Arabic Characters: U+0600..U+06FF (Urdu, Arabic, Kurdish)
+      // Arabic Presentation Forms-A: U+FB50..U+FDFF (For Persian, Urdu, Sindhi)
+      // Hebrew Characters: U+0590..U+05FF (Yiddish)
+      // Thaana Characters: U+0780..U+07BF
+
+      const testRtl = text => /[\u0600-\u06FF]|[\ufb50-\ufdff]|[\u0590-\u05ff]|[\u0780-\u07bf]/.test(text);
+      lyrics.isRtlLanguage = lyrics.lyrics.some(({words}) => testRtl(words));
+    }
+
+
     BetterLyrics.Utils.log("Got Lyrics from " + lyrics.source);
 
     BetterLyrics.App.lastLoadedVideoId = detail.videoId;
@@ -357,11 +368,6 @@ BetterLyrics.Lyrics = {
       }
 
       let line = document.createElement("div");
-
-      // Detect Arabic text
-      const containsArabic = text => /[\u0600-\u06FF]/.test(text);
-      const hasArabicContent = item.parts.some(part => containsArabic(part.words));  
-      if (hasArabicContent) line.setAttribute('dir', 'rtl');
 
       /**
        *
