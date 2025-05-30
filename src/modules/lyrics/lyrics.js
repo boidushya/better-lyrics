@@ -339,7 +339,7 @@ BetterLyrics.Lyrics = {
      */
     let lyricsData = [];
 
-    lyrics.forEach((item, index) => {
+    lyrics.forEach(item => {
       if (!item.parts || item.parts.length === 0) {
         item.parts = [];
         const words = item.words.split(" ");
@@ -431,18 +431,8 @@ BetterLyrics.Lyrics = {
                 const result = await BetterLyrics.Translation.translateTextIntoRomaji(source_language, item.words);
                 if (result && result.trim() !== "") {
                   romanizedLine.textContent = result ? "\n" + result : "\n";
-
-                  const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
-                  const prevScrollPos = tabRenderer.scrollTop;
-                  const prevHeight = wrapper.clientHeight;
                   line.appendChild(romanizedLine);
-                  const currentScrollPos = tabRenderer.scrollTop;
-                  const currentHeight = wrapper.clientHeight;
-                  BetterLyrics.DOM.lyricsHeightAdjusted(
-                    index,
-                    currentHeight - prevHeight,
-                    currentScrollPos - prevScrollPos
-                  );
+                  BetterLyrics.DOM.lyricsElementAdded();
                 }
               }
             }
@@ -459,20 +449,9 @@ BetterLyrics.Lyrics = {
                   const result = await BetterLyrics.Translation.translateText(item.words, target_language);
 
                   if (result && result.originalLanguage !== target_language) {
-                    const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
-                    const prevScrollPos = tabRenderer.scrollTop;
-                    const prevHeight = wrapper.clientHeight;
-
                     translatedLine.textContent = "\n" + result.translatedText;
                     line.appendChild(translatedLine);
-
-                    const currentScrollPos = tabRenderer.scrollTop;
-                    const currentHeight = wrapper.clientHeight;
-                    BetterLyrics.DOM.lyricsHeightAdjusted(
-                      index,
-                      currentHeight - prevHeight,
-                      currentScrollPos - prevScrollPos
-                    );
+                    BetterLyrics.DOM.lyricsElementAdded();
                   }
                 }
               }
