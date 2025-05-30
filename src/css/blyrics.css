@@ -250,6 +250,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  direction: ltr;
 }
 
 .blyrics-footer__discord {
