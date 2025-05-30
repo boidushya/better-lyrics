@@ -26,7 +26,7 @@ BetterLyrics.Translation = {
         if (romanizedText === undefined) {
           romanizedText = data[0][1][2];
         }
-        if (text.toLowerCase() === romanizedText.toLowerCase()) {
+        if (text.trim().toLowerCase() === romanizedText.trim().toLowerCase()) {
           return null;
         } else {
           return romanizedText;
