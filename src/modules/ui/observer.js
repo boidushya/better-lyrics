@@ -152,11 +152,7 @@ BetterLyrics.Observer = {
           BetterLyrics.App.handleModifications(detail);
         }
       }
-      let timeOffset = Date.now() - detail.browserTime;
-      if (!detail.playing) {
-        timeOffset = 0;
-      }
-      BetterLyrics.DOM.tickLyrics(detail.currentTime + timeOffset / 1000, detail.playing);
+      BetterLyrics.DOM.tickLyrics(detail.currentTime, detail.browserTime, detail.playing);
     });
   },
   scrollEventHandler: () => {

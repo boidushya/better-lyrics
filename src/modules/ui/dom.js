@@ -298,11 +298,24 @@ BetterLyrics.DOM = {
    */
   lyricScrollTimeOffset: 0.2,
   wasUserScrolling: false,
-  tickLyrics: function (currentTime, isPlaying = true) {
+  lastTime: 0,
+  lastPlayState: false,
+  lastEventCreationTime: 0,
+  tickLyrics: function (currentTime, eventCreationTime, isPlaying = true, smoothScroll = true) {
     const now = Date.now();
     if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking || (currentTime === 0 && !isPlaying)) {
       return;
     }
+    BetterLyrics.DOM.lastTime = currentTime;
+    BetterLyrics.DOM.lastPlayState = isPlaying;
+    BetterLyrics.DOM.lastEventCreationTime = eventCreationTime;
+
+    let timeOffset = now - eventCreationTime;
+    if (!isPlaying) {
+      timeOffset = 0;
+    }
+
+    currentTime += timeOffset / 1000;
 
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     console.assert(tabSelector != null);
@@ -464,26 +477,19 @@ BetterLyrics.DOM = {
         let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
         scrollPos = Math.max(Math.min(lyricsHeight - tabRendererHeight, scrollPos), 0);
 
-        if (
-          Math.abs(scrollTop - scrollPos) > 2 &&
-          BetterLyrics.DOM.scrollPos !== -1 &&
-          Date.now() > BetterLyrics.DOM.nextScrollAllowedTime
-        ) {
-          lyricsElement.style.transition = "top 0s ease-in-out 0s";
-          lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
-          reflow(lyricsElement);
-          lyricsElement.style.transition = "";
-          lyricsElement.style.top = "0px";
-          scrollTop = scrollPos;
-
-          BetterLyrics.DOM.scrollPos = scrollPos;
-        } else if (BetterLyrics.DOM.scrollPos === -1) {
-          if (lyricsElement.style.transition === "top 0s ease-in-out 0s") {
+        if (Math.abs(scrollTop - scrollPos) > 2 && Date.now() > BetterLyrics.DOM.nextScrollAllowedTime) {
+          if (smoothScroll) {
+            lyricsElement.style.transition = "top 0s ease-in-out 0s";
+            lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
+            reflow(lyricsElement);
             BetterLyrics.DOM.nextScrollAllowedTime =
               toMs(lyricsElement.computedStyleMap().get("transition-duration")) + Date.now();
+
+            lyricsElement.style.transition = "";
+            lyricsElement.style.top = "0px";
           }
-          lyricsElement.style.transition = "";
-          lyricsElement.style.top = "0px";
+          scrollTop = scrollPos;
+
           BetterLyrics.DOM.scrollPos = scrollPos;
         }
       } else {
@@ -518,20 +524,17 @@ BetterLyrics.DOM = {
       return true;
     }
   },
-  lyricsHeightAdjusted: function (index, amount, autoScrollOffset) {
-    const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
 
-    // ignore elements below the currently selected one (-1 b/c of dummy element at t=-1)
-    if (index >= BetterLyrics.DOM.selectedElementIndex - 1) {
-      amount = 0;
+  lyricsElementAdded: function () {
+    if (!BetterLyrics.App.areLyricsTicking) {
+      return;
     }
-    if (BetterLyrics.DOM.nextScrollAllowedTime < Date.now()) {
-      tabRenderer.scrollTop += amount - autoScrollOffset;
-    } // else let the browser handle it
-    if (autoScrollOffset !== 0 || amount - autoScrollOffset !== 0) {
-      BetterLyrics.DOM.skipScrolls += 1;
-      BetterLyrics.DOM.skipScrollsDecayTimes.push(Date.now() + 2000);
-    }
+    BetterLyrics.DOM.tickLyrics(
+      BetterLyrics.DOM.lastTime,
+      BetterLyrics.DOM.lastEventCreationTime,
+      BetterLyrics.DOM.lastPlayState,
+      false
+    );
   },
   injectSongAttributes: function (title, artist) {
     const mainPanel = document.getElementById("main-panel");
