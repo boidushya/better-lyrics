@@ -222,6 +222,16 @@ ytmusic-message-renderer.ytmusic-tab-renderer {
   }
 }
 
+/*Hide Yt's lyrics*/
+#contents
+  > ytmusic-description-shelf-renderer
+  > yt-formatted-string.footer.style-scope.ytmusic-description-shelf-renderer,
+#contents
+  > ytmusic-description-shelf-renderer
+  > yt-formatted-string.non-expandable.description.style-scope.ytmusic-description-shelf-renderer {
+  display: none;
+}
+
 @media (max-width: 615px) {
   /* Styles for smaller screens */
   #tab-renderer[page-type="MUSIC_PAGE_TYPE_TRACK_LYRICS"] {

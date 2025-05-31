@@ -248,18 +248,6 @@ BetterLyrics.Lyrics = {
       ytMusicLyrics.classList.add("blyrics-hidden");
     }
 
-    const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
-    if (existingLyrics) {
-      for (let lyrics of existingLyrics) {
-        lyrics.classList.add("blyrics-hidden");
-      }
-    }
-
-    const existingFooter = document.getElementsByClassName(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)[0];
-    if (existingFooter) {
-      existingFooter.classList.add("blyrics-hidden");
-    }
-
     try {
       const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
       lyricsElement.innerHTML = "";

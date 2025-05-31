@@ -16,11 +16,9 @@ BetterLyrics.Constants = {
   TRANSLATED_LYRICS_CLASS: "blyrics--translated",
   ROMANIZED_LYRICS_CLASS: "blyrics--romanized",
   ERROR_LYRICS_CLASS: "blyrics--error",
-  DESCRIPTION_CLASS: "description style-scope ytmusic-description-shelf-renderer",
   FOOTER_CLASS: "blyrics-footer",
   WATERMARK_CLASS: "blyrics-watermark",
   TIME_INFO_CLASS: "time-info style-scope ytmusic-player-bar",
-  YT_MUSIC_FOOTER_CLASS: "footer style-scope ytmusic-description-shelf-renderer",
 
   // DOM Selectors
   SONG_IMAGE_SELECTOR: "#song-image>#thumbnail>#img",

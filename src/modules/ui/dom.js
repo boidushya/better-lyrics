@@ -264,24 +264,12 @@ BetterLyrics.DOM = {
       ytMusicLyrics.style.display = "";
     }
 
-    const existingFooter = document.getElementsByClassName(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)[0];
-    const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
     const blyricsFooter = document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0];
 
     if (blyricsFooter) {
       blyricsFooter.remove();
     }
-    if (existingLyrics) {
-      for (let lyrics of existingLyrics) {
-        lyrics.style.display = "";
-        if (lyrics.classList.contains("blyrics--fallback")) {
-          lyrics.classList.remove("blyrics--fallback");
-        }
-      }
-    }
-    if (existingFooter && existingFooter.classList.contains("blyrics--fallback")) {
-      existingFooter.classList.remove("blyrics--fallback");
-    }
+
     BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
 
     BetterLyrics.DOM.clearLyrics();
@@ -468,7 +456,7 @@ BetterLyrics.DOM = {
       if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
         if (BetterLyrics.DOM.wasUserScrolling) {
           BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
-          lyricsElement.classList.remove(BetterLyrics.DOM.USER_SCROLLING_CLASS);
+          lyricsElement.classList.remove(BetterLyrics.Constants.USER_SCROLLING_CLASS);
           BetterLyrics.DOM.wasUserScrolling = false;
         }
 
@@ -501,7 +489,7 @@ BetterLyrics.DOM = {
       } else {
         if (!BetterLyrics.DOM.wasUserScrolling) {
           BetterLyrics.DOM.getResumeScrollElement().removeAttribute("autoscroll-hidden");
-          lyricsElement.classList.add(BetterLyrics.DOM.USER_SCROLLING_CLASS);
+          lyricsElement.classList.add(BetterLyrics.Constants.USER_SCROLLING_CLASS);
           BetterLyrics.DOM.wasUserScrolling = true;
         }
       }
