@@ -174,7 +174,7 @@ select option {
 .select {
   position: relative;
   min-width: 10ch;
-  max-width: 30ch;
+  max-width: 21ch;
   border: 2px solid hsla(0, 0%, 100%, 0.1);
   padding: 0.25em 0.5em;
   cursor: pointer;

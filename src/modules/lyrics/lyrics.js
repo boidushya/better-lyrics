@@ -409,8 +409,7 @@ BetterLyrics.Lyrics = {
       if (!allZero) {
         line.setAttribute(
           "onClick",
-          `const player = document.getElementById("movie_player"); player.seekTo(${
-            item.startTimeMs / 1000
+          `const player = document.getElementById("movie_player"); player.seekTo(${item.startTimeMs / 1000
           }, true);player.playVideo();`
         );
         line.addEventListener("click", _e => {
@@ -454,33 +453,35 @@ BetterLyrics.Lyrics = {
 
               let target_language = items.translationLanguage || "en";
 
-              if (source_language !== target_language) {
-                if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-                  const result = await BetterLyrics.Translation.translateText(item.words, target_language);
+              if (source_language === target_language) return;
+              if (items.excludedLanguages === source_language) return;
 
-                  const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
-                  const prevScrollPos = tabRenderer.scrollTop;
-                  const prevHeight = wrapper.clientHeight;
+              if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+                const result = await BetterLyrics.Translation.translateText(item.words, target_language);
 
-                  if (result) {
-                    if (result.originalLanguage !== target_language) {
-                      translatedLine.textContent = "\n" + result.translatedText;
-                      line.appendChild(translatedLine);
-                    }
-                  } else {
-                    translatedLine.textContent = "\n" + "—";
+                const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
+                const prevScrollPos = tabRenderer.scrollTop;
+                const prevHeight = wrapper.clientHeight;
+
+                if (result) {
+                  if (result.originalLanguage !== target_language) {
+                    translatedLine.textContent = "\n" + result.translatedText;
                     line.appendChild(translatedLine);
                   }
+                } else {
+                  translatedLine.textContent = "\n" + "—";
                   line.appendChild(translatedLine);
-                  const currentScrollPos = tabRenderer.scrollTop;
-                  const currentHeight = wrapper.clientHeight;
-                  BetterLyrics.DOM.lyricsHeightAdjusted(
-                    index,
-                    currentHeight - prevHeight,
-                    currentScrollPos - prevScrollPos
-                  );
                 }
+                line.appendChild(translatedLine);
+                const currentScrollPos = tabRenderer.scrollTop;
+                const currentHeight = wrapper.clientHeight;
+                BetterLyrics.DOM.lyricsHeightAdjusted(
+                  index,
+                  currentHeight - prevHeight,
+                  currentScrollPos - prevScrollPos
+                );
               }
+
             });
           }
         );
