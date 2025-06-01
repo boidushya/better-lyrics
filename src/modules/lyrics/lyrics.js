@@ -406,7 +406,7 @@ BetterLyrics.Lyrics = {
       line.dataset.duration = lineData.duration;
       line.style.setProperty("--blyrics-duration", item.durationMs + "ms");
 
-      if (!allZero) {
+      if (!allZero && !data.isPlainLyrics) {
         line.setAttribute(
           "onClick",
           `const player = document.getElementById("movie_player"); player.seekTo(${
@@ -505,7 +505,7 @@ BetterLyrics.Lyrics = {
       BetterLyrics.DOM.addFooter(data.source, data.sourceHref);
     }
 
-    if (!allZero) {
+    if (!allZero && !data.isPlainLyrics) {
       BetterLyrics.App.lyricData = lyricsData;
       BetterLyrics.App.areLyricsTicking = true;
     } else {
