@@ -301,6 +301,14 @@ BetterLyrics.DOM = {
   lastTime: 0,
   lastPlayState: false,
   lastEventCreationTime: 0,
+  cachedTransitionDuration: -1,
+  getTransitionDurationInMs(lyricsElement) {
+    if (BetterLyrics.DOM.cachedTransitionDuration === -1) {
+      BetterLyrics.DOM.cachedTransitionDuration = toMs(lyricsElement.computedStyleMap().get("transition-duration"));
+    }
+
+    return BetterLyrics.DOM.cachedTransitionDuration;
+  },
   tickLyrics: function (currentTime, eventCreationTime, isPlaying = true, smoothScroll = true) {
     const now = Date.now();
     if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking || (currentTime === 0 && !isPlaying)) {
@@ -482,8 +490,7 @@ BetterLyrics.DOM = {
             lyricsElement.style.transition = "top 0s ease-in-out 0s";
             lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
             reflow(lyricsElement);
-            BetterLyrics.DOM.nextScrollAllowedTime =
-              toMs(lyricsElement.computedStyleMap().get("transition-duration")) + Date.now();
+            BetterLyrics.DOM.nextScrollAllowedTime = this.getTransitionDurationInMs(lyricsElement) + Date.now();
 
             lyricsElement.style.transition = "";
             lyricsElement.style.top = "0px";
