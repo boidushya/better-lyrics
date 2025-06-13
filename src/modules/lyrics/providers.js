@@ -1,5 +1,5 @@
 BetterLyrics.LyricProviders = {
-  /** @typedef {object} audioTrackData
+  /** @typedef {object} AudioTrackData
    * @property {string} id
    * @property {object} kc
    * @property {string} kc.name
@@ -44,103 +44,165 @@ BetterLyrics.LyricProviders = {
    */
 
   /**
-   * @typedef {{startTimeMs: number, words: string, durationMs: number, parts: ({startTimeMs: number, words: string, durationMs: number}[] | null)}[]} LyricsArray
+   * @typedef {Object} LyricSource
+   * @property {boolean} filled
+   * @property {LyricSourceResult | null} lyricSourceResult
+   * @property {function(song, artist, duration, videoId, audioTrackData, album) | null} lyricSourceFiller
    */
 
-  providersList: [],
+  /**
+   * @typedef {Object} LyricSourceResult
+   * @property {LyricsArray} lyrics
+   * @property {string | null} language
+   * @property {string} source
+   * @property {string} sourceHref
+   * @property {boolean | null} musicVideoSynced
+   */
 
-  cubey: async function (song, artist, duration, videoId, _audioTrackData) {
+  /**
+   * @typedef {
+   *   {
+   *     startTimeMs: number,
+   *     words: string,
+   *     durationMs: number,
+   *     parts: ({startTimeMs: number, words: string, durationMs: number}[] | null),
+   *   }[]
+   * } LyricsArray
+   */
+
+  /**
+   * @typedef {Object} ProviderParameters
+   * @property {string} song
+   * @property {string} artist
+   * @property {string} duration
+   * @property {string} videoId
+   * @property {AudioTrackData} audioTrackData
+   * @property {string | null} album
+   * @property {Map<string, LyricSource>} sourceMap
+   */
+
+  /**
+   *
+   * @param {ProviderParameters} providerParameters
+   * @return {Promise<{lyrics: null, source: string, album: string, song: (string), duration, artist: string, cacheAllowed: boolean, sourceHref: string}>}
+   */
+  cubey: async function (providerParameters) {
     const url = new URL("https://lyrics.api.dacubeking.com/");
-    url.searchParams.append("song", song);
-    url.searchParams.append("artist", artist);
-    url.searchParams.append("duration", duration);
-    url.searchParams.append("videoId", videoId);
+    url.searchParams.append("song", providerParameters.song);
+    url.searchParams.append("artist", providerParameters.artist);
+    url.searchParams.append("duration", providerParameters.duration);
+    url.searchParams.append("videoId", providerParameters.videoId);
     url.searchParams.append("enhanced", await BetterLyrics.Settings.shouldUseKaraokeLyrics());
+    url.searchParams.append("useLrcLib", true);
+
     let response = await fetch(url, { signal: AbortSignal.timeout(10000) }).then(r => r.json());
     if (response.album) {
       BetterLyrics.Utils.log("Found Album: " + response.album);
     }
-    let lyrics = null;
-    try {
-      if (response.lyrics) {
-        lyrics = BetterLyrics.LyricProviders.parseLRC(response.lyrics, duration);
-        BetterLyrics.LyricProviders.lrcFixers(lyrics);
-      }
-    } catch (err) {
-      BetterLyrics.Utils.log(err);
+
+    if (response.musixmatchWordByWordLyrics) {
+      let musixmatchWordByWordLyrics = BetterLyrics.LyricProviders.parseLRC(
+        response.musixmatchWordByWordLyrics,
+        Number(providerParameters.duration)
+      );
+      BetterLyrics.LyricProviders.lrcFixers(musixmatchWordByWordLyrics);
+
+      providerParameters.sourceMap.get("musixmatch-richsync").lyricSourceResult = {
+        lyrics: musixmatchWordByWordLyrics,
+        source: "Musixmatch (Richsync)",
+        sourceHref: "https://www.musixmatch.com",
+        musicVideoSynced: false,
+        album: response.album,
+        artist: response.artist,
+        song: response.song,
+        duration: response.duration,
+      };
     }
 
-    return {
-      lyrics: lyrics,
-      source: "DaCubeKing",
-      album: response.album,
-      song: response.song,
-      duration: response.duration,
-      artist: response.artist,
-      cacheAllowed: true,
-      sourceHref: "https://dacubeking.com",
-    };
-  },
-
-  local: async function (song, artist, duration, videoId, _audioTrackData) {
-    const url = new URL("http://127.0.0.1:8787", { signal: AbortSignal.timeout(1000) });
-    url.searchParams.append("song", song);
-    url.searchParams.append("artist", artist);
-    url.searchParams.append("duration", duration);
-    url.searchParams.append("videoId", videoId);
-    url.searchParams.append("enhanced", true);
-    let response = await fetch(url).then(r => r.json());
-    let lyrics = null;
-    try {
-      if (response.lyrics) {
-        lyrics = BetterLyrics.LyricProviders.parseLRC(response.lyrics, duration);
-      }
-    } catch (err) {
-      BetterLyrics.Utils.log(err);
+    if (response.musixmatchSyncedLyrics) {
+      let musixmatchSyncedLyrics = BetterLyrics.LyricProviders.parseLRC(
+        response.musixmatchSyncedLyrics,
+        Number(providerParameters.duration)
+      );
+      providerParameters.sourceMap.get("musixmatch-synced").lyricSourceResult = {
+        lyrics: musixmatchSyncedLyrics,
+        source: "Musixmatch (Synced)",
+        sourceHref: "https://www.musixmatch.com",
+        musicVideoSynced: false,
+      };
     }
 
-    return {
-      lyrics: lyrics,
-      source: "Local Lyrics",
-      album: response.album,
-      cacheAllowed: false,
-      sourceHref: "https://dacubeking.com",
-    };
-  },
+    if (response.lrclibSyncedLyrics) {
+      let lrclibSyncedLyrics = BetterLyrics.LyricProviders.parseLRC(
+        response.lrclibSyncedLyrics,
+        Number(providerParameters.duration)
+      );
+      providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = {
+        lyrics: lrclibSyncedLyrics,
+        source: "LrcLib (Synced)",
+        sourceHref: "https://lrclib.com",
+        musicVideoSynced: false,
+      };
+    }
 
-  bLyrics: async function (song, artist, duration) {
+    if (response.lrclibPlainLyrics) {
+      let lrclibPlainLyrics = BetterLyrics.LyricProviders.parseLRC(
+        response.lrclibPlainLyrics,
+        Number(providerParameters.duration)
+      );
+      providerParameters.sourceMap.get("lrclib-plain").lyricSourceResult = {
+        lyrics: lrclibPlainLyrics,
+        source: "LrcLib (Plain)",
+        sourceHref: "https://lrclib.com",
+        musicVideoSynced: false,
+      };
+    }
+
+    ["musixmatch-synced", "musixmatch-richsync", "lrclib-synced", "lrclib-plain"].forEach(source => {
+      providerParameters.sourceMap.get(source).filled = true;
+    });
+  },
+  /**
+   *
+   * @param {ProviderParameters} providerParameters
+   */
+  bLyrics: async function (providerParameters) {
     // Fetch from the primary API if cache is empty or invalid
     const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
-    url.searchParams.append("s", song);
-    url.searchParams.append("a", artist);
-    url.searchParams.append("d", duration);
+    url.searchParams.append("s", providerParameters.song);
+    url.searchParams.append("a", providerParameters.artist);
+    url.searchParams.append("d", providerParameters.duration);
 
     const response = await fetch(url.toString(), { signal: AbortSignal.timeout(10000) });
 
     if (!response.ok) {
-      throw new Error(`${BetterLyrics.Constants.HTTP_ERROR_LOG} ${response.status}`);
+      return null;
     }
 
     const data = await response.json();
     // Validate API response structure
     if (!data || (!Array.isArray(data.lyrics) && !data.syncedLyrics)) {
-      throw new Error("Invalid API response structure");
+      return null;
     }
 
     data.source = "boidu.dev";
     data.sourceHref = "https://better-lyrics.boidu.dev";
 
-    return data;
+    providerParameters.sourceMap.get("bLyrics").filled = true;
+    providerParameters.sourceMap.get("bLyrics").lyricSourceResult = data;
   },
 
-  lyricLib: async function (song, artist, duration, _videoId, _audioTrackData, album) {
+  /**
+   * @param {ProviderParameters} providerParameters
+   */
+  lyricLib: async function (providerParameters) {
     const url = new URL(BetterLyrics.Constants.LRCLIB_API_URL);
-    url.searchParams.append("track_name", song);
-    url.searchParams.append("artist_name", artist);
-    if (album) {
-      url.searchParams.append("album_name", album);
+    url.searchParams.append("track_name", providerParameters.song);
+    url.searchParams.append("artist_name", providerParameters.artist);
+    if (providerParameters.album) {
+      url.searchParams.append("album_name", providerParameters.album);
     }
-    url.searchParams.append("duration", duration);
+    url.searchParams.append("duration", providerParameters.duration);
 
     const response = await fetch(url.toString(), {
       headers: {
@@ -155,54 +217,75 @@ BetterLyrics.LyricProviders = {
 
     const data = await response.json();
 
-    if (data && data.syncedLyrics && typeof data.duration === "number") {
+    if (data) {
       BetterLyrics.Utils.log(BetterLyrics.Constants.LRCLIB_LYRICS_FOUND_LOG);
-      return {
-        lyrics: BetterLyrics.LyricProviders.parseLRC(data.syncedLyrics, data.duration),
-        source: "LRCLib",
-        sourceHref: "https://lrclib.net/",
-      };
-    } else {
-      throw new Error(BetterLyrics.Constants.NO_LRCLIB_LYRICS_FOUND_LOG);
+
+      if (data.syncedLyrics) {
+        providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = {
+          lyrics: BetterLyrics.LyricProviders.parseLRC(data.syncedLyrics, data.duration),
+          source: "LrcLib",
+          sourceHref: "https://lrclib.com",
+          musicVideoSynced: false,
+        };
+      }
+      if (data.plainLyrics) {
+        providerParameters.sourceMap.get("lrclib-plain").lyricSourceResult = {
+          lyrics: BetterLyrics.LyricProviders.parseLRC(data.plainLyrics, data.duration),
+          source: "LrcLib",
+          sourceHref: "https://lrclib.com",
+          musicVideoSynced: false,
+        };
+      }
     }
+
+    providerParameters.sourceMap.get("lrclib-synced").filled = true;
+    providerParameters.sourceMap.get("lrclib-plain").filled = true;
   },
+
   /**
-   * @type{function(song: string, artist: string, duration:number, videoId: string)}
+   * @param {ProviderParameters} providerParameters
    */
-  ytLyrics: async function (_song, _artist, _duration, videoId, _audioTrackData, _album) {
-    let lyricsObj = await BetterLyrics.RequestSniffing.getLyrics(videoId);
-    let lyricsText = BetterLyrics.Constants.NO_LYRICS_TEXT;
-    let sourceText = "Unknown";
+  ytLyrics: async function (providerParameters) {
+    let lyricsObj = await BetterLyrics.RequestSniffing.getLyrics(providerParameters.videoId);
     const lyricsArray = [];
     if (lyricsObj.hasLyrics) {
-      lyricsText = lyricsObj.lyrics;
-      sourceText = lyricsObj.sourceText.substring(8) + " (via YT)";
+      let lyricsText = lyricsObj.lyrics;
+      let sourceText = lyricsObj.sourceText.substring(8) + " (via YT)";
+
+      lyricsText.split("\n").forEach(words => {
+        lyricsArray.push({
+          startTimeMs: "0",
+          words: words,
+          durationMs: "0",
+        });
+      });
+
+      providerParameters.sourceMap.get("yt-lyrics").lyricSourceResult = {
+        lyrics: lyricsArray,
+        text: lyricsText,
+        source: sourceText,
+        sourceHref: "",
+        musicVideoSynced: false,
+      };
     }
 
-    lyricsText.split("\n").forEach(words => {
-      lyricsArray.push({
-        startTimeMs: "0",
-        words: words,
-        durationMs: "0",
-      });
-    });
-
-    return {
-      lyrics: lyricsArray,
-      source: sourceText,
-      sourceHref: "",
-      cacheAllowed: false,
-      text: lyricsText,
-    };
+    providerParameters.sourceMap.get("yt-lyrics").filled = true;
   },
 
   /**
-   * @type{function(song: string, artist: string, duration:number, videoId: string, audioTrackData:audioTrackData)}
+   *
+   * @param {ProviderParameters} providerParameters
+   * @return {Promise<void>}
    */
-  ytCaptions: async function (_song, _artist, _duration, _videoId, audioTrackData) {
+  ytCaptions: async function (providerParameters) {
+    let audioTrackData = providerParameters.audioTrackData;
     if (audioTrackData.captionTracks.length === 0) {
       return;
     }
+
+    /**
+     * @type string
+     */
     let langCode;
     if (audioTrackData.captionTracks.length === 1) {
       langCode = audioTrackData.captionTracks[0].languageCode;
@@ -244,6 +327,9 @@ BetterLyrics.LyricProviders = {
       method: "GET",
     }).then(response => response.json());
 
+    /**
+     * @type {LyricsArray}
+     */
     let lyricsArray = [];
 
     captionData.events.forEach(event => {
@@ -268,7 +354,9 @@ BetterLyrics.LyricProviders = {
         durationMs: event.dDurationMs,
       });
     });
-    return {
+
+    providerParameters.sourceMap.get("yt-captions").filled = true;
+    providerParameters.sourceMap.get("yt-captions").lyricSourceResult = {
       lyrics: lyricsArray,
       language: langCode,
       source: "Youtube Captions",
@@ -277,33 +365,42 @@ BetterLyrics.LyricProviders = {
     };
   },
 
+  /**
+   * @type {string[]}
+   */
+  providerPriority: [],
+
   initProviders: function () {
     const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
     const updateProvidersList = preferredProviderList => {
-      BetterLyrics.LyricProviders.providersList = [];
-
-      if (!preferredProviderList) {
-        preferredProviderList = ["p-dacubeking", "p-better-lyrics", "p-lrclib", "p-yt-captions"];
-      }
-
-      const providerMap = {
-        "p-dacubeking": BetterLyrics.LyricProviders.cubey,
-        "p-better-lyrics": BetterLyrics.LyricProviders.bLyrics,
-        "p-lrclib": BetterLyrics.LyricProviders.lyricLib,
-        "p-yt-captions": BetterLyrics.LyricProviders.ytCaptions,
-      };
-
       BetterLyrics.Utils.log(BetterLyrics.Constants.PROVIDER_SWITCHED_LOG, preferredProviderList);
 
-      preferredProviderList.forEach(providerString => {
-        let provider = providerMap[providerString];
-        if (provider) {
-          BetterLyrics.LyricProviders.providersList.push(provider);
-        } else {
-          console.error("Invalid Provider string supplied: ", providerString);
-        }
+      let defaultPreferredProviderList = [
+        "musixmatch-richsync",
+        "musixmatch-synced",
+        "lrclib-synced",
+        "lrclib-plain",
+        "bLyrics",
+        "yt-captions",
+        "yt-lyrics",
+      ];
+
+      //Remove any invalid entries in the preferred provider list
+      preferredProviderList = preferredProviderList.filter(provider => {
+        return defaultPreferredProviderList.includes(provider);
       });
+
+      let isValid = defaultPreferredProviderList.every(provider => {
+        return preferredProviderList.includes(provider);
+      });
+
+      if (!isValid) {
+        preferredProviderList = defaultPreferredProviderList;
+        console.log("Invalid preferred provider list, resetting to default");
+      }
+
+      BetterLyrics.LyricProviders.providerPriority = preferredProviderList;
     };
 
     browserAPI.storage.onChanged.addListener((changes, area) => {
@@ -315,6 +412,46 @@ BetterLyrics.LyricProviders = {
     browserAPI.storage.sync.get({ preferredProviderList: null }, function (items) {
       updateProvidersList(items.preferredProviderList);
     });
+  },
+
+  /**
+   * @return {Map<string: LyricSource>} sources
+   */
+  newSourceMap: function () {
+    let sources = new Map();
+
+    function addSource(sourceName, sourceFiller) {
+      sources.set(sourceName, {
+        filled: false,
+        lyricSourceResult: null,
+        lyricSourceFiller: sourceFiller,
+      });
+    }
+
+    addSource("musixmatch-richsync", BetterLyrics.LyricProviders.cubey);
+    addSource("musixmatch-synced", BetterLyrics.LyricProviders.cubey);
+    addSource("lrclib-synced", BetterLyrics.LyricProviders.lyricLib);
+    addSource("lrclib-plain", BetterLyrics.LyricProviders.lyricLib);
+    addSource("bLyrics", BetterLyrics.LyricProviders.bLyrics);
+    addSource("yt-captions", BetterLyrics.LyricProviders.ytCaptions);
+    addSource("yt-lyrics", BetterLyrics.LyricProviders.ytLyrics);
+    return sources;
+  },
+  /**
+   * @param {ProviderParameters} providerParameters
+   * @param {string} source
+   */
+  getLyrics: async function (providerParameters, source) {
+    if (providerParameters.sourceMap.has(source)) {
+      let lyricSource = providerParameters.sourceMap.get(source);
+      if (!lyricSource.filled) {
+        await lyricSource.lyricSourceFiller(providerParameters);
+      }
+      return lyricSource.lyricSourceResult;
+    } else {
+      console.error("Tried to get lyrics from an invalid source: " + source);
+      return null;
+    }
   },
   /**
    *

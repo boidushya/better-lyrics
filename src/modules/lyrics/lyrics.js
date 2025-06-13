@@ -87,19 +87,28 @@ BetterLyrics.Lyrics = {
     BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
     let lyrics;
-    let ytLyrics;
-    let album = null;
-
+    let sourceMap = BetterLyrics.LyricProviders.newSourceMap();
     // We depend on the cubey lyrics to fetch certain metadata, so we always call it even if it isn't the top priority
-    let cubyLyrics = null;
+    /**
+     * @type {ProviderParameters}
+     */
+    let providerParameters = {
+      song,
+      artist,
+      duration,
+      videoId,
+      audioTrackData,
+      album: null,
+      sourceMap,
+    };
     try {
-      cubyLyrics = await BetterLyrics.LyricProviders.cubey(song, artist, duration, videoId, audioTrackData, album);
+      let cubyLyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, "musixmatch-richsync");
       if (cubyLyrics && cubyLyrics.album) {
-        album = cubyLyrics.album;
+        providerParameters.album = cubyLyrics.album;
       }
       if (isMusicVideo && cubyLyrics && cubyLyrics.song && cubyLyrics.song.length > 0 && song !== cubyLyrics.song) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.song + "' for song instead of '" + song + "'");
-        song = cubyLyrics.song;
+        providerParameters.song = cubyLyrics.song;
       }
 
       if (
@@ -110,7 +119,7 @@ BetterLyrics.Lyrics = {
         artist !== cubyLyrics.artist
       ) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.artist + "' for artist instead of '" + artist + "'");
-        artist = cubyLyrics.artist;
+        providerParameters.artist = cubyLyrics.artist;
       }
 
       if (
@@ -121,32 +130,20 @@ BetterLyrics.Lyrics = {
         duration !== cubyLyrics.duration
       ) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.duration + "' for duration instead of '" + duration + "'");
-        duration = Number(cubyLyrics.duration);
+        providerParameters.duration = Number(cubyLyrics.duration);
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
 
-    for (let provider of BetterLyrics.LyricProviders.providersList) {
+    for (let provider of BetterLyrics.LyricProviders.providerPriority) {
       try {
-        if (provider === BetterLyrics.LyricProviders.cubey) {
-          lyrics = cubyLyrics;
-        } else {
-          lyrics = await provider(song, artist, duration, videoId, audioTrackData, album);
-        }
+        lyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, provider);
 
         if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
-          if (!ytLyrics) {
-            ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(
-              song,
-              artist,
-              duration,
-              videoId,
-              audioTrackData,
-              album
-            );
-          }
-          if (ytLyrics.text !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
+          let ytLyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, "yt-lyrics");
+
+          if (ytLyrics !== null) {
             let lyricText = "";
             lyrics.lyrics.forEach(lyric => {
               lyricText += lyric.words + "\n";
@@ -170,12 +167,20 @@ BetterLyrics.Lyrics = {
       lyrics = null;
     }
 
-    if (!ytLyrics) {
-      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(song, artist, duration, videoId, audioTrackData, album);
-    }
-
     if (!lyrics) {
-      lyrics = ytLyrics;
+      lyrics = {
+        lyrics: [
+          {
+            startTimeMs: "0",
+            words: BetterLyrics.Constants.NO_LYRICS_TEXT,
+            durationMs: "0",
+          },
+        ],
+        source: "Unknown",
+        sourceHref: "",
+        musicVideoSynced: false,
+        cacheAllowed: false,
+      };
     }
 
     if (isMusicVideo && lyrics.musicVideoSynced !== true && segmentMap) {

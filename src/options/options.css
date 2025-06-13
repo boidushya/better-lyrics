@@ -541,6 +541,7 @@ hr {
   margin-block-start: 0;
   margin-block-end: 0;
   align-self: end;
+  padding-inline-start: 0;
 }
 
 .sortable-item {
@@ -554,7 +555,7 @@ hr {
   justify-content: left;
   font-size: 0.875rem;
   font-weight: bold;
-  width: 15em;
+  width: 20em;
 }
 
 .sortable-item:active {
