@@ -140,7 +140,7 @@ BetterLyrics.Lyrics = {
       try {
         lyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, provider);
 
-        if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
+        if (lyrics && lyrics.lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
           let ytLyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, "yt-lyrics");
 
           if (ytLyrics !== null) {

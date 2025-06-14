@@ -117,6 +117,17 @@ BetterLyrics.LyricProviders = {
         song: response.song,
         duration: response.duration,
       };
+    } else {
+      providerParameters.sourceMap.get("musixmatch-richsync").lyricSourceResult = {
+        lyrics: null,
+        source: "Musixmatch (Richsync)",
+        sourceHref: "https://www.musixmatch.com",
+        musicVideoSynced: false,
+        album: response.album,
+        artist: response.artist,
+        song: response.song,
+        duration: response.duration,
+      };
     }
 
     if (response.musixmatchSyncedLyrics) {
