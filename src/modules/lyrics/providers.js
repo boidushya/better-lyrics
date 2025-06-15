@@ -53,10 +53,10 @@ BetterLyrics.LyricProviders = {
   /**
    * @typedef {Object} LyricSourceResult
    * @property {LyricsArray} lyrics
-   * @property {string | null} language
+   * @property {string | null | undefined} language
    * @property {string} source
    * @property {string} sourceHref
-   * @property {boolean | null} musicVideoSynced
+   * @property {boolean | null | undefined} musicVideoSynced
    */
 
   /**
@@ -65,7 +65,7 @@ BetterLyrics.LyricProviders = {
    *     startTimeMs: number,
    *     words: string,
    *     durationMs: number,
-   *     parts: ({startTimeMs: number, words: string, durationMs: number}[] | null),
+   *     parts: ({startTimeMs: number, words: string, durationMs: number}[] | null | undefined),
    *   }[]
    * } LyricsArray
    */
@@ -157,10 +157,8 @@ BetterLyrics.LyricProviders = {
     }
 
     if (response.lrclibPlainLyrics) {
-      let lrclibPlainLyrics = BetterLyrics.LyricProviders.parseLRC(
-        response.lrclibPlainLyrics,
-        Number(providerParameters.duration)
-      );
+      let lrclibPlainLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(response.lrclibPlainLyrics);
+
       providerParameters.sourceMap.get("lrclib-plain").lyricSourceResult = {
         lyrics: lrclibPlainLyrics,
         source: "LRCLib (Plain)",
@@ -241,7 +239,7 @@ BetterLyrics.LyricProviders = {
       }
       if (data.plainLyrics) {
         providerParameters.sourceMap.get("lrclib-plain").lyricSourceResult = {
-          lyrics: BetterLyrics.LyricProviders.parseLRC(data.plainLyrics, data.duration),
+          lyrics: BetterLyrics.LyricProviders.parsePlainLyrics(data.plainLyrics),
           source: "LRCLib",
           sourceHref: "https://lrclib.net",
           musicVideoSynced: false,
@@ -258,19 +256,11 @@ BetterLyrics.LyricProviders = {
    */
   ytLyrics: async function (providerParameters) {
     let lyricsObj = await BetterLyrics.RequestSniffing.getLyrics(providerParameters.videoId);
-    const lyricsArray = [];
     if (lyricsObj.hasLyrics) {
       let lyricsText = lyricsObj.lyrics;
       let sourceText = lyricsObj.sourceText.substring(8) + " (via YT)";
 
-      lyricsText.split("\n").forEach(words => {
-        lyricsArray.push({
-          startTimeMs: "0",
-          words: words,
-          durationMs: "0",
-        });
-      });
-
+      let lyricsArray = BetterLyrics.LyricProviders.parsePlainLyrics(lyricsText);
       providerParameters.sourceMap.get("yt-lyrics").lyricSourceResult = {
         lyrics: lyricsArray,
         text: lyricsText,
@@ -674,5 +664,24 @@ BetterLyrics.LyricProviders = {
         }
       }
     }
+  },
+  /**
+   *
+   * @param {string} lyricsText
+   * @return {LyricsArray}
+   */
+  parsePlainLyrics: function (lyricsText) {
+    /**
+     * @type {LyricsArray}
+     */
+    const lyricsArray = [];
+    lyricsText.split("\n").forEach(words => {
+      lyricsArray.push({
+        startTimeMs: 0,
+        words: words,
+        durationMs: 0,
+      });
+    });
+    return lyricsArray;
   },
 };
