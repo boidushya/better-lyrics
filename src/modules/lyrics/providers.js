@@ -150,8 +150,8 @@ BetterLyrics.LyricProviders = {
       );
       providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = {
         lyrics: lrclibSyncedLyrics,
-        source: "LrcLib (Synced)",
-        sourceHref: "https://lrclib.com",
+        source: "LRCLib (Synced)",
+        sourceHref: "https://lrclib.net",
         musicVideoSynced: false,
       };
     }
@@ -163,8 +163,8 @@ BetterLyrics.LyricProviders = {
       );
       providerParameters.sourceMap.get("lrclib-plain").lyricSourceResult = {
         lyrics: lrclibPlainLyrics,
-        source: "LrcLib (Plain)",
-        sourceHref: "https://lrclib.com",
+        source: "LRCLib (Plain)",
+        sourceHref: "https://lrclib.net",
         musicVideoSynced: false,
       };
     }
@@ -234,16 +234,16 @@ BetterLyrics.LyricProviders = {
       if (data.syncedLyrics) {
         providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = {
           lyrics: BetterLyrics.LyricProviders.parseLRC(data.syncedLyrics, data.duration),
-          source: "LrcLib",
-          sourceHref: "https://lrclib.com",
+          source: "LRCLib",
+          sourceHref: "https://lrclib.net",
           musicVideoSynced: false,
         };
       }
       if (data.plainLyrics) {
         providerParameters.sourceMap.get("lrclib-plain").lyricSourceResult = {
           lyrics: BetterLyrics.LyricProviders.parseLRC(data.plainLyrics, data.duration),
-          source: "LrcLib",
-          sourceHref: "https://lrclib.com",
+          source: "LRCLib",
+          sourceHref: "https://lrclib.net",
           musicVideoSynced: false,
         };
       }
@@ -389,12 +389,12 @@ BetterLyrics.LyricProviders = {
 
       let defaultPreferredProviderList = [
         "musixmatch-richsync",
-        "musixmatch-synced",
-        "lrclib-synced",
-        "lrclib-plain",
-        "bLyrics",
         "yt-captions",
+        "lrclib-synced",
+        "musixmatch-synced",
+        "bLyrics",
         "yt-lyrics",
+        "lrclib-plain",
       ];
 
       //Remove any invalid entries in the preferred provider list
