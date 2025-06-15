@@ -171,9 +171,9 @@ BetterLyrics.Lyrics = {
       lyrics = {
         lyrics: [
           {
-            startTimeMs: "0",
+            startTimeMs: 0,
             words: BetterLyrics.Constants.NO_LYRICS_TEXT,
-            durationMs: "0",
+            durationMs: 0,
           },
         ],
         source: "Unknown",
