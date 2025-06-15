@@ -30,7 +30,7 @@ const getOptionsFromForm = () => {
   let preferredProviderList = [];
   let providerElems = document.getElementById("providers-list").children;
   for (let i = 0; i < providerElems.length; i++) {
-    preferredProviderList.push(providerElems[i].id);
+    preferredProviderList.push(providerElems[i].id.slice(2));
   }
 
   return {
