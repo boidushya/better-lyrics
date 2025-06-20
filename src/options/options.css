@@ -577,4 +577,18 @@ hr {
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
+  margin-right: -0.25rem;
+}
+
+.sortable-item > label {
+  transform: translateY(-0.05rem);
+  margin-left: 0.5rem;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: bold;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 0.5rem;
 }

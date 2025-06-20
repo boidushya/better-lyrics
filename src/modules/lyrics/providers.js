@@ -92,8 +92,8 @@ BetterLyrics.LyricProviders = {
     url.searchParams.append("artist", providerParameters.artist);
     url.searchParams.append("duration", providerParameters.duration);
     url.searchParams.append("videoId", providerParameters.videoId);
-    url.searchParams.append("enhanced", await BetterLyrics.Settings.shouldUseKaraokeLyrics());
-    url.searchParams.append("useLrcLib", true);
+    url.searchParams.append("enhanced", "true");
+    url.searchParams.append("useLrcLib", "true");
 
     let response = await fetch(url, { signal: AbortSignal.timeout(10000) }).then(r => r.json());
     if (response.album) {
@@ -374,6 +374,10 @@ BetterLyrics.LyricProviders = {
   initProviders: function () {
     const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
+    /**
+     *
+     * @param {string[]} preferredProviderList
+     */
     const updateProvidersList = preferredProviderList => {
       BetterLyrics.Utils.log(BetterLyrics.Constants.PROVIDER_SWITCHED_LOG, preferredProviderList);
 
@@ -387,19 +391,19 @@ BetterLyrics.LyricProviders = {
         "lrclib-plain",
       ];
 
-      //Remove any invalid entries in the preferred provider list
-      preferredProviderList = preferredProviderList.filter(provider => {
-        return defaultPreferredProviderList.includes(provider);
-      });
-
       let isValid = defaultPreferredProviderList.every(provider => {
-        return preferredProviderList.includes(provider);
+        return preferredProviderList.includes(provider) || preferredProviderList.includes("d_" + provider);
       });
 
       if (!isValid) {
         preferredProviderList = defaultPreferredProviderList;
         console.log("Invalid preferred provider list, resetting to default");
       }
+
+      //Remove any invalid entries in the preferred provider list
+      preferredProviderList = preferredProviderList.filter(provider => {
+        return defaultPreferredProviderList.includes(provider);
+      });
 
       BetterLyrics.LyricProviders.providerPriority = preferredProviderList;
     };
