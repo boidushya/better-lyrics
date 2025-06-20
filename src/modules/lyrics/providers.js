@@ -572,7 +572,6 @@ BetterLyrics.LyricProviders = {
 
     if (idTags["offset"]) {
       let offset = idTags["offset"];
-      console.log("Lyrics have a time offset: " + offset);
       result.forEach(lyric => {
         lyric.startTimeMs -= offset;
         lyric.parts.forEach(part => {
