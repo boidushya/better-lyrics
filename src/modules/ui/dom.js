@@ -80,21 +80,25 @@ BetterLyrics.DOM = {
 
       discordLink.appendChild(discordImage);
 
-      const addLyricsButton = document.createElement("button");
-      addLyricsButton.className = `${BetterLyrics.Constants.FOOTER_CLASS}__add-lyrics`;
-      addLyricsButton.textContent = "Add Lyrics to LRCLib";
-      addLyricsButton.addEventListener("click", () => {
-        const url = new URL(BetterLyrics.Constants.LRCLIB_UPLOAD_URL);
-        if (song) url.searchParams.append("title", song);
-        if (artist) url.searchParams.append("artist", artist);
-        if (album) url.searchParams.append("album", album);
-        if (duration) url.searchParams.append("duration", duration);
-        window.open(url.toString(), "_blank");
-      });
+      const addLyricsContainer = document.createElement("div");
+      addLyricsContainer.className = `${BetterLyrics.Constants.FOOTER_CLASS}__container`;
+
+      const addLyricsLink = document.createElement("a");
+      const url = new URL(BetterLyrics.Constants.LRCLIB_UPLOAD_URL);
+      if (song) url.searchParams.append("title", song);
+      if (artist) url.searchParams.append("artist", artist);
+      if (album) url.searchParams.append("album", album);
+      if (duration) url.searchParams.append("duration", duration);
+      footerLink.target = "_blank";
+      addLyricsLink.href = url.toString();
+      addLyricsLink.textContent = "Add Lyrics to LRCLib";
+      addLyricsLink.style.height = "100%";
+
+      addLyricsContainer.appendChild(addLyricsLink);
 
       footer.appendChild(footerContainer);
       footer.appendChild(discordLink);
-      footer.appendChild(addLyricsButton);
+      footer.appendChild(addLyricsContainer);
 
       footer.removeAttribute("is-empty");
     } catch (_err) {
