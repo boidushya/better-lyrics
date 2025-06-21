@@ -27,6 +27,7 @@ BetterLyrics.App = {
     BetterLyrics.Settings.listenForPopupMessages();
     BetterLyrics.Observer.lyricReloader();
     BetterLyrics.Observer.initializeLyrics();
+    BetterLyrics.Observer.disableInertWhenFullscreen();
     BetterLyrics.LyricProviders.initProviders();
 
     BetterLyrics.Utils.log(
@@ -49,7 +50,7 @@ BetterLyrics.App = {
     } else {
       BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(detail)
         .then(() => {
-          return BetterLyrics.DOM.tickLyrics(detail.currentTime, detail.playing);
+          return BetterLyrics.DOM.tickLyrics(detail.currentTime, Date.now(), detail.playing);
         })
         .catch(err => {
           BetterLyrics.Utils.log(BetterLyrics.App.GENERAL_ERROR_LOG, err);
