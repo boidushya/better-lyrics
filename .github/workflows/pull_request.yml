@@ -15,8 +15,6 @@ jobs:
         with:
           node-version: '20.x'
       - run: npm ci
-      - name: Run Biome
-        run: biome ci .
       - name: Lint and Format
         run: |
           npx @biomejs/biome lint --write .
