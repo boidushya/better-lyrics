@@ -307,6 +307,33 @@
   filter: brightness(10);
 }
 
+.blyrics-footer__add-lyrics {
+  align-items: center;
+  background-color: var(--blyrics-footer-bg-color);
+  border: 1px solid var(--blyrics-footer-border-color);
+  border-radius: var(--blyrics-border-radius);
+  cursor: default;
+  display: flex;
+  font-family: var(--blyrics-footer-font-family);
+  font-size: var(--blyrics-footer-font-size);
+  font-weight: var(--blyrics-footer-font-weight);
+  line-height: var(--ytmusic-body-line-height);
+  padding: 0.5rem 1.25rem;
+  position: relative;
+  white-space: pre;
+  width: -moz-fit-content;
+  width: fit-content;
+  z-index: 2;
+  height: 30px;
+  color: var(--blyrics-footer-link-color);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+.blyrics-footer__add-lyrics:hover {
+  text-decoration: underline;
+}
+
 .blyrics-footer__container {
   align-items: center;
   background-color: var(--blyrics-footer-bg-color);

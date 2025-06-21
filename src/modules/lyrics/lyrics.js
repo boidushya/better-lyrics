@@ -106,29 +106,17 @@ BetterLyrics.Lyrics = {
       if (cubyLyrics && cubyLyrics.album) {
         providerParameters.album = cubyLyrics.album;
       }
-      if (isMusicVideo && cubyLyrics && cubyLyrics.song && cubyLyrics.song.length > 0 && song !== cubyLyrics.song) {
+      if (cubyLyrics && cubyLyrics.song && cubyLyrics.song.length > 0 && song !== cubyLyrics.song) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.song + "' for song instead of '" + song + "'");
         providerParameters.song = cubyLyrics.song;
       }
 
-      if (
-        isMusicVideo &&
-        cubyLyrics &&
-        cubyLyrics.artist &&
-        cubyLyrics.artist.length > 0 &&
-        artist !== cubyLyrics.artist
-      ) {
+      if (cubyLyrics && cubyLyrics.artist && cubyLyrics.artist.length > 0 && artist !== cubyLyrics.artist) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.artist + "' for artist instead of '" + artist + "'");
         providerParameters.artist = cubyLyrics.artist;
       }
 
-      if (
-        isMusicVideo &&
-        cubyLyrics &&
-        cubyLyrics.duration &&
-        cubyLyrics.duration.length > 0 &&
-        duration !== cubyLyrics.duration
-      ) {
+      if (cubyLyrics && cubyLyrics.duration && cubyLyrics.duration.length > 0 && duration !== cubyLyrics.duration) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.duration + "' for duration instead of '" + duration + "'");
         providerParameters.duration = Number(cubyLyrics.duration);
       }
@@ -487,7 +475,7 @@ BetterLyrics.Lyrics = {
     BetterLyrics.DOM.scrollResumeTime = 0;
 
     if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
-      BetterLyrics.DOM.addFooter(data.source, data.sourceHref);
+      BetterLyrics.DOM.addFooter(data.source, data.sourceHref, data.song, data.artist, data.album, data.duration);
     } else {
       BetterLyrics.DOM.addNoLyricsButton(data.song, data.artist, data.album, data.duration);
     }

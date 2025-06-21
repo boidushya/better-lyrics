@@ -26,7 +26,7 @@ BetterLyrics.DOM = {
    * @param source : {string}
    * @param sourceHref : {string}
    */
-  addFooter: function (source, sourceHref) {
+  addFooter: function (source, sourceHref, song, artist, album, duration) {
     if (document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS).length !== 0) {
       document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0].remove();
     }
@@ -35,7 +35,7 @@ BetterLyrics.DOM = {
     const footer = document.createElement("div");
     footer.classList.add(BetterLyrics.Constants.FOOTER_CLASS);
     lyricsElement.appendChild(footer);
-    BetterLyrics.DOM.createFooter();
+    BetterLyrics.DOM.createFooter(song, artist, album, duration);
 
     let footerLink = document.getElementById("betterLyricsFooterLink");
     source = source || "boidu.dev";
@@ -44,7 +44,7 @@ BetterLyrics.DOM = {
     footerLink.href = sourceHref;
   },
 
-  createFooter: function () {
+  createFooter: function (song, artist, album, duration) {
     try {
       const footer = document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0];
       footer.innerHTML = "";
@@ -80,8 +80,21 @@ BetterLyrics.DOM = {
 
       discordLink.appendChild(discordImage);
 
+      const addLyricsButton = document.createElement("button");
+      addLyricsButton.className = `${BetterLyrics.Constants.FOOTER_CLASS}__add-lyrics`;
+      addLyricsButton.textContent = "Add Lyrics to LRCLib";
+      addLyricsButton.addEventListener("click", () => {
+        const url = new URL(BetterLyrics.Constants.LRCLIB_UPLOAD_URL);
+        if (song) url.searchParams.append("title", song);
+        if (artist) url.searchParams.append("artist", artist);
+        if (album) url.searchParams.append("album", album);
+        if (duration) url.searchParams.append("duration", duration);
+        window.open(url.toString(), "_blank");
+      });
+
       footer.appendChild(footerContainer);
       footer.appendChild(discordLink);
+      footer.appendChild(addLyricsButton);
 
       footer.removeAttribute("is-empty");
     } catch (_err) {
