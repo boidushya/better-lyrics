@@ -28,11 +28,21 @@ BetterLyrics.Observer = {
       return;
     }
     let observer = new MutationObserver(function (mutations) {
-      mutations.forEach(function (mutation) {
-        if (mutation.attributeName === "inert") {
-          mutation.target.removeAttribute("inert");
-        }
-      });
+      BetterLyrics.Settings.onFullScreenDisabled(
+        () => {},
+        () =>
+          mutations.forEach(function (mutation) {
+            if (mutation.attributeName === "inert") {
+              // entering fullscreen mode
+              mutation.target.removeAttribute("inert");
+              const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+              if (tabSelector && tabSelector.getAttribute("aria-selected") !== "true") {
+                // ensure lyrics tab is selected
+                tabSelector.click();
+              }
+            }
+          })
+      );
     });
     observer.observe(panelElem, { attributes: true });
     panelElem.removeAttribute("inert");
@@ -48,12 +58,10 @@ BetterLyrics.Observer = {
     if (tab1 !== undefined && tab2 !== undefined && tab3 !== undefined) {
       for (let i = 0; i < tabs.length; i++) {
         tabs[i].addEventListener("click", () => {
-          console.log(BetterLyrics.Observer.currentTab, BetterLyrics.Observer.scrollPositions);
           const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
           BetterLyrics.Observer.scrollPositions[BetterLyrics.Observer.currentTab] = tabRenderer.scrollTop;
           tabRenderer.scrollTop = BetterLyrics.Observer.scrollPositions[i];
           BetterLyrics.Observer.currentTab = i;
-          console.log(BetterLyrics.Observer.currentTab, BetterLyrics.Observer.scrollPositions);
         });
       }
 
@@ -144,11 +152,7 @@ BetterLyrics.Observer = {
           BetterLyrics.App.handleModifications(detail);
         }
       }
-      let timeOffset = Date.now() - detail.browserTime;
-      if (!detail.playing) {
-        timeOffset = 0;
-      }
-      BetterLyrics.DOM.tickLyrics(detail.currentTime + timeOffset / 1000, detail.playing);
+      BetterLyrics.DOM.tickLyrics(detail.currentTime, detail.browserTime, detail.playing);
     });
   },
   scrollEventHandler: () => {

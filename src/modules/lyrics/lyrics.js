@@ -87,66 +87,51 @@ BetterLyrics.Lyrics = {
     BetterLyrics.Utils.log(BetterLyrics.Constants.FETCH_LYRICS_LOG, song, artist);
 
     let lyrics;
-    let ytLyrics;
-    let album = null;
-
+    let sourceMap = BetterLyrics.LyricProviders.newSourceMap();
     // We depend on the cubey lyrics to fetch certain metadata, so we always call it even if it isn't the top priority
-    let cubyLyrics = null;
+    /**
+     * @type {ProviderParameters}
+     */
+    let providerParameters = {
+      song,
+      artist,
+      duration,
+      videoId,
+      audioTrackData,
+      album: null,
+      sourceMap,
+    };
     try {
-      cubyLyrics = await BetterLyrics.LyricProviders.cubey(song, artist, duration, videoId, audioTrackData, album);
+      let cubyLyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, "musixmatch-richsync");
       if (cubyLyrics && cubyLyrics.album) {
-        album = cubyLyrics.album;
+        providerParameters.album = cubyLyrics.album;
       }
-      if (isMusicVideo && cubyLyrics && cubyLyrics.song && cubyLyrics.song.length > 0 && song !== cubyLyrics.song) {
+      if (cubyLyrics && cubyLyrics.song && cubyLyrics.song.length > 0 && song !== cubyLyrics.song) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.song + "' for song instead of '" + song + "'");
-        song = cubyLyrics.song;
+        providerParameters.song = cubyLyrics.song;
       }
 
-      if (
-        isMusicVideo &&
-        cubyLyrics &&
-        cubyLyrics.artist &&
-        cubyLyrics.artist.length > 0 &&
-        artist !== cubyLyrics.artist
-      ) {
+      if (cubyLyrics && cubyLyrics.artist && cubyLyrics.artist.length > 0 && artist !== cubyLyrics.artist) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.artist + "' for artist instead of '" + artist + "'");
-        artist = cubyLyrics.artist;
+        providerParameters.artist = cubyLyrics.artist;
       }
 
-      if (
-        isMusicVideo &&
-        cubyLyrics &&
-        cubyLyrics.duration &&
-        cubyLyrics.duration.length > 0 &&
-        duration !== cubyLyrics.duration
-      ) {
+      if (cubyLyrics && cubyLyrics.duration && cubyLyrics.duration.length > 0 && duration !== cubyLyrics.duration) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.duration + "' for duration instead of '" + duration + "'");
-        duration = Number(cubyLyrics.duration);
+        providerParameters.duration = Number(cubyLyrics.duration);
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
 
-    for (let provider of BetterLyrics.LyricProviders.providersList) {
+    for (let provider of BetterLyrics.LyricProviders.providerPriority) {
       try {
-        if (provider === BetterLyrics.LyricProviders.cubey) {
-          lyrics = cubyLyrics;
-        } else {
-          lyrics = await provider(song, artist, duration, videoId, audioTrackData, album);
-        }
+        lyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, provider);
 
-        if (lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
-          if (!ytLyrics) {
-            ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(
-              song,
-              artist,
-              duration,
-              videoId,
-              audioTrackData,
-              album
-            );
-          }
-          if (ytLyrics.text !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
+        if (lyrics && lyrics.lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
+          let ytLyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, "yt-lyrics");
+
+          if (ytLyrics !== null) {
             let lyricText = "";
             lyrics.lyrics.forEach(lyric => {
               lyricText += lyric.words + "\n";
@@ -170,12 +155,20 @@ BetterLyrics.Lyrics = {
       lyrics = null;
     }
 
-    if (!ytLyrics) {
-      ytLyrics = await BetterLyrics.LyricProviders.ytLyrics(song, artist, duration, videoId, audioTrackData, album);
-    }
-
     if (!lyrics) {
-      lyrics = ytLyrics;
+      lyrics = {
+        lyrics: [
+          {
+            startTimeMs: 0,
+            words: BetterLyrics.Constants.NO_LYRICS_TEXT,
+            durationMs: 0,
+          },
+        ],
+        source: "Unknown",
+        sourceHref: "",
+        musicVideoSynced: false,
+        cacheAllowed: false,
+      };
     }
 
     if (isMusicVideo && lyrics.musicVideoSynced !== true && segmentMap) {
@@ -206,7 +199,24 @@ BetterLyrics.Lyrics = {
       }
     }
 
+    if (lyrics.isRtlLanguage === undefined) {
+      // Arabic Characters: U+0600..U+06FF (Urdu, Arabic, Kurdish)
+      // Arabic Presentation Forms-A: U+FB50..U+FDFF (For Persian, Urdu, Sindhi)
+      // Hebrew Characters: U+0590..U+05FF (Yiddish)
+      // Thaana Characters: U+0780..U+07BF
+
+      const testRtl = text => /[\u0600-\u06FF]|[\ufb50-\ufdff]|[\u0590-\u05ff]|[\u0780-\u07bf]/.test(text);
+      lyrics.isRtlLanguage = lyrics.lyrics.some(({ words }) => testRtl(words));
+    }
+
     BetterLyrics.Utils.log("Got Lyrics from " + lyrics.source);
+
+    // Preserve song and artist information in the lyrics data for the "Add Lyrics" button
+    lyrics.song = providerParameters.song;
+    lyrics.artist = providerParameters.artist;
+    lyrics.album = providerParameters.album;
+    lyrics.duration = providerParameters.duration;
+    lyrics.videoId = providerParameters.videoId;
 
     BetterLyrics.App.lastLoadedVideoId = detail.videoId;
     this.cacheAndProcessLyrics(cacheKey, lyrics);
@@ -227,7 +237,6 @@ BetterLyrics.Lyrics = {
 
     const lyrics = data.lyrics;
     if (!lyrics || lyrics.length === 0) {
-      console.log(data);
       throw new Error(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
     }
 
@@ -236,18 +245,6 @@ BetterLyrics.Lyrics = {
     const ytMusicLyrics = document.querySelector(BetterLyrics.Constants.NO_LYRICS_TEXT_SELECTOR)?.parentElement;
     if (ytMusicLyrics) {
       ytMusicLyrics.classList.add("blyrics-hidden");
-    }
-
-    const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
-    if (existingLyrics) {
-      for (let lyrics of existingLyrics) {
-        lyrics.classList.add("blyrics-hidden");
-      }
-    }
-
-    const existingFooter = document.getElementsByClassName(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)[0];
-    if (existingFooter) {
-      existingFooter.classList.add("blyrics-hidden");
     }
 
     try {
@@ -341,7 +338,7 @@ BetterLyrics.Lyrics = {
      */
     let lyricsData = [];
 
-    lyrics.forEach((item, index) => {
+    lyrics.forEach(item => {
       if (!item.parts || item.parts.length === 0) {
         item.parts = [];
         const words = item.words.split(" ");
@@ -433,18 +430,8 @@ BetterLyrics.Lyrics = {
                 const result = await BetterLyrics.Translation.translateTextIntoRomaji(source_language, item.words);
                 if (result && result.trim() !== "") {
                   romanizedLine.textContent = result ? "\n" + result : "\n";
-
-                  const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
-                  const prevScrollPos = tabRenderer.scrollTop;
-                  const prevHeight = wrapper.clientHeight;
                   line.appendChild(romanizedLine);
-                  const currentScrollPos = tabRenderer.scrollTop;
-                  const currentHeight = wrapper.clientHeight;
-                  BetterLyrics.DOM.lyricsHeightAdjusted(
-                    index,
-                    currentHeight - prevHeight,
-                    currentScrollPos - prevScrollPos
-                  );
+                  BetterLyrics.DOM.lyricsElementAdded();
                 }
               }
             }
@@ -460,27 +447,11 @@ BetterLyrics.Lyrics = {
                 if (item.words.trim() !== "♪" && item.words.trim() !== "") {
                   const result = await BetterLyrics.Translation.translateText(item.words, target_language);
 
-                  const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
-                  const prevScrollPos = tabRenderer.scrollTop;
-                  const prevHeight = wrapper.clientHeight;
-
-                  if (result) {
-                    if (result.originalLanguage !== target_language) {
-                      translatedLine.textContent = "\n" + result.translatedText;
-                      line.appendChild(translatedLine);
-                    }
-                  } else {
-                    translatedLine.textContent = "\n" + "—";
+                  if (result && result.originalLanguage !== target_language) {
+                    translatedLine.textContent = "\n" + result.translatedText;
                     line.appendChild(translatedLine);
+                    BetterLyrics.DOM.lyricsElementAdded();
                   }
-                  line.appendChild(translatedLine);
-                  const currentScrollPos = tabRenderer.scrollTop;
-                  const currentHeight = wrapper.clientHeight;
-                  BetterLyrics.DOM.lyricsHeightAdjusted(
-                    index,
-                    currentHeight - prevHeight,
-                    currentScrollPos - prevScrollPos
-                  );
                 }
               }
             });
@@ -504,7 +475,9 @@ BetterLyrics.Lyrics = {
     BetterLyrics.DOM.scrollResumeTime = 0;
 
     if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
-      BetterLyrics.DOM.addFooter(data.source, data.sourceHref);
+      BetterLyrics.DOM.addFooter(data.source, data.sourceHref, data.song, data.artist, data.album, data.duration);
+    } else {
+      BetterLyrics.DOM.addNoLyricsButton(data.song, data.artist, data.album, data.duration);
     }
 
     if (!allZero) {

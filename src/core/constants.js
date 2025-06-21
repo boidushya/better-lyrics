@@ -16,11 +16,9 @@ BetterLyrics.Constants = {
   TRANSLATED_LYRICS_CLASS: "blyrics--translated",
   ROMANIZED_LYRICS_CLASS: "blyrics--romanized",
   ERROR_LYRICS_CLASS: "blyrics--error",
-  DESCRIPTION_CLASS: "description style-scope ytmusic-description-shelf-renderer",
   FOOTER_CLASS: "blyrics-footer",
   WATERMARK_CLASS: "blyrics-watermark",
   TIME_INFO_CLASS: "time-info style-scope ytmusic-player-bar",
-  YT_MUSIC_FOOTER_CLASS: "footer style-scope ytmusic-description-shelf-renderer",
 
   // DOM Selectors
   SONG_IMAGE_SELECTOR: "#song-image>#thumbnail>#img",
@@ -45,6 +43,7 @@ BetterLyrics.Constants = {
   LYRICS_API_URL: "https://lyrics-api.boidu.dev/getLyrics",
   DISCORD_INVITE_URL: "https://discord.gg/UsHE3d5fWF",
   LRCLIB_API_URL: "https://lrclib.net/api/get",
+  LRCLIB_UPLOAD_URL: "https://lrclibup.boidu.dev/",
   LRCLIB_CLIENT_HEADER: "BetterLyrics Extension (https://github.com/boidushya/better-lyrics)",
   TRANSLATE_LYRICS_URL: function (lang, text) {
     return `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`;

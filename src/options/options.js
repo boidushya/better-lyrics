@@ -11,11 +11,8 @@ const saveOptions = () => {
     );
   }
 
-  browserAPI.storage.sync.get({ preferredProviderList: null, shouldUseKaraokeLyrics: false }, currentOptions => {
-    if (
-      !arrayEqual(currentOptions.preferredProviderList, options.preferredProviderList) ||
-      currentOptions.shouldUseKaraokeLyrics !== options.shouldUseKaraokeLyrics
-    ) {
+  browserAPI.storage.sync.get({ preferredProviderList: null }, currentOptions => {
+    if (!arrayEqual(currentOptions.preferredProviderList, options.preferredProviderList)) {
       clearTransientLyrics(() => {
         saveOptionsToStorage(options);
       });
@@ -30,7 +27,11 @@ const getOptionsFromForm = () => {
   let preferredProviderList = [];
   let providerElems = document.getElementById("providers-list").children;
   for (let i = 0; i < providerElems.length; i++) {
-    preferredProviderList.push(providerElems[i].id);
+    let id = providerElems[i].id.slice(2);
+    if (!providerElems[i].children[1].checked) {
+      id = "d_" + id;
+    }
+    preferredProviderList.push(id);
   }
 
   return {
@@ -39,7 +40,6 @@ const getOptionsFromForm = () => {
     isAlbumArtEnabled: document.getElementById("albumArt").checked,
     isFullScreenDisabled: document.getElementById("isFullScreenDisabled").checked,
     isStylizedAnimationsEnabled: document.getElementById("isStylizedAnimationsEnabled").checked,
-    shouldUseKaraokeLyrics: document.getElementById("shouldUseKaraokeLyrics").checked,
     isTranslateEnabled: document.getElementById("translate").checked,
     translationLanguage: document.getElementById("translationLanguage").value,
     isCursorAutoHideEnabled: document.getElementById("cursorAutoHide").checked,
@@ -168,11 +168,18 @@ const restoreOptions = () => {
     isCursorAutoHideEnabled: true,
     isFullScreenDisabled: false,
     isStylizedAnimationsEnabled: true,
-    shouldUseKaraokeLyrics: false,
     isTranslateEnabled: false,
     translationLanguage: "en",
     isRomanizationEnabled: false,
-    preferredProviderList: ["p-dacubeking", "p-better-lyrics", "p-lrclib", "p-yt-captions"],
+    preferredProviderList: [
+      "musixmatch-richsync",
+      "yt-captions",
+      "lrclib-synced",
+      "musixmatch-synced",
+      "bLyrics",
+      "yt-lyrics",
+      "lrclib-plain",
+    ],
   };
 
   browserAPI.storage.sync.get(defaultOptions, setOptionsInForm);
@@ -188,18 +195,88 @@ const setOptionsInForm = items => {
   document.getElementById("cursorAutoHide").checked = items.isCursorAutoHideEnabled;
   document.getElementById("isFullScreenDisabled").checked = items.isFullScreenDisabled;
   document.getElementById("isStylizedAnimationsEnabled").checked = items.isStylizedAnimationsEnabled;
-  document.getElementById("shouldUseKaraokeLyrics").checked = items.shouldUseKaraokeLyrics;
   document.getElementById("translate").checked = items.isTranslateEnabled;
   document.getElementById("translationLanguage").value = items.translationLanguage;
   document.getElementById("isRomanizationEnabled").checked = items.isRomanizationEnabled;
 
   let providersListElem = document.getElementById("providers-list");
+  providersListElem.innerHTML = "";
+
+  // Always recreate in the default order to make sure no items go missing
+  let unseenProviders = [
+    "musixmatch-richsync",
+    "yt-captions",
+    "lrclib-synced",
+    "musixmatch-synced",
+    "bLyrics",
+    "yt-lyrics",
+    "lrclib-plain",
+  ];
+
   for (let i = 0; i < items.preferredProviderList.length; i++) {
-    let providerElem = document.getElementById(items.preferredProviderList[i]);
-    providerElem.remove();
+    let providerId = items.preferredProviderList[i];
+
+    let disabled = providerId.startsWith("d_");
+    let rawProviderId = disabled ? providerId.slice(2) : providerId;
+    let providerElem = createProviderElem(rawProviderId, !disabled);
+
     providersListElem.appendChild(providerElem);
+    unseenProviders = unseenProviders.filter(p => p !== rawProviderId);
   }
+
+  unseenProviders.forEach(p => {
+    let providerElem = createProviderElem(p);
+    providersListElem.appendChild(providerElem);
+  });
 };
+let providerIdToNameMap = {
+  "musixmatch-richsync": "Musixmatch (Word Synced)",
+  "musixmatch-synced": "Musixmatch (Line Synced)",
+  "yt-captions": "Youtube Captions (Line Synced)",
+  "lrclib-synced": "LRClib (Line Synced)",
+  bLyrics: "Better Lyrics (Line Synced)",
+  "yt-lyrics": "Youtube (Unsynced)",
+  "lrclib-plain": "LRClib (Unsynced)",
+};
+
+function createProviderElem(providerId, checked = true) {
+  let liElem = document.createElement("li");
+  liElem.classList.add("sortable-item");
+  liElem.id = "p-" + providerId;
+
+  let handleElem = document.createElement("span");
+  handleElem.classList.add("sortable-handle");
+  liElem.appendChild(handleElem);
+
+  let checkboxElem = document.createElement("input");
+  checkboxElem.classList.add("provider-checkbox");
+  checkboxElem.type = "checkbox";
+  checkboxElem.checked = checked;
+  checkboxElem.id = "p-" + providerId + "-checkbox";
+  liElem.appendChild(checkboxElem);
+
+  let labelElem = document.createElement("label");
+  labelElem.setAttribute("for", "p-" + providerId + "-checkbox");
+  labelElem.textContent = providerIdToNameMap.hasOwnProperty(providerId) ? providerIdToNameMap[providerId] : providerId;
+  liElem.appendChild(labelElem);
+
+  let styleFromCheckState = () => {
+    if (checkboxElem.checked) {
+      labelElem.classList.remove("disabled-item");
+    } else {
+      labelElem.classList.add("disabled-item");
+    }
+  };
+
+  checkboxElem.addEventListener("change", () => {
+    styleFromCheckState();
+    saveOptions();
+  });
+
+  styleFromCheckState();
+
+  return liElem;
+}
 
 // Event listeners
 document.addEventListener("DOMContentLoaded", restoreOptions);

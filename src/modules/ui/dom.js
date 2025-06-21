@@ -26,7 +26,7 @@ BetterLyrics.DOM = {
    * @param source : {string}
    * @param sourceHref : {string}
    */
-  addFooter: function (source, sourceHref) {
+  addFooter: function (source, sourceHref, song, artist, album, duration) {
     if (document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS).length !== 0) {
       document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0].remove();
     }
@@ -35,7 +35,7 @@ BetterLyrics.DOM = {
     const footer = document.createElement("div");
     footer.classList.add(BetterLyrics.Constants.FOOTER_CLASS);
     lyricsElement.appendChild(footer);
-    BetterLyrics.DOM.createFooter();
+    BetterLyrics.DOM.createFooter(song, artist, album, duration);
 
     let footerLink = document.getElementById("betterLyricsFooterLink");
     source = source || "boidu.dev";
@@ -44,7 +44,7 @@ BetterLyrics.DOM = {
     footerLink.href = sourceHref;
   },
 
-  createFooter: function () {
+  createFooter: function (song, artist, album, duration) {
     try {
       const footer = document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0];
       footer.innerHTML = "";
@@ -80,8 +80,21 @@ BetterLyrics.DOM = {
 
       discordLink.appendChild(discordImage);
 
+      const addLyricsButton = document.createElement("button");
+      addLyricsButton.className = `${BetterLyrics.Constants.FOOTER_CLASS}__add-lyrics`;
+      addLyricsButton.textContent = "Add Lyrics to LRCLib";
+      addLyricsButton.addEventListener("click", () => {
+        const url = new URL(BetterLyrics.Constants.LRCLIB_UPLOAD_URL);
+        if (song) url.searchParams.append("title", song);
+        if (artist) url.searchParams.append("artist", artist);
+        if (album) url.searchParams.append("album", album);
+        if (duration) url.searchParams.append("duration", duration);
+        window.open(url.toString(), "_blank");
+      });
+
       footer.appendChild(footerContainer);
       footer.appendChild(discordLink);
+      footer.appendChild(addLyricsButton);
 
       footer.removeAttribute("is-empty");
     } catch (_err) {
@@ -235,6 +248,31 @@ BetterLyrics.DOM = {
     }
   },
 
+  addNoLyricsButton: function (song, artist, album, duration) {
+    const lyricsWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_WRAPPER_ID);
+    if (!lyricsWrapper) return;
+
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "blyrics-no-lyrics-button-container";
+
+    const addLyricsButton = document.createElement("button");
+    addLyricsButton.className = "blyrics-add-lyrics-button";
+    addLyricsButton.textContent = "Add Lyrics to LRCLib";
+
+    const url = new URL(BetterLyrics.Constants.LRCLIB_UPLOAD_URL);
+    if (song) url.searchParams.append("title", song);
+    if (artist) url.searchParams.append("artist", artist);
+    if (album) url.searchParams.append("album", album);
+    if (duration) url.searchParams.append("duration", duration);
+
+    addLyricsButton.addEventListener("click", () => {
+      window.open(url.toString(), "_blank");
+    });
+
+    buttonContainer.appendChild(addLyricsButton);
+    lyricsWrapper.appendChild(buttonContainer);
+  },
+
   injectHeadTags: function () {
     const imgURL = "https://better-lyrics.boidu.dev/icon-512.png";
 
@@ -264,25 +302,18 @@ BetterLyrics.DOM = {
       ytMusicLyrics.style.display = "";
     }
 
-    const existingFooter = document.getElementsByClassName(BetterLyrics.Constants.YT_MUSIC_FOOTER_CLASS)[0];
-    const existingLyrics = document.getElementsByClassName(BetterLyrics.Constants.DESCRIPTION_CLASS);
     const blyricsFooter = document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0];
 
     if (blyricsFooter) {
       blyricsFooter.remove();
     }
-    if (existingLyrics) {
-      for (let lyrics of existingLyrics) {
-        lyrics.style.display = "";
-        if (lyrics.classList.contains("blyrics--fallback")) {
-          lyrics.classList.remove("blyrics--fallback");
-        }
-      }
-    }
-    if (existingFooter && existingFooter.classList.contains("blyrics--fallback")) {
-      existingFooter.classList.remove("blyrics--fallback");
-    }
+
     BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
+
+    const buttonContainer = document.querySelector(".blyrics-no-lyrics-button-container");
+    if (buttonContainer) {
+      buttonContainer.remove();
+    }
 
     BetterLyrics.DOM.clearLyrics();
   },
@@ -310,11 +341,32 @@ BetterLyrics.DOM = {
    */
   lyricScrollTimeOffset: 0.2,
   wasUserScrolling: false,
-  tickLyrics: function (currentTime, isPlaying = true) {
+  lastTime: 0,
+  lastPlayState: false,
+  lastEventCreationTime: 0,
+  cachedTransitionDuration: -1,
+  getTransitionDurationInMs(lyricsElement) {
+    if (BetterLyrics.DOM.cachedTransitionDuration === -1) {
+      BetterLyrics.DOM.cachedTransitionDuration = toMs(lyricsElement.computedStyleMap().get("transition-duration"));
+    }
+
+    return BetterLyrics.DOM.cachedTransitionDuration;
+  },
+  tickLyrics: function (currentTime, eventCreationTime, isPlaying = true, smoothScroll = true) {
     const now = Date.now();
     if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking || (currentTime === 0 && !isPlaying)) {
       return;
     }
+    BetterLyrics.DOM.lastTime = currentTime;
+    BetterLyrics.DOM.lastPlayState = isPlaying;
+    BetterLyrics.DOM.lastEventCreationTime = eventCreationTime;
+
+    let timeOffset = now - eventCreationTime;
+    if (!isPlaying) {
+      timeOffset = 0;
+    }
+
+    currentTime += timeOffset / 1000;
 
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     console.assert(tabSelector != null);
@@ -468,7 +520,7 @@ BetterLyrics.DOM = {
       if (BetterLyrics.DOM.scrollResumeTime < Date.now() || BetterLyrics.DOM.scrollPos === -1) {
         if (BetterLyrics.DOM.wasUserScrolling) {
           BetterLyrics.DOM.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
-          lyricsElement.classList.remove(BetterLyrics.DOM.USER_SCROLLING_CLASS);
+          lyricsElement.classList.remove(BetterLyrics.Constants.USER_SCROLLING_CLASS);
           BetterLyrics.DOM.wasUserScrolling = false;
         }
 
@@ -476,32 +528,24 @@ BetterLyrics.DOM = {
         let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
         scrollPos = Math.max(Math.min(lyricsHeight - tabRendererHeight, scrollPos), 0);
 
-        if (
-          Math.abs(scrollTop - scrollPos) > 2 &&
-          BetterLyrics.DOM.scrollPos !== -1 &&
-          Date.now() > BetterLyrics.DOM.nextScrollAllowedTime
-        ) {
-          lyricsElement.style.transition = "top 0s ease-in-out 0s";
-          lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
-          reflow(lyricsElement);
-          lyricsElement.style.transition = "";
-          lyricsElement.style.top = "0px";
+        if (Math.abs(scrollTop - scrollPos) > 2 && Date.now() > BetterLyrics.DOM.nextScrollAllowedTime) {
+          if (smoothScroll) {
+            lyricsElement.style.transition = "top 0s ease-in-out 0s";
+            lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
+            reflow(lyricsElement);
+            BetterLyrics.DOM.nextScrollAllowedTime = this.getTransitionDurationInMs(lyricsElement) + Date.now();
+
+            lyricsElement.style.transition = "";
+            lyricsElement.style.top = "0px";
+          }
           scrollTop = scrollPos;
 
-          BetterLyrics.DOM.scrollPos = scrollPos;
-        } else if (BetterLyrics.DOM.scrollPos === -1) {
-          if (lyricsElement.style.transition === "top 0s ease-in-out 0s") {
-            BetterLyrics.DOM.nextScrollAllowedTime =
-              toMs(lyricsElement.computedStyleMap().get("transition-duration")) + Date.now();
-          }
-          lyricsElement.style.transition = "";
-          lyricsElement.style.top = "0px";
           BetterLyrics.DOM.scrollPos = scrollPos;
         }
       } else {
         if (!BetterLyrics.DOM.wasUserScrolling) {
           BetterLyrics.DOM.getResumeScrollElement().removeAttribute("autoscroll-hidden");
-          lyricsElement.classList.add(BetterLyrics.DOM.USER_SCROLLING_CLASS);
+          lyricsElement.classList.add(BetterLyrics.Constants.USER_SCROLLING_CLASS);
           BetterLyrics.DOM.wasUserScrolling = true;
         }
       }
@@ -530,20 +574,17 @@ BetterLyrics.DOM = {
       return true;
     }
   },
-  lyricsHeightAdjusted: function (index, amount, autoScrollOffset) {
-    const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
 
-    // ignore elements below the currently selected one (-1 b/c of dummy element at t=-1)
-    if (index >= BetterLyrics.DOM.selectedElementIndex - 1) {
-      amount = 0;
+  lyricsElementAdded: function () {
+    if (!BetterLyrics.App.areLyricsTicking) {
+      return;
     }
-    if (BetterLyrics.DOM.nextScrollAllowedTime < Date.now()) {
-      tabRenderer.scrollTop += amount - autoScrollOffset;
-    } // else let the browser handle it
-    if (autoScrollOffset !== 0 || amount - autoScrollOffset !== 0) {
-      BetterLyrics.DOM.skipScrolls += 1;
-      BetterLyrics.DOM.skipScrollsDecayTimes.push(Date.now() + 2000);
-    }
+    BetterLyrics.DOM.tickLyrics(
+      BetterLyrics.DOM.lastTime,
+      BetterLyrics.DOM.lastEventCreationTime,
+      BetterLyrics.DOM.lastPlayState,
+      false
+    );
   },
   injectSongAttributes: function (title, artist) {
     const mainPanel = document.getElementById("main-panel");

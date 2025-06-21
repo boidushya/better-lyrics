@@ -95,14 +95,6 @@ BetterLyrics.Settings = {
     });
   },
 
-  shouldUseKaraokeLyrics: async function () {
-    return new Promise(resolve => {
-      BetterLyrics.Storage.getStorage({ shouldUseKaraokeLyrics: false }, items => {
-        resolve(items.shouldUseKaraokeLyrics);
-      });
-    });
-  },
-
   mouseTimer: null,
   cursorEventListener: null,
   hideCursorOnIdle: function () {
