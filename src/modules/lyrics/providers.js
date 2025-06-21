@@ -191,7 +191,8 @@ BetterLyrics.LyricProviders = {
     const data = await response.json();
     // Validate API response structure
     if (!data || (!Array.isArray(data.lyrics) && !data.syncedLyrics)) {
-      return null;
+      providerParameters.sourceMap.get("bLyrics").filled = true;
+      providerParameters.sourceMap.get("bLyrics").lyricSourceResult = null;
     }
 
     data.source = "boidu.dev";
