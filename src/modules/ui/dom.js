@@ -235,7 +235,7 @@ BetterLyrics.DOM = {
     }
   },
 
-  addNoLyricsButton: function (song, artist) {
+  addNoLyricsButton: function (song, artist, album, duration) {
     const lyricsWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_WRAPPER_ID);
     if (!lyricsWrapper) return;
 
@@ -244,11 +244,13 @@ BetterLyrics.DOM = {
 
     const addLyricsButton = document.createElement("button");
     addLyricsButton.className = "blyrics-add-lyrics-button";
-    addLyricsButton.textContent = "Add Lyrics";
+    addLyricsButton.textContent = "Add Lyrics to LRCLib";
 
     const url = new URL(BetterLyrics.Constants.LRCLIB_UPLOAD_URL);
     if (song) url.searchParams.append("title", song);
     if (artist) url.searchParams.append("artist", artist);
+    if (album) url.searchParams.append("album", album);
+    if (duration) url.searchParams.append("duration", duration);
 
     addLyricsButton.addEventListener("click", () => {
       window.open(url.toString(), "_blank");

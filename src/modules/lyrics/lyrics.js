@@ -224,8 +224,11 @@ BetterLyrics.Lyrics = {
     BetterLyrics.Utils.log("Got Lyrics from " + lyrics.source);
 
     // Preserve song and artist information in the lyrics data for the "Add Lyrics" button
-    lyrics.song = song;
-    lyrics.artist = artist;
+    lyrics.song = providerParameters.song;
+    lyrics.artist = providerParameters.artist;
+    lyrics.album = providerParameters.album;
+    lyrics.duration = providerParameters.duration;
+    lyrics.videoId = providerParameters.videoId;
 
     BetterLyrics.App.lastLoadedVideoId = detail.videoId;
     this.cacheAndProcessLyrics(cacheKey, lyrics);
@@ -486,7 +489,7 @@ BetterLyrics.Lyrics = {
     if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
       BetterLyrics.DOM.addFooter(data.source, data.sourceHref);
     } else {
-      BetterLyrics.DOM.addNoLyricsButton(data.song, data.artist);
+      BetterLyrics.DOM.addNoLyricsButton(data.song, data.artist, data.album, data.duration);
     }
 
     if (!allZero) {

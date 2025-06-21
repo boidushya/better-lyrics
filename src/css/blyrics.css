@@ -260,7 +260,7 @@
   color: var(--blyrics-ui-text-color);
   cursor: pointer;
   font-family: var(--blyrics-font-family);
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 600;
   padding: 1rem 2rem;
   transition: all 0.3s ease;
