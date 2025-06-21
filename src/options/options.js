@@ -262,12 +262,9 @@ function createProviderElem(providerId, checked = true) {
 
   let styleFromCheckState = () => {
     if (checkboxElem.checked) {
-      labelElem.style = "";
+      labelElem.classList.remove("disabled-item");
     } else {
-      labelElem.style.textDecoration = "line-through";
-      labelElem.style.color = "#999";
-      labelElem.style.fontStyle = "italic";
-      labelElem.style.fontWeight = "normal";
+      labelElem.classList.add("disabled-item");
     }
   };
 

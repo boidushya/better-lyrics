@@ -592,3 +592,9 @@ hr {
   justify-content: left;
   gap: 0.5rem;
 }
+
+.disabled-item {
+  text-decoration: line-through;
+  color: #999;
+  font-style: italic;
+}
