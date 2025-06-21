@@ -109,7 +109,7 @@ BetterLyrics.LyricProviders = {
 
       providerParameters.sourceMap.get("musixmatch-richsync").lyricSourceResult = {
         lyrics: musixmatchWordByWordLyrics,
-        source: "Musixmatch (Richsync)",
+        source: "Musixmatch",
         sourceHref: "https://www.musixmatch.com",
         musicVideoSynced: false,
         album: response.album,
@@ -120,7 +120,7 @@ BetterLyrics.LyricProviders = {
     } else {
       providerParameters.sourceMap.get("musixmatch-richsync").lyricSourceResult = {
         lyrics: null,
-        source: "Musixmatch (Richsync)",
+        source: "Musixmatch",
         sourceHref: "https://www.musixmatch.com",
         musicVideoSynced: false,
         album: response.album,
@@ -137,7 +137,7 @@ BetterLyrics.LyricProviders = {
       );
       providerParameters.sourceMap.get("musixmatch-synced").lyricSourceResult = {
         lyrics: musixmatchSyncedLyrics,
-        source: "Musixmatch (Synced)",
+        source: "Musixmatch",
         sourceHref: "https://www.musixmatch.com",
         musicVideoSynced: false,
       };
@@ -150,7 +150,7 @@ BetterLyrics.LyricProviders = {
       );
       providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = {
         lyrics: lrclibSyncedLyrics,
-        source: "LRCLib (Synced)",
+        source: "LRCLib",
         sourceHref: "https://lrclib.net",
         musicVideoSynced: false,
       };
@@ -161,7 +161,7 @@ BetterLyrics.LyricProviders = {
 
       providerParameters.sourceMap.get("lrclib-plain").lyricSourceResult = {
         lyrics: lrclibPlainLyrics,
-        source: "LRCLib (Plain)",
+        source: "LRCLib",
         sourceHref: "https://lrclib.net",
         musicVideoSynced: false,
       };
