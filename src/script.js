@@ -23,39 +23,39 @@ let tickLyricsInterval;
  * Automatically stops the previous interval if one exists.
  */
 const startLyricsTick = () => {
-	stopLyricsTick();
+  stopLyricsTick();
 
-	tickLyricsInterval = setInterval(function () {
-		const player = document.getElementById("movie_player");
-		if (player) {
-			try {
-				const currentTime = player.getCurrentTime();
-				const { video_id, title, author } = player.getVideoData();
-				const audioTrackData = player.getAudioTrack();
-				const duration = player.getDuration();
-				const { isPlaying, isBuffering } = player.getPlayerStateObject();
-				const contentRect = player.getVideoContentRect();
-				document.dispatchEvent(
-					new CustomEvent("blyrics-send-player-time", {
-						detail: {
-							currentTime: currentTime,
-							videoId: video_id,
-							song: title,
-							artist: author,
-							duration: duration,
-							audioTrackData: audioTrackData,
-							browserTime: Date.now(),
-							playing: isPlaying && !isBuffering,
-							contentRect,
-						},
-					})
-				);
-			} catch (e) {
-				console.log(e);
-				stopLyricsTick();
-			}
-		}
-	}, 20);
+  tickLyricsInterval = setInterval(function () {
+    const player = document.getElementById("movie_player");
+    if (player) {
+      try {
+        const currentTime = player.getCurrentTime();
+        const { video_id, title, author } = player.getVideoData();
+        const audioTrackData = player.getAudioTrack();
+        const duration = player.getDuration();
+        const { isPlaying, isBuffering } = player.getPlayerStateObject();
+        const contentRect = player.getVideoContentRect();
+        document.dispatchEvent(
+          new CustomEvent("blyrics-send-player-time", {
+            detail: {
+              currentTime: currentTime,
+              videoId: video_id,
+              song: title,
+              artist: author,
+              duration: duration,
+              audioTrackData: audioTrackData,
+              browserTime: Date.now(),
+              playing: isPlaying && !isBuffering,
+              contentRect,
+            },
+          })
+        );
+      } catch (e) {
+        console.log(e);
+        stopLyricsTick();
+      }
+    }
+  }, 20);
 };
 
 /**
@@ -63,10 +63,10 @@ const startLyricsTick = () => {
  * Called when the page is unloaded or when an error occurs.
  */
 const stopLyricsTick = () => {
-	if (tickLyricsInterval) {
-		clearInterval(tickLyricsInterval);
-		tickLyricsInterval = null;
-	}
+  if (tickLyricsInterval) {
+    clearInterval(tickLyricsInterval);
+    tickLyricsInterval = null;
+  }
 };
 
 window.addEventListener("unload", stopLyricsTick);
