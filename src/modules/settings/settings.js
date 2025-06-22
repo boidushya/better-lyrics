@@ -1,4 +1,14 @@
+/**
+ * Settings management for the BetterLyrics extension.
+ * Handles user preferences and their application to the UI.
+ *
+ * @namespace BetterLyrics.Settings
+ */
 BetterLyrics.Settings = {
+  /**
+   * Handles settings initialization and applies user preferences.
+   * Sets up fullscreen behavior, animations, and other settings.
+   */
   handleSettings: function () {
     BetterLyrics.Settings.onFullScreenDisabled(
       () => {

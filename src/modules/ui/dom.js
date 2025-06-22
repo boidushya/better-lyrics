@@ -1,4 +1,15 @@
+/**
+ * DOM manipulation utilities for the BetterLyrics extension.
+ * Handles lyrics rendering, scrolling, animations, and UI element management.
+ *
+ * @namespace BetterLyrics.DOM
+ */
 BetterLyrics.DOM = {
+  /**
+   * Creates or reuses the lyrics wrapper element and sets up scroll event handling.
+   *
+   * @returns {HTMLElement} The lyrics wrapper element
+   */
   createLyricsWrapper: function () {
     const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
 
@@ -26,6 +37,16 @@ BetterLyrics.DOM = {
    * @param source : {string}
    * @param sourceHref : {string}
    */
+  /**
+   * Adds a footer with source attribution and action buttons to the lyrics container.
+   *
+   * @param {string} source - Source name for attribution
+   * @param {string} sourceHref - URL for the source link
+   * @param {string} song - Song title
+   * @param {string} artist - Artist name
+   * @param {string} album - Album name
+   * @param {number} duration - Song duration in seconds
+   */
   addFooter: function (source, sourceHref, song, artist, album, duration) {
     if (document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS).length !== 0) {
       document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0].remove();
@@ -44,6 +65,14 @@ BetterLyrics.DOM = {
     footerLink.href = sourceHref;
   },
 
+  /**
+   * Creates the footer elements including source link, Discord link, and add lyrics button.
+   *
+   * @param {string} song - Song title
+   * @param {string} artist - Artist name
+   * @param {string} album - Album name
+   * @param {number} duration - Song duration in seconds
+   */
   createFooter: function (song, artist, album, duration) {
     try {
       const footer = document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0];
@@ -106,6 +135,11 @@ BetterLyrics.DOM = {
     }
   },
 
+  /**
+   * Sets or removes RTL (right-to-left) attributes on layout elements.
+   *
+   * @param {boolean} isRtl - Whether to enable RTL layout
+   */
   setRtlAttributes: function (isRtl) {
     const layout = document.getElementById("layout");
     const playerPage = document.getElementById("player-page");
@@ -121,6 +155,9 @@ BetterLyrics.DOM = {
     }
   },
   loaderMayBeActive: false,
+  /**
+   * Renders and displays the loading spinner for lyrics fetching.
+   */
   renderLoader: function () {
     BetterLyrics.DOM.cleanup();
     BetterLyrics.DOM.loaderMayBeActive = true;
@@ -149,6 +186,9 @@ BetterLyrics.DOM = {
     }
   },
 
+  /**
+   * Removes the loading spinner with animation and cleanup.
+   */
   flushLoader: function () {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
@@ -176,6 +216,11 @@ BetterLyrics.DOM = {
     }
   },
 
+  /**
+   * Checks if the loader is currently active or animating.
+   *
+   * @returns {boolean} True if loader is active
+   */
   isLoaderActive: function () {
     try {
       if (!BetterLyrics.DOM.loaderMayBeActive) {
@@ -191,6 +236,9 @@ BetterLyrics.DOM = {
     return false;
   },
 
+  /**
+   * Clears all lyrics content from the wrapper element.
+   */
   clearLyrics: function () {
     try {
       const lyricsWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_WRAPPER_ID);
@@ -203,6 +251,12 @@ BetterLyrics.DOM = {
   },
   /** @type {MutationObserver | null} */
   backgroundChangeObserver: null,
+  /**
+   * Adds album art as a background image to the layout.
+   * Sets up mutation observer to watch for art changes.
+   *
+   * @param {string} videoId - YouTube video ID for fallback image
+   */
   addAlbumArtToLayout: function (videoId) {
     if (!videoId) return;
 
@@ -231,6 +285,11 @@ BetterLyrics.DOM = {
     BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_LOG);
   },
 
+  /**
+   * Injects album art URL as a CSS custom property.
+   *
+   * @param {string} src - Image source URL
+   */
   injectAlbumArt: function (src) {
     let img = new Image();
     img.src = src;
@@ -240,6 +299,9 @@ BetterLyrics.DOM = {
     };
   },
 
+  /**
+   * Removes album art from layout and disconnects observers.
+   */
   removeAlbumArtFromLayout: function () {
     if (BetterLyrics.DOM.backgroundChangeObserver) {
       BetterLyrics.DOM.backgroundChangeObserver.disconnect();
@@ -252,6 +314,14 @@ BetterLyrics.DOM = {
     }
   },
 
+  /**
+   * Adds a button for users to contribute lyrics when none are found.
+   *
+   * @param {string} song - Song title
+   * @param {string} artist - Artist name
+   * @param {string} album - Album name
+   * @param {number} duration - Song duration in seconds
+   */
   addNoLyricsButton: function (song, artist, album, duration) {
     const lyricsWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_WRAPPER_ID);
     if (!lyricsWrapper) return;
@@ -277,6 +347,9 @@ BetterLyrics.DOM = {
     lyricsWrapper.appendChild(buttonContainer);
   },
 
+  /**
+   * Injects required head tags including font links and image preloads.
+   */
   injectHeadTags: function () {
     const imgURL = "https://better-lyrics.boidu.dev/icon-512.png";
 
@@ -293,6 +366,9 @@ BetterLyrics.DOM = {
     document.head.appendChild(fontLink);
   },
 
+  /**
+   * Cleans up DOM elements and resets state when switching songs.
+   */
   cleanup: function () {
     BetterLyrics.DOM.scrollPos = -1;
 
@@ -321,6 +397,9 @@ BetterLyrics.DOM = {
 
     BetterLyrics.DOM.clearLyrics();
   },
+  /**
+   * Injects the player information script into the page.
+   */
   injectGetSongInfo: function () {
     let s = document.createElement("script");
     s.src = chrome.runtime.getURL("src/script.js");
@@ -356,6 +435,14 @@ BetterLyrics.DOM = {
 
     return BetterLyrics.DOM.cachedTransitionDuration;
   },
+  /**
+   * Main lyrics synchronization function that handles timing, highlighting, and scrolling.
+   *
+   * @param {number} currentTime - Current playback time in seconds
+   * @param {number} eventCreationTime - Timestamp when the event was created
+   * @param {boolean} [isPlaying=true] - Whether audio is currently playing
+   * @param {boolean} [smoothScroll=true] - Whether to use smooth scrolling
+   */
   tickLyrics: function (currentTime, eventCreationTime, isPlaying = true, smoothScroll = true) {
     const now = Date.now();
     if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking || (currentTime === 0 && !isPlaying)) {
@@ -579,6 +666,9 @@ BetterLyrics.DOM = {
     }
   },
 
+  /**
+   * Called when a new lyrics element is added to trigger re-sync.
+   */
   lyricsElementAdded: function () {
     if (!BetterLyrics.App.areLyricsTicking) {
       return;
@@ -590,6 +680,12 @@ BetterLyrics.DOM = {
       false
     );
   },
+  /**
+   * Injects song title and artist information into the main panel.
+   *
+   * @param {string} title - Song title
+   * @param {string} artist - Artist name
+   */
   injectSongAttributes: function (title, artist) {
     const mainPanel = document.getElementById("main-panel");
     console.assert(mainPanel != null);
@@ -614,6 +710,11 @@ BetterLyrics.DOM = {
     mainPanel.appendChild(songInfoWrapper);
   },
 
+  /**
+   * Gets or creates the resume autoscroll button element.
+   *
+   * @returns {HTMLElement} The resume scroll button element
+   */
   getResumeScrollElement() {
     let elem = document.getElementById("autoscroll-resume-button");
     if (!elem) {
@@ -638,9 +739,11 @@ BetterLyrics.DOM = {
 };
 
 /**
- * Return the position relative to the center of the parent
- * @param parent {Element}
- * @param child {Element}
+ * Returns the position and dimensions of a child element relative to its parent.
+ *
+ * @param {Element} parent - The parent element
+ * @param {Element} child - The child element
+ * @returns {DOMRect} Rectangle with relative position and dimensions
  */
 function getRelativeBounds(parent, child) {
   const parentBound = parent.getBoundingClientRect();
@@ -648,6 +751,12 @@ function getRelativeBounds(parent, child) {
   return new DOMRect(childBound.x - parentBound.x, childBound.y - parentBound.y, childBound.width, childBound.height);
 }
 
+/**
+ * Converts CSS duration value to milliseconds.
+ *
+ * @param {Object} cssDuration - CSS duration object with unit and value
+ * @returns {number} Duration in milliseconds
+ */
 function toMs(cssDuration) {
   if (cssDuration.unit === "s") {
     return cssDuration.value * 1000;
@@ -656,6 +765,11 @@ function toMs(cssDuration) {
   }
 }
 
+/**
+ * Forces a reflow/repaint of the element by accessing its offsetHeight.
+ *
+ * @param {HTMLElement} elt - Element to reflow
+ */
 function reflow(elt) {
   void elt.offsetHeight;
 }

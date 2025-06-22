@@ -1,4 +1,19 @@
+/**
+ * @fileoverview Early injection script for request interception.
+ * Intercepts YouTube Music API requests to extract song metadata and timing information.
+ */
+
+/** Store reference to original fetch function */
 const originalFetch = window.fetch;
+
+/**
+ * Overrides the global fetch function to intercept YouTube Music API requests.
+ * Extracts and dispatches song data for lyrics synchronization.
+ *
+ * @param {string|Request} request - Fetch request URL or Request object
+ * @param {RequestInit} [init] - Optional fetch configuration
+ * @returns {Promise<Response>} The original fetch response
+ */
 window.fetch = async function (request, init) {
   const urlString = typeof request === "string" ? request : request.url;
 

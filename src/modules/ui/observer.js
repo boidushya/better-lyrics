@@ -1,4 +1,14 @@
+/**
+ * Observer utilities for the BetterLyrics extension.
+ * Handles DOM observation, event listening, and state management.
+ *
+ * @namespace BetterLyrics.Observer
+ */
 BetterLyrics.Observer = {
+  /**
+   * Enables the lyrics tab and prevents it from being disabled by YouTube Music.
+   * Sets up a MutationObserver to watch for attribute changes.
+   */
   enableLyricsTab: function () {
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     if (!tabSelector) {
@@ -19,6 +29,10 @@ BetterLyrics.Observer = {
     });
     observer.observe(tabSelector, { attributes: true });
   },
+  /**
+   * Disables the inert attribute on the side panel when entering fullscreen.
+   * Ensures lyrics tab remains accessible in fullscreen mode.
+   */
   disableInertWhenFullscreen: function () {
     let panelElem = document.getElementById("side-panel");
     if (!panelElem) {
@@ -50,6 +64,10 @@ BetterLyrics.Observer = {
 
   currentTab: 0,
   scrollPositions: [0, 0, 0],
+  /**
+   * Sets up tab click handlers and manages scroll positions between tabs.
+   * Handles lyrics reloading when the lyrics tab is clicked.
+   */
   lyricReloader: function () {
     const tabs = document.getElementsByClassName(BetterLyrics.Constants.TAB_CONTENT_CLASS);
 
@@ -82,6 +100,10 @@ BetterLyrics.Observer = {
       setTimeout(() => BetterLyrics.Observer.lyricReloader(), 1000);
     }
   },
+  /**
+   * Initializes the main player time event listener.
+   * Handles video changes, lyric injection, and player state updates.
+   */
   initializeLyrics: function () {
     document.addEventListener("blyrics-send-player-time", function (event) {
       let detail = event.detail;
@@ -155,6 +177,10 @@ BetterLyrics.Observer = {
       BetterLyrics.DOM.tickLyrics(detail.currentTime, detail.browserTime, detail.playing);
     });
   },
+  /**
+   * Handles scroll events on the tab renderer.
+   * Manages autoscroll pause/resume functionality.
+   */
   scrollEventHandler: () => {
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     if (tabSelector.getAttribute("aria-selected") !== "true" || !BetterLyrics.App.areLyricsTicking) {

@@ -1,5 +1,12 @@
-// Initialize the time update interval and stop it when the page is unloaded
+/**
+ * @fileoverview YouTube Music player integration script for BetterLyrics.
+ * Handles real-time player state monitoring and event dispatching.
+ */
 
+/**
+ * Interval ID for the lyrics tick timer.
+ * @type {number|null}
+ */
 let tickLyricsInterval;
 
 // Get all player methods (paste in broswer console)
@@ -10,6 +17,11 @@ let tickLyricsInterval;
 //         console.log(i);
 //     }
 // }
+/**
+ * Starts the lyrics tick interval to monitor YouTube Music player state.
+ * Dispatches custom events with player information every 20ms for real-time sync.
+ * Automatically stops the previous interval if one exists.
+ */
 const startLyricsTick = () => {
   stopLyricsTick();
 
@@ -46,6 +58,10 @@ const startLyricsTick = () => {
   }, 20);
 };
 
+/**
+ * Stops the lyrics tick interval and clears the timer.
+ * Called when the page is unloaded or when an error occurs.
+ */
 const stopLyricsTick = () => {
   if (tickLyricsInterval) {
     clearInterval(tickLyricsInterval);
