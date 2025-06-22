@@ -2,6 +2,7 @@ name: Auto-fix Biome Issues
 
 on:
   push:
+  pull_request:
 
 permissions:
   contents: write
@@ -36,8 +37,13 @@ jobs:
             git config --local user.name "Better Lyrics Harmonizer"
             git add .
             git commit -m "Auto-fix: Apply Biome lint and format fixes"
-            git push
-            echo "✅ Auto-fixed Biome issues and committed changes"
+
+            if git symbolic-ref HEAD >/dev/null 2>&1; then
+              git push
+              echo "✅ Auto-fixed Biome issues and committed changes"
+            else
+              echo "✅ Auto-fixed Biome issues (detached HEAD - changes committed locally)"
+            fi
           else
             echo "✅ No Biome issues found - skipping commit"
           fi
