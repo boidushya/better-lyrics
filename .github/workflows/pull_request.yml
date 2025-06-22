@@ -1,6 +1,7 @@
 name: Auto-fix Biome Issues
 
 on:
+  push:
   pull_request:
 
 permissions:
@@ -32,7 +33,7 @@ jobs:
       - name: Check for changes and commit
         run: |
           if [ -n "$(git status --porcelain)" ]; then
-            git config --local user.email "bot@boidu.dev"
+            git config --local user.email "harmonizer@betterlyrics.dev"
             git config --local user.name "Better Lyrics Harmonizer"
             git add .
             git commit -m "Auto-fix: Apply Biome lint and format fixes"
