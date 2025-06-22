@@ -7,8 +7,25 @@
 	- [1. Introduction to CSS and Better Lyrics](#1-introduction-to-css-and-better-lyrics)
 	- [2. Understanding the CSS Structure](#2-understanding-the-css-structure)
 	- [3. Custom Properties (CSS Variables)](#3-custom-properties-css-variables)
+		- [Colors:](#colors)
+		- [Typography](#typography)
+		- [Animations](#animations)
+		- [Layout](#layout)
+		- [Lyric Transition](#lyric-transition)
+		- [Effects](#effects)
+		- [`--blyrics-gradient-stops`](#--blyrics-gradient-stops)
 	- [4. Styling the Main Lyrics Container](#4-styling-the-main-lyrics-container)
 	- [5. Styling Individual Lyric Lines](#5-styling-individual-lyric-lines)
+		- [Base Structure](#base-structure)
+		- [Base Styling for Each Lyric](#base-styling-for-each-lyric)
+		- [Activating a Lyric](#activating-a-lyric)
+		- [Styling Each Word](#styling-each-word)
+		- [Applying the Wobble Animation](#applying-the-wobble-animation)
+		- [Implementing the Swipe (Karaoke) Transition](#implementing-the-swipe-karaoke-transition)
+			- [Defining Custom Properties](#defining-custom-properties)
+			- [The `::after` Pseudo-element](#the-after-pseudo-element)
+			- [Pre-animation States and the Role of `.blyrics-zero-dur-animate`](#pre-animation-states-and-the-role-of-blyrics-zero-dur-animate)
+			- [Final State: Lyric Selection](#final-state-lyric-selection)
 	- [6. Creating Animation Effects](#6-creating-animation-effects)
 	- [7. Modifying YouTube Music's Layout](#7-modifying-youtube-musics-layout)
 	- [8. Handling Loading and Errors](#8-handling-loading-and-errors)
@@ -63,7 +80,7 @@ These define CSS custom properties (also known as CSS variables) used throughout
 ### Colors:
 
 | Variable                         | Default Value                                                  | Description                                     | Deprecated                                                                                              |
-|----------------------------------|----------------------------------------------------------------|-------------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| -------------------------------- | -------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | `--blyrics-text-color`           | ``                                                             | Main color of text used thoughout Better Lyrics | Use `--blyrics-ui-text-color`, `--blyrics-lyric-active-color`, `--blyrics-lyric-inactive-color` instead |
 | `--blyrics-ui-text-color`        | `color(display-p3 1 1 1 / 1)` (white)                          | Color of non-lyric UI text                      |                                                                                                         |
 | `--blyrics-active-opacity`       | ``                                                             | Controls opacity of active lyrics               | Use `--blyrics-lyric-active-color` instead                                                              |
@@ -82,7 +99,7 @@ These define CSS custom properties (also known as CSS variables) used throughout
 ### Typography
 
 | Variable                           | Default Value                                           | Description                                | Deprecated                               |
-|------------------------------------|---------------------------------------------------------|--------------------------------------------|------------------------------------------|
+| ---------------------------------- | ------------------------------------------------------- | ------------------------------------------ | ---------------------------------------- |
 | `--blyrics-font-family`            | *                                                       | Font family to use in lyrics               |                                          |
 | `--blyrics-font-size`              | `3rem`                                                  | Font size to use for lyrics                |                                          |
 | `--blyrics-font-weight`            | `700`                                                   | Font weight to use for lyrics              |                                          |
@@ -103,7 +120,7 @@ These define CSS custom properties (also known as CSS variables) used throughout
 ### Animations
 
 | Variable                                      | Default Value | Description                                 | Deprecated                                                                                                |
-|-----------------------------------------------|---------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------|
+| --------------------------------------------- | ------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `--blyrics-transition-duration`               | ``            | Transition duration of scale effect         | Use `--blyrics-scale-transition-duration`  instead                                                        |
 | `--blyrics-scale-transition-duration`         | `0.166s`      | Transition duration of scale effect         |                                                                                                           |
 | `--blyrics-opacity-transition`                | ``            | Controls duration of fade in/out transition | Use `--blyrics-lyric-highlight-fade-in-duration` / `--blyrics-lyric-highlight-fade-out-duration`  instead |
@@ -116,7 +133,7 @@ These define CSS custom properties (also known as CSS variables) used throughout
 These aren't really used anywhere relevant
 
 | Variable                  | Default Value | Description | Deprecated |
-|---------------------------|---------------|-------------|------------|
+| ------------------------- | ------------- | ----------- | ---------- |
 | `--blyrics-padding`       | `2rem`        |             |            |
 | `--blyrics-margin`        | `2rem`        |             |            |
 | `--blyrics-border-radius` | `1000rem`     |             |            |
@@ -124,7 +141,7 @@ These aren't really used anywhere relevant
 ### Lyric Transition
 
 | Variable                                     | Default Value | Description                                      | Deprecated                                                |
-|----------------------------------------------|---------------|--------------------------------------------------|-----------------------------------------------------------|
+| -------------------------------------------- | ------------- | ------------------------------------------------ | --------------------------------------------------------- |
 | `--blyrics-lyric-scroll-duration`            |               | Duration for scrolling lyric transitions.        | Use `--blyrics-lyric-transition-duration` instead.        |
 | `--blyrics-lyric-transition-duration`        | `0.3s`        | Duration for scrolling lyric transitions.        |                                                           |
 | `--blyrics-lyric-scroll-timing-function`     |               | Timing function for scrolling lyric transitions. | Use `--blyrics-lyric-transition-timing-function` instead. |
@@ -133,7 +150,7 @@ These aren't really used anywhere relevant
 ### Effects
 
 | Variable                        | Default Value | Description                                                        |
-|---------------------------------|---------------|--------------------------------------------------------------------|
+| ------------------------------- | ------------- | ------------------------------------------------------------------ |
 | `--blyrics-blur-amount`         | `30px`        | Amount of blur applied to elements for visual effects.             |
 | `--blyrics-scale`               | `0.95`        | Scale factor applied to inactive elements.                         |
 | `--blyrics-active-scale`        | `1`           | Scale factor applied to active elements.                           |
