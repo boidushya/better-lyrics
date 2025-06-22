@@ -9,16 +9,16 @@
  * @returns {boolean} Returns true to indicate asynchronous response
  */
 chrome.runtime.onMessage.addListener(request => {
-	if (request.action === "updateCSS") {
-		chrome.tabs.query({ url: "*://music.youtube.com/*" }, tabs => {
-			tabs.forEach(tab => {
-				chrome.tabs.sendMessage(tab.id, { action: "updateCSS", css: request.css }).catch(error => {
-					console.log(`[BetterLyrics] (Safe to ignore) Error sending message to tab ${tab.id}:`, error);
-				});
-			});
-		});
-	} else if (request.action === "updateSettings") {
-		BetterLyrics.Settings.handleSettings(request.settings);
-	}
-	return true;
+  if (request.action === "updateCSS") {
+    chrome.tabs.query({ url: "*://music.youtube.com/*" }, tabs => {
+      tabs.forEach(tab => {
+        chrome.tabs.sendMessage(tab.id, { action: "updateCSS", css: request.css }).catch(error => {
+          console.log(`[BetterLyrics] (Safe to ignore) Error sending message to tab ${tab.id}:`, error);
+        });
+      });
+    });
+  } else if (request.action === "updateSettings") {
+    BetterLyrics.Settings.handleSettings(request.settings);
+  }
+  return true;
 });
