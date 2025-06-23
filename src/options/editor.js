@@ -30,7 +30,7 @@ const showAlert = message => {
 
 const openEditCSS = () => {
   const editCSS = document.getElementById("css");
-  const options = document.getElementById("options");
+  const options = document.getElementById("themes-content");
 
   editCSS.style.display = "block";
   options.style.display = "none";
@@ -40,7 +40,7 @@ document.getElementById("edit-css-btn").addEventListener("click", openEditCSS);
 
 const openOptions = () => {
   const editCSS = document.getElementById("css");
-  const options = document.getElementById("options");
+  const options = document.getElementById("themes-content");
 
   editCSS.style.display = "none";
   options.style.display = "block";

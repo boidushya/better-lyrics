@@ -380,7 +380,7 @@ BetterLyrics.Lyrics = {
      */
     let lyricsData = [];
 
-    lyrics.forEach(item => {
+    lyrics.forEach((item, lineIndex) => {
       if (!item.parts || item.parts.length === 0) {
         item.parts = [];
         const words = item.words.split(" ");
@@ -445,6 +445,7 @@ BetterLyrics.Lyrics = {
 
       line.dataset.time = lineData.time;
       line.dataset.duration = lineData.duration;
+      line.dataset.lineNumber = lineIndex;
       line.style.setProperty("--blyrics-duration", item.durationMs + "ms");
 
       if (!allZero) {
