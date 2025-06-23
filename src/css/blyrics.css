@@ -50,8 +50,8 @@
   --blyrics-background-saturate: 2;
 
   /* Lyric Transition Properties */
-  --blyrics-lyric-scroll-duration: var(--blyrics-lyric-transition-duration, 0.3s);
-  --blyrics-lyric-scroll-timing-function: var(--blyrics-lyric-transition-timing-function, ease);
+  --blyrics-lyric-scroll-duration: var(--blyrics-lyric-transition-duration, 750ms);
+  --blyrics-lyric-scroll-timing-function: var(--blyrics-lyric-transition-timing-function, cubic-bezier(0.86, 0, 0.07, 1));
 
   /* Gradient stops */
   --blyrics-gradient-stops:
@@ -109,6 +109,7 @@
 .blyrics-container > div.blyrics--animating {
   transform: scale(var(--blyrics-active-scale));
 }
+
 
 .blyrics-container > div > span {
   color: var(--blyrics-lyric-inactive-color);

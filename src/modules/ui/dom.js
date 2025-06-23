@@ -126,8 +126,8 @@ BetterLyrics.DOM = {
       addLyricsContainer.appendChild(addLyricsLink);
 
       footer.appendChild(footerContainer);
-      footer.appendChild(discordLink);
       footer.appendChild(addLyricsContainer);
+      footer.appendChild(discordLink);
 
       footer.removeAttribute("is-empty");
     } catch (_err) {
