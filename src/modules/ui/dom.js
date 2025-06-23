@@ -315,7 +315,7 @@ BetterLyrics.DOM = {
 	},
 
 	/**
-	 * Adds a button for users to contribute lyrics when none are found.
+	 * Adds a button for users to contribute lyrics.
 	 *
 	 * @param {string} song - Song title
 	 * @param {string} artist - Artist name

@@ -17,13 +17,7 @@ BetterLyrics.Lyrics = {
    * Main function to create and inject lyrics for the current song.
    * Handles caching, API requests, and fallback mechanisms.
    *
-   * @param {Object} detail - Song and player details
-   * @param {string} detail.song - Song title
-   * @param {string} detail.artist - Artist name
-   * @param {string} detail.videoId - YouTube video ID
-   * @param {number} detail.duration - Song duration in seconds
-   * @param {Object} detail.audioTrackData - Audio track information
-   * @param {Object} detail.contentRect - Video content rectangle
+   * @param {PlayerDetails} detail - Song and player details
    */
   createLyrics: async function (detail) {
     let song = detail.song;
