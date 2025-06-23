@@ -681,7 +681,7 @@ BetterLyrics.DOM = {
 		);
 	},
 	/**
-	 * Injects song title and artist information into the main panel.
+	 * Injects song title and artist information used in fullscreen mode.
 	 *
 	 * @param {string} title - Song title
 	 * @param {string} artist - Artist name
