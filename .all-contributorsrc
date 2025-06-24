@@ -51,6 +51,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Kiroolos",
+      "name": "Kirolos ☃️",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43939903?v=4",
+      "profile": "https://github.com/Kiroolos",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "badgeTemplate": "<img src=\"https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg\" alt=\"\"/>",
