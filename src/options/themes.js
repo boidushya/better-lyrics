@@ -1,9 +1,9 @@
 export default [
-	{
-		name: "Spotlight",
-		author: "BetterLyrics",
-		link: "https://twitter.com/boidushya",
-		css: `.blyrics-container:has(.blyrics--active) > div:not(.blyrics--active):not(.blyrics--active ~ div) {
+  {
+    name: "Spotlight",
+    author: "BetterLyrics",
+    link: "https://twitter.com/boidushya",
+    css: `.blyrics-container:has(.blyrics--active) > div:not(.blyrics--active):not(.blyrics--active ~ div) {
   opacity: 0.33;
   filter: blur(2.5px);
 }
@@ -22,12 +22,12 @@ export default [
   transition: filter calc(var(--blyrics-duration) / 2), opacity calc(var(--blyrics-duration) / 2), transform 0.166s;
 }
 		`,
-	},
-	{
-		name: "Pastel",
-		author: "BetterLyrics",
-		link: "https://twitter.com/boidushya",
-		css: `@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+  },
+  {
+    name: "Pastel",
+    author: "BetterLyrics",
+    link: "https://twitter.com/boidushya",
+    css: `@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
 
 :root {
   --dark-mellow-bg-color: #1a1a1a;
@@ -169,12 +169,12 @@ ytmusic-player-page:before {
     ) !important;
   }
 }`,
-	},
-	{
-		name: "Harmony Glow",
-		author: "NAMELESS",
-		link: "",
-		css: `.blyrics-container {
+  },
+  {
+    name: "Harmony Glow",
+    author: "NAMELESS",
+    link: "",
+    css: `.blyrics-container {
   font-family: "Roboto Mono", monospace;
   font-size: 2.5rem;
   font-weight: 700;
@@ -265,12 +265,12 @@ ytmusic-player-page:before {
   transition: filter calc(var(--blyrics-duration) / 2),
     opacity calc(var(--blyrics-duration) / 2), transform 0.166s;
 }`,
-	},
-	{
-		name: "Even Better Lyrics",
-		author: "Noah",
-		link: "",
-		css: `:root {
+  },
+  {
+    name: "Even Better Lyrics",
+    author: "Noah",
+    link: "",
+    css: `:root {
   --yt-album-size: 500px;
   --blyrics-hover-scale: 1.02;
   /* Existing root variables... */
@@ -315,12 +315,12 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
   transition: all 0.3s ease;
 }
 `,
-	},
-	{
-		name: "Big Blurry Slow Lyrics for TV",
-		author: "zobiron",
-		link: "",
-		css: `.blyrics-container {
+  },
+  {
+    name: "Big Blurry Slow Lyrics for TV",
+    author: "zobiron",
+    link: "",
+    css: `.blyrics-container {
   font-family: "Verdana", thick;
   font-size: 7rem;
   font-weight: 700;
@@ -412,12 +412,12 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
   transition: filter calc(var(--blyrics-duration) / 3),
     opacity calc(var(--blyrics-duration) / 2), transform 1.166s;
 }`,
-	},
-	{
-		name: "Even Better Lyrics Plus",
-		author: "Noah & BetterLyrics",
-		link: "",
-		css: `
+  },
+  {
+    name: "Even Better Lyrics Plus",
+    author: "Noah & BetterLyrics",
+    link: "",
+    css: `
 :root {
   --yt-album-size: 600px;
   --blyrics-hover-scale: 1.02;
@@ -500,5 +500,5 @@ animation:
   will-change: transform;
 }
 `,
-	},
+  },
 ];
