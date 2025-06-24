@@ -1,9 +1,9 @@
 export default [
-  {
-    name: "Spotlight",
-    author: "BetterLyrics",
-    link: "https://twitter.com/boidushya",
-    css: `.blyrics-container:has(.blyrics--active) > div:not(.blyrics--active):not(.blyrics--active ~ div) {
+	{
+		name: "Spotlight",
+		author: "BetterLyrics",
+		link: "https://twitter.com/boidushya",
+		css: `.blyrics-container:has(.blyrics--active) > div:not(.blyrics--active):not(.blyrics--active ~ div) {
   opacity: 0.33;
   filter: blur(2.5px);
 }
@@ -22,153 +22,12 @@ export default [
   transition: filter calc(var(--blyrics-duration) / 2), opacity calc(var(--blyrics-duration) / 2), transform 0.166s;
 }
 		`,
-  },
-  {
-    name: "Pastel",
-    author: "BetterLyrics",
-    link: "https://twitter.com/boidushya",
-    css: `@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
-
-:root {
-  --dark-mellow-bg-color: #1a1a1a;
-  --dark-mellow-text-color: #e0e0e0;
-  --dark-mellow-highlight-color: #d4a5a5;
-  --dark-mellow-shadow-color: rgba(0, 0, 0, 0.3);
-  --dark-mellow-border-color: #d4a5a52a;
-  --dark-mellow-secondary-bg: #2c2c2c;
-}
-
-.blyrics-container {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-weight: 400;
-  color: var(--dark-mellow-text-color);
-  padding: 2rem;
-  border-radius: 1rem;
-}
-
-.blyrics-container > div {
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  opacity: 0.7;
-}
-
-.blyrics-container > div.blyrics--active {
-  transform: scale(1.05);
-  opacity: 1;
-}
-
-.blyrics-container > div.blyrics--active > span:not(:empty):not(.blyrics--translated):not(.blyrics--romanized) {
-  animation: dark-mellow-highlight var(--blyrics-duration) ease-in-out infinite;
-}
-
-/* Translation and Romanization styles */
-.blyrics--translated,
-.blyrics--romanized {
-  color: var(--dark-mellow-text-color);
-  opacity: 0.7;
-}
-
-.blyrics--romanized {
-  background-color: rgba(212, 165, 165, 0.05);
-  border: 1px solid var(--dark-mellow-border-color);
-  padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
-}
-
-@keyframes dark-mellow-highlight {
-  0%, 100% {
-    color: var(--dark-mellow-text-color);
-    text-shadow: none;
-  }
-  50% {
-    color: var(--dark-mellow-highlight-color);
-    text-shadow: 0 0 10px var(--dark-mellow-highlight-color);
-  }
-}
-
-.blyrics-footer__container {
-  background-color: var(--dark-mellow-secondary-bg);
-  color: var(--dark-mellow-text-color);
-  border: 1px solid var(--dark-mellow-border-color);
-  padding: 0.75rem 1.5rem;
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.blyrics-footer__container:hover {
-  transform: translateY(-2px);
-  background-color: var(--dark-mellow-highlight-color);
-  color: var(--dark-mellow-bg-color);
-}
-
-.blyrics-footer__container > a {
-  color: var(--dark-mellow-highlight-color);
-}
-
-.blyrics-footer__container:hover > a {
-  color: var(--dark-mellow-bg-color);
-}
-
-ytmusic-player-page:before {
-  background: linear-gradient(
-    to right,
-    rgba(26, 26, 26, 0.75),
-    rgba(26, 26, 26, 0.75)
-  ),
-  var(--blyrics-background-img);
-  filter: blur(50px) saturate(0.8);
-}
-
-#tab-renderer[page-type="MUSIC_PAGE_TYPE_TRACK_LYRICS"] {
-  scrollbar-color: var(--dark-mellow-highlight-color) transparent;
-}
-
-.blyrics--error {
-  color: #ff9999;
-  font-weight: 500;
-  opacity: 0.8;
-}
-
-#blyrics-watermark > .blyrics-watermark__container {
-  background-color: var(--dark-mellow-secondary-bg);
-  backdrop-filter: blur(5px);
-}
-
-#blyrics-watermark > .blyrics-watermark__container > p {
-  color: var(--dark-mellow-text-color);
-}
-
-#blyrics-song-info > p#blyrics-title {
-  color: var(--dark-mellow-highlight-color);
-  font-weight: 600;
-}
-
-#blyrics-song-info > p#blyrics-artist {
-  color: var(--dark-mellow-text-color);
-  font-weight: 400;
-  opacity: 0.8;
-}
-
-@media (max-width: 615px) {
-  .blyrics-container:before {
-    background: linear-gradient(
-      to right,
-      var(--dark-mellow-bg-color) 4rem,
-      rgba(26, 26, 26, 0.8),
-      var(--dark-mellow-bg-color) 96%
-    ),
-    var(--blyrics-background-img) !important;
-    filter: blur(40px) saturate(0.8);
-  }
-
-  .blyrics-container:after {
-    background: radial-gradient(
-      circle at center,
-      rgba(26, 26, 26, 0.2),
-      rgba(26, 26, 26, 0.6)
-    ) !important;
-  }
-}@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+	},
+	{
+		name: "Pastel",
+		author: "BetterLyrics",
+		link: "https://twitter.com/boidushya",
+		css: `@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
 
 :root {
   --dark-mellow-bg-color: #1a1a1a;
@@ -310,12 +169,12 @@ ytmusic-player-page:before {
     ) !important;
   }
 }`,
-  },
-  {
-    name: "Harmony Glow",
-    author: "NAMELESS",
-    link: "",
-    css: `.blyrics-container {
+	},
+	{
+		name: "Harmony Glow",
+		author: "NAMELESS",
+		link: "",
+		css: `.blyrics-container {
   font-family: "Roboto Mono", monospace;
   font-size: 2.5rem;
   font-weight: 700;
@@ -406,12 +265,12 @@ ytmusic-player-page:before {
   transition: filter calc(var(--blyrics-duration) / 2),
     opacity calc(var(--blyrics-duration) / 2), transform 0.166s;
 }`,
-  },
-  {
-    name: "Even Better Lyrics",
-    author: "Noah",
-    link: "",
-    css: `:root {
+	},
+	{
+		name: "Even Better Lyrics",
+		author: "Noah",
+		link: "",
+		css: `:root {
   --yt-album-size: 500px;
   --blyrics-hover-scale: 1.02;
   /* Existing root variables... */
@@ -456,12 +315,12 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
   transition: all 0.3s ease;
 }
 `,
-  },
-  {
-    name: "Big Blurry Slow Lyrics for TV",
-    author: "zobiron",
-    link: "",
-    css: `.blyrics-container {
+	},
+	{
+		name: "Big Blurry Slow Lyrics for TV",
+		author: "zobiron",
+		link: "",
+		css: `.blyrics-container {
   font-family: "Verdana", thick;
   font-size: 7rem;
   font-weight: 700;
@@ -553,12 +412,12 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
   transition: filter calc(var(--blyrics-duration) / 3),
     opacity calc(var(--blyrics-duration) / 2), transform 1.166s;
 }`,
-  },
-  {
-    name: "Even Better Lyrics Plus",
-    author: "Noah & BetterLyrics",
-    link: "",
-    css: `
+	},
+	{
+		name: "Even Better Lyrics Plus",
+		author: "Noah & BetterLyrics",
+		link: "",
+		css: `
 :root {
   --yt-album-size: 600px;
   --blyrics-hover-scale: 1.02;
@@ -641,5 +500,5 @@ animation:
   will-change: transform;
 }
 `,
-  },
+	},
 ];
