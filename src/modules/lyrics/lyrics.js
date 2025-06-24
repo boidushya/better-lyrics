@@ -1,6 +1,24 @@
+/**
+ * @fileoverview Main lyrics handling module for BetterLyrics.
+ * Manages lyrics fetching, caching, processing, and rendering.
+ */
+
+/** Current version of the lyrics cache format */
 const LYRIC_CACHE_VERSION = "1.1.1";
 
+/**
+ * Core lyrics functionality for the BetterLyrics extension.
+ * Handles lyrics fetching, caching, processing, and DOM injection.
+ *
+ * @namespace BetterLyrics.Lyrics
+ */
 BetterLyrics.Lyrics = {
+  /**
+   * Main function to create and inject lyrics for the current song.
+   * Handles caching, API requests, and fallback mechanisms.
+   *
+   * @param {PlayerDetails} detail - Song and player details
+   */
   createLyrics: async function (detail) {
     let song = detail.song;
     let artist = detail.artist;
@@ -222,6 +240,12 @@ BetterLyrics.Lyrics = {
     this.cacheAndProcessLyrics(cacheKey, lyrics);
   },
 
+  /**
+   * Caches lyrics data and initiates processing.
+   *
+   * @param {string} cacheKey - Storage key for caching
+   * @param {Object} data - Lyrics data to cache and process
+   */
   cacheAndProcessLyrics: function (cacheKey, data) {
     if (data.cacheAllowed === undefined || data.cacheAllowed) {
       data.version = LYRIC_CACHE_VERSION;
@@ -231,6 +255,15 @@ BetterLyrics.Lyrics = {
     BetterLyrics.Lyrics.processLyrics(data);
   },
 
+  /**
+   * Processes lyrics data and prepares it for rendering.
+   * Sets language settings, validates data, and initiates DOM injection.
+   *
+   * @param {Object} data - Processed lyrics data
+   * @param {string} data.language - Language code for the lyrics
+   * @param {boolean} data.isRtlLanguage - Whether lyrics are in RTL language
+   * @param {Array} data.lyrics - Array of lyric lines
+   */
   processLyrics: function (data) {
     BetterLyrics.App.lang = data.language;
     BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
@@ -257,6 +290,15 @@ BetterLyrics.Lyrics = {
     BetterLyrics.Lyrics.injectLyrics(data);
   },
 
+  /**
+   * Injects lyrics into the DOM with timing, click handlers, and animations.
+   * Creates the complete lyrics interface including synchronization support.
+   *
+   * @param {Object} data - Complete lyrics data object
+   * @param {Array} data.lyrics - Array of lyric lines with timing
+   * @param {string} [data.source] - Source attribution for lyrics
+   * @param {string} [data.sourceHref] - URL for source link
+   */
   injectLyrics: function (data) {
     const lyrics = data.lyrics;
     BetterLyrics.DOM.cleanup();
@@ -338,7 +380,7 @@ BetterLyrics.Lyrics = {
      */
     let lyricsData = [];
 
-    lyrics.forEach(item => {
+    lyrics.forEach((item, lineIndex) => {
       if (!item.parts || item.parts.length === 0) {
         item.parts = [];
         const words = item.words.split(" ");
@@ -403,6 +445,7 @@ BetterLyrics.Lyrics = {
 
       line.dataset.time = lineData.time;
       line.dataset.duration = lineData.duration;
+      line.dataset.lineNumber = lineIndex;
       line.style.setProperty("--blyrics-duration", item.durationMs + "ms");
 
       if (!allZero) {

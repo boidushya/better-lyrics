@@ -5,6 +5,10 @@ let isUserTyping = false;
 const SAVE_DEBOUNCE_DELAY = 1000;
 const VALID_CHANGE_ORIGINS = ["undo", "redo", "cut", "paste", "drag", "+delete", "+input"];
 
+// Storage quota limits (in bytes)
+const SYNC_STORAGE_LIMIT = 7000; // Leave some buffer under 8KB limit
+const MAX_RETRY_ATTEMPTS = 3;
+
 import THEMES from "./themes.js";
 
 const invalidKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Shift", "Enter", "Tab"];
@@ -26,7 +30,7 @@ const showAlert = message => {
 
 const openEditCSS = () => {
   const editCSS = document.getElementById("css");
-  const options = document.getElementById("options");
+  const options = document.getElementById("themes-content");
 
   editCSS.style.display = "block";
   options.style.display = "none";
@@ -36,7 +40,7 @@ document.getElementById("edit-css-btn").addEventListener("click", openEditCSS);
 
 const openOptions = () => {
   const editCSS = document.getElementById("css");
-  const options = document.getElementById("options");
+  const options = document.getElementById("themes-content");
 
   editCSS.style.display = "none";
   options.style.display = "block";
@@ -44,7 +48,7 @@ const openOptions = () => {
 
 document.getElementById("back-btn").addEventListener("click", openOptions);
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   const syncIndicator = document.getElementById("sync-indicator");
   const themeSelector = document.getElementById("theme-selector");
 
@@ -66,8 +70,59 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   editor.refresh();
-
   editor.setSize(null, 300);
+
+  // Enhanced storage management
+  const getStorageStrategy = css => {
+    const cssSize = new Blob([css]).size;
+    return cssSize > SYNC_STORAGE_LIMIT ? "local" : "sync";
+  };
+
+  const saveToStorageWithFallback = async (css, isTheme = false, retryCount = 0) => {
+    try {
+      const strategy = getStorageStrategy(css);
+
+      if (strategy === "local") {
+        // Use local storage for large content
+        await browserAPI.storage.local.set({ customCSS: css });
+        // Clear any sync storage CSS to avoid conflicts
+        await browserAPI.storage.sync.remove("customCSS");
+        // Store a flag indicating we're using local storage
+        await browserAPI.storage.sync.set({ cssStorageType: "local" });
+      } else {
+        // Use sync storage for smaller content
+        await browserAPI.storage.sync.set({ customCSS: css, cssStorageType: "sync" });
+        // Clear any local storage CSS to avoid conflicts
+        await browserAPI.storage.local.remove("customCSS");
+      }
+
+      // Always handle theme name in sync storage (small data)
+      if (!isTheme && isUserTyping) {
+        await browserAPI.storage.sync.remove("themeName");
+        themeSelector.value = "";
+        currentThemeName = null;
+      }
+
+      return { success: true, strategy };
+    } catch (error) {
+      console.error("Storage save attempt failed:", error);
+
+      if (error.message?.includes("quota") && retryCount < MAX_RETRY_ATTEMPTS) {
+        // Quota exceeded, try with local storage
+        try {
+          await browserAPI.storage.local.set({ customCSS: css });
+          await browserAPI.storage.sync.remove("customCSS");
+          await browserAPI.storage.sync.set({ cssStorageType: "local" });
+          return { success: true, strategy: "local", wasRetry: true };
+        } catch (localError) {
+          console.error("Local storage fallback failed:", localError);
+          return { success: false, error: localError };
+        }
+      }
+
+      return { success: false, error };
+    }
+  };
 
   function saveToStorage(isTheme = false) {
     const css = editor.getValue();
@@ -79,34 +134,52 @@ document.addEventListener("DOMContentLoaded", function () {
       currentThemeName = null;
     }
 
-    browserAPI.storage.sync
-      .set({ customCSS: css })
-      .then(() => {
-        syncIndicator.innerText = "Saved!";
-        syncIndicator.classList.add("success");
-        setTimeout(() => {
-          syncIndicator.style.display = "none";
-          syncIndicator.innerText = "Saving...";
-          syncIndicator.classList.remove("success");
-        }, 1000);
+    saveToStorageWithFallback(css, isTheme)
+      .then(result => {
+        if (result.success) {
+          syncIndicator.innerText =
+            result.strategy === "local" ? (result.wasRetry ? "Saved (Large CSS - Local)" : "Saved (Local)") : "Saved!";
+          syncIndicator.classList.add("success");
 
-        // Send message to all tabs to update CSS
-        try {
-          browserAPI.runtime.sendMessage({ action: "updateCSS", css: css }).catch(error => {
-            console.log("[BetterLyrics] (Safe to ignore) Error sending message:", error);
-          });
-        } catch (err) {
-          console.log(err);
+          setTimeout(() => {
+            syncIndicator.style.display = "none";
+            syncIndicator.innerText = "Saving...";
+            syncIndicator.classList.remove("success");
+          }, 1000);
+
+          // Send message to all tabs to update CSS
+          try {
+            browserAPI.runtime
+              .sendMessage({
+                action: "updateCSS",
+                css: css,
+                storageType: result.strategy,
+              })
+              .catch(error => {
+                console.log("[BetterLyrics] (Safe to ignore) Error sending message:", error);
+              });
+          } catch (err) {
+            console.log(err);
+          }
+        } else {
+          throw result.error;
         }
       })
-      .catch(() => {
-        syncIndicator.innerText = "Something went wrong!";
+      .catch(err => {
+        console.error("Error saving to storage:", err);
+
+        let errorMessage = "Something went wrong!";
+        if (err.message?.includes("quota")) {
+          errorMessage = "CSS too large for storage!";
+        }
+
+        syncIndicator.innerText = errorMessage;
         syncIndicator.classList.add("error");
         setTimeout(() => {
           syncIndicator.style.display = "none";
           syncIndicator.innerText = "Saving...";
           syncIndicator.classList.remove("error");
-        }, 1000);
+        }, 3000);
       });
 
     isUserTyping = false;
@@ -118,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
     saveTimeout = setTimeout(saveToStorage, SAVE_DEBOUNCE_DELAY);
   }
 
-  editor.on("change", function (_, changeObj) {
+  editor.on("change", (_, changeObj) => {
     console.log("cm", changeObj);
     if (VALID_CHANGE_ORIGINS.includes(changeObj.origin)) {
       isUserTyping = true;
@@ -131,14 +204,44 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Load saved content
-  browserAPI.storage.sync.get("customCSS", function (data) {
-    if (data.customCSS) {
-      editor.setValue(data.customCSS);
+  // Enhanced loading function to check both storage types
+  const loadCustomCSS = async () => {
+    try {
+      // First check which storage type was used
+      const syncData = await browserAPI.storage.sync.get(["cssStorageType", "customCSS"]);
+
+      if (syncData.cssStorageType === "local") {
+        // Load from local storage
+        const localData = await browserAPI.storage.local.get("customCSS");
+        return localData.customCSS || "";
+      } else {
+        // Load from sync storage or fallback to sync if no type is set
+        return syncData.customCSS || "";
+      }
+    } catch (error) {
+      console.error("Error loading CSS:", error);
+      // Fallback: try both storages
+      try {
+        const localData = await browserAPI.storage.local.get("customCSS");
+        if (localData.customCSS) return localData.customCSS;
+
+        const syncData = await browserAPI.storage.sync.get("customCSS");
+        return syncData.customCSS || "";
+      } catch (fallbackError) {
+        console.error("Fallback loading failed:", fallbackError);
+        return "";
+      }
+    }
+  };
+
+  // Load saved content with enhanced loading
+  loadCustomCSS().then(css => {
+    if (css) {
+      editor.setValue(css);
     }
   });
 
-  editor.on("keydown", function (cm, event) {
+  editor.on("keydown", (cm, event) => {
     const isInvalidKey = invalidKeys.includes(event.key);
     if (!cm.state.completionActive && !isInvalidKey) {
       cm.showHint({ completeSingle: false });
@@ -153,16 +256,17 @@ document.addEventListener("DOMContentLoaded", function () {
     themeSelector.appendChild(option);
   });
 
-  browserAPI.storage.sync.get(["themeName", "customCSS"], function (data) {
-    if (data.themeName) {
-      const themeIndex = THEMES.findIndex(theme => theme.name === data.themeName);
+  // Enhanced theme and CSS loading
+  Promise.all([browserAPI.storage.sync.get(["themeName"]), loadCustomCSS()]).then(([syncData, css]) => {
+    if (syncData.themeName) {
+      const themeIndex = THEMES.findIndex(theme => theme.name === syncData.themeName);
       if (themeIndex !== -1) {
         themeSelector.value = themeIndex;
-        currentThemeName = data.themeName;
+        currentThemeName = syncData.themeName;
       }
     }
-    if (data.customCSS) {
-      editor.setValue(data.customCSS);
+    if (css) {
+      editor.setValue(css);
     }
   });
 
@@ -179,7 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (selectedTheme) {
-      let themeContent = `/* ${selectedTheme.name}, a theme for BetterLyrics by ${selectedTheme.author} ${selectedTheme.link && `(${selectedTheme.link})`} */
+      const themeContent = `/* ${selectedTheme.name}, a theme for BetterLyrics by ${selectedTheme.author} ${selectedTheme.link && `(${selectedTheme.link})`} */
 
 ${selectedTheme.css}
 `;

@@ -24,11 +24,11 @@ const saveOptions = () => {
 
 // Function to get options from form elements
 const getOptionsFromForm = () => {
-  let preferredProviderList = [];
-  let providerElems = document.getElementById("providers-list").children;
+  const preferredProviderList = [];
+  const providerElems = document.getElementById("providers-list").children;
   for (let i = 0; i < providerElems.length; i++) {
     let id = providerElems[i].id.slice(2);
-    if (!providerElems[i].children[1].checked) {
+    if (!providerElems[i].children[1].children[0].checked) {
       id = "d_" + id;
     }
     preferredProviderList.push(id);
@@ -51,7 +51,7 @@ const getOptionsFromForm = () => {
 // Function to save options to Chrome storage
 const saveOptionsToStorage = options => {
   browserAPI.storage.sync.set(options, () => {
-    browserAPI.tabs.query({ url: "https://music.youtube.com/*" }, function (tabs) {
+    browserAPI.tabs.query({ url: "https://music.youtube.com/*" }, tabs => {
       tabs.forEach(tab => {
         browserAPI.tabs.sendMessage(tab.id, { action: "updateSettings", settings: options });
       });
@@ -92,7 +92,7 @@ const showAlert = message => {
 
 // Function to clear transient lyrics
 const clearTransientLyrics = callback => {
-  browserAPI.tabs.query({ url: "https://music.youtube.com/*" }, function (tabs) {
+  browserAPI.tabs.query({ url: "https://music.youtube.com/*" }, tabs => {
     if (tabs.length === 0) {
       updateCacheInfo();
       showAlert("Cache cleared successfully!");
@@ -127,7 +127,7 @@ const _formatBytes = (bytes, decimals = 2) => {
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+  return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
 };
 
 // Function to subscribe to cache info updates
@@ -199,7 +199,7 @@ const setOptionsInForm = items => {
   document.getElementById("translationLanguage").value = items.translationLanguage;
   document.getElementById("isRomanizationEnabled").checked = items.isRomanizationEnabled;
 
-  let providersListElem = document.getElementById("providers-list");
+  const providersListElem = document.getElementById("providers-list");
   providersListElem.innerHTML = "";
 
   // Always recreate in the default order to make sure no items go missing
@@ -214,22 +214,22 @@ const setOptionsInForm = items => {
   ];
 
   for (let i = 0; i < items.preferredProviderList.length; i++) {
-    let providerId = items.preferredProviderList[i];
+    const providerId = items.preferredProviderList[i];
 
-    let disabled = providerId.startsWith("d_");
-    let rawProviderId = disabled ? providerId.slice(2) : providerId;
-    let providerElem = createProviderElem(rawProviderId, !disabled);
+    const disabled = providerId.startsWith("d_");
+    const rawProviderId = disabled ? providerId.slice(2) : providerId;
+    const providerElem = createProviderElem(rawProviderId, !disabled);
 
     providersListElem.appendChild(providerElem);
     unseenProviders = unseenProviders.filter(p => p !== rawProviderId);
   }
 
   unseenProviders.forEach(p => {
-    let providerElem = createProviderElem(p);
+    const providerElem = createProviderElem(p);
     providersListElem.appendChild(providerElem);
   });
 };
-let providerIdToNameMap = {
+const providerIdToNameMap = {
   "musixmatch-richsync": "Musixmatch (Word Synced)",
   "musixmatch-synced": "Musixmatch (Line Synced)",
   "yt-captions": "Youtube Captions (Line Synced)",
@@ -240,27 +240,35 @@ let providerIdToNameMap = {
 };
 
 function createProviderElem(providerId, checked = true) {
-  let liElem = document.createElement("li");
+  const liElem = document.createElement("li");
   liElem.classList.add("sortable-item");
   liElem.id = "p-" + providerId;
 
-  let handleElem = document.createElement("span");
+  const handleElem = document.createElement("span");
   handleElem.classList.add("sortable-handle");
   liElem.appendChild(handleElem);
 
-  let checkboxElem = document.createElement("input");
+  const labelElem = document.createElement("label");
+  labelElem.classList.add("checkbox-container");
+
+  const checkboxElem = document.createElement("input");
   checkboxElem.classList.add("provider-checkbox");
   checkboxElem.type = "checkbox";
   checkboxElem.checked = checked;
   checkboxElem.id = "p-" + providerId + "-checkbox";
-  liElem.appendChild(checkboxElem);
+  labelElem.appendChild(checkboxElem);
 
-  let labelElem = document.createElement("label");
-  labelElem.setAttribute("for", "p-" + providerId + "-checkbox");
-  labelElem.textContent = providerIdToNameMap.hasOwnProperty(providerId) ? providerIdToNameMap[providerId] : providerId;
+  const checkmarkElem = document.createElement("span");
+  checkmarkElem.classList.add("checkmark");
+  labelElem.appendChild(checkmarkElem);
+  const textElem = document.createElement("span");
+  textElem.classList.add("provider-name");
+  textElem.textContent = Object.hasOwn(providerIdToNameMap, providerId) ? providerIdToNameMap[providerId] : providerId;
+  labelElem.appendChild(textElem);
+
   liElem.appendChild(labelElem);
 
-  let styleFromCheckState = () => {
+  const styleFromCheckState = () => {
     if (checkboxElem.checked) {
       labelElem.classList.remove("disabled-item");
     } else {

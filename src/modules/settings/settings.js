@@ -1,4 +1,14 @@
+/**
+ * Settings management for the BetterLyrics extension.
+ * Handles user preferences and their application to the UI.
+ *
+ * @namespace BetterLyrics.Settings
+ */
 BetterLyrics.Settings = {
+  /**
+   * Handles settings initialization and applies user preferences.
+   * Sets up fullscreen behavior, animations, and other settings.
+   */
   handleSettings: function () {
     BetterLyrics.Settings.onFullScreenDisabled(
       () => {
@@ -142,7 +152,22 @@ BetterLyrics.Settings = {
   listenForPopupMessages: function () {
     chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
       if (request.action === "updateCSS") {
-        BetterLyrics.Utils.applyCustomCSS(request.css);
+        // Enhanced CSS handling - use the new loadCustomCSS method
+        if (request.css) {
+          // Direct CSS provided (from editor)
+          BetterLyrics.Utils.applyCustomCSS(request.css);
+        } else {
+          // Load CSS from storage (hybrid storage support)
+          BetterLyrics.Storage.loadCustomCSS()
+            .then(css => {
+              if (css) {
+                BetterLyrics.Utils.applyCustomCSS(css);
+              }
+            })
+            .catch(error => {
+              console.error("[BetterLyrics] Error loading CSS:", error);
+            });
+        }
       } else if (request.action === "updateSettings") {
         BetterLyrics.Utils.setUpLog();
         BetterLyrics.Settings.hideCursorOnIdle();

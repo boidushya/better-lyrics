@@ -1,5 +1,9 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.0.4/schema.json",
+  "files": {
+    "includes": ["**/*.js", "**/*.ts", "**/*.jsx", "**/*.tsx"],
+    "ignoreUnknown": true
+  },
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
@@ -7,31 +11,14 @@
     "indentWidth": 2,
     "lineEnding": "lf",
     "lineWidth": 120,
-    "attributePosition": "auto",
-    "ignore": [
-      "www/.next/**/*",
-      "node_modules",
-      "src/options.html",
-      ".all-contributorsrc",
-      "src/libs/codemirror/**/*",
-      "STYLING.md"
-    ]
+    "attributePosition": "auto"
   },
-  "organizeImports": { "enabled": true },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": false,
       "correctness": { "noUnusedVariables": "error" }
-    },
-    "ignore": [
-      "www/.next/**/*",
-      "node_modules",
-      "src/options.html",
-      ".all-contributorsrc",
-      "src/libs/codemirror/**/*",
-      "STYLING.md"
-    ]
+    }
   },
   "javascript": {
     "formatter": {
@@ -45,5 +32,23 @@
       "quoteStyle": "double",
       "attributePosition": "auto"
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "www/.next/**/*",
+        "node_modules/**/*",
+        "src/options.html",
+        ".all-contributorsrc",
+        "src/libs/codemirror/**/*",
+        "STYLING.md"
+      ],
+      "linter": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": false
+      }
+    }
+  ]
 }

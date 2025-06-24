@@ -1,3 +1,9 @@
+/**
+ * Lyrics provider management for the BetterLyrics extension.
+ * Handles multiple lyrics sources and provider orchestration.
+ *
+ * @namespace BetterLyrics.LyricProviders
+ */
 BetterLyrics.LyricProviders = {
   /** @typedef {object} AudioTrackData
    * @property {string} id

@@ -1,6 +1,18 @@
+/**
+ * @fileoverview Constants and configuration values for the BetterLyrics extension.
+ * Contains DOM selectors, API URLs, log messages, and other static values.
+ */
+
 // Using a namespace pattern
 var BetterLyrics = BetterLyrics || {};
 
+/**
+ * Constants and configuration values for BetterLyrics.
+ * Centralized location for all static values including CSS classes,
+ * DOM selectors, API endpoints, and log messages.
+ *
+ * @namespace BetterLyrics.Constants
+ */
 BetterLyrics.Constants = {
   // DOM Class Names
   TITLE_CLASS: "title ytmusic-player-bar",

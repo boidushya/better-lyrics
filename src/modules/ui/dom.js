@@ -1,5 +1,16 @@
+/**
+ * DOM manipulation utilities for the BetterLyrics extension.
+ * Handles lyrics rendering, scrolling, animations, and UI element management.
+ *
+ * @namespace BetterLyrics.DOM
+ */
 BetterLyrics.DOM = {
-  createLyricsWrapper: function () {
+  /**
+   * Creates or reuses the lyrics wrapper element and sets up scroll event handling.
+   *
+   * @returns {HTMLElement} The lyrics wrapper element
+   */
+  createLyricsWrapper: () => {
     const tabRenderer = document.querySelector(BetterLyrics.Constants.TAB_RENDERER_SELECTOR);
 
     tabRenderer.removeEventListener("scroll", BetterLyrics.Observer.scrollEventHandler);
@@ -26,7 +37,17 @@ BetterLyrics.DOM = {
    * @param source : {string}
    * @param sourceHref : {string}
    */
-  addFooter: function (source, sourceHref, song, artist, album, duration) {
+  /**
+   * Adds a footer with source attribution and action buttons to the lyrics container.
+   *
+   * @param {string} source - Source name for attribution
+   * @param {string} sourceHref - URL for the source link
+   * @param {string} song - Song title
+   * @param {string} artist - Artist name
+   * @param {string} album - Album name
+   * @param {number} duration - Song duration in seconds
+   */
+  addFooter: (source, sourceHref, song, artist, album, duration) => {
     if (document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS).length !== 0) {
       document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0].remove();
     }
@@ -37,14 +58,22 @@ BetterLyrics.DOM = {
     lyricsElement.appendChild(footer);
     BetterLyrics.DOM.createFooter(song, artist, album, duration);
 
-    let footerLink = document.getElementById("betterLyricsFooterLink");
+    const footerLink = document.getElementById("betterLyricsFooterLink");
     source = source || "boidu.dev";
     sourceHref = sourceHref || "https://better-lyrics.boidu.dev/";
     footerLink.textContent = source;
     footerLink.href = sourceHref;
   },
 
-  createFooter: function (song, artist, album, duration) {
+  /**
+   * Creates the footer elements including source link, Discord link, and add lyrics button.
+   *
+   * @param {string} song - Song title
+   * @param {string} artist - Artist name
+   * @param {string} album - Album name
+   * @param {number} duration - Song duration in seconds
+   */
+  createFooter: (song, artist, album, duration) => {
     try {
       const footer = document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0];
       footer.innerHTML = "";
@@ -97,8 +126,8 @@ BetterLyrics.DOM = {
       addLyricsContainer.appendChild(addLyricsLink);
 
       footer.appendChild(footerContainer);
-      footer.appendChild(discordLink);
       footer.appendChild(addLyricsContainer);
+      footer.appendChild(discordLink);
 
       footer.removeAttribute("is-empty");
     } catch (_err) {
@@ -106,7 +135,12 @@ BetterLyrics.DOM = {
     }
   },
 
-  setRtlAttributes: function (isRtl) {
+  /**
+   * Sets or removes RTL (right-to-left) attributes on layout elements.
+   *
+   * @param {boolean} isRtl - Whether to enable RTL layout
+   */
+  setRtlAttributes: isRtl => {
     const layout = document.getElementById("layout");
     const playerPage = document.getElementById("player-page");
 
@@ -121,7 +155,10 @@ BetterLyrics.DOM = {
     }
   },
   loaderMayBeActive: false,
-  renderLoader: function () {
+  /**
+   * Renders and displays the loading spinner for lyrics fetching.
+   */
+  renderLoader: () => {
     BetterLyrics.DOM.cleanup();
     BetterLyrics.DOM.loaderMayBeActive = true;
     try {
@@ -149,10 +186,13 @@ BetterLyrics.DOM = {
     }
   },
 
-  flushLoader: function () {
+  /**
+   * Removes the loading spinner with animation and cleanup.
+   */
+  flushLoader: () => {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
-      if (loaderWrapper && loaderWrapper.hasAttribute("active")) {
+      if (loaderWrapper?.hasAttribute("active")) {
         clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
         loaderWrapper.dataset.animatingOut = true;
         loaderWrapper.removeAttribute("active");
@@ -176,7 +216,12 @@ BetterLyrics.DOM = {
     }
   },
 
-  isLoaderActive: function () {
+  /**
+   * Checks if the loader is currently active or animating.
+   *
+   * @returns {boolean} True if loader is active
+   */
+  isLoaderActive: () => {
     try {
       if (!BetterLyrics.DOM.loaderMayBeActive) {
         return false;
@@ -191,7 +236,10 @@ BetterLyrics.DOM = {
     return false;
   },
 
-  clearLyrics: function () {
+  /**
+   * Clears all lyrics content from the wrapper element.
+   */
+  clearLyrics: () => {
     try {
       const lyricsWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_WRAPPER_ID);
       if (lyricsWrapper) {
@@ -203,14 +251,20 @@ BetterLyrics.DOM = {
   },
   /** @type {MutationObserver | null} */
   backgroundChangeObserver: null,
-  addAlbumArtToLayout: function (videoId) {
+  /**
+   * Adds album art as a background image to the layout.
+   * Sets up mutation observer to watch for art changes.
+   *
+   * @param {string} videoId - YouTube video ID for fallback image
+   */
+  addAlbumArtToLayout: videoId => {
     if (!videoId) return;
 
     if (BetterLyrics.DOM.backgroundChangeObserver) {
       BetterLyrics.DOM.backgroundChangeObserver.disconnect();
     }
 
-    let injectAlbumArt = () => {
+    const injectAlbumArt = () => {
       if (albumArt.src.startsWith("data:image")) {
         BetterLyrics.DOM.injectAlbumArt("https://img.youtube.com/vi/" + videoId + "/0.jpg");
       } else {
@@ -218,7 +272,7 @@ BetterLyrics.DOM = {
       }
     };
 
-    let albumArt = document.querySelector(BetterLyrics.Constants.SONG_IMAGE_SELECTOR);
+    const albumArt = document.querySelector(BetterLyrics.Constants.SONG_IMAGE_SELECTOR);
     const observer = new MutationObserver(() => {
       injectAlbumArt();
       BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_FROM_MUTATION_LOG);
@@ -231,8 +285,13 @@ BetterLyrics.DOM = {
     BetterLyrics.Utils.log(BetterLyrics.Constants.ALBUM_ART_ADDED_LOG);
   },
 
-  injectAlbumArt: function (src) {
-    let img = new Image();
+  /**
+   * Injects album art URL as a CSS custom property.
+   *
+   * @param {string} src - Image source URL
+   */
+  injectAlbumArt: src => {
+    const img = new Image();
     img.src = src;
 
     img.onload = () => {
@@ -240,7 +299,10 @@ BetterLyrics.DOM = {
     };
   },
 
-  removeAlbumArtFromLayout: function () {
+  /**
+   * Removes album art from layout and disconnects observers.
+   */
+  removeAlbumArtFromLayout: () => {
     if (BetterLyrics.DOM.backgroundChangeObserver) {
       BetterLyrics.DOM.backgroundChangeObserver.disconnect();
       BetterLyrics.DOM.backgroundChangeObserver = null;
@@ -252,7 +314,15 @@ BetterLyrics.DOM = {
     }
   },
 
-  addNoLyricsButton: function (song, artist, album, duration) {
+  /**
+   * Adds a button for users to contribute lyrics.
+   *
+   * @param {string} song - Song title
+   * @param {string} artist - Artist name
+   * @param {string} album - Album name
+   * @param {number} duration - Song duration in seconds
+   */
+  addNoLyricsButton: (song, artist, album, duration) => {
     const lyricsWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_WRAPPER_ID);
     if (!lyricsWrapper) return;
 
@@ -277,7 +347,10 @@ BetterLyrics.DOM = {
     lyricsWrapper.appendChild(buttonContainer);
   },
 
-  injectHeadTags: function () {
+  /**
+   * Injects required head tags including font links and image preloads.
+   */
+  injectHeadTags: () => {
     const imgURL = "https://better-lyrics.boidu.dev/icon-512.png";
 
     const imagePreload = document.createElement("link");
@@ -293,7 +366,10 @@ BetterLyrics.DOM = {
     document.head.appendChild(fontLink);
   },
 
-  cleanup: function () {
+  /**
+   * Cleans up DOM elements and resets state when switching songs.
+   */
+  cleanup: () => {
     BetterLyrics.DOM.scrollPos = -1;
 
     if (BetterLyrics.App.lyricsObserver) {
@@ -321,8 +397,11 @@ BetterLyrics.DOM = {
 
     BetterLyrics.DOM.clearLyrics();
   },
-  injectGetSongInfo: function () {
-    let s = document.createElement("script");
+  /**
+   * Injects the player information script into the page.
+   */
+  injectGetSongInfo: () => {
+    const s = document.createElement("script");
     s.src = chrome.runtime.getURL("src/script.js");
     s.id = "blyrics-script";
     s.onload = function () {
@@ -343,7 +422,7 @@ BetterLyrics.DOM = {
   /**
    * Time in seconds before lyric highlight to begin scroll to the next lyric
    */
-  lyricScrollTimeOffset: 0.2,
+  lyricScrollTimeOffset: 0.5,
   wasUserScrolling: false,
   lastTime: 0,
   lastPlayState: false,
@@ -356,6 +435,14 @@ BetterLyrics.DOM = {
 
     return BetterLyrics.DOM.cachedTransitionDuration;
   },
+  /**
+   * Main lyrics synchronization function that handles timing, highlighting, and scrolling.
+   *
+   * @param {number} currentTime - Current playback time in seconds
+   * @param {number} eventCreationTime - Timestamp when the event was created
+   * @param {boolean} [isPlaying=true] - Whether audio is currently playing
+   * @param {boolean} [smoothScroll=true] - Whether to use smooth scrolling
+   */
   tickLyrics: function (currentTime, eventCreationTime, isPlaying = true, smoothScroll = true) {
     const now = Date.now();
     if (BetterLyrics.DOM.isLoaderActive() || !BetterLyrics.App.areLyricsTicking || (currentTime === 0 && !isPlaying)) {
@@ -375,7 +462,7 @@ BetterLyrics.DOM = {
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     console.assert(tabSelector != null);
 
-    let playerState = document.getElementById("player-page").getAttribute("player-ui-state");
+    const playerState = document.getElementById("player-page").getAttribute("player-ui-state");
     const isPlayerOpen =
       playerState === "PLAYER_PAGE_OPEN" || playerState === "FULLSCREEN" || playerState === "MINIPLAYER_IN_PLAYER_PAGE";
     // Don't tick lyrics if they're not visible
@@ -416,7 +503,7 @@ BetterLyrics.DOM = {
         }
 
         if (lyricScrollTime >= time && lyricScrollTime < nextTime) {
-          let elemBounds = getRelativeBounds(lyricsElement, lineData.lyricElement);
+          const elemBounds = getRelativeBounds(lyricsElement, lineData.lyricElement);
           targetScrollPos = elemBounds.y;
           selectedLyricHeight = elemBounds.height;
           const timeDelta = lyricScrollTime - time;
@@ -460,17 +547,17 @@ BetterLyrics.DOM = {
           }
 
           if (!lineData.isAnimating) {
-            let children = [lineData, ...lineData.parts];
+            const children = [lineData, ...lineData.parts];
             children.forEach(part => {
-              let elDuration = part.duration;
-              let elTime = part.time;
+              const elDuration = part.duration;
+              const elTime = part.time;
               const timeDelta = currentTime - elTime;
 
               part.lyricElement.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
 
               //correct for the animation not starting at 0% and instead at -10%
-              let swipeAnimationDelay = -timeDelta - elDuration * 0.1 + "s";
-              let everythingElseDelay = -timeDelta + "s";
+              const swipeAnimationDelay = -timeDelta - elDuration * 0.1 + "s";
+              const everythingElseDelay = -timeDelta + "s";
               part.lyricElement.style.transitionDelay = `${swipeAnimationDelay}, ${swipeAnimationDelay}, ${everythingElseDelay}`;
               part.lyricElement.style.animationDelay = everythingElseDelay;
               part.lyricElement.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
@@ -486,7 +573,7 @@ BetterLyrics.DOM = {
             lineData.isAnimationPlayStatePlaying = isPlaying;
             if (!isPlaying) {
               lineData.selected = false;
-              let children = [lineData, ...lineData.parts];
+              const children = [lineData, ...lineData.parts];
               children.forEach(part => {
                 if (part.animationStartTimeMs > now) {
                   part.lyricElement.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
@@ -497,7 +584,7 @@ BetterLyrics.DOM = {
           }
         } else {
           if (lineData.selected) {
-            let children = [lineData, ...lineData.parts];
+            const children = [lineData, ...lineData.parts];
             children.forEach(part => {
               part.lyricElement.style.transitionDelay = "";
               part.lyricElement.style.animationDelay = "";
@@ -528,7 +615,7 @@ BetterLyrics.DOM = {
           BetterLyrics.DOM.wasUserScrolling = false;
         }
 
-        let scrollPosOffset = Math.max(0, tabRendererHeight * topOffsetMultiplier - selectedLyricHeight / 2);
+        const scrollPosOffset = Math.max(0, tabRendererHeight * topOffsetMultiplier - selectedLyricHeight / 2);
         let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
         scrollPos = Math.max(Math.min(lyricsHeight - tabRendererHeight, scrollPos), 0);
 
@@ -572,14 +659,17 @@ BetterLyrics.DOM = {
         BetterLyrics.DOM.skipScrolls = 1; // Always leave at least one for when the window is refocused.
       }
     } catch (err) {
-      if (!(err.message && err.message.includes("undefined"))) {
+      if (!err.message?.includes("undefined")) {
         BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_CHECK_INTERVAL_ERROR, err);
       }
       return true;
     }
   },
 
-  lyricsElementAdded: function () {
+  /**
+   * Called when a new lyrics element is added to trigger re-sync.
+   */
+  lyricsElementAdded: () => {
     if (!BetterLyrics.App.areLyricsTicking) {
       return;
     }
@@ -590,7 +680,13 @@ BetterLyrics.DOM = {
       false
     );
   },
-  injectSongAttributes: function (title, artist) {
+  /**
+   * Injects song title and artist information used in fullscreen mode.
+   *
+   * @param {string} title - Song title
+   * @param {string} artist - Artist name
+   */
+  injectSongAttributes: (title, artist) => {
     const mainPanel = document.getElementById("main-panel");
     console.assert(mainPanel != null);
     const existingSongInfo = document.getElementById("blyrics-song-info");
@@ -614,10 +710,15 @@ BetterLyrics.DOM = {
     mainPanel.appendChild(songInfoWrapper);
   },
 
+  /**
+   * Gets or creates the resume autoscroll button element.
+   *
+   * @returns {HTMLElement} The resume scroll button element
+   */
   getResumeScrollElement() {
     let elem = document.getElementById("autoscroll-resume-button");
     if (!elem) {
-      let wrapper = document.createElement("div");
+      const wrapper = document.createElement("div");
       wrapper.id = "autoscroll-resume-wrapper";
       wrapper.className = "autoscroll-resume-wrapper";
       elem = document.createElement("button");
@@ -638,9 +739,11 @@ BetterLyrics.DOM = {
 };
 
 /**
- * Return the position relative to the center of the parent
- * @param parent {Element}
- * @param child {Element}
+ * Returns the position and dimensions of a child element relative to its parent.
+ *
+ * @param {Element} parent - The parent element
+ * @param {Element} child - The child element
+ * @returns {DOMRect} Rectangle with relative position and dimensions
  */
 function getRelativeBounds(parent, child) {
   const parentBound = parent.getBoundingClientRect();
@@ -648,6 +751,12 @@ function getRelativeBounds(parent, child) {
   return new DOMRect(childBound.x - parentBound.x, childBound.y - parentBound.y, childBound.width, childBound.height);
 }
 
+/**
+ * Converts CSS duration value to milliseconds.
+ *
+ * @param {Object} cssDuration - CSS duration object with unit and value
+ * @returns {number} Duration in milliseconds
+ */
 function toMs(cssDuration) {
   if (cssDuration.unit === "s") {
     return cssDuration.value * 1000;
@@ -656,6 +765,11 @@ function toMs(cssDuration) {
   }
 }
 
+/**
+ * Forces a reflow/repaint of the element by accessing its offsetHeight.
+ *
+ * @param {HTMLElement} elt - Element to reflow
+ */
 function reflow(elt) {
   void elt.offsetHeight;
 }

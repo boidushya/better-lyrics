@@ -1,5 +1,15 @@
+/**
+ * Observer utilities for the BetterLyrics extension.
+ * Handles DOM observation, event listening, and state management.
+ *
+ * @namespace BetterLyrics.Observer
+ */
 BetterLyrics.Observer = {
-  enableLyricsTab: function () {
+  /**
+   * Enables the lyrics tab and prevents it from being disabled by YouTube Music.
+   * Sets up a MutationObserver to watch for attribute changes.
+   */
+  enableLyricsTab: () => {
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     if (!tabSelector) {
       setTimeout(() => {
@@ -9,8 +19,8 @@ BetterLyrics.Observer = {
     }
     tabSelector.removeAttribute("disabled");
     tabSelector.setAttribute("aria-disabled", "false");
-    let observer = new MutationObserver(function (mutations) {
-      mutations.forEach(function (mutation) {
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
         if (mutation.attributeName === "disabled") {
           tabSelector.removeAttribute("disabled");
           tabSelector.setAttribute("aria-disabled", "false");
@@ -19,19 +29,23 @@ BetterLyrics.Observer = {
     });
     observer.observe(tabSelector, { attributes: true });
   },
-  disableInertWhenFullscreen: function () {
-    let panelElem = document.getElementById("side-panel");
+  /**
+   * Disables the inert attribute on the side panel when entering fullscreen.
+   * Ensures lyrics tab remains accessible in fullscreen mode.
+   */
+  disableInertWhenFullscreen: () => {
+    const panelElem = document.getElementById("side-panel");
     if (!panelElem) {
       setTimeout(() => {
         BetterLyrics.Observer.disableInertWhenFullscreen();
       }, 1000);
       return;
     }
-    let observer = new MutationObserver(function (mutations) {
+    const observer = new MutationObserver(mutations => {
       BetterLyrics.Settings.onFullScreenDisabled(
         () => {},
         () =>
-          mutations.forEach(function (mutation) {
+          mutations.forEach(mutation => {
             if (mutation.attributeName === "inert") {
               // entering fullscreen mode
               mutation.target.removeAttribute("inert");
@@ -50,7 +64,11 @@ BetterLyrics.Observer = {
 
   currentTab: 0,
   scrollPositions: [0, 0, 0],
-  lyricReloader: function () {
+  /**
+   * Sets up tab click handlers and manages scroll positions between tabs.
+   * Handles lyrics reloading when the lyrics tab is clicked.
+   */
+  lyricReloader: () => {
     const tabs = document.getElementsByClassName(BetterLyrics.Constants.TAB_CONTENT_CLASS);
 
     const [tab1, tab2, tab3] = tabs;
@@ -65,7 +83,7 @@ BetterLyrics.Observer = {
         });
       }
 
-      tab2.addEventListener("click", function () {
+      tab2.addEventListener("click", () => {
         BetterLyrics.DOM.getResumeScrollElement().classList.remove("blyrics-hidden");
         if (!BetterLyrics.App.areLyricsLoaded) {
           BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_CLICKED_LOG);
@@ -75,86 +93,100 @@ BetterLyrics.Observer = {
         }
       });
 
-      let hideAutoscrollResume = () => BetterLyrics.DOM.getResumeScrollElement().classList.add("blyrics-hidden");
+      const hideAutoscrollResume = () => BetterLyrics.DOM.getResumeScrollElement().classList.add("blyrics-hidden");
       tab1.addEventListener("click", hideAutoscrollResume);
       tab3.addEventListener("click", hideAutoscrollResume);
     } else {
       setTimeout(() => BetterLyrics.Observer.lyricReloader(), 1000);
     }
   },
-  initializeLyrics: function () {
-    document.addEventListener("blyrics-send-player-time", function (event) {
-      let detail = event.detail;
+  /**
+   * Initializes the main player time event listener.
+   * Handles video changes, lyric injection, and player state updates.
+   */
+  initializeLyrics: () => {
+    document.addEventListener(
+      "blyrics-send-player-time",
+      /**
+       * @param {CustomEvent<PlayerDetails>} event - Custom event with player details
+       */
+      event => {
+        const detail = event.detail;
 
-      let currentVideoId = detail.videoId;
-      let currentVideoDetails = detail.song + " " + detail.artist;
+        const currentVideoId = detail.videoId;
+        const currentVideoDetails = detail.song + " " + detail.artist;
 
-      if (
-        currentVideoId !== BetterLyrics.App.lastVideoId ||
-        currentVideoDetails !== BetterLyrics.App.lastVideoDetails
-      ) {
-        try {
-          if (currentVideoId === BetterLyrics.App.lastVideoId && BetterLyrics.App.areLyricsLoaded) {
-            console.log(BetterLyrics.Constants.SKIPPING_LOAD_WITH_META);
-            return; // We already loaded this video
+        if (
+          currentVideoId !== BetterLyrics.App.lastVideoId ||
+          currentVideoDetails !== BetterLyrics.App.lastVideoDetails
+        ) {
+          try {
+            if (currentVideoId === BetterLyrics.App.lastVideoId && BetterLyrics.App.areLyricsLoaded) {
+              console.log(BetterLyrics.Constants.SKIPPING_LOAD_WITH_META);
+              return; // We already loaded this video
+            }
+          } finally {
+            BetterLyrics.App.lastVideoId = currentVideoId;
+            BetterLyrics.App.lastVideoDetails = currentVideoDetails;
           }
-        } finally {
-          BetterLyrics.App.lastVideoId = currentVideoId;
-          BetterLyrics.App.lastVideoDetails = currentVideoDetails;
-        }
 
-        if (!detail.song || !detail.artist) {
-          console.log(BetterLyrics.Constants.LOADING_WITHOUT_SONG_META);
-        }
-
-        BetterLyrics.Utils.log(BetterLyrics.Constants.SONG_SWITCHED_LOG, detail.videoId);
-        BetterLyrics.App.areLyricsTicking = false;
-        BetterLyrics.App.areLyricsLoaded = false;
-
-        BetterLyrics.App.queueLyricInjection = true;
-        BetterLyrics.App.queueAlbumArtInjection = true;
-        BetterLyrics.App.queueSongDetailsInjection = true;
-      }
-
-      if (
-        BetterLyrics.App.queueSongDetailsInjection &&
-        detail.song &&
-        detail.artist &&
-        document.getElementById("main-panel")
-      ) {
-        BetterLyrics.App.queueSongDetailsInjection = false;
-        BetterLyrics.DOM.injectSongAttributes(detail.song, detail.artist);
-      }
-
-      if (BetterLyrics.App.queueAlbumArtInjection === true && BetterLyrics.App.shouldInjectAlbumArt === true) {
-        BetterLyrics.App.queueAlbumArtInjection = false;
-        BetterLyrics.DOM.addAlbumArtToLayout(currentVideoId);
-      }
-
-      if (BetterLyrics.App.lyricInjectionFailed) {
-        const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
-        if (tabSelector && tabSelector.getAttribute("aria-selected") !== "true") {
-          BetterLyrics.App.lyricInjectionFailed = false; //ignore failure b/c the tab isn't visible
-        }
-      }
-
-      if (BetterLyrics.App.queueLyricInjection || BetterLyrics.App.lyricInjectionFailed) {
-        const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
-        if (tabSelector) {
-          BetterLyrics.App.queueLyricInjection = false;
-          BetterLyrics.App.lyricInjectionFailed = false;
-          if (tabSelector.getAttribute("aria-selected") !== "true") {
-            BetterLyrics.Settings.onAutoSwitchEnabled(() => {
-              tabSelector.click();
-              BetterLyrics.Utils.log(BetterLyrics.Constants.AUTO_SWITCH_ENABLED_LOG);
-            });
+          if (!detail.song || !detail.artist) {
+            console.log(BetterLyrics.Constants.LOADING_WITHOUT_SONG_META);
           }
-          BetterLyrics.App.handleModifications(detail);
+
+          BetterLyrics.Utils.log(BetterLyrics.Constants.SONG_SWITCHED_LOG, detail.videoId);
+          BetterLyrics.App.areLyricsTicking = false;
+          BetterLyrics.App.areLyricsLoaded = false;
+
+          BetterLyrics.App.queueLyricInjection = true;
+          BetterLyrics.App.queueAlbumArtInjection = true;
+          BetterLyrics.App.queueSongDetailsInjection = true;
         }
+
+        if (
+          BetterLyrics.App.queueSongDetailsInjection &&
+          detail.song &&
+          detail.artist &&
+          document.getElementById("main-panel")
+        ) {
+          BetterLyrics.App.queueSongDetailsInjection = false;
+          BetterLyrics.DOM.injectSongAttributes(detail.song, detail.artist);
+        }
+
+        if (BetterLyrics.App.queueAlbumArtInjection === true && BetterLyrics.App.shouldInjectAlbumArt === true) {
+          BetterLyrics.App.queueAlbumArtInjection = false;
+          BetterLyrics.DOM.addAlbumArtToLayout(currentVideoId);
+        }
+
+        if (BetterLyrics.App.lyricInjectionFailed) {
+          const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+          if (tabSelector && tabSelector.getAttribute("aria-selected") !== "true") {
+            BetterLyrics.App.lyricInjectionFailed = false; //ignore failure b/c the tab isn't visible
+          }
+        }
+
+        if (BetterLyrics.App.queueLyricInjection || BetterLyrics.App.lyricInjectionFailed) {
+          const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
+          if (tabSelector) {
+            BetterLyrics.App.queueLyricInjection = false;
+            BetterLyrics.App.lyricInjectionFailed = false;
+            if (tabSelector.getAttribute("aria-selected") !== "true") {
+              BetterLyrics.Settings.onAutoSwitchEnabled(() => {
+                tabSelector.click();
+                BetterLyrics.Utils.log(BetterLyrics.Constants.AUTO_SWITCH_ENABLED_LOG);
+              });
+            }
+            BetterLyrics.App.handleModifications(detail);
+          }
+        }
+        BetterLyrics.DOM.tickLyrics(detail.currentTime, detail.browserTime, detail.playing);
       }
-      BetterLyrics.DOM.tickLyrics(detail.currentTime, detail.browserTime, detail.playing);
-    });
+    );
   },
+  /**
+   * Handles scroll events on the tab renderer.
+   * Manages autoscroll pause/resume functionality.
+   */
   scrollEventHandler: () => {
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     if (tabSelector.getAttribute("aria-selected") !== "true" || !BetterLyrics.App.areLyricsTicking) {

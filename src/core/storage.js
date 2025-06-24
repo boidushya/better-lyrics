@@ -1,4 +1,16 @@
+/**
+ * Storage management utilities for the BetterLyrics extension.
+ * Handles both sync and local storage across Chrome and Firefox browsers.
+ *
+ * @namespace BetterLyrics.Storage
+ */
 BetterLyrics.Storage = {
+  /**
+   * Cross-browser storage getter that works with both Chrome and Firefox.
+   *
+   * @param {Object|string} key - Storage key or object with default values
+   * @param {Function} callback - Callback function to handle the retrieved data
+   */
   getStorage: function (key, callback) {
     const inChrome = typeof chrome !== "undefined" && typeof browser === "undefined";
     const inFirefox = typeof browser !== "undefined";
@@ -15,6 +27,9 @@ BetterLyrics.Storage = {
     }
   },
 
+  /**
+   * Retrieves and applies custom CSS from storage.
+   */
   getAndApplyCustomCSS: function () {
     chrome.storage.sync.get(["customCSS"], result => {
       if (result.customCSS) {
@@ -23,6 +38,10 @@ BetterLyrics.Storage = {
     });
   },
 
+  /**
+   * Subscribes to custom CSS changes and applies them automatically.
+   * Also invalidates cached transition duration when CSS changes.
+   */
   subscribeToCustomCSS: function () {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === "sync" && changes.customCSS) {
@@ -34,6 +53,12 @@ BetterLyrics.Storage = {
     BetterLyrics.DOM.cachedTransitionDuration = -1;
   },
 
+  /**
+   * Retrieves a value from transient storage with automatic expiry handling.
+   *
+   * @param {string} key - Storage key to retrieve
+   * @returns {Promise<*|null>} The stored value or null if expired/not found
+   */
   getTransientStorage: async function (key) {
     try {
       const result = await chrome.storage.local.get(key);
@@ -54,6 +79,13 @@ BetterLyrics.Storage = {
     }
   },
 
+  /**
+   * Stores a value in transient storage with automatic expiry.
+   *
+   * @param {string} key - Storage key
+   * @param {*} value - Value to store
+   * @param {number} ttl - Time to live in milliseconds
+   */
   setTransientStorage: async function (key, value, ttl) {
     try {
       const expiry = Date.now() + ttl;
@@ -71,6 +103,11 @@ BetterLyrics.Storage = {
     }
   },
 
+  /**
+   * Calculates current cache information including count and size of stored lyrics.
+   *
+   * @returns {Promise<{count: number, size: number}>} Cache statistics
+   */
   getUpdatedCacheInfo: async function () {
     try {
       const result = await chrome.storage.local.get(null);
@@ -89,11 +126,17 @@ BetterLyrics.Storage = {
     }
   },
 
+  /**
+   * Updates and saves current cache information to sync storage.
+   */
   saveCacheInfo: async function () {
     const cacheInfo = await BetterLyrics.Storage.getUpdatedCacheInfo();
     chrome.storage.sync.set({ cacheInfo: cacheInfo });
   },
 
+  /**
+   * Clears all cached lyrics data from local storage.
+   */
   clearCache: async function () {
     try {
       const result = await chrome.storage.local.get(null);
@@ -105,6 +148,10 @@ BetterLyrics.Storage = {
     }
   },
 
+  /**
+   * Removes expired cache entries from local storage.
+   * Scans all BetterLyrics cache keys and removes those past their expiry time.
+   */
   purgeExpiredKeys: async function () {
     try {
       const now = Date.now();
