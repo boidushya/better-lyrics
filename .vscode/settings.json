@@ -6,12 +6,10 @@
     "MD041": false
   },
   "editor.defaultFormatter": "biomejs.biome",
+	"editor.formatOnSave": true,
   "prettier.enable": false,
   "[markdown]": {
     "editor.defaultFormatter": "yzhang.markdown-all-in-one",
     "editor.formatOnSave": true
   },
-  "[javascript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
-  }
 }
