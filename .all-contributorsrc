@@ -51,6 +51,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "gustavostz",
+      "name": "Gustavo Steinmetz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48111506?v=4",
+      "profile": "https://gustavostz.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "badgeTemplate": "<img src=\"https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg\" alt=\"\"/>",
