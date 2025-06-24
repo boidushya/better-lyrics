@@ -422,7 +422,7 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
   --yt-album-size: 600px;
   --blyrics-hover-scale: 1.02;
 	--blyrics-background-color: rgba(0,0,0,0.25);
-	--blyrics-font-family: "SF Pro", Helvetica Neue;
+	--blyrics-font-family: "SF Pro", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --blyrics-font-weight: 600;
 }
 
