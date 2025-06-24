@@ -3,7 +3,7 @@ let editor;
 let currentThemeName = null;
 let isUserTyping = false;
 const SAVE_DEBOUNCE_DELAY = 1000;
-const VALID_CHANGE_ORIGINS = ["undo", "redo", "cut", "paste", "drag", "+delete", "+input"];
+const VALID_CHANGE_ORIGINS = ["undo", "redo", "cut", "paste", "drag", "+delete", "+input", "setValue"];
 
 // Storage quota limits (in bytes)
 const SYNC_STORAGE_LIMIT = 7000; // Leave some buffer under 8KB limit
@@ -385,10 +385,11 @@ document.getElementById("file-import-btn").addEventListener("click", () => {
     const file = event.target.files[0];
     loadCSSFromFile(file)
       .then(css => {
-        editor.setValue(css); //fires editor.on("change");
+        editor.setValue(css);
         showAlert(`CSS file "${file.name}" imported!`);
       })
-      .catch(() => {
+      .catch(err => {
+        console.error("Error reading CSS file:", err);
         showAlert("Error reading CSS file! Please try again.");
       });
   };
