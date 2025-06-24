@@ -562,7 +562,9 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 :root {
   --yt-album-size: 600px;
   --blyrics-hover-scale: 1.02;
-  /* Existing root variables... */
+	--blyrics-background-color: rgba(0,0,0,0.25);
+	--blyrics-font-family: "SF Pro", Helvetica Neue;
+  --blyrics-font-weight: 600;
 }
 
 ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-dfs]):not([player-ui-state="MINIPLAYER"]) #player.ytmusic-player-page {
@@ -616,8 +618,7 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 }
 
 ytmusic-player-page:before {
-  background: linear-gradient(to right, var(--blyrics-background-color), var(--blyrics-background-color)),
-    var(--blyrics-background-img);
+  background: var(--blyrics-background-img);
   background-position: 50% !important;
   background-repeat: no-repeat;
   background-size: cover;
@@ -631,6 +632,7 @@ ytmusic-player-page:before {
   transform: scale(1.2);
   transform-origin: center center;
   z-index: -100;
+	opacity: 0.5;
 
 animation:
     scalePulse 8s ease-in-out infinite,

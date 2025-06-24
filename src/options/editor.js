@@ -48,7 +48,7 @@ const openOptions = () => {
 
 document.getElementById("back-btn").addEventListener("click", openOptions);
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   const syncIndicator = document.getElementById("sync-indicator");
   const themeSelector = document.getElementById("theme-selector");
 
@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } catch (error) {
       console.error("Storage save attempt failed:", error);
 
-      if (error.message && error.message.includes("quota") && retryCount < MAX_RETRY_ATTEMPTS) {
+      if (error.message?.includes("quota") && retryCount < MAX_RETRY_ATTEMPTS) {
         // Quota exceeded, try with local storage
         try {
           await browserAPI.storage.local.set({ customCSS: css });
@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Error saving to storage:", err);
 
         let errorMessage = "Something went wrong!";
-        if (err.message && err.message.includes("quota")) {
+        if (err.message?.includes("quota")) {
           errorMessage = "CSS too large for storage!";
         }
 
@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
     saveTimeout = setTimeout(saveToStorage, SAVE_DEBOUNCE_DELAY);
   }
 
-  editor.on("change", function (_, changeObj) {
+  editor.on("change", (_, changeObj) => {
     console.log("cm", changeObj);
     if (VALID_CHANGE_ORIGINS.includes(changeObj.origin)) {
       isUserTyping = true;
@@ -241,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  editor.on("keydown", function (cm, event) {
+  editor.on("keydown", (cm, event) => {
     const isInvalidKey = invalidKeys.includes(event.key);
     if (!cm.state.completionActive && !isInvalidKey) {
       cm.showHint({ completeSingle: false });
@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (selectedTheme) {
-      let themeContent = `/* ${selectedTheme.name}, a theme for BetterLyrics by ${selectedTheme.author} ${selectedTheme.link && `(${selectedTheme.link})`} */
+      const themeContent = `/* ${selectedTheme.name}, a theme for BetterLyrics by ${selectedTheme.author} ${selectedTheme.link && `(${selectedTheme.link})`} */
 
 ${selectedTheme.css}
 `;

@@ -9,7 +9,7 @@ BetterLyrics.Observer = {
    * Enables the lyrics tab and prevents it from being disabled by YouTube Music.
    * Sets up a MutationObserver to watch for attribute changes.
    */
-  enableLyricsTab: function () {
+  enableLyricsTab: () => {
     const tabSelector = document.getElementsByClassName(BetterLyrics.Constants.TAB_HEADER_CLASS)[1];
     if (!tabSelector) {
       setTimeout(() => {
@@ -19,8 +19,8 @@ BetterLyrics.Observer = {
     }
     tabSelector.removeAttribute("disabled");
     tabSelector.setAttribute("aria-disabled", "false");
-    let observer = new MutationObserver(function (mutations) {
-      mutations.forEach(function (mutation) {
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
         if (mutation.attributeName === "disabled") {
           tabSelector.removeAttribute("disabled");
           tabSelector.setAttribute("aria-disabled", "false");
@@ -33,19 +33,19 @@ BetterLyrics.Observer = {
    * Disables the inert attribute on the side panel when entering fullscreen.
    * Ensures lyrics tab remains accessible in fullscreen mode.
    */
-  disableInertWhenFullscreen: function () {
-    let panelElem = document.getElementById("side-panel");
+  disableInertWhenFullscreen: () => {
+    const panelElem = document.getElementById("side-panel");
     if (!panelElem) {
       setTimeout(() => {
         BetterLyrics.Observer.disableInertWhenFullscreen();
       }, 1000);
       return;
     }
-    let observer = new MutationObserver(function (mutations) {
+    const observer = new MutationObserver(mutations => {
       BetterLyrics.Settings.onFullScreenDisabled(
         () => {},
         () =>
-          mutations.forEach(function (mutation) {
+          mutations.forEach(mutation => {
             if (mutation.attributeName === "inert") {
               // entering fullscreen mode
               mutation.target.removeAttribute("inert");
@@ -68,7 +68,7 @@ BetterLyrics.Observer = {
    * Sets up tab click handlers and manages scroll positions between tabs.
    * Handles lyrics reloading when the lyrics tab is clicked.
    */
-  lyricReloader: function () {
+  lyricReloader: () => {
     const tabs = document.getElementsByClassName(BetterLyrics.Constants.TAB_CONTENT_CLASS);
 
     const [tab1, tab2, tab3] = tabs;
@@ -83,7 +83,7 @@ BetterLyrics.Observer = {
         });
       }
 
-      tab2.addEventListener("click", function () {
+      tab2.addEventListener("click", () => {
         BetterLyrics.DOM.getResumeScrollElement().classList.remove("blyrics-hidden");
         if (!BetterLyrics.App.areLyricsLoaded) {
           BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_CLICKED_LOG);
@@ -93,7 +93,7 @@ BetterLyrics.Observer = {
         }
       });
 
-      let hideAutoscrollResume = () => BetterLyrics.DOM.getResumeScrollElement().classList.add("blyrics-hidden");
+      const hideAutoscrollResume = () => BetterLyrics.DOM.getResumeScrollElement().classList.add("blyrics-hidden");
       tab1.addEventListener("click", hideAutoscrollResume);
       tab3.addEventListener("click", hideAutoscrollResume);
     } else {
@@ -104,17 +104,17 @@ BetterLyrics.Observer = {
    * Initializes the main player time event listener.
    * Handles video changes, lyric injection, and player state updates.
    */
-  initializeLyrics: function () {
+  initializeLyrics: () => {
     document.addEventListener(
       "blyrics-send-player-time",
       /**
        * @param {CustomEvent<PlayerDetails>} event - Custom event with player details
        */
-      function (event) {
-        let detail = event.detail;
+      event => {
+        const detail = event.detail;
 
-        let currentVideoId = detail.videoId;
-        let currentVideoDetails = detail.song + " " + detail.artist;
+        const currentVideoId = detail.videoId;
+        const currentVideoDetails = detail.song + " " + detail.artist;
 
         if (
           currentVideoId !== BetterLyrics.App.lastVideoId ||
