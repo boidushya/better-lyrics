@@ -400,6 +400,12 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
   filter: blur(6px);
 }
 
+.blyrics-user-scrolling >  div:not(.blyrics--active) {
+  opacity: 1 !important;
+  filter: blur(0px) !important; 
+
+}
+
 .blyrics-container > div.blyrics--active {
   opacity: 1;
   filter: blur(0px);
@@ -411,8 +417,8 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 }
 
 .blyrics-container > div {
-  transition: filter calc(var(--blyrics-duration) / 3),
-    opacity calc(var(--blyrics-duration) / 2), transform 1.166s;
+  transition: filter calc(var(--blyrics-duration) / 3) 0s,
+    opacity calc(var(--blyrics-duration) / 2) 0s, transform 1.166s var(--blyrics-anim-delay, 0s) !important;
 }`,
   },
   {
