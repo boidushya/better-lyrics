@@ -558,8 +558,9 @@ BetterLyrics.DOM = {
               //correct for the animation not starting at 0% and instead at -10%
               const swipeAnimationDelay = -timeDelta - elDuration * 0.1 + "s";
               const everythingElseDelay = -timeDelta + "s";
-              part.lyricElement.style.transitionDelay = `${swipeAnimationDelay}, ${swipeAnimationDelay}, ${everythingElseDelay}`;
-              part.lyricElement.style.animationDelay = everythingElseDelay;
+              part.lyricElement.style.setProperty("--blyrics-swipe-delay", swipeAnimationDelay);
+              part.lyricElement.style.setProperty("--blyrics-anim-delay", everythingElseDelay);
+
               part.lyricElement.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               reflow(part.lyricElement);
               part.lyricElement.classList.add(BetterLyrics.Constants.ANIMATING_CLASS);
@@ -586,9 +587,8 @@ BetterLyrics.DOM = {
           if (lineData.selected) {
             const children = [lineData, ...lineData.parts];
             children.forEach(part => {
-              part.lyricElement.style.transitionDelay = "";
-              part.lyricElement.style.animationDelay = "";
-              part.lyricElement.style.animationPlayState = "";
+              part.lyricElement.style.setProperty("--blyrics-swipe-delay", "");
+              part.lyricElement.style.setProperty("--blyrics-anim-delay", "");
               part.lyricElement.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
               part.lyricElement.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               part.isAnimating = false;

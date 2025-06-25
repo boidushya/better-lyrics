@@ -130,13 +130,14 @@
 
 .blyrics-container > div {
 	transform: scale(var(--blyrics-scale));
-	transition-property: --dummy, --dummy, transform;
-	transition-duration: 0s, 0s, var(--blyrics-scale-transition-duration);
-	transition-timing-function: linear, linear, ease;
+	transition-property: transform;
+	transition-duration: var(--blyrics-scale-transition-duration);
+	transition-timing-function: ease;
 }
 
 .blyrics-container > div.blyrics--animating {
 	transform: scale(var(--blyrics-active-scale));
+	transition-delay: var(--blyrics-anim-delay);
 }
 
 .blyrics-container > div > span {
@@ -148,6 +149,8 @@
 
 .blyrics-container > div > span.blyrics--animating {
 	animation: blyrics-wobble var(--blyrics-wobble-duration) forwards ease;
+	animation-delay: var(--blyrics-anim-delay);
+
 }
 
 @property --lyric-transition-amount-start {
@@ -226,7 +229,7 @@
 	opacity: 1;
 	animation: blyrics-glow max(calc(var(--blyrics-duration) * 1.2), 1.2s)
 		forwards ease;
-	animation-delay: inherit;
+	animation-delay: var(--blyrics-anim-delay);
 
 	--lyric-transition-amount-start: 1.4;
 	--lyric-transition-amount-end: 1.5;
@@ -236,7 +239,7 @@
 		calc(var(--blyrics-duration) * 1.6),
 		var(--blyrics-lyric-highlight-fade-in-duration);
 	transition-timing-function: linear, linear, ease;
-	transition-delay: inherit;
+	transition-delay: var(--blyrics-swipe-delay), var(--blyrics-swipe-delay), var(--blyrics-anim-delay);
 }
 
 .blyrics-container

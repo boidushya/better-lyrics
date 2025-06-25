@@ -3,23 +3,26 @@ export default [
     name: "Spotlight",
     author: "BetterLyrics",
     link: "https://twitter.com/boidushya",
-    css: `.blyrics-container:has(.blyrics--active) > div:not(.blyrics--active):not(.blyrics--active ~ div) {
-  opacity: 0.33;
+    css: `:root {
+  --blyrics-lyric-active-color: color(display-p3 1 1 1 /1);
+  --blyrics-lyric-inactive-color: color(display-p3 1 1 1 /0.66);
+}
+
+.blyrics-container:not(.blyrics-user-scrolling) > .blyrics--line:has(~ .blyrics--active) {
+  /* Styles for Item 1 and Item 2 */
+  opacity: 0.5;
   filter: blur(2.5px);
+  transition-delay: 0;
 }
 
 .blyrics-container > div.blyrics--active {
   opacity: 1;
   filter: blur(0px);
-}
 
-.blyrics-container > div.blyrics--active ~ div {
-  opacity: 0.66;
-  filter: blur(0px);
 }
 
 .blyrics-container > div {
-  transition: filter calc(var(--blyrics-duration) / 2), opacity calc(var(--blyrics-duration) / 2), transform 0.166s;
+  transition: filter 0.5s 0s, opacity 0.5s 0s, transform 0.166s var(--blyrics-anim-delay, 0s) !important;
 }
 		`,
   },
