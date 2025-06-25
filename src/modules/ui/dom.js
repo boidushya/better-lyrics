@@ -121,6 +121,8 @@ BetterLyrics.DOM = {
       footerLink.target = "_blank";
       addLyricsLink.href = url.toString();
       addLyricsLink.textContent = "Add Lyrics to LRCLib";
+      addLyricsLink.target = "_blank";
+      addLyricsLink.rel = "noreferrer noopener";
       addLyricsLink.style.height = "100%";
 
       addLyricsContainer.appendChild(addLyricsLink);

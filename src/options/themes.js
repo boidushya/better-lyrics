@@ -460,7 +460,7 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 
 .blyrics-container > div {
   transition: filter calc(var(--blyrics-duration) / 3) 0.4s,
-    opacity calc(var(--blyrics-duration) / 2) 0.4s, transform 1.166s var(--blyrics-anim-delay, 0s) !important;
+    opacity calc(var(--blyrics-duration) / 2) 0.4s, transform 0.166s var(--blyrics-anim-delay, 0s) !important;
   padding: 5px 0;
   transform-origin: left center;
 }
