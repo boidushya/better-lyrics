@@ -429,8 +429,8 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 :root {
   --yt-album-size: 600px;
   --blyrics-hover-scale: 1.02;
-	--blyrics-background-color: rgba(0,0,0,0.25);
-	--blyrics-font-family: "SF Pro", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --blyrics-background-color: rgba(0,0,0,0.25);
+  --blyrics-font-family: "SF Pro", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --blyrics-font-weight: 600;
 }
 
@@ -444,7 +444,7 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
   padding: 10px;
 }
 
-.blyrics-container:has(.blyrics--active) > div:not(.blyrics--active):not(.blyrics--active ~ div) {
+.blyrics-container:has(.blyrics--active):not(.blyrics-user-scrolling) > div:not(.blyrics--active):not(.blyrics--active ~ div) {
   opacity: 0.33;
   filter: blur(2.5px);
 }
@@ -460,7 +460,8 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 }
 
 .blyrics-container > div {
-  transition: filter calc(var(--blyrics-duration) / 2), opacity calc(var(--blyrics-duration) / 2), transform 0.166s;
+  transition: filter calc(var(--blyrics-duration) / 3) 0.4s,
+    opacity calc(var(--blyrics-duration) / 2) 0.4s, transform 1.166s var(--blyrics-anim-delay, 0s) !important;
   padding: 5px 0;
   transform-origin: left center;
 }
@@ -499,7 +500,7 @@ ytmusic-player-page:before {
   transform: scale(1.2);
   transform-origin: center center;
   z-index: -100;
-	opacity: 0.5;
+  opacity: 0.5;
 
 animation:
     scalePulse 8s ease-in-out infinite,
@@ -507,6 +508,7 @@ animation:
   animation-composition: add;
   will-change: transform;
 }
+
 `,
   },
 ];
