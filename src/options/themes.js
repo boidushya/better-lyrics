@@ -9,16 +9,14 @@ export default [
 }
 
 .blyrics-container:not(.blyrics-user-scrolling) > .blyrics--line:has(~ .blyrics--active) {
-  /* Styles for Item 1 and Item 2 */
   opacity: 0.5;
   filter: blur(2.5px);
-  transition-delay: 0;
+  transition: filter 0.5s 0.35s, opacity 0.5s 0.35s, transform 0.166s var(--blyrics-anim-delay, 0s) !important;
 }
 
 .blyrics-container > div.blyrics--active {
   opacity: 1;
   filter: blur(0px);
-
 }
 
 .blyrics-container > div {
@@ -292,6 +290,7 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 .blyrics-container:has(.blyrics--active):not(.blyrics-user-scrolling) > div:not(.blyrics--active):not(.blyrics--active ~ div) {
   opacity: 0.33;
   filter: blur(2.5px);
+  transition: filter 0.5s 0.35s, opacity 0.5s 0.35s, transform 0.166s var(--blyrics-anim-delay, 0s) !important;
 }
 
 .blyrics-container > div.blyrics--active {
@@ -508,7 +507,6 @@ animation:
   animation-composition: add;
   will-change: transform;
 }
-
 `,
   },
 ];
