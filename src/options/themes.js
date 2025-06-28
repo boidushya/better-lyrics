@@ -5,7 +5,7 @@ export default [
     link: "https://twitter.com/boidushya",
     css: `:root {
   --blyrics-lyric-active-color: color(display-p3 1 1 1 /1);
-  --blyrics-lyric-inactive-color: color(display-p3 1 1 1 /0.66);
+  --blyrics-lyric-inactive-color: color(display-p3 1 1 1 /0.2);
 }
 
 .blyrics-container:not(.blyrics-user-scrolling) > .blyrics--line:has(~ .blyrics--active) {
