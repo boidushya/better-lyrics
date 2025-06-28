@@ -496,6 +496,7 @@ BetterLyrics.DOM = {
 
       let selectedLyricHeight = 0;
       let targetScrollPos = 0;
+      let availableScrollTime = 999;
       lyricsData.every((lineData, index) => {
         const time = lineData.time;
         let nextTime = Infinity;
@@ -508,7 +509,8 @@ BetterLyrics.DOM = {
           const elemBounds = getRelativeBounds(lyricsElement, lineData.lyricElement);
           targetScrollPos = elemBounds.y;
           selectedLyricHeight = elemBounds.height;
-          const timeDelta = lyricScrollTime - time;
+          availableScrollTime = nextTime - lyricScrollTime;
+          const timeDelta = nextTime - time;
           if (BetterLyrics.DOM.selectedElementIndex !== index && timeDelta > 0.05 && index > 0) {
             BetterLyrics.Utils.log(
               `[BetterLyrics] Scrolling to new lyric was late, dt: ${(lyricScrollTime - time).toFixed(5)}s`
@@ -623,13 +625,23 @@ BetterLyrics.DOM = {
 
         if (Math.abs(scrollTop - scrollPos) > 2 && Date.now() > BetterLyrics.DOM.nextScrollAllowedTime) {
           if (smoothScroll) {
+            let scrollTime = BetterLyrics.DOM.getTransitionDurationInMs(lyricsElement);
+            if (scrollTime > availableScrollTime * 1000 - 50) {
+              scrollTime = availableScrollTime * 1000 - 50;
+            }
+            if (scrollTime < 200) {
+              scrollTime = 200;
+            }
+
             lyricsElement.style.transition = "top 0s ease-in-out 0s";
             lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
             reflow(lyricsElement);
-            BetterLyrics.DOM.nextScrollAllowedTime = this.getTransitionDurationInMs(lyricsElement) + Date.now();
 
             lyricsElement.style.transition = "";
+            lyricsElement.style.transitionDuration = `${scrollTime}ms`;
             lyricsElement.style.top = "0px";
+
+            BetterLyrics.DOM.nextScrollAllowedTime = scrollTime + Date.now() + 20;
           }
           scrollTop = scrollPos;
 
