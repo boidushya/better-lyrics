@@ -22,18 +22,29 @@ window.fetch = async function (request, init) {
     urlString.includes("https://music.youtube.com/youtubei/v1/next")
   ) {
     try {
-      // Clone the request immediately if it's an object
       const requestToFetch = typeof request === "string" ? request : request.clone();
       const originalRequestForJson = typeof request === "string" ? new Request(request, init) : request.clone();
+
+      // Determine the request method to avoid reading body of GET requests
+      const method = originalRequestForJson.method || (init && init.method) || "GET";
 
       const response = await originalFetch(requestToFetch, init);
       const clonedResponseForJson = response.clone();
 
-      Promise.all([
-        originalRequestForJson.text().catch(e => {
+      // Only read the request body if it's a POST request
+      let requestBodyPromise;
+      if (method.toUpperCase() === "POST") {
+        requestBodyPromise = originalRequestForJson.text().catch(e => {
           console.error("Better Lyrics: Error reading request text:", e);
           return "{}";
-        }),
+        });
+      } else {
+        // For GET or other methods, resolve immediately with an empty object string
+        requestBodyPromise = Promise.resolve("{}");
+      }
+
+      Promise.all([
+        requestBodyPromise,
         clonedResponseForJson.text().catch(e => {
           console.error("Better Lyrics: Error reading response text:", e);
           return "{}";
@@ -42,6 +53,7 @@ window.fetch = async function (request, init) {
         .then(awaitedTexts => {
           let requestJson, responseJson;
           try {
+            // No need to parse requestJson if it wasn't a POST, but the empty object handles it gracefully
             requestJson = JSON.parse(awaitedTexts[0]);
           } catch (e) {
             console.error("Better Lyrics: Error parsing request JSON for URL:", urlString, e);
