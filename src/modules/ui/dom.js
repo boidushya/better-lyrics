@@ -625,6 +625,10 @@ BetterLyrics.DOM = {
 
         if (Math.abs(scrollTop - scrollPos) > 2 && Date.now() > BetterLyrics.DOM.nextScrollAllowedTime) {
           if (smoothScroll) {
+            lyricsElement.style.transitionTimingFunction = "";
+            lyricsElement.style.transitionProperty = "";
+            lyricsElement.style.transitionDuration = "";
+
             let scrollTime = BetterLyrics.DOM.getTransitionDurationInMs(lyricsElement);
             if (scrollTime > availableScrollTime * 1000 - 50) {
               scrollTime = availableScrollTime * 1000 - 50;
@@ -636,8 +640,12 @@ BetterLyrics.DOM = {
             lyricsElement.style.transition = "top 0s ease-in-out 0s";
             lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
             reflow(lyricsElement);
-
-            lyricsElement.style.transition = "";
+            if (scrollTime < 700) {
+              lyricsElement.style.transitionProperty = "top";
+              lyricsElement.style.transitionTimingFunction = "ease";
+            } else {
+              lyricsElement.style.transition = "";
+            }
             lyricsElement.style.transitionDuration = `${scrollTime}ms`;
             lyricsElement.style.top = "0px";
 
