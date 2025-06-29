@@ -396,6 +396,7 @@ BetterLyrics.Lyrics = {
       }
 
       let line = document.createElement("div");
+      line.classList.add("blyrics--line");
 
       /**
        *

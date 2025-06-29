@@ -15,25 +15,39 @@
       "strict_min_version": "100.0"
     }
   },
-  "host_permissions": ["*://music.youtube.com/*"],
-  "permissions": ["storage"],
-  "optional_permissions": ["downloads"],
+  "host_permissions": [
+    "*://music.youtube.com/*"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "optional_permissions": [
+    "downloads"
+  ],
   "options_ui": {
     "page": "src/options/options.html",
     "open_in_tab": false
   },
   "web_accessible_resources": [
     {
-      "matches": ["*://music.youtube.com/*"],
-      "resources": ["src/script.js"]
+      "matches": [
+        "*://music.youtube.com/*"
+      ],
+      "resources": [
+        "src/script.js"
+      ]
     }
   ],
   "background": {
-    "scripts": ["src/background.js"]
+    "scripts": [
+      "src/background.js"
+    ]
   },
   "content_scripts": [
     {
-      "matches": ["*://music.youtube.com/*"],
+      "matches": [
+        "*://music.youtube.com/*"
+      ],
       "js": [
         "src/core/constants.js",
         "src/core/utils.js",
@@ -47,12 +61,20 @@
         "src/modules/settings/settings.js",
         "src/index.js"
       ],
-      "css": ["src/css/ytmusic.css", "src/css/blyrics.css", "src/css/themesong.css"],
+      "css": [
+        "src/css/ytmusic.css",
+        "src/css/blyrics.css",
+        "src/css/themesong.css"
+      ],
       "run_at": "document_start"
     },
     {
-      "matches": ["*://music.youtube.com/*"],
-      "js": ["src/earlyInject.js"],
+      "matches": [
+        "*://music.youtube.com/*"
+      ],
+      "js": [
+        "src/earlyInject.js"
+      ],
       "run_at": "document_start",
       "world": "MAIN"
     }

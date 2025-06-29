@@ -121,6 +121,8 @@ BetterLyrics.DOM = {
       footerLink.target = "_blank";
       addLyricsLink.href = url.toString();
       addLyricsLink.textContent = "Add Lyrics to LRCLib";
+      addLyricsLink.target = "_blank";
+      addLyricsLink.rel = "noreferrer noopener";
       addLyricsLink.style.height = "100%";
 
       addLyricsContainer.appendChild(addLyricsLink);
@@ -494,6 +496,7 @@ BetterLyrics.DOM = {
 
       let selectedLyricHeight = 0;
       let targetScrollPos = 0;
+      let availableScrollTime = 999;
       lyricsData.every((lineData, index) => {
         const time = lineData.time;
         let nextTime = Infinity;
@@ -506,7 +509,8 @@ BetterLyrics.DOM = {
           const elemBounds = getRelativeBounds(lyricsElement, lineData.lyricElement);
           targetScrollPos = elemBounds.y;
           selectedLyricHeight = elemBounds.height;
-          const timeDelta = lyricScrollTime - time;
+          availableScrollTime = nextTime - lyricScrollTime;
+          const timeDelta = nextTime - time;
           if (BetterLyrics.DOM.selectedElementIndex !== index && timeDelta > 0.05 && index > 0) {
             BetterLyrics.Utils.log(
               `[BetterLyrics] Scrolling to new lyric was late, dt: ${(lyricScrollTime - time).toFixed(5)}s`
@@ -558,8 +562,9 @@ BetterLyrics.DOM = {
               //correct for the animation not starting at 0% and instead at -10%
               const swipeAnimationDelay = -timeDelta - elDuration * 0.1 + "s";
               const everythingElseDelay = -timeDelta + "s";
-              part.lyricElement.style.transitionDelay = `${swipeAnimationDelay}, ${swipeAnimationDelay}, ${everythingElseDelay}`;
-              part.lyricElement.style.animationDelay = everythingElseDelay;
+              part.lyricElement.style.setProperty("--blyrics-swipe-delay", swipeAnimationDelay);
+              part.lyricElement.style.setProperty("--blyrics-anim-delay", everythingElseDelay);
+
               part.lyricElement.classList.add(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               reflow(part.lyricElement);
               part.lyricElement.classList.add(BetterLyrics.Constants.ANIMATING_CLASS);
@@ -586,9 +591,8 @@ BetterLyrics.DOM = {
           if (lineData.selected) {
             const children = [lineData, ...lineData.parts];
             children.forEach(part => {
-              part.lyricElement.style.transitionDelay = "";
-              part.lyricElement.style.animationDelay = "";
-              part.lyricElement.style.animationPlayState = "";
+              part.lyricElement.style.setProperty("--blyrics-swipe-delay", "");
+              part.lyricElement.style.setProperty("--blyrics-anim-delay", "");
               part.lyricElement.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
               part.lyricElement.classList.remove(BetterLyrics.Constants.PRE_ANIMATING_CLASS);
               part.isAnimating = false;
@@ -621,13 +625,31 @@ BetterLyrics.DOM = {
 
         if (Math.abs(scrollTop - scrollPos) > 2 && Date.now() > BetterLyrics.DOM.nextScrollAllowedTime) {
           if (smoothScroll) {
+            lyricsElement.style.transitionTimingFunction = "";
+            lyricsElement.style.transitionProperty = "";
+            lyricsElement.style.transitionDuration = "";
+
+            let scrollTime = BetterLyrics.DOM.getTransitionDurationInMs(lyricsElement);
+            if (scrollTime > availableScrollTime * 1000 - 50) {
+              scrollTime = availableScrollTime * 1000 - 50;
+            }
+            if (scrollTime < 200) {
+              scrollTime = 200;
+            }
+
             lyricsElement.style.transition = "top 0s ease-in-out 0s";
             lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
             reflow(lyricsElement);
-            BetterLyrics.DOM.nextScrollAllowedTime = this.getTransitionDurationInMs(lyricsElement) + Date.now();
-
-            lyricsElement.style.transition = "";
+            if (scrollTime < 700) {
+              lyricsElement.style.transitionProperty = "top";
+              lyricsElement.style.transitionTimingFunction = "ease";
+            } else {
+              lyricsElement.style.transition = "";
+            }
+            lyricsElement.style.transitionDuration = `${scrollTime}ms`;
             lyricsElement.style.top = "0px";
+
+            BetterLyrics.DOM.nextScrollAllowedTime = scrollTime + Date.now() + 20;
           }
           scrollTop = scrollPos;
 
