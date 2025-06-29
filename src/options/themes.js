@@ -397,6 +397,8 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 .blyrics-container:has(.blyrics--active) > div:not(.blyrics--active):not(.blyrics--active ~ div) {
   opacity: 0.33;
   filter: blur(6px);
+  transition: filter calc(var(--blyrics-duration) / 3) 0.4s,
+    opacity calc(var(--blyrics-duration) / 2) 0.4s, transform 1.166s var(--blyrics-anim-delay, 0s) !important;
 }
 
 .blyrics-user-scrolling >  div:not(.blyrics--active) {
