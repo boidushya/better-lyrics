@@ -172,31 +172,28 @@
 	left: -2rem;
 	white-space: pre;
 	padding: 2rem;
-	color: var(--blyrics-lyric-active-color);
+	/*color: var(--blyrics-lyric-active-color);*/
+	color: transparent;
 	box-sizing: content-box;
-	mask-image: linear-gradient(
-		90deg,
-		#ffffffff
-			calc(
-				100% *
-				var(--lyric-transition-amount-start) -
-				4rem *
-				var(--lyric-transition-amount-start) +
-				2rem
+	width: 100%;
+	background-image: linear-gradient(
+			90deg,
+			var(--blyrics-lyric-active-color) calc(
+					100% *
+					var(--lyric-transition-amount-start) -
+					4rem *
+					var(--lyric-transition-amount-start) +
+					2rem
 			),
-		#ffffff00
-			calc(
-				100% *
-				var(--lyric-transition-amount-end) -
-				4rem *
-				var(--lyric-transition-amount-end) +
-				2rem +
-				1px
+			#00000000 calc(
+					100% *
+					var(--lyric-transition-amount-end) -
+					4rem *
+					var(--lyric-transition-amount-end) +
+					2rem +
+					1px
 			)
 	);
-	mask-mode: alpha;
-	width: 100%;
-
 	opacity: 0;
 	--lyric-transition-amount-start: -0.2;
 	--lyric-transition-amount-end: -0.1;
@@ -204,6 +201,7 @@
 		--lyric-transition-amount-start 1s linear 1000s,
 		--lyric-transition-amount-end 1s linear 1000s,
 		opacity 0.5s ease;
+	background-clip: text;
 }
 
 .blyrics-container
@@ -583,10 +581,10 @@
 
 @keyframes blyrics-glow {
 	0% {
-		text-shadow: 0 0 1.5rem var(--blyrics-glow-color);
+		filter: drop-shadow(0 0 0.8rem var(--blyrics-glow-color));
 	}
 	to {
-		text-shadow: 0 0 0 var(--blyrics-glow-color);
+		filter: drop-shadow(0 0 0rem var(--blyrics-glow-color));
 	}
 }
 
