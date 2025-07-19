@@ -371,6 +371,7 @@ BetterLyrics.Lyrics = {
      * @property {boolean} isScrolled
      * @property {number} animationStartTimeMs
      * @property {boolean} isAnimationPlayStatePlaying
+     * @property {number} accumulatedOffsetMs
      * @property {boolean} isAnimating
      * @property {boolean} isSelected
      */
@@ -410,6 +411,7 @@ BetterLyrics.Lyrics = {
         isScrolled: false,
         animationStartTimeMs: Infinity,
         isAnimationPlayStatePlaying: false,
+        accumulatedOffsetMs: 0,
         isAnimating: false,
         isSelected: false,
       };

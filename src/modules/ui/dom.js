@@ -541,12 +541,16 @@ BetterLyrics.DOM = {
           lineData.selected = true;
 
           const timeDelta = currentTime - time;
-          if (
-            lineData.isAnimating &&
-            Math.abs((now - lineData.animationStartTimeMs) / 1000 - timeDelta) > 0.02 &&
-            isPlaying
-          ) {
+          const animationTimingOffset = (now - lineData.animationStartTimeMs) / 1000 - timeDelta;
+          lineData.accumulatedOffsetMs = lineData.accumulatedOffsetMs / 1.08;
+          lineData.accumulatedOffsetMs += animationTimingOffset * 1000 * 0.4;
+          if (lineData.isAnimating && Math.abs(lineData.accumulatedOffsetMs) > 100 && isPlaying) {
             // Our sync is off for some reason
+            console.warn(
+              "[BetterLyrics] Animation is out of sync, resetting",
+              animationTimingOffset,
+              lineData.accumulatedOffsetMs
+            );
             lineData.isAnimating = false;
           }
 
@@ -555,7 +559,7 @@ BetterLyrics.DOM = {
             children.forEach(part => {
               const elDuration = part.duration;
               const elTime = part.time;
-              const timeDelta = currentTime - elTime;
+              let timeDelta = currentTime - elTime;
 
               part.lyricElement.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
 
@@ -572,6 +576,7 @@ BetterLyrics.DOM = {
             });
 
             lineData.isAnimating = true;
+            lineData.accumulatedOffsetMs = 0;
           }
 
           if (isPlaying !== lineData.isAnimationPlayStatePlaying) {
