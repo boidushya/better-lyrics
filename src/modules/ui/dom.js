@@ -432,7 +432,9 @@ BetterLyrics.DOM = {
   cachedTransitionDuration: -1,
   getTransitionDurationInMs(lyricsElement) {
     if (BetterLyrics.DOM.cachedTransitionDuration === -1) {
-      BetterLyrics.DOM.cachedTransitionDuration = toMs(lyricsElement.computedStyleMap().get("transition-duration"));
+      BetterLyrics.DOM.cachedTransitionDuration = toMs(
+        window.getComputedStyle(lyricsElement).getPropertyValue("transition-duration")
+      );
     }
 
     return BetterLyrics.DOM.cachedTransitionDuration;
@@ -546,11 +548,6 @@ BetterLyrics.DOM = {
           lineData.accumulatedOffsetMs += animationTimingOffset * 1000 * 0.4;
           if (lineData.isAnimating && Math.abs(lineData.accumulatedOffsetMs) > 100 && isPlaying) {
             // Our sync is off for some reason
-            console.warn(
-              "[BetterLyrics] Animation is out of sync, resetting",
-              animationTimingOffset,
-              lineData.accumulatedOffsetMs
-            );
             lineData.isAnimating = false;
           }
 
@@ -559,7 +556,7 @@ BetterLyrics.DOM = {
             children.forEach(part => {
               const elDuration = part.duration;
               const elTime = part.time;
-              let timeDelta = currentTime - elTime;
+              const timeDelta = currentTime - elTime;
 
               part.lyricElement.classList.remove(BetterLyrics.Constants.ANIMATING_CLASS);
 
@@ -781,14 +778,13 @@ function getRelativeBounds(parent, child) {
 /**
  * Converts CSS duration value to milliseconds.
  *
- * @param {Object} cssDuration - CSS duration object with unit and value
  * @returns {number} Duration in milliseconds
  */
 function toMs(cssDuration) {
-  if (cssDuration.unit === "s") {
-    return cssDuration.value * 1000;
-  } else {
-    return cssDuration.value;
+  if (cssDuration.endsWith("s")) {
+    return parseFloat(cssDuration.slice(0, -1)) * 1000;
+  } else if (cssDuration.endsWith("ms")) {
+    return parseFloat(cssDuration.slice(0, -2));
   }
 }
 
