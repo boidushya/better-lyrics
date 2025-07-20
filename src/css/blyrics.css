@@ -105,7 +105,7 @@
 	transition: top var(--blyrics-lyric-scroll-duration)
 		var(--blyrics-lyric-scroll-timing-function) 0s;
 	padding-top: 2rem;
-	padding-bottom: 2rem;
+	padding-bottom: 0;
 }
 
 .blyrics-hidden {
@@ -339,10 +339,13 @@
 
 /* Footer styles */
 .blyrics-footer {
+	height: 0;
 	display: flex;
 	align-items: center;
 	gap: 1rem;
 	direction: ltr;
+	position: sticky;
+	top: calc(100% - 9rem);
 }
 
 .blyrics-footer__discord {

@@ -304,9 +304,10 @@ BetterLyrics.Lyrics = {
     BetterLyrics.DOM.cleanup();
     let lyricsWrapper = BetterLyrics.DOM.createLyricsWrapper();
 
+    lyricsWrapper.innerHTML = "";
+    const lyricsContainer = document.createElement("div");
+
     try {
-      lyricsWrapper.innerHTML = "";
-      const lyricsContainer = document.createElement("div");
       lyricsContainer.className = BetterLyrics.Constants.LYRICS_CLASS;
       lyricsWrapper.appendChild(lyricsContainer);
       BetterLyrics.DOM.flushLoader();
@@ -463,8 +464,6 @@ BetterLyrics.Lyrics = {
         });
       }
 
-      const wrapper = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
-
       langPromise.then(source_language => {
         BetterLyrics.Translation.onRomanizationEnabled(
           async () => {
@@ -507,7 +506,7 @@ BetterLyrics.Lyrics = {
 
       try {
         lyricsData.push(lineData);
-        wrapper.appendChild(line);
+        lyricsContainer.appendChild(line);
       } catch (_err) {
         BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
       }
@@ -525,6 +524,14 @@ BetterLyrics.Lyrics = {
     } else {
       BetterLyrics.DOM.addNoLyricsButton(data.song, data.artist, data.album, data.duration);
     }
+
+    let spacingElement = document.createElement("div");
+    spacingElement.id = BetterLyrics.Constants.LYRICS_SPACING_ELEMENT_ID;
+    spacingElement.style.height = "100px"; // Temp Value; actual is calculated in the tick function
+    spacingElement.textContent = "";
+    spacingElement.style.padding = "0";
+    spacingElement.style.margin = "0";
+    lyricsContainer.appendChild(spacingElement);
 
     if (!allZero) {
       BetterLyrics.App.lyricData = lyricsData;

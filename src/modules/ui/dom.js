@@ -653,8 +653,11 @@ BetterLyrics.DOM = {
 
             BetterLyrics.DOM.nextScrollAllowedTime = scrollTime + Date.now() + 20;
           }
-          scrollTop = scrollPos;
+          let extraHeight = Math.max(tabRendererHeight * (1 - topOffsetMultiplier), tabRendererHeight - lyricsHeight);
 
+          document.getElementById(BetterLyrics.Constants.LYRICS_SPACING_ELEMENT_ID).style.height =
+            `${extraHeight.toFixed(0)}px`;
+          scrollTop = scrollPos;
           BetterLyrics.DOM.scrollPos = scrollPos;
         }
       } else {

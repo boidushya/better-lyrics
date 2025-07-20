@@ -41,6 +41,7 @@ BetterLyrics.Constants = {
   // DOM IDs and Attributes
   LYRICS_LOADER_ID: "blyrics-loader",
   LYRICS_WRAPPER_ID: "blyrics-wrapper",
+  LYRICS_SPACING_ELEMENT_ID: "blyrics-spacing-element",
   LYRICS_DISABLED_ATTR: "blyrics-dfs",
   LYRICS_STYLIZED_ATTR: "blyrics-stylized",
   LYRICS_RTL_ATTR: "blyrics-rtl-enabled",
