@@ -346,6 +346,7 @@
 	direction: ltr;
 	position: sticky;
 	top: calc(100% - 9rem);
+	z-index: 100;
 }
 
 .blyrics-footer__discord {
