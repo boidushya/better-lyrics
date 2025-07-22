@@ -512,11 +512,9 @@ BetterLyrics.DOM = {
           targetScrollPos = elemBounds.y;
           selectedLyricHeight = elemBounds.height;
           availableScrollTime = nextTime - lyricScrollTime;
-          const timeDelta = nextTime - time;
+          const timeDelta = lyricScrollTime - time;
           if (BetterLyrics.DOM.selectedElementIndex !== index && timeDelta > 0.05 && index > 0) {
-            BetterLyrics.Utils.log(
-              `[BetterLyrics] Scrolling to new lyric was late, dt: ${(lyricScrollTime - time).toFixed(5)}s`
-            );
+            BetterLyrics.Utils.log(`[BetterLyrics] Scrolling to new lyric was late, dt: ${timeDelta.toFixed(5)}s`);
           }
           BetterLyrics.DOM.selectedElementIndex = index;
           if (!lineData.isScrolled) {
@@ -549,6 +547,7 @@ BetterLyrics.DOM = {
           if (lineData.isAnimating && Math.abs(lineData.accumulatedOffsetMs) > 100 && isPlaying) {
             // Our sync is off for some reason
             lineData.isAnimating = false;
+            // BetterLyrics.Utils.log("[BetterLyrics] Animation time sync is off, resetting");
           }
 
           if (!lineData.isAnimating) {
