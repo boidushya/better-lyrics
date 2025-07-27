@@ -321,7 +321,13 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
     name: "Big Blurry Slow Lyrics for TV",
     author: "zobiron",
     link: "",
-    css: `.blyrics-container {
+    css: `/* Big Blurry Slow Lyrics for TV, a theme for BetterLyrics by zobiron  */
+:root {
+  --blyrics-lyric-active-color: white;
+  --blyrics-lyric-inactive-color: rgb(255 255 255 / 40%);
+}
+
+.blyrics-container {
   font-family: "Verdana", thick;
   font-size: 7rem;
   font-weight: 700;
@@ -339,7 +345,8 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
   display: out-block;
   opacity: 0.2;
   transition: opacity 0.7s;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+
 }
 
 /* Fix for translated and romanized text */
@@ -395,7 +402,7 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 }
 
 .blyrics-container:has(.blyrics--active) > div:not(.blyrics--active):not(.blyrics--active ~ div) {
-  opacity: 0.33;
+  opacity: 0.825;
   filter: blur(6px);
   transition: filter calc(var(--blyrics-duration) / 3) 0.4s,
     opacity calc(var(--blyrics-duration) / 2) 0.4s, transform 1.166s var(--blyrics-anim-delay, 0s) !important;
@@ -413,7 +420,7 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 }
 
 .blyrics-container > div.blyrics--active ~ div {
-  opacity: 0.33;
+  opacity: 0.825;
   filter: blur(4px);
 }
 
