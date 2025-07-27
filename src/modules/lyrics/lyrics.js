@@ -95,6 +95,7 @@ BetterLyrics.Lyrics = {
 
     song = song.trim();
     artist = artist.trim();
+    artist = artist.replace(", & ", ", ");
 
     // Check for empty strings after trimming
     if (!song || !artist) {
