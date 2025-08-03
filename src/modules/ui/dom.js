@@ -137,7 +137,7 @@ BetterLyrics.DOM = {
       changeLyricsLink.addEventListener("click", e => {
         e.preventDefault();
         if (BetterLyrics.ChangeLyrics) {
-          BetterLyrics.ChangeLyrics.init(song, artist, duration);
+          BetterLyrics.ChangeLyrics.init(song, artist, album, duration);
           BetterLyrics.ChangeLyrics.showModal();
         }
       });

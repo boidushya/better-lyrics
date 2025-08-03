@@ -782,6 +782,7 @@
 	outline: none;
 	resize: vertical;
 	margin-bottom: 1rem;
+	box-sizing: border-box;
 }
 
 .blyrics-field-group {

@@ -2,11 +2,13 @@ BetterLyrics.ChangeLyrics = {
   searchResults: [],
   currentSong: null,
   currentArtist: null,
+  currentAlbum: null,
   currentDuration: null,
 
-  init: function (song, artist, duration) {
+  init: function (song, artist, album, duration) {
     this.currentSong = song;
     this.currentArtist = artist;
+    this.currentAlbum = album;
     this.currentDuration = duration;
   },
 
@@ -43,7 +45,6 @@ BetterLyrics.ChangeLyrics = {
     try {
       BetterLyrics.Utils.log("[BetterLyrics] Applying lyrics data:", lyricsData);
       let parsedLyrics;
-      let resultData;
 
       if (typeof lyricsData === "string") {
         if (lyricsData.includes("[") && lyricsData.includes("]")) {
@@ -51,13 +52,6 @@ BetterLyrics.ChangeLyrics = {
         } else {
           parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(lyricsData);
         }
-
-        resultData = {
-          lyrics: parsedLyrics,
-          source: source,
-          sourceHref: sourceHref,
-          musicVideoSynced: false,
-        };
       } else if (
         lyricsData.richSyncLyrics ||
         lyricsData.richSyncLyricsUri ||
@@ -109,16 +103,20 @@ BetterLyrics.ChangeLyrics = {
           if (!text) throw new Error("No plain lyrics content found");
           parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(text);
         }
-
-        resultData = {
-          lyrics: parsedLyrics,
-          source: "LRCLib",
-          sourceHref: "https://lrclib.net",
-          musicVideoSynced: false,
-        };
       } else {
         throw new Error("Invalid lyrics data format");
       }
+
+      const resultData = {
+        lyrics: parsedLyrics,
+        source: source,
+        sourceHref: sourceHref,
+        musicVideoSynced: false,
+        song: lyricsData.trackName || this.currentSong,
+        artist: lyricsData.artistName || this.currentArtist,
+        album: lyricsData.albumName || this.currentAlbum,
+        duration: lyricsData.duration || this.currentDuration,
+      };
 
       await this.cacheLyrics(resultData);
       BetterLyrics.Lyrics.processLyrics(resultData);
@@ -176,7 +174,7 @@ BetterLyrics.ChangeLyrics = {
               </div>
               <div class="blyrics-field-group">
                 <label for="blyrics-album-input">Album:</label>
-                <input type="text" id="blyrics-album-input" />
+                <input type="text" id="blyrics-album-input" value="${this.currentAlbum || ""}" />
               </div>
               <div class="blyrics-field-group">
                 <span>Search Providers:</span>
