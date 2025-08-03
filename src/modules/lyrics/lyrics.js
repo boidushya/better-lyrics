@@ -520,11 +520,7 @@ BetterLyrics.Lyrics = {
     }
     BetterLyrics.DOM.scrollResumeTime = 0;
 
-    if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
-      BetterLyrics.DOM.addFooter(data.source, data.sourceHref, data.song, data.artist, data.album, data.duration);
-    } else {
-      BetterLyrics.DOM.addNoLyricsButton(data.song, data.artist, data.album, data.duration);
-    }
+    BetterLyrics.DOM.addFooter(data.source, data.sourceHref, data.song, data.artist, data.album, data.duration);
 
     let spacingElement = document.createElement("div");
     spacingElement.id = BetterLyrics.Constants.LYRICS_SPACING_ELEMENT_ID;

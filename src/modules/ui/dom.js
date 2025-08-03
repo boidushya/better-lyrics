@@ -127,8 +127,26 @@ BetterLyrics.DOM = {
 
       addLyricsContainer.appendChild(addLyricsLink);
 
+      const changeLyricsContainer = document.createElement("div");
+      changeLyricsContainer.className = `${BetterLyrics.Constants.FOOTER_CLASS}__container`;
+
+      const changeLyricsLink = document.createElement("a");
+      changeLyricsLink.href = "#";
+      changeLyricsLink.textContent = "Change Lyrics";
+      changeLyricsLink.style.height = "100%";
+      changeLyricsLink.addEventListener("click", e => {
+        e.preventDefault();
+        if (BetterLyrics.ChangeLyrics) {
+          BetterLyrics.ChangeLyrics.init(song, artist, duration);
+          BetterLyrics.ChangeLyrics.showModal();
+        }
+      });
+
+      changeLyricsContainer.appendChild(changeLyricsLink);
+
       footer.appendChild(footerContainer);
       footer.appendChild(addLyricsContainer);
+      footer.appendChild(changeLyricsContainer);
       footer.appendChild(discordLink);
 
       footer.removeAttribute("is-empty");

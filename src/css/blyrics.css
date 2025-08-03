@@ -620,6 +620,317 @@
 	}
 }
 
+#blyrics-change-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 10000;
+	display: none;
+}
+
+.blyrics-modal-backdrop {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.8);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	backdrop-filter: blur(10px);
+}
+
+.blyrics-modal-content {
+	background: rgba(18, 18, 18, 0.95);
+	border-radius: 12px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	max-width: 600px;
+	width: 90%;
+	max-height: 80vh;
+	overflow-y: auto;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.blyrics-modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1.5rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.blyrics-modal-header h3 {
+	color: var(--blyrics-footer-link-color);
+	font-family: var(--blyrics-font-family);
+	font-size: 1.2rem;
+	font-weight: 600;
+	margin: 0;
+}
+
+.blyrics-modal-close {
+	background: none;
+	border: none;
+	color: var(--blyrics-footer-text-color);
+	font-size: 1.5rem;
+	cursor: pointer;
+	padding: 0.25rem;
+	line-height: 1;
+	transition: color 0.2s ease;
+}
+
+.blyrics-modal-close:hover {
+	color: var(--blyrics-footer-link-color);
+}
+
+.blyrics-modal-body {
+	padding: 1.5rem;
+}
+
+.blyrics-tabs {
+	display: flex;
+	gap: 0.5rem;
+	margin-bottom: 1.5rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.blyrics-tab-btn {
+	background: none;
+	border: none;
+	color: var(--blyrics-footer-text-color);
+	font-family: var(--blyrics-footer-font-family);
+	font-size: var(--blyrics-footer-font-size);
+	padding: 0.75rem 1rem;
+	cursor: pointer;
+	border-bottom: 2px solid transparent;
+	transition: all 0.2s ease;
+}
+
+.blyrics-tab-btn:hover {
+	color: var(--blyrics-footer-link-color);
+}
+
+.blyrics-tab-btn.active {
+	color: var(--blyrics-footer-link-color);
+	border-bottom-color: var(--blyrics-footer-link-color);
+}
+
+.blyrics-search-container {
+	display: flex;
+	gap: 0.75rem;
+	margin-bottom: 1rem;
+}
+
+#blyrics-search-input {
+	flex: 1;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 6px;
+	color: var(--blyrics-footer-link-color);
+	font-family: var(--blyrics-footer-font-family);
+	font-size: var(--blyrics-footer-font-size);
+	padding: 0.75rem;
+	outline: none;
+}
+
+#blyrics-search-input:focus {
+	border-color: var(--blyrics-footer-link-color);
+}
+
+#blyrics-search-btn {
+	background: var(--blyrics-footer-link-color);
+	border: none;
+	border-radius: 6px;
+	color: #000;
+	font-family: var(--blyrics-footer-font-family);
+	font-size: var(--blyrics-footer-font-size);
+	font-weight: 500;
+	padding: 0.75rem 1.5rem;
+	cursor: pointer;
+	transition: opacity 0.2s ease;
+}
+
+#blyrics-search-btn:hover:not(:disabled) {
+	opacity: 0.9;
+}
+
+#blyrics-search-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.blyrics-manual-container label {
+	display: block;
+	color: var(--blyrics-footer-link-color);
+	font-family: var(--blyrics-footer-font-family);
+	font-size: var(--blyrics-footer-font-size);
+	margin-bottom: 0.5rem;
+}
+
+#blyrics-manual-input {
+	width: 100%;
+	min-height: 150px;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 6px;
+	color: var(--blyrics-footer-link-color);
+	font-family: monospace;
+	font-size: 13px;
+	padding: 0.75rem;
+	outline: none;
+	resize: vertical;
+	margin-bottom: 1rem;
+}
+
+.blyrics-field-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	margin-bottom: 1rem;
+}
+
+.blyrics-field-group > label,
+.blyrics-field-group > span {
+	color: var(--blyrics-footer-link-color);
+	font-family: var(--blyrics-footer-font-family);
+	font-size: var(--blyrics-footer-font-size);
+}
+
+.blyrics-field-group input[type="text"] {
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 6px;
+	color: var(--blyrics-footer-link-color);
+	font-family: var(--blyrics-footer-font-family);
+	font-size: var(--blyrics-footer-font-size);
+	padding: 0.5rem 0.75rem;
+	outline: none;
+}
+
+.blyrics-field-group input[type="text"]:focus {
+	border-color: var(--blyrics-footer-link-color);
+}
+
+.blyrics-primary-btn {
+	background: var(--blyrics-footer-link-color);
+	border: none;
+	border-radius: 6px;
+	color: #000;
+	font-family: var(--blyrics-footer-font-family);
+	font-size: var(--blyrics-footer-font-size);
+	font-weight: 500;
+	padding: 0.75rem 1.5rem;
+	cursor: pointer;
+	transition: opacity 0.2s ease;
+	margin-bottom: 1rem;
+}
+
+.blyrics-primary-btn:hover:not(:disabled) {
+	opacity: 0.9;
+}
+
+.blyrics-type-tag {
+	background: rgba(255,255,255,0.1);
+	border: 1px solid rgba(255,255,255,0.2);
+	border-radius: 4px;
+	padding: 0 4px;
+	font-size: 11px;
+	margin-left: 4px;
+	color: var(--blyrics-footer-link-color);
+}
+
+#blyrics-manual-input:focus {
+	border-color: var(--blyrics-footer-link-color);
+}
+
+#blyrics-apply-manual {
+	background: var(--blyrics-footer-link-color);
+	border: none;
+	border-radius: 6px;
+	color: #000;
+	font-family: var(--blyrics-footer-font-family);
+	font-size: var(--blyrics-footer-font-size);
+	font-weight: 500;
+	padding: 0.75rem 1.5rem;
+	cursor: pointer;
+	transition: opacity 0.2s ease;
+}
+
+#blyrics-apply-manual:hover {
+	opacity: 0.9;
+}
+
+.blyrics-search-result {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem;
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 6px;
+	margin-bottom: 0.5rem;
+}
+
+.blyrics-result-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.blyrics-result-info strong {
+	color: var(--blyrics-footer-link-color);
+	font-family: var(--blyrics-footer-font-family);
+	font-size: var(--blyrics-footer-font-size);
+}
+
+.blyrics-result-artist,
+.blyrics-result-album,
+.blyrics-result-duration {
+	color: var(--blyrics-footer-text-color);
+	font-family: var(--blyrics-footer-font-family);
+	font-size: 12px;
+}
+
+.blyrics-use-result {
+	background: var(--blyrics-footer-link-color);
+	border: none;
+	border-radius: 4px;
+	color: #000;
+	font-family: var(--blyrics-footer-font-family);
+	font-size: 12px;
+	font-weight: 500;
+	padding: 0.5rem 1rem;
+	cursor: pointer;
+	transition: opacity 0.2s ease;
+}
+
+.blyrics-use-result:hover {
+	opacity: 0.9;
+}
+
+.blyrics-loading,
+.blyrics-no-results {
+	text-align: center;
+	color: var(--blyrics-footer-text-color);
+	font-family: var(--blyrics-footer-font-family);
+	font-size: var(--blyrics-footer-font-size);
+	padding: 2rem;
+}
+
+#blyrics-error-message {
+	background: rgba(220, 53, 69, 0.1);
+	border: 1px solid rgba(220, 53, 69, 0.3);
+	border-radius: 6px;
+	color: #ff6b7a;
+	font-family: var(--blyrics-footer-font-family);
+	font-size: var(--blyrics-footer-font-size);
+	margin-top: 1rem;
+	padding: 0.75rem;
+}
+
 @media (max-width: 615px) {
 	/* Styles for smaller screens */
 	.blyrics-container > div {

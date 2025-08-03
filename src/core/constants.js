@@ -56,6 +56,7 @@ BetterLyrics.Constants = {
   LYRICS_API_URL: "https://lyrics-api.boidu.dev/getLyrics",
   DISCORD_INVITE_URL: "https://discord.gg/UsHE3d5fWF",
   LRCLIB_API_URL: "https://lrclib.net/api/get",
+  LRCLIB_SEARCH_URL: "https://lrclib.net/api/search",
   LRCLIB_UPLOAD_URL: "https://lrclibup.boidu.dev/",
   LRCLIB_CLIENT_HEADER: "BetterLyrics Extension (https://github.com/boidushya/better-lyrics)",
   TRANSLATE_LYRICS_URL: function (lang, text) {

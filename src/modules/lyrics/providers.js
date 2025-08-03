@@ -398,6 +398,10 @@ BetterLyrics.LyricProviders = {
         "lrclib-plain",
       ];
 
+      if (!Array.isArray(preferredProviderList)) {
+        preferredProviderList = defaultPreferredProviderList.slice();
+      }
+
       let isValid = defaultPreferredProviderList.every(provider => {
         return preferredProviderList.includes(provider) || preferredProviderList.includes("d_" + provider);
       });
