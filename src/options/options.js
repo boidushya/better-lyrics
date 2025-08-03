@@ -220,12 +220,14 @@ const setOptionsInForm = items => {
     const rawProviderId = disabled ? providerId.slice(2) : providerId;
     const providerElem = createProviderElem(rawProviderId, !disabled);
 
+    if (providerElem === null) continue;
     providersListElem.appendChild(providerElem);
     unseenProviders = unseenProviders.filter(p => p !== rawProviderId);
   }
 
   unseenProviders.forEach(p => {
     const providerElem = createProviderElem(p);
+    if (providerElem === null) return;
     providersListElem.appendChild(providerElem);
   });
 };
@@ -240,6 +242,11 @@ const providerIdToNameMap = {
 };
 
 function createProviderElem(providerId, checked = true) {
+  if (!Object.hasOwn(providerIdToNameMap, providerId)) {
+    console.warn("Unknown provider ID:", providerId);
+    return null;
+  }
+
   const liElem = document.createElement("li");
   liElem.classList.add("sortable-item");
   liElem.id = "p-" + providerId;
@@ -263,7 +270,7 @@ function createProviderElem(providerId, checked = true) {
   labelElem.appendChild(checkmarkElem);
   const textElem = document.createElement("span");
   textElem.classList.add("provider-name");
-  textElem.textContent = Object.hasOwn(providerIdToNameMap, providerId) ? providerIdToNameMap[providerId] : providerId;
+  textElem.textContent = providerIdToNameMap[providerId];
   labelElem.appendChild(textElem);
 
   liElem.appendChild(labelElem);
