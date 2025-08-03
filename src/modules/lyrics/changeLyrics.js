@@ -322,14 +322,19 @@ Or just plain text without timestamps..."></textarea>
       .map(
         (result, index) => `
       <div class="blyrics-search-result" data-index="${index}">
-        <div class="blyrics-result-info">
-          <strong>${result.trackName || "Unknown Title"}</strong>
+        <div class="blyrics-result-header">
+          <h4 class="blyrics-result-title">${result.trackName || "Unknown Title"}</h4>
+          <button class="blyrics-use-result" data-index="${index}">Use These Lyrics</button>
+        </div>
+        <div class="blyrics-result-meta">
           <span class="blyrics-result-artist">${result.artistName || "Unknown Artist"}</span>
           ${result.albumName ? `<span class="blyrics-result-album">${result.albumName}</span>` : ""}
-          <span class="blyrics-type-tag">${result.__type === "rich" ? "Rich Synced" : result.__type === "synced" ? "Synced" : "Plain"}</span>
+        </div>
+        <div class="blyrics-result-footer">
+          <span class="blyrics-provider-tag">LRCLib</span>
+          <span class="blyrics-type-tag blyrics-type-${result.__type}">${result.__type === "rich" ? "Rich Synced" : result.__type === "synced" ? "Synced" : "Plain"}</span>
           <span class="blyrics-result-duration">${this.formatDuration(result.duration || 0)}</span>
         </div>
-        <button class="blyrics-use-result" data-index="${index}">Use These Lyrics</button>
       </div>
     `
       )
@@ -353,9 +358,10 @@ Or just plain text without timestamps..."></textarea>
 
   showModal: function () {
     let modal = document.getElementById("blyrics-change-modal");
-    if (!modal) {
-      modal = this.createModal();
+    if (modal) {
+      modal.remove();
     }
+    modal = this.createModal();
     modal.style.display = "block";
     document.body.style.overflow = "hidden";
   },

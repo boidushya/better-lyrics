@@ -832,13 +832,28 @@
 }
 
 .blyrics-type-tag {
-	background: rgba(255,255,255,0.1);
-	border: 1px solid rgba(255,255,255,0.2);
 	border-radius: 4px;
-	padding: 0 4px;
+	padding: 2px 6px;
 	font-size: 11px;
-	margin-left: 4px;
-	color: var(--blyrics-footer-link-color);
+	font-weight: 500;
+}
+
+.blyrics-type-rich {
+	background: rgba(255, 215, 0, 0.2);
+	border: 1px solid rgba(255, 215, 0, 0.4);
+	color: #FFD700;
+}
+
+.blyrics-type-synced {
+	background: rgba(50, 205, 50, 0.2);
+	border: 1px solid rgba(50, 205, 50, 0.4);
+	color: #32CD32;
+}
+
+.blyrics-type-plain {
+	background: rgba(169, 169, 169, 0.2);
+	border: 1px solid rgba(169, 169, 169, 0.4);
+	color: #A9A9A9;
 }
 
 #blyrics-manual-input:focus {
@@ -863,52 +878,95 @@
 }
 
 .blyrics-search-result {
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 8px;
+	margin-bottom: 0.75rem;
+	padding: 1rem;
+	transition: background-color 0.2s ease;
+}
+
+.blyrics-search-result:hover {
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.blyrics-result-header {
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
-	padding: 1rem;
-	background: rgba(255, 255, 255, 0.03);
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 6px;
+	align-items: flex-start;
 	margin-bottom: 0.5rem;
 }
 
-.blyrics-result-info {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	gap: 0.25rem;
-}
-
-.blyrics-result-info strong {
+.blyrics-result-title {
 	color: var(--blyrics-footer-link-color);
 	font-family: var(--blyrics-footer-font-family);
-	font-size: var(--blyrics-footer-font-size);
+	font-size: 16px;
+	font-weight: 600;
+	margin: 0;
+	flex: 1;
+	line-height: 1.3;
 }
 
-.blyrics-result-artist,
-.blyrics-result-album,
+.blyrics-result-meta {
+	margin-bottom: 0.75rem;
+}
+
+.blyrics-result-artist {
+	color: var(--blyrics-footer-text-color);
+	font-family: var(--blyrics-footer-font-family);
+	font-size: 14px;
+	display: block;
+	margin-bottom: 0.25rem;
+}
+
+.blyrics-result-album {
+	color: var(--blyrics-footer-text-color);
+	font-family: var(--blyrics-footer-font-family);
+	font-size: 13px;
+	opacity: 0.8;
+	display: block;
+}
+
+.blyrics-result-footer {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.blyrics-provider-tag {
+	background: rgba(100, 149, 237, 0.2);
+	border: 1px solid rgba(100, 149, 237, 0.4);
+	border-radius: 4px;
+	padding: 2px 6px;
+	font-size: 11px;
+	font-weight: 500;
+	color: #6495ED;
+}
+
 .blyrics-result-duration {
 	color: var(--blyrics-footer-text-color);
 	font-family: var(--blyrics-footer-font-family);
 	font-size: 12px;
+	margin-left: auto;
 }
 
 .blyrics-use-result {
 	background: var(--blyrics-footer-link-color);
 	border: none;
-	border-radius: 4px;
+	border-radius: 6px;
 	color: #000;
 	font-family: var(--blyrics-footer-font-family);
 	font-size: 12px;
-	font-weight: 500;
+	font-weight: 600;
 	padding: 0.5rem 1rem;
 	cursor: pointer;
-	transition: opacity 0.2s ease;
+	transition: all 0.2s ease;
+	white-space: nowrap;
 }
 
 .blyrics-use-result:hover {
 	opacity: 0.9;
+	transform: translateY(-1px);
 }
 
 .blyrics-loading,
