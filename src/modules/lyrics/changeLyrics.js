@@ -4,12 +4,14 @@ BetterLyrics.ChangeLyrics = {
   currentArtist: null,
   currentAlbum: null,
   currentDuration: null,
+  currentVideoId: null,
 
-  init: function (song, artist, album, duration) {
+  init: function (song, artist, album, duration, videoId) {
     this.currentSong = song;
     this.currentArtist = artist;
     this.currentAlbum = album;
     this.currentDuration = duration;
+    this.currentVideoId = videoId;
   },
 
   searchLyrics: async function (query) {
@@ -131,18 +133,18 @@ BetterLyrics.ChangeLyrics = {
   },
 
   cacheLyrics: async function (lyricsData) {
-    if (!this.currentSong || !this.currentArtist) return;
+    if (!this.currentVideoId) return;
 
-    const cacheKey = `blyrics_${this.currentSong}_${this.currentArtist}`;
-    const cacheData = {
-      type: "transient",
-      value: lyricsData,
-      expiryTime: Date.now() + 7 * 24 * 60 * 60 * 1000,
-    };
+    // Use the same cache key format as the main lyrics system
+    const cacheKey = `blyrics_${this.currentVideoId}`;
+    
+    // Add version and format the data to match the main lyrics cache format
+    lyricsData.version = "1.1.1"; // Match LYRIC_CACHE_VERSION from lyrics.js
+    lyricsData.cacheAllowed = true;
 
     try {
-      await chrome.storage.local.set({ [cacheKey]: cacheData });
-      await BetterLyrics.Storage.saveCacheInfo();
+      const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
+      await BetterLyrics.Storage.setTransientStorage(cacheKey, JSON.stringify(lyricsData), oneWeekInMs);
     } catch (error) {
       BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, error);
     }

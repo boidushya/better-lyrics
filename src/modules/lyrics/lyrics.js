@@ -520,7 +520,7 @@ BetterLyrics.Lyrics = {
     }
     BetterLyrics.DOM.scrollResumeTime = 0;
 
-    BetterLyrics.DOM.addFooter(data.source, data.sourceHref, data.song, data.artist, data.album, data.duration);
+    BetterLyrics.DOM.addFooter(data.source, data.sourceHref, data.song, data.artist, data.album, data.duration, data.videoId);
 
     let spacingElement = document.createElement("div");
     spacingElement.id = BetterLyrics.Constants.LYRICS_SPACING_ELEMENT_ID;

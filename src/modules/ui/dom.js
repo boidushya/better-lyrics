@@ -46,8 +46,9 @@ BetterLyrics.DOM = {
    * @param {string} artist - Artist name
    * @param {string} album - Album name
    * @param {number} duration - Song duration in seconds
+   * @param {string} videoId - YouTube video ID
    */
-  addFooter: (source, sourceHref, song, artist, album, duration) => {
+  addFooter: (source, sourceHref, song, artist, album, duration, videoId) => {
     if (document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS).length !== 0) {
       document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0].remove();
     }
@@ -56,7 +57,7 @@ BetterLyrics.DOM = {
     const footer = document.createElement("div");
     footer.classList.add(BetterLyrics.Constants.FOOTER_CLASS);
     lyricsElement.appendChild(footer);
-    BetterLyrics.DOM.createFooter(song, artist, album, duration);
+    BetterLyrics.DOM.createFooter(song, artist, album, duration, videoId);
 
     const footerLink = document.getElementById("betterLyricsFooterLink");
     source = source || "boidu.dev";
@@ -72,8 +73,9 @@ BetterLyrics.DOM = {
    * @param {string} artist - Artist name
    * @param {string} album - Album name
    * @param {number} duration - Song duration in seconds
+   * @param {string} videoId - YouTube video ID
    */
-  createFooter: (song, artist, album, duration) => {
+  createFooter: (song, artist, album, duration, videoId) => {
     try {
       const footer = document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0];
       footer.innerHTML = "";
@@ -137,7 +139,7 @@ BetterLyrics.DOM = {
       changeLyricsLink.addEventListener("click", e => {
         e.preventDefault();
         if (BetterLyrics.ChangeLyrics) {
-          BetterLyrics.ChangeLyrics.init(song, artist, album, duration);
+          BetterLyrics.ChangeLyrics.init(song, artist, album, duration, videoId);
           BetterLyrics.ChangeLyrics.showModal();
         }
       });
