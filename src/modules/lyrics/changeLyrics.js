@@ -14,33 +14,120 @@ BetterLyrics.ChangeLyrics = {
     this.currentVideoId = videoId;
   },
 
-  searchLyrics: async function (query) {
+  searchLyrics: async function (query, enabledProviders = ['lrclib']) {
     if (!query || query.trim() === "") {
       return [];
     }
 
-    try {
-      const url = new URL(BetterLyrics.Constants.LRCLIB_SEARCH_URL);
-      url.searchParams.append("q", query);
-
-      const response = await fetch(url.toString(), {
-        headers: {
-          "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER,
-        },
-        signal: AbortSignal.timeout(10000),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-
-      const results = await response.json();
-      this.searchResults = Array.isArray(results) ? results : [];
-      return this.searchResults;
-    } catch (error) {
-      BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, error);
-      return [];
+    const allResults = [];
+    
+    // Parse query to extract song and artist if possible
+    const queryParts = query.trim().split(/\s+/);
+    let song = query;
+    let artist = "";
+    
+    // Simple heuristic: if query has multiple words, assume first half is song, second half is artist
+    if (queryParts.length > 2) {
+      const midPoint = Math.ceil(queryParts.length / 2);
+      song = queryParts.slice(0, midPoint).join(" ");
+      artist = queryParts.slice(midPoint).join(" ");
     }
+
+    // LRCLib Search (original functionality)
+    if (enabledProviders.includes('lrclib')) {
+      try {
+        const url = new URL(BetterLyrics.Constants.LRCLIB_SEARCH_URL);
+        url.searchParams.append("q", query);
+
+        const response = await fetch(url.toString(), {
+          headers: {
+            "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER,
+          },
+          signal: AbortSignal.timeout(10000),
+        });
+
+        if (response.ok) {
+          const results = await response.json();
+          if (Array.isArray(results)) {
+            results.forEach(result => {
+              result.__provider = 'LRCLib';
+              result.__providerHref = 'https://lrclib.net';
+            });
+            allResults.push(...results);
+          }
+        }
+      } catch (error) {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, 'LRCLib search error:', error);
+      }
+    }
+
+    // bLyrics Search (using direct lookup)
+    if (enabledProviders.includes('blyrics') && song) {
+      try {
+        const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
+        url.searchParams.append("s", song);
+        url.searchParams.append("a", artist);
+        url.searchParams.append("d", this.currentDuration || "180");
+
+        const response = await fetch(url.toString(), { signal: AbortSignal.timeout(10000) });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data && (data.lyrics || data.syncedLyrics)) {
+            const result = {
+              trackName: data.song || song,
+              artistName: data.artist || artist,
+              albumName: data.album || null,
+              duration: data.duration || this.currentDuration || 180,
+              plainLyrics: data.lyrics ? (Array.isArray(data.lyrics) ? data.lyrics.map(l => l.words).join('\n') : data.lyrics) : null,
+              syncedLyrics: data.syncedLyrics,
+              __provider: 'bLyrics',
+              __providerHref: 'https://better-lyrics.boidu.dev'
+            };
+            allResults.push(result);
+          }
+        }
+      } catch (error) {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, 'bLyrics search error:', error);
+      }
+    }
+
+    // Musixmatch Search (via cubey API)
+    if (enabledProviders.includes('musixmatch') && song) {
+      try {
+        const url = new URL("https://lyrics.api.dacubeking.com/");
+        url.searchParams.append("song", song);
+        url.searchParams.append("artist", artist);
+        url.searchParams.append("duration", this.currentDuration || "180");
+        url.searchParams.append("videoId", this.currentVideoId || "");
+        url.searchParams.append("enhanced", "true");
+        url.searchParams.append("useLrcLib", "false");
+
+        const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data && (data.musixmatchWordByWordLyrics || data.musixmatchSyncedLyrics)) {
+            const result = {
+              trackName: data.song || song,
+              artistName: data.artist || artist,
+              albumName: data.album,
+              duration: data.duration || this.currentDuration || 180,
+              richSyncLyrics: data.musixmatchWordByWordLyrics,
+              syncedLyrics: data.musixmatchSyncedLyrics,
+              __provider: 'Musixmatch',
+              __providerHref: 'https://www.musixmatch.com'
+            };
+            allResults.push(result);
+          }
+        }
+      } catch (error) {
+        BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, 'Musixmatch search error:', error);
+      }
+    }
+
+    this.searchResults = allResults;
+    return allResults;
   },
 
   applyLyrics: async function (lyricsData, source = "Manual", sourceHref = "") {
@@ -111,8 +198,8 @@ BetterLyrics.ChangeLyrics = {
 
       const resultData = {
         lyrics: parsedLyrics,
-        source: source,
-        sourceHref: sourceHref,
+        source: lyricsData.__provider || source,
+        sourceHref: lyricsData.__providerHref || sourceHref,
         musicVideoSynced: false,
         song: lyricsData.trackName || this.currentSong,
         artist: lyricsData.artistName || this.currentArtist,
@@ -181,6 +268,8 @@ BetterLyrics.ChangeLyrics = {
               <div class="blyrics-field-group">
                 <span>Search Providers:</span>
                 <label><input type="checkbox" id="provider-lrclib" checked /> LRCLib</label>
+                <label><input type="checkbox" id="provider-musixmatch" checked /> Musixmatch</label>
+                <label><input type="checkbox" id="provider-blyrics" checked /> bLyrics</label>
               </div>
               <button id="blyrics-search-btn" class="blyrics-primary-btn">Search</button>
               <div id="blyrics-search-results"></div>
@@ -274,6 +363,17 @@ Or just plain text without timestamps..."></textarea>
       return;
     }
 
+    // Get enabled providers
+    const enabledProviders = [];
+    if (document.querySelector("#provider-lrclib")?.checked) enabledProviders.push('lrclib');
+    if (document.querySelector("#provider-musixmatch")?.checked) enabledProviders.push('musixmatch');
+    if (document.querySelector("#provider-blyrics")?.checked) enabledProviders.push('blyrics');
+
+    if (enabledProviders.length === 0) {
+      this.showError("Please select at least one provider");
+      return;
+    }
+
     const query = `${song} ${artist}`;
 
     searchBtn.disabled = true;
@@ -281,7 +381,7 @@ Or just plain text without timestamps..."></textarea>
     resultsContainer.innerHTML = '<div class="blyrics-loading">Searching for lyrics...</div>';
 
     try {
-      const results = await this.searchLyrics(query);
+      const results = await this.searchLyrics(query, enabledProviders);
       this.displaySearchResults(results);
     } catch (_error) {
       this.showError("Search failed. Please try again.");
@@ -331,7 +431,7 @@ Or just plain text without timestamps..."></textarea>
           ${result.albumName ? `<span class="blyrics-result-album">${result.albumName}</span>` : ""}
         </div>
         <div class="blyrics-result-footer">
-          <span class="blyrics-provider-tag">LRCLib</span>
+          <span class="blyrics-provider-tag">${result.__provider || 'LRCLib'}</span>
           <span class="blyrics-type-tag blyrics-type-${result.__type}">${result.__type === "rich" ? "Rich Synced" : result.__type === "synced" ? "Synced" : "Plain"}</span>
           <span class="blyrics-result-duration">${this.formatDuration(result.duration || 0)}</span>
         </div>

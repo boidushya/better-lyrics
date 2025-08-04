@@ -520,7 +520,11 @@ BetterLyrics.Lyrics = {
     }
     BetterLyrics.DOM.scrollResumeTime = 0;
 
-    BetterLyrics.DOM.addFooter(data.source, data.sourceHref, data.song, data.artist, data.album, data.duration, data.videoId);
+    // Check if this is the "no lyrics found" case
+    const isNoLyricsFound = data.lyrics && data.lyrics.length === 1 && 
+                           data.lyrics[0].words === BetterLyrics.Constants.NO_LYRICS_TEXT;
+    
+    BetterLyrics.DOM.addFooter(data.source, data.sourceHref, data.song, data.artist, data.album, data.duration, data.videoId, isNoLyricsFound);
 
     let spacingElement = document.createElement("div");
     spacingElement.id = BetterLyrics.Constants.LYRICS_SPACING_ELEMENT_ID;

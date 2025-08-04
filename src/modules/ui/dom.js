@@ -47,8 +47,9 @@ BetterLyrics.DOM = {
    * @param {string} album - Album name
    * @param {number} duration - Song duration in seconds
    * @param {string} videoId - YouTube video ID
+   * @param {boolean} showAddLyricsLink - Whether to show the "Add Lyrics to LRCLib" link
    */
-  addFooter: (source, sourceHref, song, artist, album, duration, videoId) => {
+  addFooter: (source, sourceHref, song, artist, album, duration, videoId, showAddLyricsLink = false) => {
     if (document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS).length !== 0) {
       document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0].remove();
     }
@@ -57,7 +58,7 @@ BetterLyrics.DOM = {
     const footer = document.createElement("div");
     footer.classList.add(BetterLyrics.Constants.FOOTER_CLASS);
     lyricsElement.appendChild(footer);
-    BetterLyrics.DOM.createFooter(song, artist, album, duration, videoId);
+    BetterLyrics.DOM.createFooter(song, artist, album, duration, videoId, showAddLyricsLink);
 
     const footerLink = document.getElementById("betterLyricsFooterLink");
     source = source || "boidu.dev";
@@ -74,8 +75,9 @@ BetterLyrics.DOM = {
    * @param {string} album - Album name
    * @param {number} duration - Song duration in seconds
    * @param {string} videoId - YouTube video ID
+   * @param {boolean} showAddLyricsLink - Whether to show the "Add Lyrics to LRCLib" link
    */
-  createFooter: (song, artist, album, duration, videoId) => {
+  createFooter: (song, artist, album, duration, videoId, showAddLyricsLink = false) => {
     try {
       const footer = document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0];
       footer.innerHTML = "";
@@ -111,23 +113,27 @@ BetterLyrics.DOM = {
 
       discordLink.appendChild(discordImage);
 
-      const addLyricsContainer = document.createElement("div");
-      addLyricsContainer.className = `${BetterLyrics.Constants.FOOTER_CLASS}__container`;
+      // Only show "Add Lyrics to LRCLib" link when no lyrics are found
+      let addLyricsContainer = null;
+      if (showAddLyricsLink) {
+        addLyricsContainer = document.createElement("div");
+        addLyricsContainer.className = `${BetterLyrics.Constants.FOOTER_CLASS}__container`;
 
-      const addLyricsLink = document.createElement("a");
-      const url = new URL(BetterLyrics.Constants.LRCLIB_UPLOAD_URL);
-      if (song) url.searchParams.append("title", song);
-      if (artist) url.searchParams.append("artist", artist);
-      if (album) url.searchParams.append("album", album);
-      if (duration) url.searchParams.append("duration", duration);
-      footerLink.target = "_blank";
-      addLyricsLink.href = url.toString();
-      addLyricsLink.textContent = "Add Lyrics to LRCLib";
-      addLyricsLink.target = "_blank";
-      addLyricsLink.rel = "noreferrer noopener";
-      addLyricsLink.style.height = "100%";
+        const addLyricsLink = document.createElement("a");
+        const url = new URL(BetterLyrics.Constants.LRCLIB_UPLOAD_URL);
+        if (song) url.searchParams.append("title", song);
+        if (artist) url.searchParams.append("artist", artist);
+        if (album) url.searchParams.append("album", album);
+        if (duration) url.searchParams.append("duration", duration);
+        footerLink.target = "_blank";
+        addLyricsLink.href = url.toString();
+        addLyricsLink.textContent = "Add Lyrics to LRCLib";
+        addLyricsLink.target = "_blank";
+        addLyricsLink.rel = "noreferrer noopener";
+        addLyricsLink.style.height = "100%";
 
-      addLyricsContainer.appendChild(addLyricsLink);
+        addLyricsContainer.appendChild(addLyricsLink);
+      }
 
       const changeLyricsContainer = document.createElement("div");
       changeLyricsContainer.className = `${BetterLyrics.Constants.FOOTER_CLASS}__container`;
@@ -147,7 +153,9 @@ BetterLyrics.DOM = {
       changeLyricsContainer.appendChild(changeLyricsLink);
 
       footer.appendChild(footerContainer);
-      footer.appendChild(addLyricsContainer);
+      if (addLyricsContainer) {
+        footer.appendChild(addLyricsContainer);
+      }
       footer.appendChild(changeLyricsContainer);
       footer.appendChild(discordLink);
 
