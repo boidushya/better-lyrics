@@ -386,8 +386,6 @@ BetterLyrics.LyricProviders = {
      * @param {string[]} preferredProviderList
      */
     const updateProvidersList = preferredProviderList => {
-      BetterLyrics.Utils.log(BetterLyrics.Constants.PROVIDER_SWITCHED_LOG, preferredProviderList);
-
       let defaultPreferredProviderList = [
         "musixmatch-richsync",
         "yt-captions",
@@ -398,8 +396,11 @@ BetterLyrics.LyricProviders = {
         "lrclib-plain",
       ];
 
-      if (!Array.isArray(preferredProviderList)) {
-        preferredProviderList = defaultPreferredProviderList.slice();
+
+      if (preferredProviderList === null) {
+        preferredProviderList = defaultPreferredProviderList;
+        BetterLyrics.Utils.log("No preferred provider list, resetting to default");
+
       }
 
       let isValid = defaultPreferredProviderList.every(provider => {
@@ -408,14 +409,18 @@ BetterLyrics.LyricProviders = {
 
       if (!isValid) {
         preferredProviderList = defaultPreferredProviderList;
-        console.log("Invalid preferred provider list, resetting to default");
+        BetterLyrics.Utils.log("Invalid preferred provider list, resetting to default");
       }
 
       //Remove any invalid entries in the preferred provider list
       preferredProviderList = preferredProviderList.filter(provider => {
-        return defaultPreferredProviderList.includes(provider);
+        return (
+          defaultPreferredProviderList.includes(provider) ||
+          (provider.startsWith("d_") && defaultPreferredProviderList.includes(provider.substring(2)))
+        );
       });
 
+      BetterLyrics.Utils.log(BetterLyrics.Constants.PROVIDER_SWITCHED_LOG, preferredProviderList);
       BetterLyrics.LyricProviders.providerPriority = preferredProviderList;
     };
 
