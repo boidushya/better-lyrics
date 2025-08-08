@@ -387,6 +387,7 @@ Or just plain text without timestamps..."></textarea>
       const results = await this.searchLyrics(query, enabledProviders);
       this.displaySearchResults(results);
     } catch (_error) {
+      console.error(_error);
       this.showError("Search failed. Please try again.");
     } finally {
       searchBtn.disabled = false;
