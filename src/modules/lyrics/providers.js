@@ -396,9 +396,11 @@ BetterLyrics.LyricProviders = {
         "lrclib-plain",
       ];
 
+
       if (preferredProviderList === null) {
         preferredProviderList = defaultPreferredProviderList;
         BetterLyrics.Utils.log("No preferred provider list, resetting to default");
+
       }
 
       let isValid = defaultPreferredProviderList.every(provider => {
