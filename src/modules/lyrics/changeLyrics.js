@@ -173,6 +173,7 @@ BetterLyrics.ChangeLyrics = {
                 lrc = await response.text();
               }
             } catch (_e) {
+              BetterLyrics.Utils.log("[BetterLyrics] Error fetching synced lyrics:", _e);
               throw new Error("Failed to fetch synced lyrics");
             }
           }
