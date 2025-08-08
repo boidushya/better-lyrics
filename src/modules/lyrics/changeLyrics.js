@@ -158,6 +158,7 @@ BetterLyrics.ChangeLyrics = {
                 lrc = await response.text();
               }
             } catch (_e) {
+              BetterLyrics.Utils.log("[BetterLyrics] Error fetching rich sync lyrics:", _e);
               throw new Error("Failed to fetch rich sync lyrics");
             }
           }
