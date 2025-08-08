@@ -188,6 +188,7 @@ BetterLyrics.ChangeLyrics = {
                 text = await response.text();
               }
             } catch (_e) {
+              BetterLyrics.Utils.log("[BetterLyrics] Error fetching plain lyrics:", _e);
               throw new Error("Failed to fetch plain lyrics");
             }
           }
