@@ -20,12 +20,12 @@ BetterLyrics.ChangeLyrics = {
     }
 
     const allResults = [];
-    
+
     // Parse query to extract song and artist if possible
     const queryParts = query.trim().split(/\s+/);
     let song = query;
     let artist = "";
-    
+
     // Simple heuristic: if query has multiple words, assume first half is song, second half is artist
     if (queryParts.length > 2) {
       const midPoint = Math.ceil(queryParts.length / 2);
@@ -67,10 +67,12 @@ BetterLyrics.ChangeLyrics = {
         const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
         url.searchParams.append("s", song);
         url.searchParams.append("a", artist);
-        url.searchParams.append("d", this.currentDuration || "180");
+        if (this.currentDuration) {
+          url.searchParams.append("d", this.currentDuration);
+        }
 
         const response = await fetch(url.toString(), { signal: AbortSignal.timeout(10000) });
-        
+
         if (response.ok) {
           const data = await response.json();
           if (data && (data.lyrics || data.syncedLyrics)) {
@@ -98,13 +100,15 @@ BetterLyrics.ChangeLyrics = {
         const url = new URL("https://lyrics.api.dacubeking.com/");
         url.searchParams.append("song", song);
         url.searchParams.append("artist", artist);
-        url.searchParams.append("duration", this.currentDuration || "180");
+        if (this.currentDuration) {
+          url.searchParams.append("duration", this.currentDuration);
+        }
         url.searchParams.append("videoId", this.currentVideoId || "");
         url.searchParams.append("enhanced", "true");
         url.searchParams.append("useLrcLib", "false");
 
         const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
-        
+
         if (response.ok) {
           const data = await response.json();
           if (data && (data.musixmatchWordByWordLyrics || data.musixmatchSyncedLyrics)) {
@@ -227,7 +231,7 @@ BetterLyrics.ChangeLyrics = {
 
     // Use the same cache key format as the main lyrics system
     const cacheKey = `blyrics_${this.currentVideoId}`;
-    
+
     // Add version and format the data to match the main lyrics cache format
     lyricsData.version = "1.1.1"; // Match LYRIC_CACHE_VERSION from lyrics.js
     lyricsData.cacheAllowed = true;
