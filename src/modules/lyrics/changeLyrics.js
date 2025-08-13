@@ -28,52 +28,45 @@ BetterLyrics.ChangeLyrics = {
     if (!query) {
       return [];
     }
-    const allResults = [];
 
+    const promises = [];
 
-    // LRCLib Search (original functionality)
     if (enabledProviders.includes('lrclib')) {
-      try {
-        const url = new URL(BetterLyrics.Constants.LRCLIB_SEARCH_URL);
-        url.searchParams.append("q", query);
-
-        const response = await fetch(url.toString(), {
-          headers: {
-            "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER,
-          },
+      const url = new URL(BetterLyrics.Constants.LRCLIB_SEARCH_URL);
+      url.searchParams.append("q", query);
+      promises.push(
+        fetch(url.toString(), {
+          headers: { "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER },
           signal: AbortSignal.timeout(10000),
-        });
-
-        if (response.ok) {
-          const results = await response.json();
-          if (Array.isArray(results)) {
+        })
+          .then(r => (r.ok ? r.json() : []))
+          .then(results => {
+            if (!Array.isArray(results)) return [];
             results.forEach(result => {
               result.__provider = 'LRCLib';
               result.__providerHref = 'https://lrclib.net';
             });
-            allResults.push(...results);
-          }
-        }
-      } catch (error) {
-        BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, 'LRCLib search error:', error);
-      }
+            return results;
+          })
+          .catch(error => {
+            BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, 'LRCLib search error:', error);
+            return [];
+          })
+      );
     }
 
-    // bLyrics Search (using direct lookup)
     if (enabledProviders.includes('blyrics') && song) {
-      try {
-        const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
-        url.searchParams.append("s", song);
-        url.searchParams.append("a", artist);
-        if (this.currentDuration) {
-          url.searchParams.append("d", this.currentDuration);
-        }
-
-        const response = await fetch(url.toString(), { signal: AbortSignal.timeout(10000) });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data && (data.lyrics || data.syncedLyrics)) {
+      const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
+      url.searchParams.append("s", song);
+      url.searchParams.append("a", artist);
+      if (this.currentDuration) {
+        url.searchParams.append("d", this.currentDuration);
+      }
+      promises.push(
+        fetch(url.toString(), { signal: AbortSignal.timeout(10000) })
+          .then(r => (r.ok ? r.json() : null))
+          .then(data => {
+            if (!data || !(data.lyrics || data.syncedLyrics)) return [];
             const result = {
               trackName: data.song || song,
               artistName: data.artist || artist,
@@ -84,32 +77,30 @@ BetterLyrics.ChangeLyrics = {
               __provider: 'bLyrics',
               __providerHref: 'https://better-lyrics.boidu.dev'
             };
-            allResults.push(result);
-          }
-        }
-      } catch (error) {
-        BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, 'bLyrics search error:', error);
-      }
+            return [result];
+          })
+          .catch(error => {
+            BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, 'bLyrics search error:', error);
+            return [];
+          })
+      );
     }
 
-    // Musixmatch Search (via cubey API)
     if (enabledProviders.includes('musixmatch') && song) {
-      try {
-        const url = new URL("https://lyrics.api.dacubeking.com/");
-        url.searchParams.append("song", song);
-        url.searchParams.append("artist", artist);
-        if (this.currentDuration) {
-          url.searchParams.append("duration", this.currentDuration);
-        }
-        url.searchParams.append("videoId", this.currentVideoId || "");
-        url.searchParams.append("enhanced", "true");
-        url.searchParams.append("useLrcLib", "false");
-
-        const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data && (data.musixmatchWordByWordLyrics || data.musixmatchSyncedLyrics)) {
+      const url = new URL("https://lyrics.api.dacubeking.com/");
+      url.searchParams.append("song", song);
+      url.searchParams.append("artist", artist);
+      if (this.currentDuration) {
+        url.searchParams.append("duration", this.currentDuration);
+      }
+      url.searchParams.append("videoId", this.currentVideoId || "");
+      url.searchParams.append("enhanced", "true");
+      url.searchParams.append("useLrcLib", "false");
+      promises.push(
+        fetch(url.toString(), { signal: AbortSignal.timeout(10000) })
+          .then(r => (r.ok ? r.json() : null))
+          .then(data => {
+            if (!data || !(data.musixmatchWordByWordLyrics || data.musixmatchSyncedLyrics)) return [];
             const result = {
               trackName: data.song || song,
               artistName: data.artist || artist,
@@ -120,16 +111,20 @@ BetterLyrics.ChangeLyrics = {
               __provider: 'Musixmatch',
               __providerHref: 'https://www.musixmatch.com'
             };
-            allResults.push(result);
-          }
-        }
-      } catch (error) {
-        BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, 'Musixmatch search error:', error);
-      }
+            return [result];
+          })
+          .catch(error => {
+            BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, 'Musixmatch search error:', error);
+            return [];
+          })
+      );
     }
 
-    this.searchResults = allResults;
-    return allResults;
+    return Promise.all(promises).then(resultsArrays => {
+      const allResults = [].concat(...resultsArrays);
+      this.searchResults = allResults;
+      return allResults;
+    });
   },
 
   applyLyrics: async function (lyricsData, source = "Manual", sourceHref = "") {
@@ -386,7 +381,7 @@ Or just plain text without timestamps..."></textarea>
     resultsContainer.innerHTML = '<div class="blyrics-loading">Searching for lyrics...</div>';
 
     try {
-      const results = await this.searchLyrics(query, enabledProviders);
+      const results = await this.searchLyrics({ song, artist, query }, enabledProviders);
       this.displaySearchResults(results);
     } catch (_error) {
       console.error(_error);
