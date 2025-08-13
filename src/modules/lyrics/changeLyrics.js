@@ -14,24 +14,22 @@ BetterLyrics.ChangeLyrics = {
     this.currentVideoId = videoId;
   },
 
-  searchLyrics: async function (query, enabledProviders = ['lrclib']) {
-    if (!query || query.trim() === "") {
+  searchLyrics: async function (params, enabledProviders = ['lrclib']) {
+    let song = "";
+    let artist = "";
+    let query = "";
+    if (params && typeof params === "object") {
+      song = (params.song || "").trim();
+      artist = (params.artist || "").trim();
+      query = params.query;
+    } else {
+      query = (params || "").toString().trim();
+    }
+    if (!query) {
       return [];
     }
-
     const allResults = [];
 
-    // Parse query to extract song and artist if possible
-    const queryParts = query.trim().split(/\s+/);
-    let song = query;
-    let artist = "";
-
-    // Simple heuristic: if query has multiple words, assume first half is song, second half is artist
-    if (queryParts.length > 2) {
-      const midPoint = Math.ceil(queryParts.length / 2);
-      song = queryParts.slice(0, midPoint).join(" ");
-      artist = queryParts.slice(midPoint).join(" ");
-    }
 
     // LRCLib Search (original functionality)
     if (enabledProviders.includes('lrclib')) {
