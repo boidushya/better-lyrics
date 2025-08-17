@@ -195,58 +195,180 @@ BetterLyrics.ChangeLyrics = {
     }
   },
 
+  createModalHeader: function () {
+    const header = document.createElement("div");
+    header.className = "blyrics-modal-header";
+
+    const title = document.createElement("h3");
+    title.textContent = "Change Lyrics";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "blyrics-modal-close";
+    closeBtn.textContent = "×";
+
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    return header;
+  },
+
+  createSearchTab: function () {
+    const searchTab = document.createElement("div");
+    searchTab.className = "blyrics-tab-content";
+    searchTab.id = "search-tab";
+
+    const songGroup = document.createElement("div");
+    songGroup.className = "blyrics-field-group";
+    const songLabel = document.createElement("label");
+    songLabel.setAttribute("for", "blyrics-song-input");
+    songLabel.textContent = "Song Title:";
+    const songInput = document.createElement("input");
+    songInput.type = "text";
+    songInput.id = "blyrics-song-input";
+    songInput.value = this.currentSong || "";
+    songGroup.appendChild(songLabel);
+    songGroup.appendChild(songInput);
+
+    const artistGroup = document.createElement("div");
+    artistGroup.className = "blyrics-field-group";
+    const artistLabel = document.createElement("label");
+    artistLabel.setAttribute("for", "blyrics-artist-input");
+    artistLabel.textContent = "Artist:";
+    const artistInput = document.createElement("input");
+    artistInput.type = "text";
+    artistInput.id = "blyrics-artist-input";
+    artistInput.value = this.currentArtist || "";
+    artistGroup.appendChild(artistLabel);
+    artistGroup.appendChild(artistInput);
+
+    const albumGroup = document.createElement("div");
+    albumGroup.className = "blyrics-field-group";
+    const albumLabel = document.createElement("label");
+    albumLabel.setAttribute("for", "blyrics-album-input");
+    albumLabel.textContent = "Album:";
+    const albumInput = document.createElement("input");
+    albumInput.type = "text";
+    albumInput.id = "blyrics-album-input";
+    albumInput.value = this.currentAlbum || "";
+    albumGroup.appendChild(albumLabel);
+    albumGroup.appendChild(albumInput);
+
+    const providersGroup = document.createElement("div");
+    providersGroup.className = "blyrics-field-group";
+    const providersSpan = document.createElement("span");
+    providersSpan.textContent = "Search Providers:";
+    providersGroup.appendChild(providersSpan);
+
+    const providers = [
+      { id: "provider-lrclib", text: " LRCLib" },
+      { id: "provider-musixmatch", text: " Musixmatch" },
+      { id: "provider-blyrics", text: " bLyrics" }
+    ];
+
+    providers.forEach(provider => {
+      const label = document.createElement("label");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = provider.id;
+      checkbox.checked = true;
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(provider.text));
+      providersGroup.appendChild(label);
+    });
+
+    const searchBtn = document.createElement("button");
+    searchBtn.id = "blyrics-search-btn";
+    searchBtn.className = "blyrics-primary-btn";
+    searchBtn.textContent = "Search";
+
+    const searchResults = document.createElement("div");
+    searchResults.id = "blyrics-search-results";
+
+    searchTab.appendChild(songGroup);
+    searchTab.appendChild(artistGroup);
+    searchTab.appendChild(albumGroup);
+    searchTab.appendChild(providersGroup);
+    searchTab.appendChild(searchBtn);
+    searchTab.appendChild(searchResults);
+
+    return searchTab;
+  },
+
+  createManualTab: function () {
+    const manualTab = document.createElement("div");
+    manualTab.className = "blyrics-tab-content";
+    manualTab.id = "manual-tab";
+    manualTab.style.display = "none";
+
+    const container = document.createElement("div");
+    container.className = "blyrics-manual-container";
+
+    const label = document.createElement("label");
+    label.setAttribute("for", "blyrics-manual-input");
+    label.textContent = "Enter lyrics in LRC format or plain text:";
+
+    const textarea = document.createElement("textarea");
+    textarea.id = "blyrics-manual-input";
+    textarea.placeholder = "[00:12.50]Line 1 lyrics\n[00:17.20]Line 2 lyrics\n\nOr just plain text without timestamps...";
+
+    const applyBtn = document.createElement("button");
+    applyBtn.id = "blyrics-apply-manual";
+    applyBtn.textContent = "Apply Lyrics";
+
+    container.appendChild(label);
+    container.appendChild(textarea);
+    container.appendChild(applyBtn);
+    manualTab.appendChild(container);
+
+    return manualTab;
+  },
+
+  createModalBody: function () {
+    const body = document.createElement("div");
+    body.className = "blyrics-modal-body";
+
+    const tabs = document.createElement("div");
+    tabs.className = "blyrics-tabs";
+
+    const searchTabBtn = document.createElement("button");
+    searchTabBtn.className = "blyrics-tab-btn active";
+    searchTabBtn.dataset.tab = "search";
+    searchTabBtn.textContent = "Search";
+
+    const manualTabBtn = document.createElement("button");
+    manualTabBtn.className = "blyrics-tab-btn";
+    manualTabBtn.dataset.tab = "manual";
+    manualTabBtn.textContent = "Manual Input";
+
+    tabs.appendChild(searchTabBtn);
+    tabs.appendChild(manualTabBtn);
+
+    body.appendChild(tabs);
+    body.appendChild(this.createSearchTab());
+    body.appendChild(this.createManualTab());
+
+    return body;
+  },
+
   createModal: function () {
     const modal = document.createElement("div");
     modal.id = "blyrics-change-modal";
-    modal.innerHTML = `
-      <div class="blyrics-modal-backdrop">
-        <div class="blyrics-modal-content">
-          <div class="blyrics-modal-header">
-            <h3>Change Lyrics</h3>
-            <button class="blyrics-modal-close">&times;</button>
-          </div>
-          <div class="blyrics-modal-body">
-            <div class="blyrics-tabs">
-              <button class="blyrics-tab-btn active" data-tab="search">Search</button>
-              <button class="blyrics-tab-btn" data-tab="manual">Manual Input</button>
-            </div>
-            <div class="blyrics-tab-content" id="search-tab">
-              <div class="blyrics-field-group">
-                <label for="blyrics-song-input">Song Title:</label>
-                <input type="text" id="blyrics-song-input" value="${this.currentSong || ""}" />
-              </div>
-              <div class="blyrics-field-group">
-                <label for="blyrics-artist-input">Artist:</label>
-                <input type="text" id="blyrics-artist-input" value="${this.currentArtist || ""}" />
-              </div>
-              <div class="blyrics-field-group">
-                <label for="blyrics-album-input">Album:</label>
-                <input type="text" id="blyrics-album-input" value="${this.currentAlbum || ""}" />
-              </div>
-              <div class="blyrics-field-group">
-                <span>Search Providers:</span>
-                <label><input type="checkbox" id="provider-lrclib" checked /> LRCLib</label>
-                <label><input type="checkbox" id="provider-musixmatch" checked /> Musixmatch</label>
-                <label><input type="checkbox" id="provider-blyrics" checked /> bLyrics</label>
-              </div>
-              <button id="blyrics-search-btn" class="blyrics-primary-btn">Search</button>
-              <div id="blyrics-search-results"></div>
-            </div>
-            <div class="blyrics-tab-content" id="manual-tab" style="display: none;">
-              <div class="blyrics-manual-container">
-                <label for="blyrics-manual-input">Enter lyrics in LRC format or plain text:</label>
-                <textarea id="blyrics-manual-input" placeholder="[00:12.50]Line 1 lyrics
-[00:17.20]Line 2 lyrics
 
-Or just plain text without timestamps..."></textarea>
-                <button id="blyrics-apply-manual">Apply Lyrics</button>
-              </div>
-            </div>
-          </div>
-          <div id="blyrics-error-message" style="display: none;"></div>
-        </div>
-      </div>
-    `;
+    const backdrop = document.createElement("div");
+    backdrop.className = "blyrics-modal-backdrop";
+
+    const content = document.createElement("div");
+    content.className = "blyrics-modal-content";
+
+    const errorMessage = document.createElement("div");
+    errorMessage.id = "blyrics-error-message";
+    errorMessage.style.display = "none";
+
+    content.appendChild(this.createModalHeader());
+    content.appendChild(this.createModalBody());
+    content.appendChild(errorMessage);
+
+    backdrop.appendChild(content);
+    modal.appendChild(backdrop);
 
     document.body.appendChild(modal);
     this.attachModalEvents(modal);
@@ -336,7 +458,8 @@ Or just plain text without timestamps..."></textarea>
 
     searchBtn.disabled = true;
     searchBtn.textContent = "Searching...";
-    resultsContainer.innerHTML = '<div class="blyrics-loading">Searching for lyrics...</div>';
+    resultsContainer.textContent = "";
+    resultsContainer.appendChild(this.createLoadingElement());
 
     try {
       const results = await this.searchLyrics({ song, artist, query }, enabledProviders);
@@ -353,9 +476,10 @@ Or just plain text without timestamps..."></textarea>
   displaySearchResults: function (results) {
     const resultsContainer = document.querySelector("#blyrics-search-results");
 
+    resultsContainer.textContent = "";
+
     if (!results || results.length === 0) {
-      resultsContainer.innerHTML =
-        '<div class="blyrics-no-results">No lyrics found. Try a different search term.</div>';
+      resultsContainer.appendChild(this.createNoResultsElement());
       return;
     }
 
@@ -377,36 +501,93 @@ Or just plain text without timestamps..."></textarea>
 
     results.sort((a, b) => a.__priority - b.__priority);
 
-    const resultsHTML = results
-      .map(
-        (result, index) => `
-      <div class="blyrics-search-result" data-index="${index}">
-        <div class="blyrics-result-header">
-          <h4 class="blyrics-result-title">${result.trackName || "Unknown Title"}</h4>
-          <button class="blyrics-use-result" data-index="${index}">Use These Lyrics</button>
-        </div>
-        <div class="blyrics-result-meta">
-          <span class="blyrics-result-artist">${result.artistName || "Unknown Artist"}</span>
-          ${result.albumName ? `<span class="blyrics-result-album">${result.albumName}</span>` : ""}
-        </div>
-        <div class="blyrics-result-footer">
-          <span class="blyrics-provider-tag">${result.__provider || 'LRCLib'}</span>
-          <span class="blyrics-type-tag blyrics-type-${result.__type}">${result.__type === "rich" ? "Rich Synced" : result.__type === "synced" ? "Synced" : "Plain"}</span>
-          <span class="blyrics-result-duration">${this.formatDuration(result.duration || 0)}</span>
-        </div>
-      </div>
-    `
-      )
-      .join("");
+    results.forEach((result, index) => {
+      const resultElement = this.createSearchResultElement(result, index);
+      resultsContainer.appendChild(resultElement);
 
-    resultsContainer.innerHTML = resultsHTML;
-
-    resultsContainer.querySelectorAll(".blyrics-use-result").forEach(btn => {
-      btn.addEventListener("click", e => {
+      const useBtn = resultElement.querySelector(".blyrics-use-result");
+      useBtn.addEventListener("click", e => {
         const index = parseInt(e.target.dataset.index);
         this.applyLyrics(results[index]);
       });
     });
+  },
+
+  createLoadingElement: function () {
+    const loadingDiv = document.createElement("div");
+    loadingDiv.className = "blyrics-loading";
+    loadingDiv.textContent = "Searching for lyrics...";
+    return loadingDiv;
+  },
+
+  createNoResultsElement: function () {
+    const noResultsDiv = document.createElement("div");
+    noResultsDiv.className = "blyrics-no-results";
+    noResultsDiv.textContent = "No lyrics found. Try a different search term.";
+    return noResultsDiv;
+  },
+
+  createSearchResultElement: function (result, index) {
+    const resultDiv = document.createElement("div");
+    resultDiv.className = "blyrics-search-result";
+    resultDiv.dataset.index = index;
+
+    const header = document.createElement("div");
+    header.className = "blyrics-result-header";
+
+    const title = document.createElement("h4");
+    title.className = "blyrics-result-title";
+    title.textContent = result.trackName || "Unknown Title";
+
+    const useBtn = document.createElement("button");
+    useBtn.className = "blyrics-use-result";
+    useBtn.dataset.index = index;
+    useBtn.textContent = "Use These Lyrics";
+
+    header.appendChild(title);
+    header.appendChild(useBtn);
+
+    const meta = document.createElement("div");
+    meta.className = "blyrics-result-meta";
+
+    const artist = document.createElement("span");
+    artist.className = "blyrics-result-artist";
+    artist.textContent = result.artistName || "Unknown Artist";
+    meta.appendChild(artist);
+
+    if (result.albumName) {
+      const album = document.createElement("span");
+      album.className = "blyrics-result-album";
+      album.textContent = result.albumName;
+      meta.appendChild(album);
+    }
+
+    const footer = document.createElement("div");
+    footer.className = "blyrics-result-footer";
+
+    const providerTag = document.createElement("span");
+    providerTag.className = "blyrics-provider-tag";
+    providerTag.textContent = result.__provider || 'LRCLib';
+
+    const typeTag = document.createElement("span");
+    typeTag.className = `blyrics-type-tag blyrics-type-${result.__type}`;
+    const typeText = result.__type === "rich" ? "Rich Synced" :
+      result.__type === "synced" ? "Synced" : "Plain";
+    typeTag.textContent = typeText;
+
+    const duration = document.createElement("span");
+    duration.className = "blyrics-result-duration";
+    duration.textContent = this.formatDuration(result.duration || 0);
+
+    footer.appendChild(providerTag);
+    footer.appendChild(typeTag);
+    footer.appendChild(duration);
+
+    resultDiv.appendChild(header);
+    resultDiv.appendChild(meta);
+    resultDiv.appendChild(footer);
+
+    return resultDiv;
   },
 
   formatDuration: function (seconds) {
