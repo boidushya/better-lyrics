@@ -168,7 +168,7 @@ BetterLyrics.ChangeLyrics = {
       await this.cacheLyrics(resultData);
       BetterLyrics.Lyrics.processLyrics(resultData);
 
-      this.closeModal();
+      BetterLyrics.DOM.scrollResumeTime = 0;
 
       BetterLyrics.Utils.log("[BetterLyrics] Custom lyrics applied successfully");
     } catch (error) {
@@ -412,6 +412,16 @@ BetterLyrics.ChangeLyrics = {
         this.showError("Please enter some lyrics");
       }
     });
+
+    this._escapeHandler = e => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        this.closeModal();
+      }
+    };
+    document.addEventListener("keydown", this._escapeHandler, true);
   },
 
   switchTab: function (tabName) {
@@ -610,6 +620,10 @@ BetterLyrics.ChangeLyrics = {
     const modal = document.getElementById("blyrics-change-modal");
     if (modal) {
       modal.remove();
+    }
+    if (this._escapeHandler) {
+      document.removeEventListener("keydown", this._escapeHandler, true);
+      this._escapeHandler = null;
     }
     document.body.style.overflow = "";
     this.hideError();

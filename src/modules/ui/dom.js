@@ -408,6 +408,11 @@ BetterLyrics.DOM = {
       buttonContainer.remove();
     }
 
+    const changeLyricsModal = document.getElementById("blyrics-change-modal");
+    if (changeLyricsModal && BetterLyrics.ChangeLyrics) {
+      BetterLyrics.ChangeLyrics.closeModal();
+    }
+
     BetterLyrics.DOM.clearLyrics();
   },
   /**
