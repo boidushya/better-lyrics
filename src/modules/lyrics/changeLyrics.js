@@ -131,6 +131,7 @@ BetterLyrics.ChangeLyrics = {
     try {
       BetterLyrics.Utils.log("[BetterLyrics] Applying lyrics data:", lyricsData);
       let parsedLyrics;
+      let meta = typeof lyricsData === "object" && lyricsData !== null ? lyricsData : {};
 
       if (typeof lyricsData === "string") {
         if (lyricsData.includes("[") && lyricsData.includes("]")) {
@@ -139,16 +140,40 @@ BetterLyrics.ChangeLyrics = {
           parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(lyricsData);
         }
       } else if (
-        lyricsData.richSyncLyrics ||
-        lyricsData.syncedLyrics ||
-        lyricsData.plainLyrics
+        meta.richSyncLyrics ||
+        meta.syncedLyrics ||
+        meta.plainLyrics
       ) {
-        if (lyricsData.richSyncLyrics) {
-          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(lyricsData.richSyncLyrics, lyricsData.duration || this.currentDuration);
-        } else if (lyricsData.syncedLyrics) {
-          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(lyricsData.syncedLyrics, lyricsData.duration || this.currentDuration);
+        if (meta.richSyncLyrics) {
+          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(meta.richSyncLyrics, meta.duration || this.currentDuration);
+        } else if (meta.syncedLyrics) {
+          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(meta.syncedLyrics, meta.duration || this.currentDuration);
         } else {
-          parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(lyricsData.plainLyrics);
+          parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(meta.plainLyrics);
+        }
+      } else if (meta && Array.isArray(meta.lyrics)) {
+        parsedLyrics = meta.lyrics;
+      } else if (meta && (meta.__provider === 'LRCLib' || meta.__provider === 'LRClib' || meta.__provider === 'LRCLIB')) {
+        const url = new URL(BetterLyrics.Constants.LRCLIB_API_URL);
+        const tn = meta.trackName || this.currentSong || "";
+        const an = meta.artistName || this.currentArtist || "";
+        if (!tn || !an) throw new Error("Invalid lyrics data format");
+        url.searchParams.append("track_name", tn);
+        url.searchParams.append("artist_name", an);
+        if (meta.albumName) url.searchParams.append("album_name", meta.albumName);
+        if (meta.duration || this.currentDuration) url.searchParams.append("duration", meta.duration || this.currentDuration);
+        const response = await fetch(url.toString(), {
+          headers: { "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER },
+          signal: AbortSignal.timeout(10000),
+        });
+        if (!response.ok) throw new Error("Invalid lyrics data format");
+        const data = await response.json();
+        if (data && data.syncedLyrics) {
+          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(data.syncedLyrics, data.duration || meta.duration || this.currentDuration);
+        } else if (data && data.plainLyrics) {
+          parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(data.plainLyrics);
+        } else {
+          throw new Error("Invalid lyrics data format");
         }
       } else {
         throw new Error("Invalid lyrics data format");
@@ -156,13 +181,13 @@ BetterLyrics.ChangeLyrics = {
 
       const resultData = {
         lyrics: parsedLyrics,
-        source: lyricsData.__provider || source,
-        sourceHref: lyricsData.__providerHref || sourceHref,
+        source: meta.__provider || source,
+        sourceHref: meta.__providerHref || sourceHref,
         musicVideoSynced: false,
-        song: this.sanitizeMetaValue(lyricsData.trackName) || this.currentSong,
-        artist: this.sanitizeMetaValue(lyricsData.artistName) || this.currentArtist,
-        album: this.sanitizeMetaValue(lyricsData.albumName) || this.currentAlbum,
-        duration: lyricsData.duration || this.currentDuration,
+        song: this.sanitizeMetaValue(meta.trackName) || this.currentSong,
+        artist: this.sanitizeMetaValue(meta.artistName) || this.currentArtist,
+        album: this.sanitizeMetaValue(meta.albumName) || this.currentAlbum,
+        duration: meta.duration || this.currentDuration,
       };
 
       await this.cacheLyrics(resultData);
