@@ -159,9 +159,9 @@ BetterLyrics.ChangeLyrics = {
         source: lyricsData.__provider || source,
         sourceHref: lyricsData.__providerHref || sourceHref,
         musicVideoSynced: false,
-        song: lyricsData.trackName || this.currentSong,
-        artist: lyricsData.artistName || this.currentArtist,
-        album: lyricsData.albumName || this.currentAlbum,
+        song: this.sanitizeMetaValue(lyricsData.trackName) || this.currentSong,
+        artist: this.sanitizeMetaValue(lyricsData.artistName) || this.currentArtist,
+        album: this.sanitizeMetaValue(lyricsData.albumName) || this.currentAlbum,
         duration: lyricsData.duration || this.currentDuration,
       };
 
@@ -474,8 +474,8 @@ BetterLyrics.ChangeLyrics = {
     try {
       const results = await this.searchLyrics({ song, artist, query }, enabledProviders);
       this.displaySearchResults(results);
-    } catch (_error) {
-      console.error(_error);
+    } catch (error) {
+      console.error(error);
       this.showError("Search failed. Please try again.");
     } finally {
       searchBtn.disabled = false;
@@ -510,6 +510,12 @@ BetterLyrics.ChangeLyrics = {
     });
 
     results.sort((a, b) => a.__priority - b.__priority);
+
+    results.forEach(r => {
+      r.trackName = this.sanitizeMetaValue(r.trackName);
+      r.artistName = this.sanitizeMetaValue(r.artistName);
+      r.albumName = this.sanitizeMetaValue(r.albumName);
+    });
 
     results.forEach((result, index) => {
       const resultElement = this.createSearchResultElement(result, index);
@@ -547,7 +553,7 @@ BetterLyrics.ChangeLyrics = {
 
     const title = document.createElement("h4");
     title.className = "blyrics-result-title";
-    title.textContent = result.trackName || "Unknown Title";
+    title.textContent = this.sanitizeMetaValue(result.trackName) || "";
 
     const useBtn = document.createElement("button");
     useBtn.className = "blyrics-use-result";
@@ -562,13 +568,14 @@ BetterLyrics.ChangeLyrics = {
 
     const artist = document.createElement("span");
     artist.className = "blyrics-result-artist";
-    artist.textContent = result.artistName || "Unknown Artist";
+    artist.textContent = this.sanitizeMetaValue(result.artistName) || "";
     meta.appendChild(artist);
 
-    if (result.albumName) {
+    const sanitizedAlbum = this.sanitizeMetaValue(result.albumName);
+    if (sanitizedAlbum) {
       const album = document.createElement("span");
       album.className = "blyrics-result-album";
-      album.textContent = result.albumName;
+      album.textContent = sanitizedAlbum;
       meta.appendChild(album);
     }
 
@@ -598,6 +605,11 @@ BetterLyrics.ChangeLyrics = {
     resultDiv.appendChild(footer);
 
     return resultDiv;
+  },
+
+  sanitizeMetaValue: function (value) {
+    if (!value || value === "null" || value === "unknown") return "";
+    return value;
   },
 
   formatDuration: function (seconds) {
