@@ -58,28 +58,8 @@ BetterLyrics.DOM = {
     const footer = document.createElement("div");
     footer.classList.add(BetterLyrics.Constants.FOOTER_CLASS);
     lyricsElement.appendChild(footer);
-    BetterLyrics.DOM.createFooter(song, artist, album, duration, videoId, showAddLyricsLink);
 
-    const footerLink = document.getElementById("betterLyricsFooterLink");
-    source = source || "boidu.dev";
-    sourceHref = sourceHref || "https://better-lyrics.boidu.dev/";
-    footerLink.textContent = source;
-    footerLink.href = sourceHref;
-  },
-
-  /**
-   * Creates the footer elements including source link, Discord link, and add lyrics button.
-   *
-   * @param {string} song - Song title
-   * @param {string} artist - Artist name
-   * @param {string} album - Album name
-   * @param {number} duration - Song duration in seconds
-   * @param {string} videoId - YouTube video ID
-   * @param {boolean} showAddLyricsLink - Whether to show the "Add Lyrics to LRCLib" link
-   */
-  createFooter: (song, artist, album, duration, videoId, showAddLyricsLink = false) => {
     try {
-      const footer = document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0];
       footer.innerHTML = "";
 
       const footerContainer = document.createElement("div");
@@ -97,6 +77,10 @@ BetterLyrics.DOM = {
       const footerLink = document.createElement("a");
       footerLink.target = "_blank";
       footerLink.id = "betterLyricsFooterLink";
+      source = source || "boidu.dev";
+      sourceHref = sourceHref || "https://better-lyrics.boidu.dev/";
+      footerLink.textContent = source;
+      footerLink.href = sourceHref;
 
       footerContainer.appendChild(footerLink);
 
@@ -125,7 +109,6 @@ BetterLyrics.DOM = {
         if (artist) url.searchParams.append("artist", artist);
         if (album) url.searchParams.append("album", album);
         if (duration) url.searchParams.append("duration", duration);
-        footerLink.target = "_blank";
         addLyricsLink.href = url.toString();
         addLyricsLink.textContent = "Add Lyrics to LRCLib";
         addLyricsLink.target = "_blank";
