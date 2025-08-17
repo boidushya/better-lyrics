@@ -140,57 +140,15 @@ BetterLyrics.ChangeLyrics = {
         }
       } else if (
         lyricsData.richSyncLyrics ||
-        lyricsData.richSyncLyricsUri ||
         lyricsData.syncedLyrics ||
-        lyricsData.syncedLyricsUri ||
-        lyricsData.plainLyrics ||
-        lyricsData.plainLyricsUri
+        lyricsData.plainLyrics
       ) {
-        if (lyricsData.richSyncLyrics || lyricsData.richSyncLyricsUri) {
-          let lrc = lyricsData.richSyncLyrics;
-          if (!lrc && lyricsData.richSyncLyricsUri) {
-            try {
-              const response = await fetch(lyricsData.richSyncLyricsUri);
-              if (response.ok) {
-                lrc = await response.text();
-              }
-            } catch (_e) {
-              BetterLyrics.Utils.log("[BetterLyrics] Error fetching rich sync lyrics:", _e);
-              throw new Error("Failed to fetch rich sync lyrics");
-            }
-          }
-          if (!lrc) throw new Error("No rich sync lyrics content found");
-          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(lrc, lyricsData.duration || this.currentDuration);
-        } else if (lyricsData.syncedLyrics || lyricsData.syncedLyricsUri) {
-          let lrc = lyricsData.syncedLyrics;
-          if (!lrc && lyricsData.syncedLyricsUri) {
-            try {
-              const response = await fetch(lyricsData.syncedLyricsUri);
-              if (response.ok) {
-                lrc = await response.text();
-              }
-            } catch (_e) {
-              BetterLyrics.Utils.log("[BetterLyrics] Error fetching synced lyrics:", _e);
-              throw new Error("Failed to fetch synced lyrics");
-            }
-          }
-          if (!lrc) throw new Error("No synced lyrics content found");
-          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(lrc, lyricsData.duration || this.currentDuration);
+        if (lyricsData.richSyncLyrics) {
+          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(lyricsData.richSyncLyrics, lyricsData.duration || this.currentDuration);
+        } else if (lyricsData.syncedLyrics) {
+          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(lyricsData.syncedLyrics, lyricsData.duration || this.currentDuration);
         } else {
-          let text = lyricsData.plainLyrics;
-          if (!text && lyricsData.plainLyricsUri) {
-            try {
-              const response = await fetch(lyricsData.plainLyricsUri);
-              if (response.ok) {
-                text = await response.text();
-              }
-            } catch (_e) {
-              BetterLyrics.Utils.log("[BetterLyrics] Error fetching plain lyrics:", _e);
-              throw new Error("Failed to fetch plain lyrics");
-            }
-          }
-          if (!text) throw new Error("No plain lyrics content found");
-          parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(text);
+          parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(lyricsData.plainLyrics);
         }
       } else {
         throw new Error("Invalid lyrics data format");
@@ -226,7 +184,7 @@ BetterLyrics.ChangeLyrics = {
     const cacheKey = `blyrics_${this.currentVideoId}`;
 
     // Add version and format the data to match the main lyrics cache format
-    lyricsData.version = "1.1.1"; // Match LYRIC_CACHE_VERSION from lyrics.js
+    lyricsData.version = BetterLyrics.Lyrics.LYRIC_CACHE_VERSION;
     lyricsData.cacheAllowed = true;
 
     try {
@@ -410,9 +368,9 @@ Or just plain text without timestamps..."></textarea>
 
     results.forEach(r => {
       let type = "plain";
-      if (r.richSyncLyrics || r.richSyncLyricsUri) type = "rich";
-      else if (r.syncedLyrics || r.syncedLyricsUri) type = "synced";
-      else if (r.plainLyrics || r.plainLyricsUri) type = "plain";
+      if (r.richSyncLyrics) type = "rich";
+      else if (r.syncedLyrics) type = "synced";
+      else if (r.plainLyrics) type = "plain";
       r.__type = type;
       r.__priority = priority[type] ?? 2;
     });

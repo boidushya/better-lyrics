@@ -182,6 +182,7 @@ BetterLyrics.LyricProviders = {
    * @param {ProviderParameters} providerParameters
    */
   bLyrics: async function (providerParameters) {
+    debugger;
     // Fetch from the primary API if cache is empty or invalid
     const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
     url.searchParams.append("s", providerParameters.song);
