@@ -14,7 +14,7 @@ BetterLyrics.ChangeLyrics = {
     this.currentVideoId = videoId;
   },
 
-  searchLyrics: async function (params, enabledProviders = ['lrclib']) {
+  searchLyrics: async function (params, enabledProviders = ["lrclib"]) {
     let song = "";
     let artist = "";
     let query = "";
@@ -31,7 +31,7 @@ BetterLyrics.ChangeLyrics = {
 
     const promises = [];
 
-    if (enabledProviders.includes('lrclib')) {
+    if (enabledProviders.includes("lrclib")) {
       const url = new URL(BetterLyrics.Constants.LRCLIB_SEARCH_URL);
       url.searchParams.append("q", query);
       promises.push(
@@ -43,19 +43,19 @@ BetterLyrics.ChangeLyrics = {
           .then(results => {
             if (!Array.isArray(results)) return [];
             results.forEach(result => {
-              result.__provider = 'LRCLib';
-              result.__providerHref = 'https://lrclib.net';
+              result.__provider = "LRCLib";
+              result.__providerHref = "https://lrclib.net";
             });
             return results;
           })
           .catch(error => {
-            BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, 'LRCLib search error:', error);
+            BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, "LRCLib search error:", error);
             return [];
           })
       );
     }
 
-    if (enabledProviders.includes('blyrics') && song) {
+    if (enabledProviders.includes("blyrics") && song) {
       const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
       url.searchParams.append("s", song);
       url.searchParams.append("a", artist);
@@ -72,21 +72,25 @@ BetterLyrics.ChangeLyrics = {
               artistName: data.artist || artist,
               albumName: data.album || null,
               duration: data.duration || this.currentDuration || 180,
-              plainLyrics: data.lyrics ? (Array.isArray(data.lyrics) ? data.lyrics.map(l => l.words).join('\n') : data.lyrics) : null,
+              plainLyrics: data.lyrics
+                ? Array.isArray(data.lyrics)
+                  ? data.lyrics.map(l => l.words).join("\n")
+                  : data.lyrics
+                : null,
               syncedLyrics: data.syncedLyrics,
-              __provider: 'bLyrics',
-              __providerHref: 'https://better-lyrics.boidu.dev'
+              __provider: "bLyrics",
+              __providerHref: "https://better-lyrics.boidu.dev",
             };
             return [result];
           })
           .catch(error => {
-            BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, 'bLyrics search error:', error);
+            BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, "bLyrics search error:", error);
             return [];
           })
       );
     }
 
-    if (enabledProviders.includes('musixmatch') && song) {
+    if (enabledProviders.includes("musixmatch") && song) {
       const url = new URL("https://lyrics.api.dacubeking.com/");
       url.searchParams.append("song", song);
       url.searchParams.append("artist", artist);
@@ -108,13 +112,13 @@ BetterLyrics.ChangeLyrics = {
               duration: data.duration || this.currentDuration || 180,
               richSyncLyrics: data.musixmatchWordByWordLyrics,
               syncedLyrics: data.musixmatchSyncedLyrics,
-              __provider: 'Musixmatch',
-              __providerHref: 'https://www.musixmatch.com'
+              __provider: "Musixmatch",
+              __providerHref: "https://www.musixmatch.com",
             };
             return [result];
           })
           .catch(error => {
-            BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, 'Musixmatch search error:', error);
+            BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, "Musixmatch search error:", error);
             return [];
           })
       );
@@ -139,13 +143,12 @@ BetterLyrics.ChangeLyrics = {
         } else {
           parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(lyricsData);
         }
-      } else if (
-        meta.richSyncLyrics ||
-        meta.syncedLyrics ||
-        meta.plainLyrics
-      ) {
+      } else if (meta.richSyncLyrics || meta.syncedLyrics || meta.plainLyrics) {
         if (meta.richSyncLyrics) {
-          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(meta.richSyncLyrics, meta.duration || this.currentDuration);
+          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(
+            meta.richSyncLyrics,
+            meta.duration || this.currentDuration
+          );
         } else if (meta.syncedLyrics) {
           parsedLyrics = BetterLyrics.LyricProviders.parseLRC(meta.syncedLyrics, meta.duration || this.currentDuration);
         } else {
@@ -153,7 +156,10 @@ BetterLyrics.ChangeLyrics = {
         }
       } else if (meta && Array.isArray(meta.lyrics)) {
         parsedLyrics = meta.lyrics;
-      } else if (meta && (meta.__provider === 'LRCLib' || meta.__provider === 'LRClib' || meta.__provider === 'LRCLIB')) {
+      } else if (
+        meta &&
+        (meta.__provider === "LRCLib" || meta.__provider === "LRClib" || meta.__provider === "LRCLIB")
+      ) {
         const url = new URL(BetterLyrics.Constants.LRCLIB_API_URL);
         const tn = meta.trackName || this.currentSong || "";
         const an = meta.artistName || this.currentArtist || "";
@@ -161,7 +167,8 @@ BetterLyrics.ChangeLyrics = {
         url.searchParams.append("track_name", tn);
         url.searchParams.append("artist_name", an);
         if (meta.albumName) url.searchParams.append("album_name", meta.albumName);
-        if (meta.duration || this.currentDuration) url.searchParams.append("duration", meta.duration || this.currentDuration);
+        if (meta.duration || this.currentDuration)
+          url.searchParams.append("duration", meta.duration || this.currentDuration);
         const response = await fetch(url.toString(), {
           headers: { "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER },
           signal: AbortSignal.timeout(10000),
@@ -169,7 +176,10 @@ BetterLyrics.ChangeLyrics = {
         if (!response.ok) throw new Error("Invalid lyrics data format");
         const data = await response.json();
         if (data && data.syncedLyrics) {
-          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(data.syncedLyrics, data.duration || meta.duration || this.currentDuration);
+          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(
+            data.syncedLyrics,
+            data.duration || meta.duration || this.currentDuration
+          );
         } else if (data && data.plainLyrics) {
           parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(data.plainLyrics);
         } else {
@@ -184,13 +194,13 @@ BetterLyrics.ChangeLyrics = {
         source: meta.__provider || source,
         sourceHref: meta.__providerHref || sourceHref,
         musicVideoSynced: false,
-        song: this.sanitizeMetaValue(meta.trackName) || this.currentSong,
-        artist: this.sanitizeMetaValue(meta.artistName) || this.currentArtist,
-        album: this.sanitizeMetaValue(meta.albumName) || this.currentAlbum,
+        song: BetterLyrics.ChangeLyrics.sanitizeMetaValue(meta.trackName) || this.currentSong,
+        artist: BetterLyrics.ChangeLyrics.sanitizeMetaValue(meta.artistName) || this.currentArtist,
+        album: BetterLyrics.ChangeLyrics.sanitizeMetaValue(meta.albumName) || this.currentAlbum,
         duration: meta.duration || this.currentDuration,
       };
 
-      await this.cacheLyrics(resultData);
+      await BetterLyrics.ChangeLyrics.cacheLyrics(resultData);
       BetterLyrics.Lyrics.processLyrics(resultData);
 
       BetterLyrics.DOM.scrollResumeTime = 0;
@@ -198,7 +208,9 @@ BetterLyrics.ChangeLyrics = {
       BetterLyrics.Utils.log("[BetterLyrics] Custom lyrics applied successfully");
     } catch (error) {
       BetterLyrics.Utils.log(BetterLyrics.Constants.GENERAL_ERROR_LOG, error);
-      this.showError(`Failed to apply lyrics: ${error.message || "Please check the format and try again."}`);
+      BetterLyrics.ChangeLyrics.showError(
+        `Failed to apply lyrics: ${error.message || "Please check the format and try again."}`
+      );
     }
   },
 
@@ -224,6 +236,14 @@ BetterLyrics.ChangeLyrics = {
     const header = document.createElement("div");
     header.className = "blyrics-modal-header";
 
+    const logo = document.createElement("img");
+    logo.src = "https://better-lyrics.boidu.dev/icon-512.png";
+    logo.alt = "BetterLyrics Logo";
+    logo.className = "blyrics-modal-logo";
+
+    const titleContainer = document.createElement("div");
+    titleContainer.className = "blyrics-modal-title-container";
+
     const title = document.createElement("h3");
     title.textContent = "Change Lyrics";
 
@@ -231,7 +251,10 @@ BetterLyrics.ChangeLyrics = {
     closeBtn.className = "blyrics-modal-close";
     closeBtn.textContent = "×";
 
-    header.appendChild(title);
+    titleContainer.appendChild(logo);
+    titleContainer.appendChild(title);
+
+    header.appendChild(titleContainer);
     header.appendChild(closeBtn);
     return header;
   },
@@ -245,7 +268,7 @@ BetterLyrics.ChangeLyrics = {
     songGroup.className = "blyrics-field-group";
     const songLabel = document.createElement("label");
     songLabel.setAttribute("for", "blyrics-song-input");
-    songLabel.textContent = "Song Title:";
+    songLabel.textContent = "Song Title";
     const songInput = document.createElement("input");
     songInput.type = "text";
     songInput.id = "blyrics-song-input";
@@ -257,7 +280,7 @@ BetterLyrics.ChangeLyrics = {
     artistGroup.className = "blyrics-field-group";
     const artistLabel = document.createElement("label");
     artistLabel.setAttribute("for", "blyrics-artist-input");
-    artistLabel.textContent = "Artist:";
+    artistLabel.textContent = "Artist";
     const artistInput = document.createElement("input");
     artistInput.type = "text";
     artistInput.id = "blyrics-artist-input";
@@ -269,7 +292,7 @@ BetterLyrics.ChangeLyrics = {
     albumGroup.className = "blyrics-field-group";
     const albumLabel = document.createElement("label");
     albumLabel.setAttribute("for", "blyrics-album-input");
-    albumLabel.textContent = "Album:";
+    albumLabel.textContent = "Album";
     const albumInput = document.createElement("input");
     albumInput.type = "text";
     albumInput.id = "blyrics-album-input";
@@ -280,25 +303,41 @@ BetterLyrics.ChangeLyrics = {
     const providersGroup = document.createElement("div");
     providersGroup.className = "blyrics-field-group";
     const providersSpan = document.createElement("span");
-    providersSpan.textContent = "Search Providers:";
+    providersSpan.textContent = "Search Providers";
     providersGroup.appendChild(providersSpan);
 
     const providers = [
-      { id: "provider-lrclib", text: " LRCLib" },
-      { id: "provider-musixmatch", text: " Musixmatch" },
-      { id: "provider-blyrics", text: " bLyrics" }
+      { id: "provider-lrclib", text: "LRCLib" },
+      { id: "provider-musixmatch", text: "Musixmatch" },
+      { id: "provider-blyrics", text: "bLyrics" },
     ];
+
+    const providersContainer = document.createElement("div");
+    providersContainer.className = "blyrics-providers-container";
 
     providers.forEach(provider => {
       const label = document.createElement("label");
+      label.className = "blyrics-checkbox-container";
+
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.id = provider.id;
       checkbox.checked = true;
+
+      const checkmark = document.createElement("span");
+      checkmark.className = "blyrics-checkmark";
+
+      const providerName = document.createElement("span");
+      providerName.className = "blyrics-provider-name";
+      providerName.textContent = provider.text;
+
       label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(provider.text));
-      providersGroup.appendChild(label);
+      label.appendChild(checkmark);
+      label.appendChild(providerName);
+      providersContainer.appendChild(label);
     });
+
+    providersGroup.appendChild(providersContainer);
 
     const searchBtn = document.createElement("button");
     searchBtn.id = "blyrics-search-btn";
@@ -329,11 +368,12 @@ BetterLyrics.ChangeLyrics = {
 
     const label = document.createElement("label");
     label.setAttribute("for", "blyrics-manual-input");
-    label.textContent = "Enter lyrics in LRC format or plain text:";
+    label.textContent = "Enter lyrics in LRC format or plain text";
 
     const textarea = document.createElement("textarea");
     textarea.id = "blyrics-manual-input";
-    textarea.placeholder = "[00:12.50]Line 1 lyrics\n[00:17.20]Line 2 lyrics\n\nOr just plain text without timestamps...";
+    textarea.placeholder =
+      "[00:12.50]Line 1 lyrics\n[00:17.20]Line 2 lyrics\n\nOr just plain text without timestamps...";
 
     const applyBtn = document.createElement("button");
     applyBtn.id = "blyrics-apply-manual";
@@ -368,8 +408,8 @@ BetterLyrics.ChangeLyrics = {
     tabs.appendChild(manualTabBtn);
 
     body.appendChild(tabs);
-    body.appendChild(this.createSearchTab());
-    body.appendChild(this.createManualTab());
+    body.appendChild(BetterLyrics.ChangeLyrics.createSearchTab());
+    body.appendChild(BetterLyrics.ChangeLyrics.createManualTab());
 
     return body;
   },
@@ -388,16 +428,25 @@ BetterLyrics.ChangeLyrics = {
     errorMessage.id = "blyrics-error-message";
     errorMessage.style.display = "none";
 
-    content.appendChild(this.createModalHeader());
-    content.appendChild(this.createModalBody());
+    content.appendChild(BetterLyrics.ChangeLyrics.createModalHeader());
+    content.appendChild(BetterLyrics.ChangeLyrics.createModalBody());
     content.appendChild(errorMessage);
 
     backdrop.appendChild(content);
     modal.appendChild(backdrop);
 
     document.body.appendChild(modal);
-    this.attachModalEvents(modal);
+    BetterLyrics.ChangeLyrics.attachModalEvents(modal);
     return modal;
+  },
+
+  _escapeHandler: e => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      BetterLyrics.ChangeLyrics.closeModal();
+    }
   },
 
   attachModalEvents: function (modal) {
@@ -410,43 +459,35 @@ BetterLyrics.ChangeLyrics = {
     const applyManualBtn = modal.querySelector("#blyrics-apply-manual");
     const manualInput = modal.querySelector("#blyrics-manual-input");
 
-    closeBtn.addEventListener("click", () => this.closeModal());
+    closeBtn.addEventListener("click", () => BetterLyrics.ChangeLyrics.closeModal());
 
     backdrop.addEventListener("click", e => {
-      if (e.target === backdrop) this.closeModal();
+      if (e.target === backdrop) BetterLyrics.ChangeLyrics.closeModal();
     });
 
     tabBtns.forEach(btn => {
-      btn.addEventListener("click", () => this.switchTab(btn.dataset.tab));
+      btn.addEventListener("click", () => BetterLyrics.ChangeLyrics.switchTab(btn.dataset.tab));
     });
 
-    searchBtn.addEventListener("click", () => this.performSearch());
+    searchBtn.addEventListener("click", () => BetterLyrics.ChangeLyrics.performSearch());
 
     songInput.addEventListener("keypress", e => {
-      if (e.key === "Enter") this.performSearch();
+      if (e.key === "Enter") BetterLyrics.ChangeLyrics.performSearch();
     });
     artistInput.addEventListener("keypress", e => {
-      if (e.key === "Enter") this.performSearch();
+      if (e.key === "Enter") BetterLyrics.ChangeLyrics.performSearch();
     });
 
     applyManualBtn.addEventListener("click", () => {
       const lyricsText = manualInput.value.trim();
       if (lyricsText) {
-        this.applyLyrics(lyricsText);
+        BetterLyrics.ChangeLyrics.applyLyrics(lyricsText);
       } else {
-        this.showError("Please enter some lyrics");
+        BetterLyrics.ChangeLyrics.showError("Please enter some lyrics");
       }
     });
 
-    this._escapeHandler = e => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        this.closeModal();
-      }
-    };
-    document.addEventListener("keydown", this._escapeHandler, true);
+    document.addEventListener("keydown", BetterLyrics.ChangeLyrics._escapeHandler, true);
   },
 
   switchTab: function (tabName) {
@@ -474,18 +515,18 @@ BetterLyrics.ChangeLyrics = {
     const artist = artistInput.value.trim();
 
     if (!song || !artist) {
-      this.showError("Enter both song title and artist");
+      BetterLyrics.ChangeLyrics.showError("Enter both song title and artist");
       return;
     }
 
     // Get enabled providers
     const enabledProviders = [];
-    if (document.querySelector("#provider-lrclib")?.checked) enabledProviders.push('lrclib');
-    if (document.querySelector("#provider-musixmatch")?.checked) enabledProviders.push('musixmatch');
-    if (document.querySelector("#provider-blyrics")?.checked) enabledProviders.push('blyrics');
+    if (document.querySelector("#provider-lrclib")?.checked) enabledProviders.push("lrclib");
+    if (document.querySelector("#provider-musixmatch")?.checked) enabledProviders.push("musixmatch");
+    if (document.querySelector("#provider-blyrics")?.checked) enabledProviders.push("blyrics");
 
     if (enabledProviders.length === 0) {
-      this.showError("Please select at least one provider");
+      BetterLyrics.ChangeLyrics.showError("Please select at least one provider");
       return;
     }
 
@@ -494,14 +535,14 @@ BetterLyrics.ChangeLyrics = {
     searchBtn.disabled = true;
     searchBtn.textContent = "Searching...";
     resultsContainer.textContent = "";
-    resultsContainer.appendChild(this.createLoadingElement());
+    resultsContainer.appendChild(BetterLyrics.ChangeLyrics.createLoadingElement());
 
     try {
-      const results = await this.searchLyrics({ song, artist, query }, enabledProviders);
-      this.displaySearchResults(results);
+      const results = await BetterLyrics.ChangeLyrics.searchLyrics({ song, artist, query }, enabledProviders);
+      BetterLyrics.ChangeLyrics.displaySearchResults(results);
     } catch (error) {
       console.error(error);
-      this.showError("Search failed. Please try again.");
+      BetterLyrics.ChangeLyrics.showError("Search failed. Please try again.");
     } finally {
       searchBtn.disabled = false;
       searchBtn.textContent = "Search";
@@ -514,7 +555,7 @@ BetterLyrics.ChangeLyrics = {
     resultsContainer.textContent = "";
 
     if (!results || results.length === 0) {
-      resultsContainer.appendChild(this.createNoResultsElement());
+      resultsContainer.appendChild(BetterLyrics.ChangeLyrics.createNoResultsElement());
       return;
     }
 
@@ -537,19 +578,19 @@ BetterLyrics.ChangeLyrics = {
     results.sort((a, b) => a.__priority - b.__priority);
 
     results.forEach(r => {
-      r.trackName = this.sanitizeMetaValue(r.trackName);
-      r.artistName = this.sanitizeMetaValue(r.artistName);
-      r.albumName = this.sanitizeMetaValue(r.albumName);
+      r.trackName = BetterLyrics.ChangeLyrics.sanitizeMetaValue(r.trackName);
+      r.artistName = BetterLyrics.ChangeLyrics.sanitizeMetaValue(r.artistName);
+      r.albumName = BetterLyrics.ChangeLyrics.sanitizeMetaValue(r.albumName);
     });
 
     results.forEach((result, index) => {
-      const resultElement = this.createSearchResultElement(result, index);
+      const resultElement = BetterLyrics.ChangeLyrics.createSearchResultElement(result, index);
       resultsContainer.appendChild(resultElement);
 
       const useBtn = resultElement.querySelector(".blyrics-use-result");
       useBtn.addEventListener("click", e => {
         const index = parseInt(e.target.dataset.index);
-        this.applyLyrics(results[index]);
+        BetterLyrics.ChangeLyrics.applyLyrics(results[index]);
       });
     });
   },
@@ -578,12 +619,12 @@ BetterLyrics.ChangeLyrics = {
 
     const title = document.createElement("h4");
     title.className = "blyrics-result-title";
-    title.textContent = this.sanitizeMetaValue(result.trackName) || "";
+    title.textContent = BetterLyrics.ChangeLyrics.sanitizeMetaValue(result.trackName) || "";
 
     const useBtn = document.createElement("button");
     useBtn.className = "blyrics-use-result";
     useBtn.dataset.index = index;
-    useBtn.textContent = "Use These Lyrics";
+    useBtn.textContent = "Apply";
 
     header.appendChild(title);
     header.appendChild(useBtn);
@@ -593,10 +634,10 @@ BetterLyrics.ChangeLyrics = {
 
     const artist = document.createElement("span");
     artist.className = "blyrics-result-artist";
-    artist.textContent = this.sanitizeMetaValue(result.artistName) || "";
+    artist.textContent = BetterLyrics.ChangeLyrics.sanitizeMetaValue(result.artistName) || "";
     meta.appendChild(artist);
 
-    const sanitizedAlbum = this.sanitizeMetaValue(result.albumName);
+    const sanitizedAlbum = BetterLyrics.ChangeLyrics.sanitizeMetaValue(result.albumName);
     if (sanitizedAlbum) {
       const album = document.createElement("span");
       album.className = "blyrics-result-album";
@@ -609,17 +650,16 @@ BetterLyrics.ChangeLyrics = {
 
     const providerTag = document.createElement("span");
     providerTag.className = "blyrics-provider-tag";
-    providerTag.textContent = result.__provider || 'LRCLib';
+    providerTag.textContent = result.__provider || "LRCLib";
 
     const typeTag = document.createElement("span");
     typeTag.className = `blyrics-type-tag blyrics-type-${result.__type}`;
-    const typeText = result.__type === "rich" ? "Rich Synced" :
-      result.__type === "synced" ? "Synced" : "Plain";
+    const typeText = result.__type === "rich" ? "Rich Synced" : result.__type === "synced" ? "Synced" : "Plain";
     typeTag.textContent = typeText;
 
     const duration = document.createElement("span");
     duration.className = "blyrics-result-duration";
-    duration.textContent = this.formatDuration(result.duration || 0);
+    duration.textContent = BetterLyrics.ChangeLyrics.formatDuration(result.duration || 0);
 
     footer.appendChild(providerTag);
     footer.appendChild(typeTag);
@@ -648,22 +688,89 @@ BetterLyrics.ChangeLyrics = {
     if (modal) {
       modal.remove();
     }
-    modal = this.createModal();
+    modal = BetterLyrics.ChangeLyrics.createModal();
     modal.style.display = "block";
     document.body.style.overflow = "hidden";
+
+    // Calculate and set initial top position
+    BetterLyrics.ChangeLyrics.calculateAndSetModalPosition(modal);
+
+    // Trigger animation after a frame to ensure display is set
+    requestAnimationFrame(() => {
+      modal.classList.add("show");
+    });
+  },
+
+  calculateAndSetModalPosition: function (modal) {
+    const content = modal.querySelector(".blyrics-modal-content");
+    if (!content) return;
+
+    // Get viewport height
+    const viewportHeight = window.innerHeight;
+
+    // Temporarily make content visible to measure its height
+    const originalTransform = content.style.transform;
+    const originalOpacity = content.style.opacity;
+    content.style.transform = "translateX(-50%) scale(1)";
+    content.style.opacity = "0";
+    content.style.visibility = "hidden";
+
+    // Force layout calculation
+    const contentHeight = content.offsetHeight;
+
+    // Calculate optimal top position (centered with some padding)
+    const padding = Math.min(40, viewportHeight * 0.1); // 10% of viewport or 40px, whichever is smaller
+    const availableHeight = viewportHeight - padding * 2;
+
+    let topPosition;
+    if (contentHeight <= availableHeight) {
+      // Center it vertically
+      topPosition = (viewportHeight - contentHeight) / 2;
+    } else {
+      // Position at top with padding
+      topPosition = padding;
+    }
+
+    // Store the calculated position
+    BetterLyrics.ChangeLyrics._modalTopPosition = topPosition;
+
+    // Apply the position
+    content.style.top = topPosition + "px";
+
+    // Restore original transform and opacity for animation
+    content.style.transform = originalTransform;
+    content.style.opacity = originalOpacity;
+    content.style.visibility = "visible";
+  },
+
+  updateModalPosition: function () {
+    const modal = document.getElementById("blyrics-change-modal");
+    const content = modal?.querySelector(".blyrics-modal-content");
+    if (!content || BetterLyrics.ChangeLyrics._modalTopPosition === undefined) return;
+
+    // Use the stored position to maintain consistency
+    content.style.top = BetterLyrics.ChangeLyrics._modalTopPosition + "px";
   },
 
   closeModal: function () {
     const modal = document.getElementById("blyrics-change-modal");
     if (modal) {
-      modal.remove();
+      modal.classList.remove("show");
+
+      // Wait for animation to complete before removing
+      setTimeout(() => {
+        if (modal.parentNode) {
+          modal.remove();
+        }
+      }, 300); // Match the CSS transition duration
     }
+
     if (this._escapeHandler) {
       document.removeEventListener("keydown", this._escapeHandler, true);
       this._escapeHandler = null;
     }
     document.body.style.overflow = "";
-    this.hideError();
+    BetterLyrics.ChangeLyrics.hideError();
   },
 
   showError: function (message) {
@@ -671,7 +778,7 @@ BetterLyrics.ChangeLyrics = {
     if (errorEl) {
       errorEl.textContent = message;
       errorEl.style.display = "block";
-      setTimeout(() => this.hideError(), 5000);
+      setTimeout(() => BetterLyrics.ChangeLyrics.hideError(), 5000);
     }
   },
 
