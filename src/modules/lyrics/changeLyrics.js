@@ -7,11 +7,11 @@ BetterLyrics.ChangeLyrics = {
   currentVideoId: null,
 
   init: function (song, artist, album, duration, videoId) {
-    this.currentSong = song;
-    this.currentArtist = artist;
-    this.currentAlbum = album;
-    this.currentDuration = duration;
-    this.currentVideoId = videoId;
+    BetterLyrics.ChangeLyrics.currentSong = song;
+    BetterLyrics.ChangeLyrics.currentArtist = artist;
+    BetterLyrics.ChangeLyrics.currentAlbum = album;
+    BetterLyrics.ChangeLyrics.currentDuration = duration;
+    BetterLyrics.ChangeLyrics.currentVideoId = videoId;
   },
 
   searchLyrics: async function (params, enabledProviders = ["lrclib"]) {
@@ -59,8 +59,8 @@ BetterLyrics.ChangeLyrics = {
       const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
       url.searchParams.append("s", song);
       url.searchParams.append("a", artist);
-      if (this.currentDuration) {
-        url.searchParams.append("d", this.currentDuration);
+      if (BetterLyrics.ChangeLyrics.currentDuration) {
+        url.searchParams.append("d", BetterLyrics.ChangeLyrics.currentDuration);
       }
       promises.push(
         fetch(url.toString(), { signal: AbortSignal.timeout(10000) })
@@ -71,7 +71,7 @@ BetterLyrics.ChangeLyrics = {
               trackName: data.song || song,
               artistName: data.artist || artist,
               albumName: data.album || null,
-              duration: data.duration || this.currentDuration || 180,
+              duration: data.duration || BetterLyrics.ChangeLyrics.currentDuration || 180,
               plainLyrics: data.lyrics
                 ? Array.isArray(data.lyrics)
                   ? data.lyrics.map(l => l.words).join("\n")
@@ -94,10 +94,10 @@ BetterLyrics.ChangeLyrics = {
       const url = new URL("https://lyrics.api.dacubeking.com/");
       url.searchParams.append("song", song);
       url.searchParams.append("artist", artist);
-      if (this.currentDuration) {
-        url.searchParams.append("duration", this.currentDuration);
+      if (BetterLyrics.ChangeLyrics.currentDuration) {
+        url.searchParams.append("duration", BetterLyrics.ChangeLyrics.currentDuration);
       }
-      url.searchParams.append("videoId", this.currentVideoId || "");
+      url.searchParams.append("videoId", BetterLyrics.ChangeLyrics.currentVideoId || "");
       url.searchParams.append("enhanced", "true");
       url.searchParams.append("useLrcLib", "false");
       promises.push(
@@ -109,7 +109,7 @@ BetterLyrics.ChangeLyrics = {
               trackName: data.song || song,
               artistName: data.artist || artist,
               albumName: data.album,
-              duration: data.duration || this.currentDuration || 180,
+              duration: data.duration || BetterLyrics.ChangeLyrics.currentDuration || 180,
               richSyncLyrics: data.musixmatchWordByWordLyrics,
               syncedLyrics: data.musixmatchSyncedLyrics,
               __provider: "Musixmatch",
@@ -126,7 +126,7 @@ BetterLyrics.ChangeLyrics = {
 
     return Promise.all(promises).then(resultsArrays => {
       const allResults = [].concat(...resultsArrays);
-      this.searchResults = allResults;
+      BetterLyrics.ChangeLyrics.searchResults = allResults;
       return allResults;
     });
   },
@@ -139,7 +139,7 @@ BetterLyrics.ChangeLyrics = {
 
       if (typeof lyricsData === "string") {
         if (lyricsData.includes("[") && lyricsData.includes("]")) {
-          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(lyricsData, this.currentDuration);
+          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(lyricsData, BetterLyrics.ChangeLyrics.currentDuration);
         } else {
           parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(lyricsData);
         }
@@ -147,10 +147,10 @@ BetterLyrics.ChangeLyrics = {
         if (meta.richSyncLyrics) {
           parsedLyrics = BetterLyrics.LyricProviders.parseLRC(
             meta.richSyncLyrics,
-            meta.duration || this.currentDuration
+            meta.duration || BetterLyrics.ChangeLyrics.currentDuration
           );
         } else if (meta.syncedLyrics) {
-          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(meta.syncedLyrics, meta.duration || this.currentDuration);
+          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(meta.syncedLyrics, meta.duration || BetterLyrics.ChangeLyrics.currentDuration);
         } else {
           parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(meta.plainLyrics);
         }
@@ -161,14 +161,14 @@ BetterLyrics.ChangeLyrics = {
         (meta.__provider === "LRCLib" || meta.__provider === "LRClib" || meta.__provider === "LRCLIB")
       ) {
         const url = new URL(BetterLyrics.Constants.LRCLIB_API_URL);
-        const tn = meta.trackName || this.currentSong || "";
-        const an = meta.artistName || this.currentArtist || "";
+        const tn = meta.trackName || BetterLyrics.ChangeLyrics.currentSong || "";
+        const an = meta.artistName || BetterLyrics.ChangeLyrics.currentArtist || "";
         if (!tn || !an) throw new Error("Invalid lyrics data format");
         url.searchParams.append("track_name", tn);
         url.searchParams.append("artist_name", an);
         if (meta.albumName) url.searchParams.append("album_name", meta.albumName);
-        if (meta.duration || this.currentDuration)
-          url.searchParams.append("duration", meta.duration || this.currentDuration);
+        if (meta.duration || BetterLyrics.ChangeLyrics.currentDuration)
+          url.searchParams.append("duration", meta.duration || BetterLyrics.ChangeLyrics.currentDuration);
         const response = await fetch(url.toString(), {
           headers: { "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER },
           signal: AbortSignal.timeout(10000),
@@ -178,7 +178,7 @@ BetterLyrics.ChangeLyrics = {
         if (data && data.syncedLyrics) {
           parsedLyrics = BetterLyrics.LyricProviders.parseLRC(
             data.syncedLyrics,
-            data.duration || meta.duration || this.currentDuration
+            data.duration || meta.duration || BetterLyrics.ChangeLyrics.currentDuration
           );
         } else if (data && data.plainLyrics) {
           parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(data.plainLyrics);
@@ -194,10 +194,11 @@ BetterLyrics.ChangeLyrics = {
         source: meta.__provider || source,
         sourceHref: meta.__providerHref || sourceHref,
         musicVideoSynced: false,
-        song: BetterLyrics.ChangeLyrics.sanitizeMetaValue(meta.trackName) || this.currentSong,
-        artist: BetterLyrics.ChangeLyrics.sanitizeMetaValue(meta.artistName) || this.currentArtist,
-        album: BetterLyrics.ChangeLyrics.sanitizeMetaValue(meta.albumName) || this.currentAlbum,
-        duration: meta.duration || this.currentDuration,
+        song: BetterLyrics.ChangeLyrics.sanitizeMetaValue(meta.trackName) || BetterLyrics.ChangeLyrics.currentSong,
+        artist: BetterLyrics.ChangeLyrics.sanitizeMetaValue(meta.artistName) || BetterLyrics.ChangeLyrics.currentArtist,
+        album: BetterLyrics.ChangeLyrics.sanitizeMetaValue(meta.albumName) || BetterLyrics.ChangeLyrics.currentAlbum,
+        duration: meta.duration || BetterLyrics.ChangeLyrics.currentDuration,
+        videoId: BetterLyrics.ChangeLyrics.currentVideoId,
       };
 
       await BetterLyrics.ChangeLyrics.cacheLyrics(resultData);
@@ -215,12 +216,10 @@ BetterLyrics.ChangeLyrics = {
   },
 
   cacheLyrics: async function (lyricsData) {
-    if (!this.currentVideoId) return;
+    if (!BetterLyrics.ChangeLyrics.currentVideoId) return;
 
-    // Use the same cache key format as the main lyrics system
-    const cacheKey = `blyrics_${this.currentVideoId}`;
+    const cacheKey = `blyrics_${BetterLyrics.ChangeLyrics.currentVideoId}`;
 
-    // Add version and format the data to match the main lyrics cache format
     lyricsData.version = BetterLyrics.Lyrics.LYRIC_CACHE_VERSION;
     lyricsData.cacheAllowed = true;
 
@@ -272,7 +271,7 @@ BetterLyrics.ChangeLyrics = {
     const songInput = document.createElement("input");
     songInput.type = "text";
     songInput.id = "blyrics-song-input";
-    songInput.value = this.currentSong || "";
+    songInput.value = BetterLyrics.ChangeLyrics.currentSong || "";
     songGroup.appendChild(songLabel);
     songGroup.appendChild(songInput);
 
@@ -284,7 +283,7 @@ BetterLyrics.ChangeLyrics = {
     const artistInput = document.createElement("input");
     artistInput.type = "text";
     artistInput.id = "blyrics-artist-input";
-    artistInput.value = this.currentArtist || "";
+    artistInput.value = BetterLyrics.ChangeLyrics.currentArtist || "";
     artistGroup.appendChild(artistLabel);
     artistGroup.appendChild(artistInput);
 
@@ -296,7 +295,7 @@ BetterLyrics.ChangeLyrics = {
     const albumInput = document.createElement("input");
     albumInput.type = "text";
     albumInput.id = "blyrics-album-input";
-    albumInput.value = this.currentAlbum || "";
+    albumInput.value = BetterLyrics.ChangeLyrics.currentAlbum || "";
     albumGroup.appendChild(albumLabel);
     albumGroup.appendChild(albumInput);
 
@@ -501,6 +500,10 @@ BetterLyrics.ChangeLyrics = {
     tabContents.forEach(content => {
       content.style.display = content.id === `${tabName}-tab` ? "block" : "none";
     });
+
+    if (tabName === "manual") {
+      BetterLyrics.ChangeLyrics.prefillManualEditor();
+    }
   },
 
   performSearch: async function () {
@@ -588,9 +591,11 @@ BetterLyrics.ChangeLyrics = {
       resultsContainer.appendChild(resultElement);
 
       const useBtn = resultElement.querySelector(".blyrics-use-result");
-      useBtn.addEventListener("click", e => {
+      useBtn.addEventListener("click", async e => {
         const index = parseInt(e.target.dataset.index);
-        BetterLyrics.ChangeLyrics.applyLyrics(results[index]);
+        await BetterLyrics.ChangeLyrics.applyLyrics(results[index]);
+        BetterLyrics.ChangeLyrics.switchTab("manual");
+        BetterLyrics.ChangeLyrics.prefillManualEditor();
       });
     });
   },
@@ -765,9 +770,9 @@ BetterLyrics.ChangeLyrics = {
       }, 300); // Match the CSS transition duration
     }
 
-    if (this._escapeHandler) {
-      document.removeEventListener("keydown", this._escapeHandler, true);
-      this._escapeHandler = null;
+    if (BetterLyrics.ChangeLyrics._escapeHandler) {
+      document.removeEventListener("keydown", BetterLyrics.ChangeLyrics._escapeHandler, true);
+      BetterLyrics.ChangeLyrics._escapeHandler = null;
     }
     document.body.style.overflow = "";
     BetterLyrics.ChangeLyrics.hideError();
@@ -786,6 +791,56 @@ BetterLyrics.ChangeLyrics = {
     const errorEl = document.getElementById("blyrics-error-message");
     if (errorEl) {
       errorEl.style.display = "none";
+    }
+  },
+  _serializeToManualText: function (input) {
+    if (!input) return "";
+    if (typeof input === "string") return input;
+    if (input.richSyncLyrics && typeof input.richSyncLyrics === "string") return input.richSyncLyrics;
+    if (input.syncedLyrics && typeof input.syncedLyrics === "string") return input.syncedLyrics;
+    if (input.plainLyrics) {
+      if (Array.isArray(input.plainLyrics)) return input.plainLyrics.map(l => (typeof l === "string" ? l : l.words || "")).join("\n");
+      if (typeof input.plainLyrics === "string") return input.plainLyrics;
+    }
+    if (Array.isArray(input.lyrics) && input.lyrics.length > 0) {
+      const hasTimedEntries = input.lyrics.some(item => typeof item.startTimeMs !== "undefined" && !isNaN(Number(item.startTimeMs)) && Number(item.startTimeMs) > 0);
+      const toTag = ms => {
+        const m = Math.floor(Number(ms) / 60000);
+        const s = ((Number(ms) % 60000) / 1000).toFixed(2).padStart(5, "0");
+        return `[${m}:${s}]`;
+      };
+      return input.lyrics
+        .map(item => {
+          const text = typeof item.words === "string" ? item.words : "";
+          return hasTimedEntries ? `${toTag(item.startTimeMs || 0)}${text}` : text;
+        })
+        .join("\n");
+    }
+    return "";
+  },
+  prefillManualEditor: async function () {
+    try {
+      const textarea = document.getElementById("blyrics-manual-input");
+      if (!textarea) return;
+      console.log("[ChangeLyrics] prefillManualEditor - currentVideoId:", BetterLyrics.ChangeLyrics.currentVideoId);
+      if (!BetterLyrics.ChangeLyrics.currentVideoId) {
+        console.log("[ChangeLyrics] No currentVideoId - cannot prefill");
+        return;
+      }
+      const cacheKey = `blyrics_${BetterLyrics.ChangeLyrics.currentVideoId}`;
+      console.log("[ChangeLyrics] Looking for cache key:", cacheKey);
+      const cached = await BetterLyrics.Storage.getTransientStorage(cacheKey);
+      console.log("[ChangeLyrics] Cache result:", cached ? "found" : "not found");
+      if (!cached) return;
+      let data;
+      try {
+        data = JSON.parse(cached);
+      } catch (_e) { return; }
+      const fromCache = BetterLyrics.ChangeLyrics._serializeToManualText(data);
+      console.log("[ChangeLyrics] Serialized lyrics length:", fromCache.length);
+      if (fromCache && fromCache.length) textarea.value = fromCache;
+    } catch (_err) {
+      console.log("[ChangeLyrics] Error in prefillManualEditor:", _err);
     }
   },
 };
