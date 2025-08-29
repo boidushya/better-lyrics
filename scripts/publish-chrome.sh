@@ -6,6 +6,13 @@
 
 npm install -g chrome-webstore-upload-cli
 
+# Load environment variables from .env file
+if [ -f .env ]; then
+	export $(cat .env | xargs)
+else
+	echo -e "${COLOR_ERROR}Error: .env file not found.${COLOR_RESET}"
+fi
+
 # Check if all required environment variables are set
 
 if [ -z "$EXTENSION_ID" ]; then
