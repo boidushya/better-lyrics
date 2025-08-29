@@ -32,5 +32,5 @@ else
 fi
 
 # Run biome lint and format after bumping the version
-biome lint --fix
-biome format --fix
+npx @biomejs/biome lint --fix
+npx @biomejs/biome format --fix
