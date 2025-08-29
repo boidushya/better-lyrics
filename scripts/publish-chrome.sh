@@ -56,7 +56,10 @@ chrome-webstore-upload upload \
 
 # Publish the package
 
-chrome-webstore-upload publish --extension-id $EXTENSION_ID || {
+chrome-webstore-upload publish --extension-id $EXTENSION_ID \
+	--client-id $CLIENT_ID \
+	--client-secret $CLIENT_SECRET \
+	--refresh-token $REFRESH_TOKEN || {
 	echo "Error: Failed to publish the extension. Exiting gracefully."
 	exit 0
 }
