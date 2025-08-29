@@ -11,7 +11,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "better-lyrics@boidu.dev",
+      "id": "betterlyrics@boidu.dev",
       "strict_min_version": "100.0"
     }
   },
