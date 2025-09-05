@@ -228,7 +228,10 @@ BetterLyrics.LyricProviders = {
     });
 
     if (!response.ok) {
-      throw new Error(BetterLyrics.Constants.HTTP_ERROR_LOG + response.status);
+      providerParameters.sourceMap.get("lrclib-synced").filled = true;
+      providerParameters.sourceMap.get("lrclib-plain").filled = true;
+      providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = null;
+      providerParameters.sourceMap.get("lrclib-plain").lyricSourceResult = null;
     }
 
     const data = await response.json();
@@ -310,8 +313,9 @@ BetterLyrics.LyricProviders = {
     }
 
     if (!langCode) {
-      BetterLyrics.Utils.log(audioTrackData);
-      throw new Error("Found Caption Tracks, but couldn't determine the default");
+      BetterLyrics.Utils.log("Found Caption Tracks, but couldn't determine the default", audioTrackData);
+      providerParameters.sourceMap.get("yt-captions").filled = true;
+      providerParameters.sourceMap.get("yt-captions").lyricSourceResult = null;
     }
 
     let captionsUrl;
@@ -324,8 +328,9 @@ BetterLyrics.LyricProviders = {
     }
 
     if (!captionsUrl) {
-      BetterLyrics.Utils.log(audioTrackData);
-      throw new Error("Only found auto generated lyrics, not using");
+      BetterLyrics.Utils.log("Only found auto generated lyrics for youtube captions, not using", audioTrackData);
+      providerParameters.sourceMap.get("yt-captions").filled = true;
+      providerParameters.sourceMap.get("yt-captions").lyricSourceResult = null;
     }
 
     captionsUrl = new URL(captionsUrl);
