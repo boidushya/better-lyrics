@@ -585,7 +585,12 @@ BetterLyrics.LyricProviders = {
     });
 
     if (idTags["offset"]) {
-      let offset = idTags["offset"];
+      let offset = Number(idTags["offset"]);
+      if (isNaN(offset)) {
+        offset = 0;
+        console.log("[BetterLyrics] Invalid offset in lyrics: " + idTags["offset"]);
+      }
+      offset = offset * 1000;
       result.forEach(lyric => {
         lyric.startTimeMs -= offset;
         lyric.parts.forEach(part => {
