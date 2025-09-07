@@ -379,9 +379,23 @@ BetterLyrics.Lyrics = {
      */
 
     /**
+     * @typedef {object} LyricsData
+     * @property {LineData[]} lines
+     * @property {SyncType} syncType
+     */
+
+    /**
+     * @typedef {"richsync"|"synced"|"none"} SyncType
+     */
+
+    /**
      * @type {LineData[]}
      */
-    let lyricsData = [];
+    let lines = [];
+    /**
+     * @type {SyncType}
+     */
+    let syncType = "synced";
 
     lyrics.forEach((item, lineIndex) => {
       if (!item.parts || item.parts.length === 0) {
@@ -398,15 +412,19 @@ BetterLyrics.Lyrics = {
         });
       }
 
-      let line = document.createElement("div");
-      line.classList.add("blyrics--line");
+      if (!item.parts.every(part => part.durationMs === 0)) {
+        syncType = "richsync";
+      }
+
+      let lyricElement = document.createElement("div");
+      lyricElement.classList.add("blyrics--line");
 
       /**
        *
        * @type LineData
        */
-      let lineData = {
-        lyricElement: line,
+      let line = {
+        lyricElement: lyricElement,
         time: parseFloat(item.startTimeMs) / 1000,
         duration: parseFloat(item.durationMs) / 1000,
         parts: [],
@@ -436,31 +454,31 @@ BetterLyrics.Lyrics = {
         };
 
         span.textContent = part.words;
-        span.dataset.time = partData.time;
-        span.dataset.duration = partData.duration;
+        span.dataset.time = String(partData.time);
+        span.dataset.duration = String(partData.duration);
         span.dataset.content = part.words;
         span.style.setProperty("--blyrics-duration", part.durationMs + "ms");
         if (part.words.trim().length === 0) {
           span.style.display = "inline";
         }
 
-        lineData.parts.push(partData);
-        line.appendChild(span);
+        line.parts.push(partData);
+        lyricElement.appendChild(span);
       });
 
-      line.dataset.time = lineData.time;
-      line.dataset.duration = lineData.duration;
-      line.dataset.lineNumber = lineIndex;
-      line.style.setProperty("--blyrics-duration", item.durationMs + "ms");
+      lyricElement.dataset.time = String(line.time);
+      lyricElement.dataset.duration = String(line.duration);
+      lyricElement.dataset.lineNumber = String(lineIndex);
+      lyricElement.style.setProperty("--blyrics-duration", item.durationMs + "ms");
 
       if (!allZero) {
-        line.setAttribute(
+        lyricElement.setAttribute(
           "onClick",
           `const player = document.getElementById("movie_player"); player.seekTo(${
             item.startTimeMs / 1000
           }, true);player.playVideo();`
         );
-        line.addEventListener("click", _e => {
+        lyricElement.addEventListener("click", _e => {
           BetterLyrics.DOM.scrollResumeTime = 0;
         });
       }
@@ -476,7 +494,7 @@ BetterLyrics.Lyrics = {
                 const result = await BetterLyrics.Translation.translateTextIntoRomaji(source_language, item.words);
                 if (result && result.trim() !== "") {
                   romanizedLine.textContent = result ? "\n" + result : "\n";
-                  line.appendChild(romanizedLine);
+                  lyricElement.appendChild(romanizedLine);
                   BetterLyrics.DOM.lyricsElementAdded();
                 }
               }
@@ -495,7 +513,7 @@ BetterLyrics.Lyrics = {
 
                   if (result && result.originalLanguage !== target_language) {
                     translatedLine.textContent = "\n" + result.translatedText;
-                    line.appendChild(translatedLine);
+                    lyricElement.appendChild(translatedLine);
                     BetterLyrics.DOM.lyricsElementAdded();
                   }
                 }
@@ -506,8 +524,8 @@ BetterLyrics.Lyrics = {
       });
 
       try {
-        lyricsData.push(lineData);
-        lyricsContainer.appendChild(line);
+        lines.push(line);
+        lyricsContainer.appendChild(lyricElement);
       } catch (_err) {
         BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
       }
@@ -535,11 +553,17 @@ BetterLyrics.Lyrics = {
     lyricsContainer.appendChild(spacingElement);
 
     if (!allZero) {
-      BetterLyrics.App.lyricData = lyricsData;
       BetterLyrics.App.areLyricsTicking = true;
     } else {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SYNC_DISABLED_LOG);
+      syncType = "none";
     }
+
+    BetterLyrics.App.lyricData = {
+      lines: lines,
+      syncType: syncType,
+    };
+
     BetterLyrics.App.areLyricsLoaded = true;
   },
 };

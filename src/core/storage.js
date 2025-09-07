@@ -46,11 +46,11 @@ BetterLyrics.Storage = {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === "sync" && changes.customCSS) {
         BetterLyrics.Utils.applyCustomCSS(changes.customCSS.newValue);
-        BetterLyrics.DOM.cachedTransitionDuration = -1;
+        BetterLyrics.DOM.cachedDurations = new Map();
       }
     });
     BetterLyrics.Storage.getAndApplyCustomCSS();
-    BetterLyrics.DOM.cachedTransitionDuration = -1;
+    BetterLyrics.DOM.cachedDurations = new Map();
   },
 
   /**

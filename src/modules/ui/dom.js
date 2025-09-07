@@ -418,10 +418,6 @@ BetterLyrics.DOM = {
   selectedElementIndex: 0,
   nextScrollAllowedTime: 0,
   /**
-   * Time in seconds to offset lyric highlighting by
-   */
-  lyricTimeOffset: 0.015,
-  /**
    * Time in seconds before lyric highlight to begin scroll to the next lyric
    */
   lyricScrollTimeOffset: 0.5,
@@ -429,15 +425,27 @@ BetterLyrics.DOM = {
   lastTime: 0,
   lastPlayState: false,
   lastEventCreationTime: 0,
-  cachedTransitionDuration: -1,
-  getTransitionDurationInMs(lyricsElement) {
-    if (BetterLyrics.DOM.cachedTransitionDuration === -1) {
-      BetterLyrics.DOM.cachedTransitionDuration = toMs(
-        window.getComputedStyle(lyricsElement).getPropertyValue("transition-duration")
-      );
+  /**
+   * @type {Map<string, number>}
+   */
+  cachedDurations: new Map(),
+  /**
+   * Gets and caches a css duration.
+   * Note this function does not key its cache on the element provided --
+   * it assumes that it isn't relevant to the calling code
+   *
+   * @param lyricsElement - the element to look up against
+   * @param property - the css property to look up
+   * @return {number} - in ms
+   */
+  getCSSDurationInMs(lyricsElement, property) {
+    let duration = BetterLyrics.DOM.cachedDurations.get(lyricsElement);
+    if (duration === undefined) {
+      duration = toMs(window.getComputedStyle(lyricsElement).getPropertyValue(property));
+      BetterLyrics.DOM.cachedDurations.set(property, duration);
     }
 
-    return BetterLyrics.DOM.cachedTransitionDuration;
+    return duration;
   },
   /**
    * Main lyrics synchronization function that handles timing, highlighting, and scrolling.
@@ -474,7 +482,6 @@ BetterLyrics.DOM = {
       return;
     }
 
-    currentTime += BetterLyrics.DOM.lyricTimeOffset;
     const lyricScrollTime = currentTime + BetterLyrics.DOM.lyricScrollTimeOffset;
     try {
       const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
@@ -485,25 +492,29 @@ BetterLyrics.DOM = {
         return;
       }
 
-      /**
-       * @type {LineData[]}
-       */
-      const lyricsData = BetterLyrics.App.lyricData;
-
-      if (!lyricsData) {
+      let lyricData = BetterLyrics.App.lyricData;
+      if (!lyricData) {
         BetterLyrics.App.areLyricsTicking = false;
-        BetterLyrics.Utils.log("Lyrics are ticking, but lyricsData is null!");
+        BetterLyrics.Utils.log("Lyrics are ticking, but lyricData are null!");
         return;
       }
+
+      if (lyricData.syncType === "richsync") {
+        currentTime += BetterLyrics.DOM.getCSSDurationInMs(lyricsElement, "--blyrics-richsync-timing-offset") / 1000;
+      } else {
+        currentTime += BetterLyrics.DOM.getCSSDurationInMs(lyricsElement, "--blyrics-timing-offset") / 1000;
+      }
+
+      const lines = BetterLyrics.App.lyricData.lines;
 
       let selectedLyricHeight = 0;
       let targetScrollPos = 0;
       let availableScrollTime = 999;
-      lyricsData.every((lineData, index) => {
+      lines.every((lineData, index) => {
         const time = lineData.time;
         let nextTime = Infinity;
-        if (index + 1 < lyricsData.length) {
-          const nextLyric = lyricsData[index + 1];
+        if (index + 1 < lines.length) {
+          const nextLyric = lines[index + 1];
           nextTime = nextLyric.time;
         }
 
@@ -630,7 +641,7 @@ BetterLyrics.DOM = {
             lyricsElement.style.transitionProperty = "";
             lyricsElement.style.transitionDuration = "";
 
-            let scrollTime = BetterLyrics.DOM.getTransitionDurationInMs(lyricsElement);
+            let scrollTime = BetterLyrics.DOM.getCSSDurationInMs(lyricsElement, "transition-duration");
             if (scrollTime > availableScrollTime * 1000 - 50) {
               scrollTime = availableScrollTime * 1000 - 50;
             }

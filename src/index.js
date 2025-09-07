@@ -25,7 +25,7 @@ BetterLyrics.App = {
   lang: "en",
   /** @type {boolean} Whether lyrics are currently syncing with playback */
   areLyricsTicking: false,
-  /** @type {LineData[]|null} Current lyric data object */
+  /** @type {LyricsData|null} Current lyric data object */
   lyricData: null,
   /** @type {boolean} Whether lyrics have been successfully loaded */
   areLyricsLoaded: false,
