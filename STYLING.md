@@ -130,14 +130,15 @@ These custom properties allow for easy customization of colors, sizes, and other
 
 ### Animations
 
-| Variable                                      | Default Value | Description                                                                                  |
-|-----------------------------------------------|---------------|----------------------------------------------------------------------------------------------|
-| `--blyrics-scale-transition-duration`         | `0.166s`      | Transition duration of scale effect                                                          |
-| `--blyrics-lyric-highlight-fade-in-duration`  | `0.33s`       | Controls duration of fade in transition                                                      |
-| `--blyrics-lyric-highlight-fade-out-duration` | `0.5s`        | Controls duration of fade out transition                                                     |
-| `--blyrics-wobble-duration`                   | `1s`          | Controls duration of wobble animation                                                        |
-| `--blyrics-timing-offset`                     | `0.115s`      | Offsets lyrics highlighting for synced lyrics (positive values = lyrics highlighted earlier) |
-| `--blyrics-richsync-timing-offset`            | `0.020s`      | Offsets highlighting for richsynced lyrics (positive values = lyrics highlighted earlier)    |
+| Variable                                      | Default Value | Description                                                                                     |
+|-----------------------------------------------|---------------|-------------------------------------------------------------------------------------------------|
+| `--blyrics-scale-transition-duration`         | `0.166s`      | Transition duration of scale effect                                                             |
+| `--blyrics-lyric-highlight-fade-in-duration`  | `0.33s`       | Controls duration of fade in transition                                                         |
+| `--blyrics-lyric-highlight-fade-out-duration` | `0.5s`        | Controls duration of fade out transition                                                        |
+| `--blyrics-wobble-duration`                   | `1s`          | Controls duration of wobble animation                                                           |
+| `--blyrics-timing-offset`                     | `0.115s`      | Offsets lyrics highlighting for synced lyrics (positive values = lyrics highlighted earlier)    |
+| `--blyrics-richsync-timing-offset`            | `0.020s`      | Offsets highlighting for richsynced lyrics (positive values = lyrics highlighted earlier)       |
+| `--blyrics-scroll-timing-offset`              | `0.5s`        | Offsets the scroll time (positive values = scroll earlier). Applied after other timing offsets. |
 
 ### Layout
 

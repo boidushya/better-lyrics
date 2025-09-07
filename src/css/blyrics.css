@@ -26,6 +26,8 @@
 	--blyrics-richsync-timing-offset: 0.115s;
 	--blyrics-timing-offset: 0.020s;
 
+	--blyrics-scroll-timeing-offset: 0.5s;
+
 	/* Typography */
 	--blyrics-font-family:
 		Satoshi, Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,

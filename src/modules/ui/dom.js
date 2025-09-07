@@ -417,10 +417,6 @@ BetterLyrics.DOM = {
   scrollPos: 0,
   selectedElementIndex: 0,
   nextScrollAllowedTime: 0,
-  /**
-   * Time in seconds before lyric highlight to begin scroll to the next lyric
-   */
-  lyricScrollTimeOffset: 0.5,
   wasUserScrolling: false,
   lastTime: 0,
   lastPlayState: false,
@@ -482,7 +478,6 @@ BetterLyrics.DOM = {
       return;
     }
 
-    const lyricScrollTime = currentTime + BetterLyrics.DOM.lyricScrollTimeOffset;
     try {
       const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
       // If lyrics element doesn't exist, clear the interval and return silently
@@ -504,6 +499,9 @@ BetterLyrics.DOM = {
       } else {
         currentTime += BetterLyrics.DOM.getCSSDurationInMs(lyricsElement, "--blyrics-timing-offset") / 1000;
       }
+
+      const lyricScrollTime =
+        currentTime + BetterLyrics.DOM.getCSSDurationInMs(lyricsElement, "--blyrics-scroll-timing-offset") / 1000;
 
       const lines = BetterLyrics.App.lyricData.lines;
 
