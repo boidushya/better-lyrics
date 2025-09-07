@@ -135,15 +135,25 @@ BetterLyrics.Lyrics = {
         providerParameters.artist = cubyLyrics.artist;
       }
 
-      if (cubyLyrics && cubyLyrics.duration && cubyLyrics.duration.length > 0 && duration !== cubyLyrics.duration) {
+      if (
+        cubyLyrics &&
+        cubyLyrics.duration &&
+        cubyLyrics.duration.length > 0 &&
+        String(duration) !== String(cubyLyrics.duration)
+      ) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.duration + "' for duration instead of '" + duration + "'");
-        providerParameters.duration = Number(cubyLyrics.duration);
+        providerParameters.duration = String(cubyLyrics.duration);
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
 
     for (let provider of BetterLyrics.LyricProviders.providerPriority) {
+      if (provider.startsWith("d_")) {
+        // Provider is disabled
+        continue;
+      }
+
       try {
         lyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, provider);
 
