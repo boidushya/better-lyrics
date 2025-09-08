@@ -55,9 +55,9 @@ BetterLyrics.App = {
    * This method orchestrates the setup of logging, DOM injection, observers, settings,
    * storage, and lyric providers.
    */
-  modify: function () {
+  modify: async function () {
     BetterLyrics.Utils.setUpLog();
-    BetterLyrics.DOM.injectHeadTags();
+    await BetterLyrics.DOM.injectHeadTags();
     BetterLyrics.Observer.enableLyricsTab();
     BetterLyrics.Settings.hideCursorOnIdle();
     BetterLyrics.Settings.handleSettings();

@@ -29,7 +29,10 @@
         "*://music.youtube.com/*"
       ],
       "resources": [
-        "src/script.js"
+        "src/script.js",
+        "src/css/ytmusic.css",
+        "src/css/blyrics.css",
+        "src/css/themesong.css"
       ]
     }
   ],
@@ -53,11 +56,6 @@
         "src/modules/ui/observer.js",
         "src/modules/settings/settings.js",
         "src/index.js"
-      ],
-      "css": [
-        "src/css/ytmusic.css",
-        "src/css/blyrics.css",
-        "src/css/themesong.css"
       ],
       "run_at": "document_start"
     },

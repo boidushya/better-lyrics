@@ -352,7 +352,7 @@ BetterLyrics.DOM = {
   /**
    * Injects required head tags including font links and image preloads.
    */
-  injectHeadTags: () => {
+  injectHeadTags: async () => {
     const imgURL = "https://better-lyrics.boidu.dev/icon-512.png";
 
     const imagePreload = document.createElement("link");
@@ -366,6 +366,22 @@ BetterLyrics.DOM = {
     fontLink.href = BetterLyrics.Constants.FONT_LINK;
     fontLink.rel = "stylesheet";
     document.head.appendChild(fontLink);
+
+    const cssFiles = [
+      "src/css/ytmusic.css",
+      "src/css/blyrics.css",
+      "src/css/themesong.css",
+    ];
+
+    let css = "";
+    for (const file of cssFiles) {
+      const response = await fetch(chrome.runtime.getURL(file));
+      css += await response.text();
+    }
+
+    const style = document.createElement('style');
+    style.textContent = css;
+    document.head.appendChild(style);
   },
 
   /**
