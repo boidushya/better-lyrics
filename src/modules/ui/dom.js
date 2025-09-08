@@ -367,11 +367,7 @@ BetterLyrics.DOM = {
     fontLink.rel = "stylesheet";
     document.head.appendChild(fontLink);
 
-    const cssFiles = [
-      "src/css/ytmusic.css",
-      "src/css/blyrics.css",
-      "src/css/themesong.css",
-    ];
+    const cssFiles = ["src/css/ytmusic.css", "src/css/blyrics.css", "src/css/themesong.css"];
 
     let css = "";
     for (const file of cssFiles) {
@@ -379,7 +375,7 @@ BetterLyrics.DOM = {
       css += await response.text();
     }
 
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = css;
     document.head.appendChild(style);
   },
