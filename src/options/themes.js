@@ -40,7 +40,7 @@ export default [
 }
 
 .blyrics-container {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Bricolage Grotesque', var(--noto-sans-universal), sans-serif;
   font-weight: 400;
   color: var(--dark-mellow-text-color);
   padding: 2rem;
@@ -91,7 +91,7 @@ export default [
   color: var(--dark-mellow-text-color);
   border: 1px solid var(--dark-mellow-border-color);
   padding: 0.75rem 1.5rem;
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Bricolage Grotesque', var(--noto-sans-universal), sans-serif;
   font-weight: 500;
   transition: all 0.2s ease;
 }
@@ -328,7 +328,7 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 }
 
 .blyrics-container {
-  font-family: "Verdana", thick;
+  font-family: "Verdana", var(--noto-sans-universal), thick;
   font-size: 7rem;
   font-weight: 700;
   line-height: 1.5;
@@ -438,7 +438,7 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
   --yt-album-size: 600px;
   --blyrics-hover-scale: 1.02;
   --blyrics-background-color: rgba(0,0,0,0.25);
-  --blyrics-font-family: "SF Pro", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --blyrics-font-family: "SF Pro", var(--noto-sans-universal), system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --blyrics-font-weight: 600;
 }
 
