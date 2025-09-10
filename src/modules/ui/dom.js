@@ -136,26 +136,6 @@ BetterLyrics.DOM = {
       BetterLyrics.Utils.log(BetterLyrics.Constants.FOOTER_NOT_VISIBLE_LOG);
     }
   },
-
-  /**
-   * Sets or removes RTL (right-to-left) attributes on layout elements.
-   *
-   * @param {boolean} isRtl - Whether to enable RTL layout
-   */
-  setRtlAttributes: isRtl => {
-    const layout = document.getElementById("layout");
-    const playerPage = document.getElementById("player-page");
-
-    if (layout && playerPage) {
-      if (isRtl) {
-        layout.setAttribute(BetterLyrics.Constants.LYRICS_RTL_ATTR, "");
-        playerPage.setAttribute(BetterLyrics.Constants.LYRICS_RTL_ATTR, "");
-      } else {
-        layout.removeAttribute(BetterLyrics.Constants.LYRICS_RTL_ATTR);
-        playerPage.removeAttribute(BetterLyrics.Constants.LYRICS_RTL_ATTR);
-      }
-    }
-  },
   loaderMayBeActive: false,
   /**
    * Renders and displays the loading spinner for lyrics fetching.

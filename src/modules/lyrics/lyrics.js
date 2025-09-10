@@ -228,16 +228,6 @@ BetterLyrics.Lyrics = {
       }
     }
 
-    if (lyrics.isRtlLanguage === undefined) {
-      // Arabic Characters: U+0600..U+06FF (Urdu, Arabic, Kurdish)
-      // Arabic Presentation Forms-A: U+FB50..U+FDFF (For Persian, Urdu, Sindhi)
-      // Hebrew Characters: U+0590..U+05FF (Yiddish)
-      // Thaana Characters: U+0780..U+07BF
-
-      const testRtl = text => /[\u0600-\u06FF]|[\ufb50-\ufdff]|[\u0590-\u05ff]|[\u0780-\u07bf]/.test(text);
-      lyrics.isRtlLanguage = lyrics.lyrics.some(({ words }) => testRtl(words));
-    }
-
     BetterLyrics.Utils.log("Got Lyrics from " + lyrics.source);
 
     // Preserve song and artist information in the lyrics data for the "Add Lyrics" button
@@ -272,12 +262,10 @@ BetterLyrics.Lyrics = {
    *
    * @param {Object} data - Processed lyrics data
    * @param {string} data.language - Language code for the lyrics
-   * @param {boolean} data.isRtlLanguage - Whether lyrics are in RTL language
    * @param {Array} data.lyrics - Array of lyric lines
    */
   processLyrics: function (data) {
     BetterLyrics.App.lang = data.language;
-    BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
 
     const lyrics = data.lyrics;
     if (!lyrics || lyrics.length === 0) {
@@ -446,10 +434,30 @@ BetterLyrics.Lyrics = {
         isSelected: false,
       };
 
+      // To add rtl elements in reverse to the dom
+      /**
+       * @type {HTMLSpanElement[]}
+       */
+      let rtlBuffer = [];
+      let isAllRtl = true;
+
       item.parts.forEach(part => {
+
+        let isRtl = testRtl(part.words);
+        if (!isRtl && part.words.trim().length > 0) {
+          isAllRtl = false;
+          rtlBuffer.reverse().forEach(part => {
+            lyricElement.appendChild(part);
+          });
+          rtlBuffer = [];
+        }
+
         let span = document.createElement("span");
         if (Number(part.durationMs) === 0) {
           span.classList.add(BetterLyrics.Constants.ZERO_DURATION_ANIMATION_CLASS);
+        }
+        if (isRtl) {
+          span.classList.add(BetterLyrics.Constants.RTL_CLASS);
         }
 
         /**
@@ -473,8 +481,27 @@ BetterLyrics.Lyrics = {
         }
 
         line.parts.push(partData);
-        lyricElement.appendChild(span);
+        if (isRtl) {
+          rtlBuffer.push(span);
+        } else {
+          lyricElement.appendChild(span);
+        }
       });
+
+      //Add remaining rtl elements
+
+
+      if (isAllRtl) {
+        lyricElement.classList.add(BetterLyrics.Constants.RTL_CLASS);
+        rtlBuffer.forEach(part => {
+          lyricElement.appendChild(part);
+        });
+      } else {
+        rtlBuffer.reverse().forEach(part => {
+          lyricElement.appendChild(part);
+        });
+      }
+
 
       lyricElement.dataset.time = String(line.time);
       lyricElement.dataset.duration = String(line.duration);
@@ -616,3 +643,6 @@ var stringSimilarity = function (str1, str2, substringLength, caseSensitive) {
   }
   return (match * 2) / (str1.length + str2.length - (substringLength - 1) * 2);
 };
+
+
+const testRtl = text => /[\u0600-\u06FF]|[\ufb50-\ufdff]|[\u0590-\u05ff]|[\u0780-\u07bf]/.test(text);

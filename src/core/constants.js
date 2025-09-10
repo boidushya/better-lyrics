@@ -22,6 +22,7 @@ BetterLyrics.Constants = {
   LYRICS_CLASS: "blyrics-container",
   CURRENT_LYRICS_CLASS: "blyrics--active",
   ZERO_DURATION_ANIMATION_CLASS: "blyrics-zero-dur-animate",
+  RTL_CLASS: "blyrics-rtl",
   ANIMATING_CLASS: "blyrics--animating",
   PRE_ANIMATING_CLASS: "blyrics--pre-animating",
   USER_SCROLLING_CLASS: "blyrics-user-scrolling",

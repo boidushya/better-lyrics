@@ -290,12 +290,7 @@
 	white-space: pre-wrap;
 }
 
-/* RTL support */
-#layout[blyrics-rtl-enabled] .blyrics-container > div {
-	transform-origin: right center;
-}
-
-#layout[blyrics-rtl-enabled] .blyrics-container {
+.blyrics-rtl {
 	direction: rtl;
 }
 
