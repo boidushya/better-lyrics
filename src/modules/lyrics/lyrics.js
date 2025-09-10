@@ -442,7 +442,6 @@ BetterLyrics.Lyrics = {
       let isAllRtl = true;
 
       item.parts.forEach(part => {
-
         let isRtl = testRtl(part.words);
         if (!isRtl && part.words.trim().length > 0) {
           isAllRtl = false;
@@ -490,7 +489,6 @@ BetterLyrics.Lyrics = {
 
       //Add remaining rtl elements
 
-
       if (isAllRtl) {
         lyricElement.classList.add(BetterLyrics.Constants.RTL_CLASS);
         rtlBuffer.forEach(part => {
@@ -501,7 +499,6 @@ BetterLyrics.Lyrics = {
           lyricElement.appendChild(part);
         });
       }
-
 
       lyricElement.dataset.time = String(line.time);
       lyricElement.dataset.duration = String(line.duration);
@@ -643,6 +640,5 @@ var stringSimilarity = function (str1, str2, substringLength, caseSensitive) {
   }
   return (match * 2) / (str1.length + str2.length - (substringLength - 1) * 2);
 };
-
 
 const testRtl = text => /[\u0600-\u06FF]|[\ufb50-\ufdff]|[\u0590-\u05ff]|[\u0780-\u07bf]/.test(text);
