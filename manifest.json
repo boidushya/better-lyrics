@@ -32,6 +32,7 @@
         "src/script.js",
         "src/css/ytmusic.css",
         "src/css/blyrics.css",
+        "src/css/disablestylizedanimations.css",
         "src/css/themesong.css"
       ]
     }

@@ -1,0 +1,11 @@
+/**
+    Effects applied when stylized animations are disabled
+ */
+
+.blyrics-container > div > span.blyrics--animating::after {
+    animation: none;
+}
+
+.blyrics-container > div > span.blyrics--animating {
+    animation: none;
+}

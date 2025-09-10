@@ -193,7 +193,6 @@
 .blyrics-container > div > span.blyrics--animating {
 	animation: blyrics-wobble var(--blyrics-wobble-duration) forwards ease;
 	animation-delay: var(--blyrics-anim-delay);
-
 }
 
 @property --lyric-transition-amount-start {
