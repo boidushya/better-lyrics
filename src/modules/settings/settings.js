@@ -32,22 +32,24 @@ BetterLyrics.Settings = {
     );
 
     BetterLyrics.Settings.onStylizedAnimationsEnabled(
-        () => {
-          let styleElm = document.getElementById("blyrics-disable-effects");
-          if (styleElm) {
-            styleElm.remove();
-          }
-        },
-        async () => {
-          let styleElem = document.getElementById("blyrics-disable-effects");
-          if (!styleElem) {
-            styleElem = document.createElement("style");
-            styleElem.id = "blyrics-disable-effects";
-
-            styleElem.textContent = await fetch(chrome.runtime.getURL("src/css/disablestylizedanimations.css")).then(res => res.text());
-            document.head.appendChild(styleElem);
-          }
+      () => {
+        let styleElm = document.getElementById("blyrics-disable-effects");
+        if (styleElm) {
+          styleElm.remove();
         }
+      },
+      async () => {
+        let styleElem = document.getElementById("blyrics-disable-effects");
+        if (!styleElem) {
+          styleElem = document.createElement("style");
+          styleElem.id = "blyrics-disable-effects";
+
+          styleElem.textContent = await fetch(chrome.runtime.getURL("src/css/disablestylizedanimations.css")).then(
+            res => res.text()
+          );
+          document.head.appendChild(styleElem);
+        }
+      }
     );
   },
 
