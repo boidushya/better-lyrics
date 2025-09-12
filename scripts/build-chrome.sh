@@ -39,6 +39,7 @@ sed -i.bak 's/src="options\.js"/src="options.min.js"/' src/options/options.html 
 postcss src/css/ytmusic.css --use autoprefixer cssnano -o src/css/ytmusic.min.css && rm src/css/ytmusic.css
 postcss src/css/themesong.css --use autoprefixer cssnano -o src/css/themesong.min.css && rm src/css/themesong.css
 postcss src/css/blyrics.css --use autoprefixer cssnano -o src/css/blyrics.min.css && rm src/css/blyrics.css
+postcss src/css/disablestylizedanimations.css --use autoprefixer cssnano -o src/css/disablestylizedanimations.min.css && rm src/css/disablestylizedanimations.css
 postcss src/options/options.css --use autoprefixer cssnano -o src/options/options.min.css && rm src/options/options.css
 
 # Update HTML file to use minified CSS
@@ -47,22 +48,28 @@ sed -i.bak 's/href="options\.css"/href="options.min.css"/' src/options/options.h
 # Update manifest to use minified files
 mv templates/manifest.chrome.json manifest.json
 jq '.content_scripts[0].js = [
-  "src/core/constants.min.js",
-  "src/core/utils.min.js",
-  "src/core/storage.min.js",
-  "src/modules/lyrics/translation.min.js",
-  "src/modules/lyrics/lyrics.min.js",
-  "src/modules/lyrics/providers.min.js",
-  "src/modules/lyrics/requestSniffer.min.js",
-  "src/modules/ui/dom.min.js",
-  "src/modules/ui/observer.min.js",
-  "src/modules/settings/settings.min.js",
-  "src/index.min.js"
+	"src/core/constants.min.js",
+	"src/core/utils.min.js",
+	"src/core/storage.min.js",
+	"src/modules/lyrics/translation.min.js",
+	"src/modules/lyrics/lyrics.min.js",
+	"src/modules/lyrics/providers.min.js",
+	"src/modules/lyrics/requestSniffer.min.js",
+	"src/modules/ui/dom.min.js",
+	"src/modules/ui/observer.min.js",
+	"src/modules/settings/settings.min.js",
+	"src/index.min.js"
 ] | .content_scripts[0].css = [
-  "src/css/ytmusic.min.css",
-  "src/css/themesong.min.css",
-  "src/css/blyrics.min.css"
-] | .background.service_worker = "src/background.min.js"' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
+	"src/css/ytmusic.min.css",
+	"src/css/themesong.min.css",
+	"src/css/blyrics.min.css"
+] | .background.service_worker = "src/background.min.js" | .web_accessible_resources[0].resources = [
+	"src/script.js",
+	"src/css/ytmusic.min.css",
+	"src/css/blyrics.min.css",
+	"src/css/disablestylizedanimations.min.css",
+	"src/css/themesong.min.css"
+]' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
 
 # Create zip file
 zip -r better-lyrics.zip ./* -x "./dist/*" "LICENSE" "README.md" "./templates/*" "*.DS_Store" "${SCRIPT_DIR}/*"
