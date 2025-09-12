@@ -15,6 +15,11 @@ cp -r images src manifest.json templates $TEMP_DIR
 
 cd $TEMP_DIR
 
+# Update dom.js to use minified CSS files before minification
+sed -i.bak 's/"src\/css\/ytmusic\.css"/"src\/css\/ytmusic.min.css"/g' src/modules/ui/dom.js && rm src/modules/ui/dom.js.bak
+sed -i.bak 's/"src\/css\/blyrics\.css"/"src\/css\/blyrics.min.css"/g' src/modules/ui/dom.js && rm src/modules/ui/dom.js.bak  
+sed -i.bak 's/"src\/css\/themesong\.css"/"src\/css\/themesong.min.css"/g' src/modules/ui/dom.js && rm src/modules/ui/dom.js.bak
+
 # Minify JavaScript files
 terser src/core/constants.js -c -m -o src/core/constants.min.js && rm src/core/constants.js
 terser src/core/utils.js -c -m -o src/core/utils.min.js && rm src/core/utils.js
