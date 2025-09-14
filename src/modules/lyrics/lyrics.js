@@ -13,6 +13,8 @@ const LYRIC_CACHE_VERSION = "1.1.1";
  * @namespace BetterLyrics.Lyrics
  */
 BetterLyrics.Lyrics = {
+  /** Current version of the lyrics cache format */
+  LYRIC_CACHE_VERSION: LYRIC_CACHE_VERSION,
   /**
    * Main function to create and inject lyrics for the current song.
    * Handles caching, API requests, and fallback mechanisms.
@@ -572,11 +574,20 @@ BetterLyrics.Lyrics = {
     }
     BetterLyrics.DOM.scrollResumeTime = 0;
 
-    if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
-      BetterLyrics.DOM.addFooter(data.source, data.sourceHref, data.song, data.artist, data.album, data.duration);
-    } else {
-      BetterLyrics.DOM.addNoLyricsButton(data.song, data.artist, data.album, data.duration);
-    }
+    // Check if this is the "no lyrics found" case
+    const isNoLyricsFound =
+      data.lyrics && data.lyrics.length === 1 && data.lyrics[0].words === BetterLyrics.Constants.NO_LYRICS_TEXT;
+
+    BetterLyrics.DOM.addFooter(
+      data.source,
+      data.sourceHref,
+      data.song,
+      data.artist,
+      data.album,
+      data.duration,
+      data.videoId,
+      isNoLyricsFound
+    );
 
     let spacingElement = document.createElement("div");
     spacingElement.id = BetterLyrics.Constants.LYRICS_SPACING_ELEMENT_ID;
