@@ -368,6 +368,17 @@ BetterLyrics.LyricProviders = {
       });
     });
 
+    let allCaps = lyricsArray.every(lyric => {
+      return lyric.words.toUpperCase() === lyric.words;
+    });
+
+    if (allCaps) {
+      lyricsArray.every(lyric => {
+        lyric.words = lyric.words.substring(0, 1).toUpperCase() + lyric.words.substring(1).toLowerCase();
+        return true;
+      });
+    }
+
     providerParameters.sourceMap.get("yt-captions").filled = true;
     providerParameters.sourceMap.get("yt-captions").lyricSourceResult = {
       lyrics: lyricsArray,

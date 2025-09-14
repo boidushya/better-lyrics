@@ -508,7 +508,7 @@ BetterLyrics.DOM = {
           nextTime = nextLyric.time;
         }
 
-        if (lyricScrollTime >= time && lyricScrollTime < nextTime) {
+        if (lyricScrollTime >= time && (lyricScrollTime < nextTime || lyricScrollTime < time + lineData.duration)) {
           const elemBounds = getRelativeBounds(lyricsElement, lineData.lyricElement);
           targetScrollPos = elemBounds.y;
           selectedLyricHeight = elemBounds.height;
@@ -538,7 +538,10 @@ BetterLyrics.DOM = {
         if (!isPlaying) {
           setUpAnimationEarlyTime = 0;
         }
-        if (currentTime + setUpAnimationEarlyTime >= time && currentTime < nextTime) {
+        if (
+          currentTime + setUpAnimationEarlyTime >= time &&
+          (currentTime < nextTime || currentTime < time + lineData.duration)
+        ) {
           lineData.selected = true;
 
           const timeDelta = currentTime - time;
