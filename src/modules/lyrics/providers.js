@@ -98,8 +98,7 @@ BetterLyrics.LyricProviders = {
     url.searchParams.append("artist", providerParameters.artist);
     url.searchParams.append("duration", providerParameters.duration);
     url.searchParams.append("videoId", providerParameters.videoId);
-    url.searchParams.append("enhanced", "true");
-    url.searchParams.append("useLrcLib", "true");
+    url.searchParams.append("album", providerParameters.album);
 
     let response = await fetch(url, { signal: AbortSignal.timeout(10000) }).then(r => r.json());
     if (response.album) {
