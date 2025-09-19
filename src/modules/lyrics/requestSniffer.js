@@ -1,10 +1,4 @@
 /**
- *
- * @type {Map<string, string>}
- */
-const browseIdToVideoIdMap = new Map();
-
-/**
  * @typedef {object} Segment
  * @property {number} primaryVideoStartTimeMilliseconds
  * @property {number} counterpartVideoStartTimeMilliseconds
@@ -15,25 +9,41 @@ const browseIdToVideoIdMap = new Map();
  */
 
 /**
+ * @type {Map<string, string>}
+ */
+const browseIdToVideoIdMap = new Map();
+/**
  *
  * @type {Map<string, {hasLyrics: boolean, lyrics: string, sourceText: string}>}
  */
 const videoIdToLyricsMap = new Map();
 /**
  *
- * @type {Map<string, {counterpartVideoId: string, segmentMap: SegmentMap | null}>}
+ * @type {Map<string, {counterpartVideoId: string | null, segmentMap: SegmentMap | null}>}
  */
 const counterpartVideoIdMap = new Map();
+
+/**
+ *
+ * @type {Map<string, string|null>}
+ */
+const videoIdToAlbumMap = new Map();
 
 let firstRequestMissedVideoId = null;
 
 BetterLyrics.RequestSniffing = {
-  getLyrics: function (videoId) {
+  /**
+   *
+   * @param videoId {string}
+   * @param maxRetries {number}
+   * @return {Promise<{hasLyrics: boolean, lyrics: string, sourceText: string}>}
+   */
+  getLyrics: async function (videoId, maxRetries = 250) {
     if (videoIdToLyricsMap.has(videoId)) {
-      return Promise.resolve(videoIdToLyricsMap.get(videoId));
+      return videoIdToLyricsMap.get(videoId);
     } else {
       let checkCount = 0;
-      return new Promise(resolve => {
+      return await new Promise(resolve => {
         const checkInterval = setInterval(() => {
           if (videoIdToLyricsMap.has(videoId)) {
             clearInterval(checkInterval);
@@ -46,7 +56,7 @@ BetterLyrics.RequestSniffing = {
               resolve(videoIdToLyricsMap.get(counterpart));
             }
           }
-          if (checkCount > 250) {
+          if (checkCount > maxRetries) {
             clearInterval(checkInterval);
             BetterLyrics.Utils.log("Failed to sniff lyrics");
             resolve({ hasLyrics: false, lyrics: "", sourceText: "" });
@@ -57,12 +67,18 @@ BetterLyrics.RequestSniffing = {
     }
   },
 
-  getMatchingSong: function (videoId, maxCheckCount = 250) {
+  /**
+   *
+   * @param videoId {String}
+   * @param maxCheckCount {number}
+   * @return {Promise<{counterpartVideoId: (string | null), segmentMap: (SegmentMap | null)}>}
+   */
+  getMatchingSong: async function (videoId, maxCheckCount = 250) {
     if (counterpartVideoIdMap.has(videoId)) {
-      return Promise.resolve(counterpartVideoIdMap.get(videoId));
+      return counterpartVideoIdMap.get(videoId);
     } else {
       let checkCount = 0;
-      return new Promise(resolve => {
+      return await new Promise(resolve => {
         const checkInterval = setInterval(() => {
           if (counterpartVideoIdMap.has(videoId)) {
             let counterpart = counterpartVideoIdMap.get(videoId);
@@ -78,6 +94,14 @@ BetterLyrics.RequestSniffing = {
         }, 20);
       });
     }
+  },
+
+  /**
+   * @param videoId {string}
+   * @return {string | null | undefined}
+   */
+  getSongAlbum: function (videoId) {
+    return videoIdToAlbumMap.get(videoId);
   },
 
   setupRequestSniffer: function () {
@@ -115,6 +139,9 @@ BetterLyrics.RequestSniffing = {
               playlistPanelRendererContent?.playlistPanelVideoWrapperRenderer?.counterpart?.[0]?.segmentMap;
 
             if (counterpartId && primaryId) {
+              /**
+               * @type {SegmentMap | null}
+               */
               let reversedSegmentMap = null;
 
               if (segmentMap && segmentMap.segment) {
@@ -123,10 +150,6 @@ BetterLyrics.RequestSniffing = {
                   segment.primaryVideoStartTimeMilliseconds = Number(segment.primaryVideoStartTimeMilliseconds);
                   segment.durationMilliseconds = Number(segment.durationMilliseconds);
                 }
-
-                /**
-                 * @type {SegmentMap}
-                 */
                 reversedSegmentMap = { segment: [], reversed: true };
                 for (let segment of segmentMap.segment) {
                   reversedSegmentMap.segment.push({
@@ -159,6 +182,14 @@ BetterLyrics.RequestSniffing = {
         }
         if (!playlistId) {
           playlistId = responseJson.currentVideoEndpoint?.watchEndpoint?.playlistId;
+        }
+
+        let album =
+          responseJson?.playerOverlays?.playerOverlayRenderer?.browserMediaSession?.browserMediaSessionRenderer?.album
+            ?.runs[0]?.text;
+
+        if (album) {
+          videoIdToAlbumMap.set(videoId, album);
         }
 
         if (!videoId) {

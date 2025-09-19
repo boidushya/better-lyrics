@@ -96,6 +96,12 @@ BetterLyrics.Lyrics = {
     song = song.trim();
     artist = artist.trim();
     artist = artist.replace(", & ", ", ");
+    // By this point, the album should have been sniffed (if it ever is)
+    // We wait for the sniff to happen when waiting for the counterpart ID.
+    let album = BetterLyrics.RequestSniffing.getSongAlbum(videoId);
+    if (!album) {
+      album = "";
+    }
 
     // Check for empty strings after trimming
     if (!song || !artist) {
@@ -117,12 +123,12 @@ BetterLyrics.Lyrics = {
       duration,
       videoId,
       audioTrackData,
-      album: null,
+      album,
       sourceMap,
     };
     try {
       let cubyLyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, "musixmatch-richsync");
-      if (cubyLyrics && cubyLyrics.album) {
+      if (cubyLyrics && cubyLyrics.album && cubyLyrics.album.length > 0 && album !== cubyLyrics.album) {
         providerParameters.album = cubyLyrics.album;
       }
       if (cubyLyrics && cubyLyrics.song && cubyLyrics.song.length > 0 && song !== cubyLyrics.song) {
