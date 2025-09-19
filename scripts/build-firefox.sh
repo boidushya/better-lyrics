@@ -64,10 +64,6 @@ jq '.content_scripts[0].js = [
 	"src/modules/ui/observer.min.js",
 	"src/modules/settings/settings.min.js",
 	"src/index.min.js"
-] | .content_scripts[0].css = [
-	"src/css/ytmusic.min.css",
-	"src/css/themesong.min.css",
-	"src/css/blyrics.min.css"
 ] | .background.scripts = ["src/background.min.js"] | .web_accessible_resources[0].resources = [
 	"src/script.js",
 	"src/css/ytmusic.min.css",
