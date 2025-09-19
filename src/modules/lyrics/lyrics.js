@@ -96,9 +96,7 @@ BetterLyrics.Lyrics = {
     song = song.trim();
     artist = artist.trim();
     artist = artist.replace(", & ", ", ");
-    // By this point, the album should have been sniffed (if it ever is)
-    // We wait for the sniff to happen when waiting for the counterpart ID.
-    let album = BetterLyrics.RequestSniffing.getSongAlbum(videoId);
+    let album = await BetterLyrics.RequestSniffing.getSongAlbum(videoId);
     if (!album) {
       album = "";
     }

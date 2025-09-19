@@ -31,6 +31,10 @@ const videoIdToAlbumMap = new Map();
 
 let firstRequestMissedVideoId = null;
 
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 BetterLyrics.RequestSniffing = {
   /**
    *
@@ -98,10 +102,16 @@ BetterLyrics.RequestSniffing = {
 
   /**
    * @param videoId {string}
-   * @return {string | null | undefined}
+   * @return {Promise<string | null | undefined>}
    */
-  getSongAlbum: function (videoId) {
-    return videoIdToAlbumMap.get(videoId);
+  getSongAlbum: async function (videoId) {
+    for (let i = 0; i < 250; i++) {
+      if (videoIdToAlbumMap.has(videoId)) {
+        return videoIdToAlbumMap.get(videoId);
+      }
+      await delay(20);
+    }
+    BetterLyrics.Utils.log("Song album information didn't come in time for: ", videoId);
   },
 
   setupRequestSniffer: function () {
@@ -190,6 +200,8 @@ BetterLyrics.RequestSniffing = {
 
         if (album) {
           videoIdToAlbumMap.set(videoId, album);
+        } else {
+          videoIdToAlbumMap.set(videoId, null);
         }
 
         if (!videoId) {
