@@ -85,6 +85,7 @@ BetterLyrics.LyricProviders = {
    * @property {AudioTrackData} audioTrackData
    * @property {string | null} album
    * @property {Map<string, LyricSource>} sourceMap
+   * @property {boolean} alwaysFetchMetadata
    */
 
   /**
@@ -99,6 +100,7 @@ BetterLyrics.LyricProviders = {
     url.searchParams.append("duration", providerParameters.duration);
     url.searchParams.append("videoId", providerParameters.videoId);
     url.searchParams.append("album", providerParameters.album);
+    url.searchParams.append("alwaysFetchMetadata", String(providerParameters.alwaysFetchMetadata));
 
     let response = await fetch(url, { signal: AbortSignal.timeout(10000) }).then(r => r.json());
     if (response.album) {
@@ -449,7 +451,7 @@ BetterLyrics.LyricProviders = {
   },
 
   /**
-   * @return {Map<string: LyricSource>} sources
+   * @return {Map<string, LyricSource>} sources
    */
   newSourceMap: function () {
     let sources = new Map();

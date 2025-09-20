@@ -63,6 +63,7 @@ BetterLyrics.Lyrics = {
      */
     let segmentMap = null;
     let matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId, 1);
+    let swappedVideoId = false;
     if (
       (!matchingSong ||
         !matchingSong.counterpartVideoId ||
@@ -76,6 +77,7 @@ BetterLyrics.Lyrics = {
     }
     if (isMusicVideo && matchingSong && matchingSong.counterpartVideoId && matchingSong.segmentMap) {
       BetterLyrics.Utils.log("Switching VideoId to Audio Id");
+      swappedVideoId = true;
       videoId = matchingSong.counterpartVideoId;
       segmentMap = matchingSong.segmentMap;
     }
@@ -123,6 +125,7 @@ BetterLyrics.Lyrics = {
       audioTrackData,
       album,
       sourceMap,
+      alwaysFetchMetadata: swappedVideoId,
     };
     try {
       let cubyLyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, "musixmatch-richsync");

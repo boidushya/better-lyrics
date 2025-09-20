@@ -198,10 +198,12 @@ BetterLyrics.RequestSniffing = {
           responseJson?.playerOverlays?.playerOverlayRenderer?.browserMediaSession?.browserMediaSessionRenderer?.album
             ?.runs[0]?.text;
 
-        if (album) {
-          videoIdToAlbumMap.set(videoId, album);
-        } else {
-          videoIdToAlbumMap.set(videoId, null);
+        videoIdToAlbumMap.set(videoId, album);
+        if (counterpartVideoIdMap.has(videoId)) {
+          let counterpart = counterpartVideoIdMap.get(videoId).counterpartVideoId;
+          if (counterpart) {
+            videoIdToAlbumMap.set(counterpart, album);
+          }
         }
 
         if (!videoId) {
