@@ -351,7 +351,9 @@ BetterLyrics.DOM = {
 
     let css = "";
     for (const file of cssFiles) {
-      const response = await fetch(chrome.runtime.getURL(file));
+      const response = await fetch(chrome.runtime.getURL(file), {
+        cache: 'no-store'
+      });
       css += await response.text();
     }
 

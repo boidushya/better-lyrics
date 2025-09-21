@@ -2,7 +2,9 @@ BetterLyrics.Translation = {
   translateText: async function (text, targetLanguage) {
     let url = BetterLyrics.Constants.TRANSLATE_LYRICS_URL(targetLanguage, text);
 
-    return fetch(url)
+    return fetch(url, {
+        cache: 'force-cache'
+    })
       .then(response => response.json())
       .then(data => {
         let originalLanguage = data[2];
@@ -19,7 +21,9 @@ BetterLyrics.Translation = {
   },
   translateTextIntoRomaji: async function (lang, text) {
     let url = BetterLyrics.Constants.TRANSLATE_IN_ROMAJI(lang, text);
-    return fetch(url)
+    return fetch(url, {
+        cache: 'force-cache'
+    })
       .then(response => response.json())
       .then(data => {
         let romanizedText = data[0][1][3];
