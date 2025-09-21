@@ -4,7 +4,7 @@
  */
 
 /** Current version of the lyrics cache format */
-const LYRIC_CACHE_VERSION = "1.1.1";
+const LYRIC_CACHE_VERSION = "1.2.0";
 
 /**
  * Core lyrics functionality for the BetterLyrics extension.
