@@ -3,7 +3,7 @@ BetterLyrics.Translation = {
     let url = BetterLyrics.Constants.TRANSLATE_LYRICS_URL(targetLanguage, text);
 
     return fetch(url, {
-        cache: 'force-cache'
+      cache: "force-cache",
     })
       .then(response => response.json())
       .then(data => {
@@ -22,7 +22,7 @@ BetterLyrics.Translation = {
   translateTextIntoRomaji: async function (lang, text) {
     let url = BetterLyrics.Constants.TRANSLATE_IN_ROMAJI(lang, text);
     return fetch(url, {
-        cache: 'force-cache'
+      cache: "force-cache",
     })
       .then(response => response.json())
       .then(data => {
