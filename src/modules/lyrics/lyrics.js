@@ -530,9 +530,14 @@ BetterLyrics.Lyrics = {
             let romanizedLine = document.createElement("div");
             romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
 
-            if (BetterLyrics.Constants.romanizationLanguages.includes(source_language)) {
+            let isNonLatin = containsNonLatin(item.words);
+            if (BetterLyrics.Constants.romanizationLanguages.includes(source_language) || containsNonLatin(item.words)) {
+              let usableLang = source_language;
+              if (isNonLatin) {
+                usableLang = "auto";
+              }
               if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-                const result = await BetterLyrics.Translation.translateTextIntoRomaji(source_language, item.words);
+                const result = await BetterLyrics.Translation.translateTextIntoRomaji(usableLang, item.words);
                 if (result && result.trim() !== "") {
                   romanizedLine.textContent = result ? "\n" + result : "\n";
                   lyricElement.appendChild(romanizedLine);
@@ -548,7 +553,7 @@ BetterLyrics.Lyrics = {
 
               let target_language = items.translationLanguage || "en";
 
-              if (source_language !== target_language) {
+              if (source_language !== target_language || containsNonLatin(item.words)) {
                 if (item.words.trim() !== "♪" && item.words.trim() !== "") {
                   const result = await BetterLyrics.Translation.translateText(item.words, target_language);
 
@@ -649,3 +654,16 @@ var stringSimilarity = function (str1, str2, substringLength, caseSensitive) {
 };
 
 const testRtl = text => /[\u0600-\u06FF]|[\ufb50-\ufdff]|[\u0590-\u05ff]|[\u0780-\u07bf]/.test(text);
+
+const nonLatinRegex = /[^\x00-\x7F]/;
+
+/**
+ * Checks if a given string contains any non-Latin characters.
+ * @param {string} text The string to check.
+ * @returns {boolean} True if a non-Latin character is found, otherwise false.
+ */
+function containsNonLatin(text) {
+  // The .test() method of a regex returns true if there is a match, and false otherwise.
+  // It's very efficient for simple yes/no checks like this.
+  return nonLatinRegex.test(text);
+}
