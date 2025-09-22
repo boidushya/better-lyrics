@@ -364,9 +364,7 @@ BetterLyrics.Lyrics = {
         }
         const translationResult = await BetterLyrics.Translation.translateText(text, "en");
         const lang = translationResult?.originalLanguage || "";
-        BetterLyrics.Utils.log(
-          "[BetterLyrics] Lang was missing. Determined it is: " + lang
-        );
+        BetterLyrics.Utils.log("[BetterLyrics] Lang was missing. Determined it is: " + lang);
         return resolve(lang);
       } else {
         resolve();
@@ -548,7 +546,10 @@ BetterLyrics.Lyrics = {
         lyricElement.dataset.romanized = "true";
       }
 
-      const translatedResult = BetterLyrics.Translation.getTranslationFromCache(item.words, BetterLyrics.Translation.currentTranslationLanguage);
+      const translatedResult = BetterLyrics.Translation.getTranslationFromCache(
+        item.words,
+        BetterLyrics.Translation.currentTranslationLanguage
+      );
       if (translatedResult) {
         let translatedLine = document.createElement("div");
         translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
@@ -576,7 +577,7 @@ BetterLyrics.Lyrics = {
                 romanizedLine.textContent = result ? "\n" + result : "\n";
 
                 let translatedLine = Array.from(lyricElement.children).filter(part =>
-                    part.classList.contains(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS)
+                  part.classList.contains(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS)
                 );
 
                 if (translatedLine.length > 0) {
@@ -590,7 +591,11 @@ BetterLyrics.Lyrics = {
           }
         });
         BetterLyrics.Translation.onTranslationEnabled(async items => {
-          if (lyricElement.dataset.translated === "true" && (items.translationLanguage || "en") === BetterLyrics.Translation.currentTranslationLanguage) return;
+          if (
+            lyricElement.dataset.translated === "true" &&
+            (items.translationLanguage || "en") === BetterLyrics.Translation.currentTranslationLanguage
+          )
+            return;
 
           let translatedLine = document.createElement("div");
           translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
@@ -603,7 +608,9 @@ BetterLyrics.Lyrics = {
 
               if (result) {
                 // Remove existing translated line if language changed
-                const existingTranslatedLine = lyricElement.querySelector("." + BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
+                const existingTranslatedLine = lyricElement.querySelector(
+                  "." + BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS
+                );
                 if (existingTranslatedLine) {
                   existingTranslatedLine.remove();
                 }
