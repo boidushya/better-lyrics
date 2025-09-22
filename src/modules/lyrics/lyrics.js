@@ -533,6 +533,8 @@ BetterLyrics.Lyrics = {
         lyricElement.addEventListener("click", _e => {
           BetterLyrics.DOM.scrollResumeTime = 0;
         });
+      } else {
+        lyricElement.style.cursor = "unset";
       }
 
       langPromise.then(source_language => {
