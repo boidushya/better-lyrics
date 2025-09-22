@@ -381,9 +381,9 @@
 	align-items: center;
 	gap: 1rem;
 	direction: ltr;
-	position: sticky;
-	top: calc(100% - 9rem);
+	position: relative;
 	z-index: 100;
+	margin-top: 6rem;
 }
 
 .blyrics-footer__discord {
