@@ -658,7 +658,20 @@ var stringSimilarity = function (str1, str2, substringLength, caseSensitive) {
 
 const testRtl = text => /[\u0600-\u06FF]|[\ufb50-\ufdff]|[\u0590-\u05ff]|[\u0780-\u07bf]/.test(text);
 
-const nonLatinRegex = /[^\x00-\x7F]/;
+/**
+ * This regex is designed to detect any characters that are outside of the
+ * standard "Basic Latin" and "Latin-1 Supplement" Unicode blocks, as well
+ * as common "smart" punctuation like curved quotes.
+ *
+ * How it works:
+ * [^...]     - This is a negated set, which matches any character NOT inside the brackets.
+ * \x00-\xFF  - This range covers both the "Basic Latin" (ASCII) and "Latin-1 Supplement"
+ * blocks. This includes English letters, numbers, common punctuation, and
+ * most accented characters used in Western European languages (e.g., á, ö, ñ).
+ * \u2018-\u201D - This range covers common "smart" or curly punctuation, including single
+ * and double quotation marks/apostrophes (‘, ’, “, ”).
+ */
+const nonLatinRegex = /[^\x00-\xFF\u2018-\u201D]/;
 
 /**
  * Checks if a given string contains any non-Latin characters.
@@ -666,7 +679,5 @@ const nonLatinRegex = /[^\x00-\x7F]/;
  * @returns {boolean} True if a non-Latin character is found, otherwise false.
  */
 function containsNonLatin(text) {
-  // The .test() method of a regex returns true if there is a match, and false otherwise.
-  // It's very efficient for simple yes/no checks like this.
   return nonLatinRegex.test(text);
 }
