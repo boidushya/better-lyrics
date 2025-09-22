@@ -180,6 +180,8 @@ BetterLyrics.Settings = {
       } else if (request.action === "clearCache") {
         try {
           BetterLyrics.Storage.clearCache();
+          BetterLyrics.App.reloadLyrics();
+
           sendResponse({ success: true });
         } catch {
           sendResponse({ success: false });
