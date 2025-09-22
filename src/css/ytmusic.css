@@ -184,7 +184,6 @@ ytmusic-app-layout:not([is-mweb-modernization-enabled])[player-fullscreened]:not
 ytmusic-app-layout:not([is-mweb-modernization-enabled])[player-fullscreened]:not([blyrics-dfs])
 > [slot="player-page"]
 #side-panel {
-  width: unset;
   transform: translateY(-7.5rem);
 }
 
