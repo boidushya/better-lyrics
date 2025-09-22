@@ -8,7 +8,7 @@ export default [
   --blyrics-lyric-inactive-color: color(display-p3 1 1 1 /0.2);
 }
 
-.blyrics-container:not(.blyrics-user-scrolling) > .blyrics--line:has(~ .blyrics--active) {
+.blyrics-container:not(.blyrics-user-scrolling) > .blyrics--line:has(~ .blyrics--active):not(.blyrics--active) {
   opacity: 0.5;
   filter: blur(2.5px);
   transition: filter 0.5s 0.35s, opacity 0.5s 0.35s, transform 0.166s var(--blyrics-anim-delay, 0s) !important;
