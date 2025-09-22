@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # bash script to publish the edge version of the package to edge store
-# Usage: bash scripts/publish-edge.sh
+# Usage: bash dev-scripts/publish-edge.sh
 
 # Define colors
 COLOR_SUCCESS="\033[0;32m" # Green

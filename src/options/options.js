@@ -11,7 +11,7 @@ const saveOptions = () => {
     );
   }
 
-  browserAPI.storage.sync.get({ preferredProviderList: null }, currentOptions => {
+  browserAPI.storage.sync.get({preferredProviderList: null}, currentOptions => {
     if (!arrayEqual(currentOptions.preferredProviderList, options.preferredProviderList)) {
       clearTransientLyrics(() => {
         saveOptionsToStorage(options);
@@ -51,9 +51,9 @@ const getOptionsFromForm = () => {
 // Function to save options to Chrome storage
 const saveOptionsToStorage = options => {
   browserAPI.storage.sync.set(options, () => {
-    browserAPI.tabs.query({ url: "https://music.youtube.com/*" }, tabs => {
+    browserAPI.tabs.query({url: "https://music.youtube.com/*"}, tabs => {
       tabs.forEach(tab => {
-        browserAPI.tabs.sendMessage(tab.id, { action: "updateSettings", settings: options });
+        browserAPI.tabs.sendMessage(tab.id, {action: "updateSettings", settings: options});
       });
     });
   });
@@ -92,7 +92,7 @@ const showAlert = message => {
 
 // Function to clear transient lyrics
 const clearTransientLyrics = callback => {
-  browserAPI.tabs.query({ url: "https://music.youtube.com/*" }, tabs => {
+  browserAPI.tabs.query({url: "https://music.youtube.com/*"}, tabs => {
     if (tabs.length === 0) {
       updateCacheInfo();
       showAlert("Cache cleared successfully!");
@@ -102,7 +102,7 @@ const clearTransientLyrics = callback => {
 
     let completedTabs = 0;
     tabs.forEach(tab => {
-      browserAPI.tabs.sendMessage(tab.id, { action: "clearCache" }, response => {
+      browserAPI.tabs.sendMessage(tab.id, {action: "clearCache"}, response => {
         completedTabs++;
         if (completedTabs === tabs.length) {
           if (response?.success) {
@@ -138,7 +138,7 @@ const subscribeToCacheInfo = () => {
 
   browserAPI.storage.onChanged.addListener((changes, area) => {
     if (area === "sync" && changes.cacheInfo) {
-      updateCacheInfo({ cacheInfo: changes.cacheInfo.newValue });
+      updateCacheInfo({cacheInfo: changes.cacheInfo.newValue});
     }
   });
 };
@@ -149,7 +149,7 @@ const updateCacheInfo = items => {
     showAlert("Nothing to clear!");
     return;
   }
-  const cacheInfo = items.cacheInfo || { count: 0, size: 0 };
+  const cacheInfo = items.cacheInfo || {count: 0, size: 0};
   const cacheCount = document.getElementById("lyrics-count");
   const cacheSize = document.getElementById("cache-size");
 

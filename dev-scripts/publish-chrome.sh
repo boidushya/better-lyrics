@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # bash script to publish the chrome version of the package to chrome store
-# Usage: bash scripts/publish-chrome.sh
+# Usage: bash dev-scripts/publish-chrome.sh
 # Requires: npm install -g chrome-webstore-upload-cli
 
 npm install -g chrome-webstore-upload-cli
