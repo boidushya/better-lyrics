@@ -165,6 +165,7 @@ BetterLyrics.Settings = {
             });
         }
       } else if (request.action === "updateSettings") {
+        BetterLyrics.Translation.clearCache();
         BetterLyrics.Utils.setUpLog();
         BetterLyrics.Settings.hideCursorOnIdle();
         BetterLyrics.Settings.handleSettings();

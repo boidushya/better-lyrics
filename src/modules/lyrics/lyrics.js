@@ -71,6 +71,7 @@ BetterLyrics.Lyrics = {
       BetterLyrics.App.lastLoadedVideoId !== videoId
     ) {
       BetterLyrics.DOM.renderLoader(); // Only render the loader after we've checked the cache & we're not switching between audio and video
+      BetterLyrics.Translation.clearCache();
       matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId);
     } else {
       BetterLyrics.Utils.log("Switching between audio/video: Skipping Loader");
@@ -283,8 +284,6 @@ BetterLyrics.Lyrics = {
    * @param {Array} data.lyrics - Array of lyric lines
    */
   processLyrics: function (data) {
-    BetterLyrics.App.lang = data.language;
-
     const lyrics = data.lyrics;
     if (!lyrics || lyrics.length === 0) {
       throw new Error(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
@@ -353,7 +352,7 @@ BetterLyrics.Lyrics = {
     // }
 
     const langPromise = new Promise(async resolve => {
-      if (!BetterLyrics.App.lang || BetterLyrics.App.lang === "") {
+      if (!data.language) {
         let text = "";
         let lineCount = 0;
         for (let item of lyrics) {
@@ -364,12 +363,14 @@ BetterLyrics.Lyrics = {
           }
         }
         const translationResult = await BetterLyrics.Translation.translateText(text, "en");
-        BetterLyrics.App.lang = translationResult.originalLanguage;
+        const lang = translationResult?.originalLanguage || "";
         BetterLyrics.Utils.log(
-          "[BetterLyrics] Lang was missing. Determined it is: " + translationResult.originalLanguage
+          "[BetterLyrics] Lang was missing. Determined it is: " + lang
         );
+        return resolve(lang);
+      } else {
+        resolve();
       }
-      return resolve(BetterLyrics.App.lang);
     });
     /**
      *
@@ -537,8 +538,31 @@ BetterLyrics.Lyrics = {
         lyricElement.style.cursor = "unset";
       }
 
+      // Synchronously check cache and inject if found
+      const romanizedResult = BetterLyrics.Translation.getRomanizationFromCache(item.words);
+      if (romanizedResult) {
+        let romanizedLine = document.createElement("div");
+        romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
+        romanizedLine.textContent = "\n" + romanizedResult;
+        lyricElement.appendChild(romanizedLine);
+        lyricElement.dataset.romanized = "true";
+        BetterLyrics.DOM.lyricsElementAdded();
+      }
+
+      const translatedResult = BetterLyrics.Translation.getTranslationFromCache(item.words, BetterLyrics.Translation.currentTranslationLanguage);
+      if (translatedResult) {
+        let translatedLine = document.createElement("div");
+        translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
+        translatedLine.textContent = "\n" + translatedResult.translatedText;
+        lyricElement.appendChild(translatedLine);
+        lyricElement.dataset.translated = "true";
+        BetterLyrics.DOM.lyricsElementAdded();
+      }
+
       langPromise.then(source_language => {
         BetterLyrics.Translation.onRomanizationEnabled(async () => {
+          if (lyricElement.dataset.romanized === "true") return;
+
           let romanizedLine = document.createElement("div");
           romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
 
@@ -550,7 +574,7 @@ BetterLyrics.Lyrics = {
             }
             if (item.words.trim() !== "♪" && item.words.trim() !== "") {
               const result = await BetterLyrics.Translation.translateTextIntoRomaji(usableLang, item.words);
-              if (result && result.trim() !== "") {
+              if (result) {
                 romanizedLine.textContent = result ? "\n" + result : "\n";
                 lyricElement.appendChild(romanizedLine);
                 BetterLyrics.DOM.lyricsElementAdded();
@@ -559,6 +583,8 @@ BetterLyrics.Lyrics = {
           }
         });
         BetterLyrics.Translation.onTranslationEnabled(async items => {
+          if (lyricElement.dataset.translated === "true" && (items.translationLanguage || "en") === BetterLyrics.Translation.currentTranslationLanguage) return;
+
           let translatedLine = document.createElement("div");
           translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
 
@@ -568,7 +594,13 @@ BetterLyrics.Lyrics = {
             if (item.words.trim() !== "♪" && item.words.trim() !== "") {
               const result = await BetterLyrics.Translation.translateText(item.words, target_language);
 
-              if (result && result.originalLanguage !== target_language) {
+              if (result) {
+                // Remove existing translated line if language changed
+                const existingTranslatedLine = lyricElement.querySelector("." + BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
+                if (existingTranslatedLine) {
+                  existingTranslatedLine.remove();
+                }
+
                 translatedLine.textContent = "\n" + result.translatedText;
                 lyricElement.appendChild(translatedLine);
                 BetterLyrics.DOM.lyricsElementAdded();

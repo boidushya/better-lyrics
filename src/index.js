@@ -21,8 +21,6 @@
  * @namespace BetterLyrics.App
  */
 BetterLyrics.App = {
-  /** @type {string} Current language setting */
-  lang: "en",
   /** @type {boolean} Whether lyrics are currently syncing with playback */
   areLyricsTicking: false,
   /** @type {LyricsData|null} Current lyric data object */
