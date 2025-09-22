@@ -350,11 +350,13 @@ BetterLyrics.DOM = {
     const cssFiles = ["src/css/ytmusic.css", "src/css/blyrics.css", "src/css/themesong.css"];
 
     let css = "";
-    const responses = await Promise.all(cssFiles.map(file =>
-      fetch(chrome.runtime.getURL(file), {
-        cache: "no-store",
-      })
-    ));
+    const responses = await Promise.all(
+      cssFiles.map(file =>
+        fetch(chrome.runtime.getURL(file), {
+          cache: "no-store",
+        })
+      )
+    );
 
     for (let i = 0; i < cssFiles.length; i++) {
       css += "/* " + cssFiles[i] + " */\n";

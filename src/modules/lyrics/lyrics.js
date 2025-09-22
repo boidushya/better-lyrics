@@ -531,7 +531,10 @@ BetterLyrics.Lyrics = {
             romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
 
             let isNonLatin = containsNonLatin(item.words);
-            if (BetterLyrics.Constants.romanizationLanguages.includes(source_language) || containsNonLatin(item.words)) {
+            if (
+              BetterLyrics.Constants.romanizationLanguages.includes(source_language) ||
+              containsNonLatin(item.words)
+            ) {
               let usableLang = source_language;
               if (isNonLatin) {
                 usableLang = "auto";
