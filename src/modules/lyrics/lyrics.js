@@ -128,14 +128,15 @@ BetterLyrics.Lyrics = {
       alwaysFetchMetadata: swappedVideoId,
     };
 
-    let ytLyricsPromise = BetterLyrics.LyricProviders.getLyrics(providerParameters, "yt-lyrics")
-        .then((lyrics) => {
-          if (!BetterLyrics.App.areLyricsLoaded && lyrics) {
-            BetterLyrics.Utils.log("[BetterLyrics] Temporarily Using YT Music Lyrics while we wait for synced lyrics to load");
-            BetterLyrics.Lyrics.processLyrics(lyrics);
-          }
-          return lyrics;
-        });
+    let ytLyricsPromise = BetterLyrics.LyricProviders.getLyrics(providerParameters, "yt-lyrics").then(lyrics => {
+      if (!BetterLyrics.App.areLyricsLoaded && lyrics) {
+        BetterLyrics.Utils.log(
+          "[BetterLyrics] Temporarily Using YT Music Lyrics while we wait for synced lyrics to load"
+        );
+        BetterLyrics.Lyrics.processLyrics(lyrics);
+      }
+      return lyrics;
+    });
 
     try {
       let cubyLyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, "musixmatch-richsync");
@@ -535,31 +536,26 @@ BetterLyrics.Lyrics = {
       }
 
       langPromise.then(source_language => {
-        BetterLyrics.Translation.onRomanizationEnabled(
-          async () => {
-            let romanizedLine = document.createElement("div");
-            romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
+        BetterLyrics.Translation.onRomanizationEnabled(async () => {
+          let romanizedLine = document.createElement("div");
+          romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
 
-            let isNonLatin = containsNonLatin(item.words);
-            if (
-              BetterLyrics.Constants.romanizationLanguages.includes(source_language) ||
-              containsNonLatin(item.words)
-            ) {
-              let usableLang = source_language;
-              if (isNonLatin) {
-                usableLang = "auto";
-              }
-              if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-                const result = await BetterLyrics.Translation.translateTextIntoRomaji(usableLang, item.words);
-                if (result && result.trim() !== "") {
-                  romanizedLine.textContent = result ? "\n" + result : "\n";
-                  lyricElement.appendChild(romanizedLine);
-                  BetterLyrics.DOM.lyricsElementAdded();
-                }
+          let isNonLatin = containsNonLatin(item.words);
+          if (BetterLyrics.Constants.romanizationLanguages.includes(source_language) || containsNonLatin(item.words)) {
+            let usableLang = source_language;
+            if (isNonLatin) {
+              usableLang = "auto";
+            }
+            if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+              const result = await BetterLyrics.Translation.translateTextIntoRomaji(usableLang, item.words);
+              if (result && result.trim() !== "") {
+                romanizedLine.textContent = result ? "\n" + result : "\n";
+                lyricElement.appendChild(romanizedLine);
+                BetterLyrics.DOM.lyricsElementAdded();
               }
             }
           }
-        );
+        });
         BetterLyrics.Translation.onTranslationEnabled(async items => {
           let translatedLine = document.createElement("div");
           translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
