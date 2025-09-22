@@ -127,6 +127,16 @@ BetterLyrics.Lyrics = {
       sourceMap,
       alwaysFetchMetadata: swappedVideoId,
     };
+
+    let ytLyricsPromise = BetterLyrics.LyricProviders.getLyrics(providerParameters, "yt-lyrics")
+        .then((lyrics) => {
+          if (!BetterLyrics.App.areLyricsLoaded && lyrics) {
+            BetterLyrics.Utils.log("[BetterLyrics] Temporarily Using YT Music Lyrics while we wait for synced lyrics to load");
+            BetterLyrics.Lyrics.processLyrics(lyrics);
+          }
+          return lyrics;
+        });
+
     try {
       let cubyLyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, "musixmatch-richsync");
       if (cubyLyrics && cubyLyrics.album && cubyLyrics.album.length > 0 && album !== cubyLyrics.album) {
@@ -165,7 +175,7 @@ BetterLyrics.Lyrics = {
         lyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, provider);
 
         if (lyrics && lyrics.lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
-          let ytLyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, "yt-lyrics");
+          let ytLyrics = await ytLyricsPromise;
 
           if (ytLyrics !== null) {
             let lyricText = "";
@@ -548,28 +558,26 @@ BetterLyrics.Lyrics = {
                 }
               }
             }
-          },
-          async () => {
-            BetterLyrics.Translation.onTranslationEnabled(async items => {
-              let translatedLine = document.createElement("div");
-              translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
-
-              let target_language = items.translationLanguage || "en";
-
-              if (source_language !== target_language || containsNonLatin(item.words)) {
-                if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-                  const result = await BetterLyrics.Translation.translateText(item.words, target_language);
-
-                  if (result && result.originalLanguage !== target_language) {
-                    translatedLine.textContent = "\n" + result.translatedText;
-                    lyricElement.appendChild(translatedLine);
-                    BetterLyrics.DOM.lyricsElementAdded();
-                  }
-                }
-              }
-            });
           }
         );
+        BetterLyrics.Translation.onTranslationEnabled(async items => {
+          let translatedLine = document.createElement("div");
+          translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
+
+          let target_language = items.translationLanguage || "en";
+
+          if (source_language !== target_language || containsNonLatin(item.words)) {
+            if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+              const result = await BetterLyrics.Translation.translateText(item.words, target_language);
+
+              if (result && result.originalLanguage !== target_language) {
+                translatedLine.textContent = "\n" + result.translatedText;
+                lyricElement.appendChild(translatedLine);
+                BetterLyrics.DOM.lyricsElementAdded();
+              }
+            }
+          }
+        });
       });
 
       try {

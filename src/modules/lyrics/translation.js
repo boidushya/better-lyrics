@@ -42,12 +42,11 @@ BetterLyrics.Translation = {
       });
   },
 
-  onRomanizationEnabled: async function (callback, next = () => {}) {
+  onRomanizationEnabled: function (callback) {
     BetterLyrics.Storage.getStorage(["isRomanizationEnabled"], async items => {
       if (items.isRomanizationEnabled) {
-        await callback(items);
+        callback(items);
       }
-      await next();
     });
   },
 
