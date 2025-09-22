@@ -650,17 +650,17 @@ BetterLyrics.DOM = {
               scrollTime = 200;
             }
 
-            lyricsElement.style.transition = "top 0s ease-in-out 0s";
-            lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
+            lyricsElement.style.transition = "transform 0s ease-in-out 0s";
+            lyricsElement.style.transform = `translate(0px, ${-(scrollTop - scrollPos)}px)`;
             reflow(lyricsElement);
             if (scrollTime < 700) {
-              lyricsElement.style.transitionProperty = "top";
+              lyricsElement.style.transitionProperty = "transform";
               lyricsElement.style.transitionTimingFunction = "ease";
             } else {
               lyricsElement.style.transition = "";
             }
             lyricsElement.style.transitionDuration = `${scrollTime}ms`;
-            lyricsElement.style.top = "0px";
+            lyricsElement.style.transform = "translate(0px, 0px)";
 
             BetterLyrics.DOM.nextScrollAllowedTime = scrollTime + Date.now() + 20;
           }

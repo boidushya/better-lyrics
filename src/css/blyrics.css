@@ -145,7 +145,7 @@
 	line-height: var(--blyrics-line-height);
 	position: relative !important;
 	z-index: 1;
-	transition: top var(--blyrics-lyric-scroll-duration)
+	transition: transform var(--blyrics-lyric-scroll-duration)
 		var(--blyrics-lyric-scroll-timing-function) 0s;
 	padding-top: 2rem;
 	padding-bottom: 0;
