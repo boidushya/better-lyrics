@@ -1,5 +1,34 @@
 {
 	"devDependencies": {
-		"@biomejs/biome": "2.0.4"
+		"@biomejs/biome": "2.0.4",
+		"typescript": "^5.9.2"
+	},
+	"name": "better-lyrics",
+	"version": "2.0.3",
+	"description": "Enhance YouTube Music with beautiful time-synced lyrics, multilingual support, real-time translations and more",
+	"main": "index.js",
+	"scripts": {
+		"dev": "extension dev",
+		"start": "extension start",
+		"build": "extension build"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/boidushya/better-lyrics.git"
+	},
+	"keywords": [
+		"youtube-music",
+		"chrome-extension"
+	],
+	"author": "boidu",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/boidushya/better-lyrics/issues"
+	},
+	"homepage": "https://github.com/boidushya/better-lyrics#readme",
+	"dependencies": {
+		"codemirror": "^5.65.20",
+		"extension": "^2.1.3",
+		"sortablejs": "^1.15.6"
 	}
 }

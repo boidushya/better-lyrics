@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # bash script to publish the firefox version of the package to firefox store
-# Usage: bash scripts/publish-firefox.sh
+# Usage: bash dev-scripts/publish-firefox.sh
 # Requires: web-ext
 
 npm install -g web-ext

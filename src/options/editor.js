@@ -1,3 +1,5 @@
+import {browser} from "../../extension.config";
+
 let saveTimeout;
 let editor;
 let currentThemeName = null;
@@ -84,14 +86,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (strategy === "local") {
         // Use local storage for large content
-        await browserAPI.storage.local.set({ customCSS: css });
+        await browserAPI.storage.local.set({customCSS: css});
         // Clear any sync storage CSS to avoid conflicts
         await browserAPI.storage.sync.remove("customCSS");
         // Store a flag indicating we're using local storage
-        await browserAPI.storage.sync.set({ cssStorageType: "local" });
+        await browserAPI.storage.sync.set({cssStorageType: "local"});
       } else {
         // Use sync storage for smaller content
-        await browserAPI.storage.sync.set({ customCSS: css, cssStorageType: "sync" });
+        await browserAPI.storage.sync.set({customCSS: css, cssStorageType: "sync"});
         // Clear any local storage CSS to avoid conflicts
         await browserAPI.storage.local.remove("customCSS");
       }
@@ -103,24 +105,24 @@ document.addEventListener("DOMContentLoaded", () => {
         currentThemeName = null;
       }
 
-      return { success: true, strategy };
+      return {success: true, strategy};
     } catch (error) {
       console.error("Storage save attempt failed:", error);
 
       if (error.message?.includes("quota") && retryCount < MAX_RETRY_ATTEMPTS) {
         // Quota exceeded, try with local storage
         try {
-          await browserAPI.storage.local.set({ customCSS: css });
+          await browserAPI.storage.local.set({customCSS: css});
           await browserAPI.storage.sync.remove("customCSS");
-          await browserAPI.storage.sync.set({ cssStorageType: "local" });
-          return { success: true, strategy: "local", wasRetry: true };
+          await browserAPI.storage.sync.set({cssStorageType: "local"});
+          return {success: true, strategy: "local", wasRetry: true};
         } catch (localError) {
           console.error("Local storage fallback failed:", localError);
-          return { success: false, error: localError };
+          return {success: false, error: localError};
         }
       }
 
-      return { success: false, error };
+      return {success: false, error};
     }
   };
 
@@ -244,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
   editor.on("keydown", (cm, event) => {
     const isInvalidKey = invalidKeys.includes(event.key);
     if (!cm.state.completionActive && !isInvalidKey) {
-      cm.showHint({ completeSingle: false });
+      cm.showHint({completeSingle: false});
     }
   });
 
@@ -289,7 +291,7 @@ ${selectedTheme.css}
 `;
       editor.setValue(themeContent); //fires editor.on("change");
 
-      browserAPI.storage.sync.set({ themeName: selectedTheme.name });
+      browserAPI.storage.sync.set({themeName: selectedTheme.name});
       currentThemeName = selectedTheme.name;
       isUserTyping = false;
       saveToStorage(true);
@@ -307,11 +309,11 @@ const generateDefaultFilename = () => {
 };
 
 const saveCSSToFile = (css, defaultFilename) => {
-  browserAPI.permissions.contains({ permissions: ["downloads"] }, hasPermission => {
+  browserAPI.permissions.contains({permissions: ["downloads"]}, hasPermission => {
     if (hasPermission) {
       downloadFile(css, defaultFilename);
     } else {
-      browserAPI.permissions.request({ permissions: ["downloads"] }, granted => {
+      browserAPI.permissions.request({permissions: ["downloads"]}, granted => {
         if (granted) {
           downloadFile(css, defaultFilename);
         } else {
@@ -323,7 +325,7 @@ const saveCSSToFile = (css, defaultFilename) => {
 };
 
 const downloadFile = (css, defaultFilename) => {
-  const blob = new Blob([css], { type: "text/css" });
+  const blob = new Blob([css], {type: "text/css"});
   const url = URL.createObjectURL(blob);
 
   if (browserAPI.downloads) {
@@ -348,7 +350,7 @@ const downloadFile = (css, defaultFilename) => {
 };
 
 const fallbackSaveMethod = (css, defaultFilename) => {
-  const blob = new Blob([css], { type: "text/css" });
+  const blob = new Blob([css], {type: "text/css"});
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");

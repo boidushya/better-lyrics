@@ -57,7 +57,7 @@ window.fetch = async function (request, init) {
             requestJson = JSON.parse(awaitedTexts[0]);
           } catch (e) {
             console.error("Better Lyrics: Error parsing request JSON for URL:", urlString, e);
-            requestJson = { error: "Failed to parse request JSON" };
+            requestJson = {error: "Failed to parse request JSON"};
           }
           try {
             responseJson = JSON.parse(awaitedTexts[1]);
@@ -67,7 +67,7 @@ window.fetch = async function (request, init) {
               clonedResponseForJson.url || urlString,
               e
             );
-            responseJson = { error: "Failed to parse response JSON" };
+            responseJson = {error: "Failed to parse response JSON"};
           }
 
           const event = new CustomEvent("blyrics-send-response", {

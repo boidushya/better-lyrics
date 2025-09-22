@@ -41,7 +41,6 @@
         "dist/**/*",
         "src/options.html",
         ".all-contributorsrc",
-        "src/libs/codemirror/**/*",
         "STYLING.md"
       ],
       "linter": {
