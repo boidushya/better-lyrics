@@ -337,6 +337,7 @@ BetterLyrics.LyricProviders = {
       BetterLyrics.Utils.log("Only found auto generated lyrics for youtube captions, not using", audioTrackData);
       providerParameters.sourceMap.get("yt-captions").filled = true;
       providerParameters.sourceMap.get("yt-captions").lyricSourceResult = null;
+      return;
     }
 
     captionsUrl = new URL(captionsUrl);
