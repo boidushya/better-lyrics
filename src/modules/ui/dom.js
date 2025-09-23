@@ -159,7 +159,6 @@ BetterLyrics.DOM = {
       loaderWrapper.setAttribute("active", "");
       loaderWrapper.removeAttribute("no-sync-available");
 
-
       if (small) {
         loaderWrapper.setAttribute("small-loader", "");
       } else {
@@ -206,11 +205,14 @@ BetterLyrics.DOM = {
           BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_TRANSITION_ENDED);
         });
 
-        BetterLyrics.App.loaderAnimationEndTimeout = setTimeout(() => {
-          loaderWrapper.dataset.animatingOut = false;
-          BetterLyrics.DOM.loaderMayBeActive = false;
-          BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_ANIMATION_END_FAILED);
-        }, 1000 + toMs(loaderWrapper.computedStyleMap().get("transition-delay")));
+        BetterLyrics.App.loaderAnimationEndTimeout = setTimeout(
+          () => {
+            loaderWrapper.dataset.animatingOut = false;
+            BetterLyrics.DOM.loaderMayBeActive = false;
+            BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_ANIMATION_END_FAILED);
+          },
+          1000 + toMs(loaderWrapper.computedStyleMap().get("transition-delay"))
+        );
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
