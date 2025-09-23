@@ -18,6 +18,7 @@ BetterLyrics.Lyrics = {
    * Handles caching, API requests, and fallback mechanisms.
    *
    * @param {PlayerDetails} detail - Song and player details
+   * @param signal {AbortSignal}
    */
   createLyrics: async function (detail, signal) {
     let song = detail.song;
@@ -173,6 +174,9 @@ BetterLyrics.Lyrics = {
         // Provider is disabled
         continue;
       }
+      if (signal.aborted) {
+        return;
+      }
 
       try {
         lyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, provider);
@@ -258,6 +262,9 @@ BetterLyrics.Lyrics = {
     lyrics.videoId = providerParameters.videoId;
 
     BetterLyrics.App.lastLoadedVideoId = detail.videoId;
+    if (signal.aborted) {
+      return;
+    }
     this.cacheAndProcessLyrics(cacheKey, lyrics);
   },
 
