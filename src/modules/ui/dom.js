@@ -653,7 +653,7 @@ BetterLyrics.DOM = {
             lyricsElement.style.transition = "transform 0s ease-in-out 0s";
             lyricsElement.style.transform = `translate(0px, ${-(scrollTop - scrollPos)}px)`;
             reflow(lyricsElement);
-            if (scrollTime < 700) {
+            if (scrollTime < 500) {
               lyricsElement.style.transitionProperty = "transform";
               lyricsElement.style.transitionTimingFunction = "ease";
             } else {
