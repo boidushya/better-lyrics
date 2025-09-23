@@ -140,8 +140,10 @@ BetterLyrics.DOM = {
   /**
    * Renders and displays the loading spinner for lyrics fetching.
    */
-  renderLoader: () => {
-    BetterLyrics.DOM.cleanup();
+  renderLoader: (small = false) => {
+    if (!small) {
+      BetterLyrics.DOM.cleanup();
+    }
     BetterLyrics.DOM.loaderMayBeActive = true;
     try {
       clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
@@ -150,19 +152,28 @@ BetterLyrics.DOM = {
       if (!loaderWrapper) {
         loaderWrapper = document.createElement("div");
         loaderWrapper.id = BetterLyrics.Constants.LYRICS_LOADER_ID;
-      } else if (loaderWrapper.hasAttribute("active")) {
-        return;
       }
 
-      tabRenderer.prepend(loaderWrapper);
-      loaderWrapper.style.display = "inline-block !important";
+      let wasActive = loaderWrapper.hasAttribute("active");
+
       loaderWrapper.setAttribute("active", "");
-      loaderWrapper.hidden = false;
-      loaderWrapper.scrollIntoView({
-        behavior: "instant",
-        block: "start",
-        inline: "start",
-      });
+
+      if (small) {
+        loaderWrapper.setAttribute("small-loader", "");
+      } else {
+        loaderWrapper.removeAttribute("small-loader");
+      }
+
+      if (!wasActive) {
+        tabRenderer.prepend(loaderWrapper);
+        loaderWrapper.hidden = false;
+        loaderWrapper.style.display = "inline-block !important";
+        loaderWrapper.scrollIntoView({
+          behavior: "instant",
+          block: "start",
+          inline: "start",
+        });
+      }
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }

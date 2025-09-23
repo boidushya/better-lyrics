@@ -304,7 +304,8 @@
 	position: relative;
 	transition:
 		height 0.2s,
-		opacity 0.2s;
+		opacity 0.2s,
+		margin-top 0.2s;
 }
 
 #blyrics-loader:before {
@@ -333,9 +334,18 @@
 	z-index: 1;
 }
 
+#blyrics-loader[small-loader][active]  {
+	margin-top: 5rem;
+	height: 5rem;
+}
+
 #blyrics-loader:not([active]) {
 	height: 0;
 	opacity: 0;
+}
+
+#blyrics-loader[small-loader]:after {
+	content: "Still searching for synced lyrics...";
 }
 
 #tab-renderer[page-type="MUSIC_PAGE_TYPE_TRACK_LYRICS"]

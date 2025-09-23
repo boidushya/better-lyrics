@@ -136,7 +136,7 @@ BetterLyrics.Lyrics = {
         BetterLyrics.Utils.log(
           "[BetterLyrics] Temporarily Using YT Music Lyrics while we wait for synced lyrics to load"
         );
-        BetterLyrics.Lyrics.processLyrics(lyrics);
+        BetterLyrics.Lyrics.processLyrics(lyrics, true);
       }
       return lyrics;
     });
@@ -288,10 +288,11 @@ BetterLyrics.Lyrics = {
    * Sets language settings, validates data, and initiates DOM injection.
    *
    * @param {Object} data - Processed lyrics data
+   * @param keepLoaderVisible {boolean}
    * @param {string} data.language - Language code for the lyrics
    * @param {Array} data.lyrics - Array of lyric lines
    */
-  processLyrics: function (data) {
+  processLyrics: function (data, keepLoaderVisible = false) {
     const lyrics = data.lyrics;
     if (!lyrics || lyrics.length === 0) {
       throw new Error(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
@@ -311,7 +312,7 @@ BetterLyrics.Lyrics = {
       BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_NOT_DISABLED_LOG);
     }
 
-    BetterLyrics.Lyrics.injectLyrics(data);
+    BetterLyrics.Lyrics.injectLyrics(data, keepLoaderVisible);
   },
 
   /**
@@ -319,11 +320,12 @@ BetterLyrics.Lyrics = {
    * Creates the complete lyrics interface including synchronization support.
    *
    * @param {Object} data - Complete lyrics data object
+   * @param keepLoaderVisible {boolean}
    * @param {Array} data.lyrics - Array of lyric lines with timing
    * @param {string} [data.source] - Source attribution for lyrics
    * @param {string} [data.sourceHref] - URL for source link
    */
-  injectLyrics: function (data) {
+  injectLyrics: function (data, keepLoaderVisible = false) {
     const lyrics = data.lyrics;
     BetterLyrics.DOM.cleanup();
     let lyricsWrapper = BetterLyrics.DOM.createLyricsWrapper();
@@ -334,7 +336,11 @@ BetterLyrics.Lyrics = {
     try {
       lyricsContainer.className = BetterLyrics.Constants.LYRICS_CLASS;
       lyricsWrapper.appendChild(lyricsContainer);
-      BetterLyrics.DOM.flushLoader();
+      if (keepLoaderVisible) {
+        BetterLyrics.DOM.renderLoader(true);
+      } else {
+        BetterLyrics.DOM.flushLoader();
+      }
 
       lyricsWrapper.removeAttribute("is-empty");
 
