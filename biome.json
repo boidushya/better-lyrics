@@ -38,6 +38,7 @@
       "includes": [
         "www/.next/**/*",
         "node_modules/**/*",
+        "dist/**/*",
         "src/options.html",
         ".all-contributorsrc",
         "src/libs/codemirror/**/*",
