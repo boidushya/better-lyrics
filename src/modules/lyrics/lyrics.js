@@ -336,11 +336,6 @@ BetterLyrics.Lyrics = {
     try {
       lyricsContainer.className = BetterLyrics.Constants.LYRICS_CLASS;
       lyricsWrapper.appendChild(lyricsContainer);
-      if (keepLoaderVisible) {
-        BetterLyrics.DOM.renderLoader(true);
-      } else {
-        BetterLyrics.DOM.flushLoader();
-      }
 
       lyricsWrapper.removeAttribute("is-empty");
 
@@ -359,11 +354,11 @@ BetterLyrics.Lyrics = {
 
     const allZero = lyrics.every(item => item.startTimeMs === "0" || item.startTimeMs === 0);
 
-    // Disabled since we want to show the last line even if it's nothing as that ends syncing for the second last line
-    //
-    // if (lyrics[lyrics.length - 1].words === "") {
-    //   lyrics.pop();
-    // }
+    if (keepLoaderVisible) {
+      BetterLyrics.DOM.renderLoader(true);
+    } else {
+      BetterLyrics.DOM.flushLoader(allZero && lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT);
+    }
 
     const langPromise = new Promise(async resolve => {
       if (!data.language) {

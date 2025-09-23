@@ -174,6 +174,7 @@ BetterLyrics.LyricProviders = {
         source: "LRCLib",
         sourceHref: "https://lrclib.net",
         musicVideoSynced: false,
+        cacheAllowed: false,
       };
     }
 
@@ -259,6 +260,7 @@ BetterLyrics.LyricProviders = {
           source: "LRCLib",
           sourceHref: "https://lrclib.net",
           musicVideoSynced: false,
+          cacheAllowed: false,
         };
       }
     }
@@ -283,6 +285,7 @@ BetterLyrics.LyricProviders = {
         source: sourceText,
         sourceHref: "",
         musicVideoSynced: false,
+        cacheAllowed: false,
       };
     }
 

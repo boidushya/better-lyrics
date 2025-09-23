@@ -157,6 +157,8 @@ BetterLyrics.DOM = {
       let wasActive = loaderWrapper.hasAttribute("active");
 
       loaderWrapper.setAttribute("active", "");
+      loaderWrapper.removeAttribute("no-sync-available");
+
 
       if (small) {
         loaderWrapper.setAttribute("small-loader", "");
@@ -182,9 +184,15 @@ BetterLyrics.DOM = {
   /**
    * Removes the loading spinner with animation and cleanup.
    */
-  flushLoader: () => {
+  flushLoader: (showNoSyncAvailable = false) => {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
+
+      if (showNoSyncAvailable) {
+        loaderWrapper.setAttribute("small-loader", "");
+        reflow(loaderWrapper);
+        loaderWrapper.setAttribute("no-sync-available", "");
+      }
       if (loaderWrapper?.hasAttribute("active")) {
         clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
         loaderWrapper.dataset.animatingOut = true;
@@ -202,7 +210,7 @@ BetterLyrics.DOM = {
           loaderWrapper.dataset.animatingOut = false;
           BetterLyrics.DOM.loaderMayBeActive = false;
           BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_ANIMATION_END_FAILED);
-        }, 1000);
+        }, 1000 + toMs(loaderWrapper.computedStyleMap().get("transition-delay")));
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);

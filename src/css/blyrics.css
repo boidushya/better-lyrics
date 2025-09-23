@@ -302,13 +302,14 @@
 	justify-content: center;
 	opacity: 1;
 	position: relative;
+	max-height: 100%;
 	transition:
 		height 0.2s,
 		opacity 0.2s,
-		margin-top 0.2s;
+		padding-top 0.2s;
 }
 
-#blyrics-loader:before {
+#blyrics-loader:not([no-sync-available]):before {
 	animation: blyrics-spin 1s linear infinite;
 	background: url(https://better-lyrics.boidu.dev/icon-512.png);
 	background-position: 50%;
@@ -321,7 +322,6 @@
 }
 
 #blyrics-loader:after {
-	animation: blyrics-pulse 1.5s infinite;
 	color: var(--blyrics-ui-text-color);
 	content: "Better Lyrics is searching for lyrics...";
 	font-family: var(--blyrics-font-family);
@@ -334,8 +334,12 @@
 	z-index: 1;
 }
 
+#blyrics-loader:not([no-sync-available]):after {
+	animation: blyrics-pulse 1.5s infinite;
+}
+
 #blyrics-loader[small-loader][active]  {
-	margin-top: 5rem;
+	padding-top: 5rem;
 	height: 5rem;
 }
 
@@ -346,6 +350,19 @@
 
 #blyrics-loader[small-loader]:after {
 	content: "Still searching for synced lyrics...";
+}
+
+#blyrics-loader[no-sync-available] {
+	max-height: 5rem;
+	transition:
+		height 0.2s linear 5s,
+		opacity 0.2s linear 5s,
+		padding-top 0.2s linear 5s,
+		max-height 0.2s linear 0s;
+}
+
+#blyrics-loader[no-sync-available]:after {
+	content: "Better Lyrics could not find synced lyrics";
 }
 
 #tab-renderer[page-type="MUSIC_PAGE_TYPE_TRACK_LYRICS"]
