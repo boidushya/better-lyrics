@@ -19,7 +19,7 @@ BetterLyrics.Lyrics = {
    *
    * @param {PlayerDetails} detail - Song and player details
    */
-  createLyrics: async function (detail) {
+  createLyrics: async function (detail, signal) {
     let song = detail.song;
     let artist = detail.artist;
     let videoId = detail.videoId;
@@ -127,6 +127,7 @@ BetterLyrics.Lyrics = {
       album,
       sourceMap,
       alwaysFetchMetadata: swappedVideoId,
+      signal,
     };
 
     let ytLyricsPromise = BetterLyrics.LyricProviders.getLyrics(providerParameters, "yt-lyrics").then(lyrics => {

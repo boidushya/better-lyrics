@@ -86,6 +86,7 @@ BetterLyrics.LyricProviders = {
    * @property {string | null} album
    * @property {Map<string, LyricSource>} sourceMap
    * @property {boolean} alwaysFetchMetadata
+   * @property {AbortSignal} signal
    */
 
   /**
@@ -102,7 +103,9 @@ BetterLyrics.LyricProviders = {
     url.searchParams.append("album", providerParameters.album);
     url.searchParams.append("alwaysFetchMetadata", String(providerParameters.alwaysFetchMetadata));
 
-    let response = await fetch(url, { signal: AbortSignal.timeout(10000) }).then(r => r.json());
+    let response = await fetch(url, {
+      signal: AbortSignal.any([providerParameters.signal, AbortSignal.timeout(10000)]),
+    }).then(r => r.json());
     if (response.album) {
       BetterLyrics.Utils.log("Found Album: " + response.album);
     }
@@ -189,7 +192,9 @@ BetterLyrics.LyricProviders = {
     url.searchParams.append("a", providerParameters.artist);
     url.searchParams.append("d", providerParameters.duration);
 
-    const response = await fetch(url.toString(), { signal: AbortSignal.timeout(10000) });
+    const response = await fetch(url.toString(), {
+      signal: AbortSignal.any([providerParameters.signal, AbortSignal.timeout(10000)]),
+    });
 
     if (!response.ok) {
       return null;
@@ -225,7 +230,7 @@ BetterLyrics.LyricProviders = {
       headers: {
         "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER,
       },
-      signal: AbortSignal.timeout(10000),
+      signal: AbortSignal.any([providerParameters.signal, AbortSignal.timeout(10000)]),
     });
 
     if (!response.ok) {
@@ -339,6 +344,7 @@ BetterLyrics.LyricProviders = {
 
     let captionData = await fetch(captionsUrl, {
       method: "GET",
+      signal: AbortSignal.any([providerParameters.signal, AbortSignal.timeout(10000)]),
     }).then(response => response.json());
 
     /**

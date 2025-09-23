@@ -35,6 +35,8 @@ BetterLyrics.App = {
   lastVideoDetails: null,
   /** @type {Promise|null} Promise for ongoing lyric injection process */
   lyricInjectionPromise: null,
+  /** @type {AbortController|null} Abort controller for lyric fetching */
+  lyricAbortController: null,
   /** @type {boolean} Whether lyric injection is queued */
   queueLyricInjection: false,
   /** @type {boolean} Whether album art injection is queued */
@@ -87,12 +89,17 @@ BetterLyrics.App = {
    */
   handleModifications: function (detail) {
     if (BetterLyrics.App.lyricInjectionPromise) {
+      BetterLyrics.App.lyricAbortController.abort("New song is being loaded");
       BetterLyrics.App.lyricInjectionPromise.then(() => {
         BetterLyrics.App.lyricInjectionPromise = null;
         BetterLyrics.App.handleModifications(detail);
       });
     } else {
-      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(detail)
+      BetterLyrics.App.lyricAbortController = new AbortController();
+      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(
+        detail,
+        BetterLyrics.App.lyricAbortController.signal
+      )
         .then(() => {
           return BetterLyrics.DOM.tickLyrics(detail.currentTime, Date.now(), detail.playing);
         })
