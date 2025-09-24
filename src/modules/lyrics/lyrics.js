@@ -577,7 +577,7 @@ BetterLyrics.Lyrics = {
           let isNonLatin = containsNonLatin(item.words);
           if (BetterLyrics.Constants.romanizationLanguages.includes(source_language) || containsNonLatin(item.words)) {
             let usableLang = source_language;
-            if (isNonLatin) {
+            if (isNonLatin && !BetterLyrics.Constants.romanizationLanguages.includes(source_language)) {
               usableLang = "auto";
             }
             if (item.words.trim() !== "♪" && item.words.trim() !== "") {
