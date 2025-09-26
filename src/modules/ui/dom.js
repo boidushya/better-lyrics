@@ -205,13 +205,18 @@ BetterLyrics.DOM = {
           BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_TRANSITION_ENDED);
         });
 
+        let timeout = 1000;
+        let transitionDelay = window.getComputedStyle(loaderWrapper).getPropertyValue("transition-delay");
+        if (transitionDelay) {
+          timeout += toMs(transitionDelay);
+        }
+        
         BetterLyrics.App.loaderAnimationEndTimeout = setTimeout(
           () => {
-            loaderWrapper.dataset.animatingOut = false;
+            loaderWrapper.dataset.animatingOut = String(false);
             BetterLyrics.DOM.loaderMayBeActive = false;
             BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_ANIMATION_END_FAILED);
-          },
-          1000 + toMs(loaderWrapper.computedStyleMap().get("transition-delay"))
+          }, timeout
         );
       }
     } catch (err) {
