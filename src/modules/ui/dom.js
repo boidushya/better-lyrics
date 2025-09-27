@@ -210,14 +210,12 @@ BetterLyrics.DOM = {
         if (transitionDelay) {
           timeout += toMs(transitionDelay);
         }
-        
-        BetterLyrics.App.loaderAnimationEndTimeout = setTimeout(
-          () => {
-            loaderWrapper.dataset.animatingOut = String(false);
-            BetterLyrics.DOM.loaderMayBeActive = false;
-            BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_ANIMATION_END_FAILED);
-          }, timeout
-        );
+
+        BetterLyrics.App.loaderAnimationEndTimeout = setTimeout(() => {
+          loaderWrapper.dataset.animatingOut = String(false);
+          BetterLyrics.DOM.loaderMayBeActive = false;
+          BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_ANIMATION_END_FAILED);
+        }, timeout);
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
