@@ -16,8 +16,7 @@
     }
   },
   "host_permissions": [
-    "*://music.youtube.com/*",
-    "*://lyrics.api.dacubeking.com/*"
+    "*://music.youtube.com/*"
   ],
   "permissions": [
     "storage"
