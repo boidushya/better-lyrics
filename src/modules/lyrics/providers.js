@@ -11,8 +11,8 @@ function handleTurnstile() {
     iframe.style.position = "fixed";
     iframe.style.bottom = "calc(20px + var(--ytmusic-player-bar-height))";
     iframe.style.right = "20px";
-    iframe.style.width = "300px";
-    iframe.style.height = "65px";
+    iframe.style.width = "0px";
+    iframe.style.height = "0px";
     iframe.style.border = "none";
     iframe.style.zIndex = "999999";
     document.body.appendChild(iframe);
