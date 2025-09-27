@@ -9,7 +9,7 @@ function handleTurnstile() {
     iframe.src = CUBEY_LYRICS_API_URL + "challenge";
 
     iframe.style.position = "fixed";
-    iframe.style.bottom = "20px";
+    iframe.style.bottom = "calc(20px + var(--ytmusic-player-bar-height))";
     iframe.style.right = "20px";
     iframe.style.width = "300px";
     iframe.style.height = "65px";
