@@ -1,13 +1,10 @@
 /**
  * Handles the Turnstile challenge by creating an iframe and returning a Promise.
  * The visibility of the iframe can be controlled for testing purposes.
- * @param {object} [options] - Configuration options.
- * @param {boolean} [options.visible=false] - If true, the iframe will be visible in the corner. Defaults to false.
  * @returns {Promise<string>} A promise that resolves with the Turnstile token.
  */
 function handleTurnstile() {
   return new Promise((resolve, reject) => {
-    // --- Create and style the iframe to be visible ---
     const iframe = document.createElement('iframe');
     iframe.src = CUBEY_LYRICS_API_URL + "challenge";
 
@@ -21,34 +18,32 @@ function handleTurnstile() {
     document.body.appendChild(iframe);
 
     const messageListener = (event) => {
-      // It's good practice to ensure the message comes from your iframe
       if (event.source !== iframe.contentWindow) {
         return;
       }
 
       switch (event.data.type) {
         case 'turnstile-token':
-          console.log('✅ Received Success Token:', event.data.token);
+          BetterLyrics.Utils.log('[BetterLyrics] ✅ Received Success Token:', event.data.token);
           cleanup();
           resolve(event.data.token);
           break;
 
         case 'turnstile-error':
-          console.error('❌ Received Challenge Error:', event.data.error);
+          console.error('[BetterLyrics] ❌ Received Challenge Error:', event.data.error);
           cleanup();
-          reject(new Error(`Turnstile challenge error: ${event.data.error}`));
+          reject(new Error(`[BetterLyrics] Turnstile challenge error: ${event.data.error}`));
           break;
 
         case 'turnstile-expired':
           console.warn('⚠️ Token expired. Resetting challenge.');
-          // If the iframe is visible, we'll reset. If not, we might just get a new one.
           iframe.contentWindow.postMessage({type: 'reset-turnstile'}, '*');
           break;
 
         case 'turnstile-timeout':
-          console.warn('⏳ Challenge timed out.');
+          console.warn('[BetterLyrics] ⏳ Challenge timed out.');
           cleanup();
-          reject(new Error('Turnstile challenge timed out.'));
+          reject(new Error('[BetterLyrics] Turnstile challenge timed out.'));
           break;
       }
     };
@@ -183,29 +178,29 @@ BetterLyrics.LyricProviders = {
           const nowInSeconds = Date.now() / 1000;
           return nowInSeconds > expirationTimeInSeconds;
         } catch (e) {
-          console.error("Error decoding JWT on client-side:", e);
+          console.error("[BetterLyrics] Error decoding JWT on client-side:", e);
           return true;
         }
       }
 
       if (forceNew) {
-        console.log('Forcing new token, removing any existing one.');
+        BetterLyrics.Utils.log('[BetterLyrics] Forcing new token, removing any existing one.');
         await browserAPI.storage.local.remove('jwtToken');
       } else {
         const storedData = await browserAPI.storage.local.get('jwtToken');
         if (storedData.jwtToken) {
           if (isJwtExpired(storedData.jwtToken)) {
-            console.log('Local JWT has expired. Removing and requesting a new one.');
+            BetterLyrics.Utils.log('[BetterLyrics]Local JWT has expired. Removing and requesting a new one.');
             await browserAPI.storage.local.remove('jwtToken');
           } else {
-            console.log('🔑 Using valid, non-expired JWT for bypass.');
+            BetterLyrics.Utils.log('[BetterLyrics] 🔑 Using valid, non-expired JWT for bypass.');
             return storedData.jwtToken;
           }
         }
       }
 
       try {
-        console.log('No valid JWT found, initiating Turnstile challenge...');
+        BetterLyrics.Utils.log('[BetterLyrics] No valid JWT found, initiating Turnstile challenge...');
         const turnstileToken = await handleTurnstile({visible: false});
 
         const response = await fetch(CUBEY_LYRICS_API_URL + "verify-turnstile", {
@@ -223,11 +218,11 @@ BetterLyrics.LyricProviders = {
         if (!newJwt) throw new Error('No JWT returned from API after verification.');
 
         await browserAPI.storage.local.set({jwtToken: newJwt});
-        console.log('✅ New JWT received and stored.');
+        BetterLyrics.Utils.log('[BetterLyrics] ✅ New JWT received and stored.');
         return newJwt;
 
       } catch (error) {
-        console.error('Authentication process failed:', error);
+        console.error('[BetterLyrics] Authentication process failed:', error);
         return null;
       }
     }
@@ -257,10 +252,9 @@ BetterLyrics.LyricProviders = {
       });
     }
 
-    // --- MAIN LOGIC ---
     let jwt = await getAuthenticationToken();
     if (!jwt) {
-      console.error("Could not obtain an initial authentication token. Aborting lyrics fetch.");
+      console.error("[BetterLyrics] Could not obtain an initial authentication token. Aborting lyrics fetch.");
       // Mark sources as filled to prevent retries
       ["musixmatch-synced", "musixmatch-richsync", "lrclib-synced", "lrclib-plain"].forEach(source => {
         providerParameters.sourceMap.get(source).filled = true;
@@ -273,23 +267,23 @@ BetterLyrics.LyricProviders = {
     // If the request is forbidden (403), it's likely a WAF block.
     // Invalidate the current JWT and try one more time with a fresh one.
     if (response.status === 403) {
-      console.warn('Request was blocked (403 Forbidden), possibly by WAF. Forcing new Turnstile challenge.');
+      console.warn('[BetterLyrics] Request was blocked (403 Forbidden), possibly by WAF. Forcing new Turnstile challenge.');
       jwt = await getAuthenticationToken(true); // `true` forces a new token
 
       if (!jwt) {
-        console.error("Could not obtain a new token after WAF block. Aborting.");
+        console.error("[BetterLyrics] Could not obtain a new token after WAF block. Aborting.");
         ["musixmatch-synced", "musixmatch-richsync", "lrclib-synced", "lrclib-plain"].forEach(source => {
           providerParameters.sourceMap.get(source).filled = true;
         });
         return;
       }
 
-      console.log('Retrying API call with new token...');
+      BetterLyrics.Utils.log('[BetterLyrics] Retrying API call with new token...');
       response = await makeApiCall(jwt);
     }
 
     if (!response.ok) {
-      console.error(`API request failed with status: ${response.status}`);
+      console.error(`[BetterLyrics] API request failed with status: ${response.status}`);
       ["musixmatch-synced", "musixmatch-richsync", "lrclib-synced", "lrclib-plain"].forEach(source => {
         providerParameters.sourceMap.get(source).filled = true;
       });
@@ -300,7 +294,7 @@ BetterLyrics.LyricProviders = {
 
 
     if (responseData.album) {
-      BetterLyrics.Utils.log("Found Album: " + responseData.album);
+      BetterLyrics.Utils.log("[BetterLyrics] Found Album: " + responseData.album);
     }
 
     if (responseData.musixmatchWordByWordLyrics) {
