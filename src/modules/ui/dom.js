@@ -173,7 +173,7 @@ BetterLyrics.DOM = {
                 console.log('Challenge timed out');
               }
             });
-          `
+          `;
       }
 
       let wasActive = loaderWrapper.hasAttribute("active");
