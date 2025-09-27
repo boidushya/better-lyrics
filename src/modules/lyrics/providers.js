@@ -59,7 +59,7 @@ function handleTurnstile() {
   });
 }
 
-const CUBEY_LYRICS_API_URL = "https://auth-better-lyrics-cf-api.dacubeking.workers.dev/";
+const CUBEY_LYRICS_API_URL = "https://lyrics.api.dacubeking.com/";
 
 /**
  * Lyrics provider management for the BetterLyrics extension.
@@ -231,7 +231,7 @@ BetterLyrics.LyricProviders = {
      * @returns {Promise<Response>} The fetch Response object.
      */
     async function makeApiCall(jwt) {
-      const url = new URL(CUBEY_LYRICS_API_URL);
+      const url = new URL(CUBEY_LYRICS_API_URL + "lyrics");
       url.searchParams.append("song", providerParameters.song);
       url.searchParams.append("artist", providerParameters.artist);
       url.searchParams.append("duration", providerParameters.duration);
