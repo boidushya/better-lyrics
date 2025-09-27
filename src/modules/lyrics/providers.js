@@ -1,4 +1,66 @@
 /**
+ * Handles the Turnstile challenge by creating an iframe and returning a Promise.
+ * The Promise resolves with a valid Turnstile token or rejects on error/timeout.
+ * @returns {Promise<string>} A promise that resolves with the Turnstile token.
+ */
+function handleTurnstile() {
+  return new Promise((resolve, reject) => {
+    // --- Create and style the iframe to be visible ---
+    const iframe = document.createElement('iframe');
+    iframe.src = CUBEY_LYRICS_API_URL + "challenge"; // Your page that hosts the Turnstile widget
+    iframe.style.position = 'fixed';
+    iframe.style.bottom = '20px';
+    iframe.style.right = '20px';
+    iframe.style.width = '300px';
+    iframe.style.height = '65px';
+    iframe.style.border = 'none';
+    iframe.style.zIndex = '999999';
+    document.body.appendChild(iframe);
+
+    const messageListener = (event) => {
+      if (event.source !== iframe.contentWindow) {
+        return;
+      }
+
+      switch (event.data.type) {
+        case 'turnstile-token':
+          BetterLyrics.Utils.log('[Better Lyrics] ✅ Received Success Token:', event.data.token);
+          cleanup();
+          resolve(event.data.token); // Resolve the promise with the token
+          break;
+
+        case 'turnstile-error':
+          console.error('[Better Lyrics] ❌ Received Challenge Error:', event.data.error);
+          cleanup();
+          reject(new Error(`Turnstile challenge error: ${event.data.error}`));
+          break;
+
+        case 'turnstile-expired':
+          console.warn('[Better Lyrics] ⚠️ Token expired. Resetting challenge.');
+          iframe.contentWindow.postMessage({type: 'reset-turnstile'}, '*');
+          break;
+
+        case 'turnstile-timeout':
+          console.warn('[Better Lyrics] ⏳ Challenge timed out.');
+          cleanup();
+          reject(new Error('Turnstile challenge timed out.'));
+          break;
+      }
+    };
+
+    // Function to remove the iframe and listener
+    const cleanup = () => {
+      window.removeEventListener('message', messageListener);
+      document.body.removeChild(iframe);
+    };
+
+    window.addEventListener('message', messageListener);
+  });
+}
+
+const CUBEY_LYRICS_API_URL = "https://auth-better-lyrics-cf-api.dacubeking.workers.dev/";
+
+/**
  * Lyrics provider management for the BetterLyrics extension.
  * Handles multiple lyrics sources and provider orchestration.
  *
@@ -92,19 +154,121 @@ BetterLyrics.LyricProviders = {
   /**
    *
    * @param {ProviderParameters} providerParameters
-   * @return {Promise<{lyrics: null, source: string, album: string, song: (string), duration, artist: string, cacheAllowed: boolean, sourceHref: string}>}
    */
   cubey: async function (providerParameters) {
+    const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+
+    /**
+     * Gets a valid JWT, either from storage or by solving a new Turnstile challenge.
+     * This function now checks for JWT expiration on the client side.
+     * @returns {Promise<string|null>} A promise that resolves with the JWT.
+     */
+    async function getAuthenticationToken() {
+      // Helper function to decode a JWT payload and check its expiration
+      function isJwtExpired(token) {
+        try {
+          // The payload is the second part of the JWT
+          const payloadBase64Url = token.split('.')[1];
+          if (!payloadBase64Url) {
+            return true; // Malformed token
+          }
+
+          // Decode the Base64Url string
+          const payloadBase64 = payloadBase64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const decodedPayload = atob(payloadBase64);
+          const payload = JSON.parse(decodedPayload);
+
+          // The 'exp' claim is a UNIX timestamp in seconds
+          const expirationTimeInSeconds = payload.exp;
+          if (!expirationTimeInSeconds) {
+            return true; // No expiration claim
+          }
+
+          const nowInSeconds = Date.now() / 1000;
+
+          // Return true if the token is expired
+          return nowInSeconds > expirationTimeInSeconds;
+        } catch (e) {
+          console.error("[BetterLyrics] Error decoding JWT on client-side:", e);
+          return true; // Treat any decoding errors as an expired token
+        }
+      }
+
+      // 1. Check for an existing JWT in local storage
+      const storedData = await browserAPI.storage.local.get('jwtToken');
+      if (storedData.jwtToken) {
+        // 2. If a token exists, check if it has expired
+        if (isJwtExpired(storedData.jwtToken)) {
+          BetterLyrics.Utils.log('[BetterLyrics] Local JWT has expired. Removing and requesting a new one.');
+          // Remove the expired token so we don't use it again
+          await browserAPI.storage.local.remove('jwtToken');
+          // Proceed to the Turnstile challenge flow
+        } else {
+          // If the token is valid and not expired, use it
+          BetterLyrics.Utils.log('[BetterLyrics] 🔑 Using valid, non-expired JWT for bypass.');
+          return storedData.jwtToken;
+        }
+      }
+
+      // 3. If no JWT was found or the existing one was expired, run the Turnstile challenge
+      try {
+        BetterLyrics.Utils.log('[BetterLyrics] No valid JWT found, initiating Turnstile challenge...');
+        const turnstileToken = await handleTurnstile();
+
+        // 4. Exchange the Turnstile token for a new JWT from your API
+        const response = await fetch("https://lyrics.api.dacubeking.com/verify-turnstile", {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({token: turnstileToken})
+        });
+
+        if (!response.ok) {
+          throw new Error(`[BetterLyrics] API verification failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const newJwt = data.jwt;
+
+        if (!newJwt) {
+          throw new Error('[BetterLyrics] No JWT returned from API after verification.');
+        }
+
+        // 5. Store the new, valid JWT for future use
+        await browserAPI.storage.local.set({jwtToken: newJwt});
+        BetterLyrics.Utils.log('[BetterLyrics] ✅ New JWT received and stored.');
+        return newJwt;
+
+      } catch (error) {
+        console.error('[BetterLyrics] Authentication process failed:', error);
+        return null;
+      }
+    }
+
+    const jwt = await getAuthenticationToken();
+
+    if (!jwt) {
+      console.error("Could not obtain authentication token. Aborting lyrics fetch.");
+      ["musixmatch-synced", "musixmatch-richsync", "lrclib-synced", "lrclib-plain"].forEach(source => {
+        providerParameters.sourceMap.get(source).filled = true;
+      });
+      return;
+    }
+
     const url = new URL("https://lyrics.api.dacubeking.com/");
     url.searchParams.append("song", providerParameters.song);
     url.searchParams.append("artist", providerParameters.artist);
     url.searchParams.append("duration", providerParameters.duration);
     url.searchParams.append("videoId", providerParameters.videoId);
-    url.searchParams.append("album", providerParameters.album);
+    if (providerParameters.album) {
+      url.searchParams.append("album", providerParameters.album);
+    }
     url.searchParams.append("alwaysFetchMetadata", String(providerParameters.alwaysFetchMetadata));
 
     let response = await fetch(url, {
       signal: AbortSignal.any([providerParameters.signal, AbortSignal.timeout(10000)]),
+      headers: {
+        'Authorization': `Bearer ${jwt}`
+      }
     }).then(r => r.json());
     if (response.album) {
       BetterLyrics.Utils.log("Found Album: " + response.album);
@@ -615,7 +779,7 @@ BetterLyrics.LyricProviders = {
       let offset = Number(idTags["offset"]);
       if (isNaN(offset)) {
         offset = 0;
-        console.log("[BetterLyrics] Invalid offset in lyrics: " + idTags["offset"]);
+        BetterLyrics.Utils.log("[BetterLyrics] Invalid offset in lyrics: " + idTags["offset"]);
       }
       offset = offset * 1000;
       result.forEach(lyric => {
