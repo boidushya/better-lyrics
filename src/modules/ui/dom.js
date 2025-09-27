@@ -152,28 +152,6 @@ BetterLyrics.DOM = {
       if (!loaderWrapper) {
         loaderWrapper = document.createElement("div");
         loaderWrapper.id = BetterLyrics.Constants.LYRICS_LOADER_ID;
-        let turnstileContainer = document.createElement("div");
-        turnstileContainer.id = "turnstile-container";
-        loaderWrapper.appendChild(turnstileContainer);
-
-        let turnstileScript = document.createElement("script");
-        turnstileScript.text = `
-            turnstile.render('#widget-container', {
-              sitekey: '0x4AAAAAAB3r6jRoddwH5ypO',
-              callback: function(token) {
-                console.log('Challenge Success:', token);
-              },
-              'error-callback': function(errorCode) {
-                console.log('Challenge Error:', errorCode);
-              },
-              'expired-callback': function() {
-                console.log('Token expired');
-              },
-              'timeout-callback': function() {
-                console.log('Challenge timed out');
-              }
-            });
-          `;
       }
 
       let wasActive = loaderWrapper.hasAttribute("active");
