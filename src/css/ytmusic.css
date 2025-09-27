@@ -149,6 +149,7 @@ ytmusic-player-page:not([is-video-truncation-fix-enabled])[player-fullscreened]:
     display: flex;
     justify-content: center;
     max-width: 33%;
+    flex-direction: column;
   }
 
 
