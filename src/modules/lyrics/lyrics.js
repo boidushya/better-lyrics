@@ -23,6 +23,10 @@ BetterLyrics.Lyrics = {
    * @param signal {AbortSignal}
    */
   createLyrics: async function (detail, signal) {
+    if (!BetterLyrics.LyricProviders || typeof BetterLyrics.LyricProviders.newSourceMap !== "function") {
+      try { setTimeout(() => BetterLyrics.Lyrics.createLyrics(detail, signal), 50); } catch (_e) {}
+      return;
+    }
     let song = detail.song;
     let artist = detail.artist;
     let videoId = detail.videoId;
