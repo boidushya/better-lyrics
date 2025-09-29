@@ -93,92 +93,166 @@ BetterLyrics.LyricProviders = {
    * @return {Promise<{lyrics: null, source: string, album: string, song: (string), duration, artist: string, cacheAllowed: boolean, sourceHref: string}>}
    */
   cubey: async function (providerParameters) {
-    const url = new URL("https://lyrics.api.dacubeking.com/");
-    url.searchParams.append("song", providerParameters.song);
-    url.searchParams.append("artist", providerParameters.artist);
-    url.searchParams.append("duration", providerParameters.duration);
-    url.searchParams.append("videoId", providerParameters.videoId);
-    url.searchParams.append("enhanced", "true");
-    url.searchParams.append("useLrcLib", "true");
+    const LEGACY_BASE = "https://lyrics.api.dacubeking.com/";
+    const CUBEY_LYRICS_API_URL = "https://lyrics.api.dacubeking.com/";
 
-    let response = await BetterLyrics.Utils.fetchJSON(url.toString(), {}, 10000);
-    if (!response) {
-      response = {};
-    }
-    if (response.album) {
-      BetterLyrics.Utils.log("Found Album: " + response.album);
+    async function legacyFetch() {
+      const url = new URL(LEGACY_BASE);
+      url.searchParams.append("song", providerParameters.song);
+      url.searchParams.append("artist", providerParameters.artist);
+      url.searchParams.append("duration", providerParameters.duration);
+      url.searchParams.append("videoId", providerParameters.videoId);
+      url.searchParams.append("enhanced", "true");
+      url.searchParams.append("useLrcLib", "true");
+      return await BetterLyrics.Utils.fetchJSON(url.toString(), {}, 10000);
     }
 
-    if (response.musixmatchWordByWordLyrics) {
-      let musixmatchWordByWordLyrics = BetterLyrics.LyricProviders.parseLRC(
-        response.musixmatchWordByWordLyrics,
-        BetterLyrics.Utils.toMs(providerParameters.duration)
-      );
-      BetterLyrics.LyricProviders.lrcFixers(musixmatchWordByWordLyrics);
+    function fillSourceMapFromResponse(response) {
+      if (!response || typeof response !== "object") response = {};
+      if (response.album) {
+        BetterLyrics.Utils.log("Found Album: " + response.album);
+      }
 
-      providerParameters.sourceMap.get("musixmatch-richsync").lyricSourceResult = {
-        lyrics: musixmatchWordByWordLyrics,
-        source: "Musixmatch",
-        sourceHref: "https://www.musixmatch.com",
-        musicVideoSynced: false,
-        album: response.album,
-        artist: response.artist,
-        song: response.song,
-        duration: response.duration,
-      };
-    } else {
-      providerParameters.sourceMap.get("musixmatch-richsync").lyricSourceResult = {
-        lyrics: null,
-        source: "Musixmatch",
-        sourceHref: "https://www.musixmatch.com",
-        musicVideoSynced: false,
-        album: response.album,
-        artist: response.artist,
-        song: response.song,
-        duration: response.duration,
-      };
+      if (response.musixmatchWordByWordLyrics) {
+        const parsed = BetterLyrics.LyricProviders.parseLRC(
+          response.musixmatchWordByWordLyrics,
+          BetterLyrics.Utils.toMs(providerParameters.duration)
+        );
+        BetterLyrics.LyricProviders.lrcFixers(parsed);
+        providerParameters.sourceMap.get("musixmatch-richsync").lyricSourceResult = {
+          lyrics: parsed,
+          source: "Musixmatch",
+          sourceHref: "https://www.musixmatch.com",
+          musicVideoSynced: false,
+          album: response.album,
+          artist: response.artist,
+          song: response.song,
+          duration: response.duration,
+        };
+      } else {
+        providerParameters.sourceMap.get("musixmatch-richsync").lyricSourceResult = {
+          lyrics: null,
+          source: "Musixmatch",
+          sourceHref: "https://www.musixmatch.com",
+          musicVideoSynced: false,
+          album: response.album,
+          artist: response.artist,
+          song: response.song,
+          duration: response.duration,
+        };
+      }
+
+      if (response.musixmatchSyncedLyrics) {
+        const parsed = BetterLyrics.LyricProviders.parseLRC(
+          response.musixmatchSyncedLyrics,
+          BetterLyrics.Utils.toMs(providerParameters.duration)
+        );
+        providerParameters.sourceMap.get("musixmatch-synced").lyricSourceResult = {
+          lyrics: parsed,
+          source: "Musixmatch",
+          sourceHref: "https://www.musixmatch.com",
+          musicVideoSynced: false,
+        };
+      }
+
+      if (response.lrclibSyncedLyrics) {
+        const parsed = BetterLyrics.LyricProviders.parseLRC(
+          response.lrclibSyncedLyrics,
+          BetterLyrics.Utils.toMs(providerParameters.duration)
+        );
+        providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = {
+          lyrics: parsed,
+          source: "LRCLib",
+          sourceHref: "https://lrclib.net",
+          musicVideoSynced: false,
+        };
+      }
+
+      if (response.lrclibPlainLyrics) {
+        const parsed = BetterLyrics.LyricProviders.parsePlainLyrics(response.lrclibPlainLyrics);
+        providerParameters.sourceMap.get("lrclib-plain").lyricSourceResult = {
+          lyrics: parsed,
+          source: "LRCLib",
+          sourceHref: "https://lrclib.net",
+          musicVideoSynced: false,
+        };
+      }
+
+      ["musixmatch-synced", "musixmatch-richsync", "lrclib-synced", "lrclib-plain"].forEach(source => {
+        providerParameters.sourceMap.get(source).filled = true;
+      });
     }
 
-    if (response.musixmatchSyncedLyrics) {
-      let musixmatchSyncedLyrics = BetterLyrics.LyricProviders.parseLRC(
-        response.musixmatchSyncedLyrics,
-        BetterLyrics.Utils.toMs(providerParameters.duration)
-      );
-      providerParameters.sourceMap.get("musixmatch-synced").lyricSourceResult = {
-        lyrics: musixmatchSyncedLyrics,
-        source: "Musixmatch",
-        sourceHref: "https://www.musixmatch.com",
-        musicVideoSynced: false,
-      };
+    async function authenticateAndGetJwt() {
+      try {
+        const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+        const { jwtToken } = await browserAPI.storage.local.get("jwtToken");
+        if (jwtToken) return jwtToken;
+        return null;
+      } catch (_e) {
+        return null;
+      }
     }
 
-    if (response.lrclibSyncedLyrics) {
-      let lrclibSyncedLyrics = BetterLyrics.LyricProviders.parseLRC(
-        response.lrclibSyncedLyrics,
-        BetterLyrics.Utils.toMs(providerParameters.duration)
-      );
-      providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = {
-        lyrics: lrclibSyncedLyrics,
-        source: "LRCLib",
-        sourceHref: "https://lrclib.net",
-        musicVideoSynced: false,
-      };
+    async function makeApiCall(jwt) {
+      const url = new URL(CUBEY_LYRICS_API_URL + "lyrics");
+      url.searchParams.append("song", providerParameters.song);
+      url.searchParams.append("artist", providerParameters.artist);
+      url.searchParams.append("duration", providerParameters.duration);
+      url.searchParams.append("videoId", providerParameters.videoId);
+      if (providerParameters.album) {
+        url.searchParams.append("album", providerParameters.album);
+      }
+      if (typeof providerParameters.alwaysFetchMetadata !== "undefined") {
+        url.searchParams.append("alwaysFetchMetadata", String(!!providerParameters.alwaysFetchMetadata));
+      }
+
+      let signal;
+      try {
+        if (typeof AbortSignal !== "undefined" && "any" in AbortSignal && "timeout" in AbortSignal) {
+          const signals = [];
+          if (providerParameters.signal) signals.push(providerParameters.signal);
+          signals.push(AbortSignal.timeout(10000));
+          signal = AbortSignal.any(signals);
+        }
+      } catch (_e) {}
+
+      return await fetch(url, {
+        signal,
+        headers: jwt ? { Authorization: `Bearer ${jwt}` } : undefined,
+        credentials: jwt ? "include" : "same-origin",
+      });
     }
 
-    if (response.lrclibPlainLyrics) {
-      let lrclibPlainLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(response.lrclibPlainLyrics);
+    let responseObj = null;
+    try {
+      const jwt = await authenticateAndGetJwt();
+      if (jwt) {
+        let res = await makeApiCall(jwt);
+        if (res && res.status === 401) {
+          // JWT invalid; try legacy as fallback
+          res = null;
+        }
+        if (res && res.ok) {
+          try {
+            const text = await res.text();
+            responseObj = text ? JSON.parse(text) : {};
+          } catch (_e) {
+            responseObj = {};
+          }
+        }
+      }
 
-      providerParameters.sourceMap.get("lrclib-plain").lyricSourceResult = {
-        lyrics: lrclibPlainLyrics,
-        source: "LRCLib",
-        sourceHref: "https://lrclib.net",
-        musicVideoSynced: false,
-      };
+      if (!responseObj) {
+        responseObj = await legacyFetch();
+        if (!responseObj) responseObj = {};
+      }
+    } catch (_e) {
+      responseObj = await legacyFetch();
+      if (!responseObj) responseObj = {};
     }
 
-    ["musixmatch-synced", "musixmatch-richsync", "lrclib-synced", "lrclib-plain"].forEach(source => {
-      providerParameters.sourceMap.get(source).filled = true;
-    });
+    fillSourceMapFromResponse(responseObj);
   },
   /**
    *
