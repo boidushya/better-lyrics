@@ -122,14 +122,39 @@ BetterLyrics.DOM = {
       changeLyricsContainer.className = `${BetterLyrics.Constants.FOOTER_CLASS}__container`;
 
       const changeLyricsLink = document.createElement("a");
+      try {
+        const man = chrome?.runtime?.getManifest?.();
+        const listed = Array.isArray(man?.content_scripts?.[0]?.js) && man.content_scripts[0].js.includes("src/modules/lyrics/changeLyrics.js");
+        BetterLyrics.Utils.log("[BetterLyrics] manifest lists changeLyrics:", listed);
+        BetterLyrics.Utils.log("[BetterLyrics] typeof BetterLyrics.ChangeLyrics:", typeof BetterLyrics?.ChangeLyrics);
+      } catch (_e) {}
       changeLyricsLink.href = "#";
       changeLyricsLink.textContent = "Change Lyrics";
       changeLyricsLink.style.height = "100%";
-      changeLyricsLink.addEventListener("click", e => {
-        e.preventDefault();
-        if (BetterLyrics.ChangeLyrics) {
+      const tryOpenChangeLyrics = (attempt = 0) => {
+        if (BetterLyrics?.ChangeLyrics && typeof BetterLyrics.ChangeLyrics.showModal === 'function') {
           BetterLyrics.ChangeLyrics.init(song, artist, album, duration, videoId);
           BetterLyrics.ChangeLyrics.showModal();
+          return true;
+        }
+        if (attempt < 10) {
+          setTimeout(() => tryOpenChangeLyrics(attempt + 1), 50);
+          return false;
+        }
+        BetterLyrics.Utils.log("[BetterLyrics] ChangeLyrics not available after retries");
+        return false;
+      };
+
+      changeLyricsLink.addEventListener("click", e => {
+        try {
+          e.preventDefault();
+          e.stopPropagation();
+          BetterLyrics.Utils.log("[BetterLyrics] Change Lyrics clicked");
+          if (!tryOpenChangeLyrics()) {
+            BetterLyrics.Utils.log("[BetterLyrics] ChangeLyrics is not available yet");
+          }
+        } catch (err) {
+          BetterLyrics.Utils.log("[BetterLyrics] Error handling Change Lyrics click:", err);
         }
       });
 

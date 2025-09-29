@@ -1,3 +1,4 @@
+var BetterLyrics = window.BetterLyrics || (window.BetterLyrics = {});
 BetterLyrics.ChangeLyrics = {
   searchResults: [],
   currentSong: null,
@@ -35,11 +36,11 @@ BetterLyrics.ChangeLyrics = {
       const url = new URL(BetterLyrics.Constants.LRCLIB_SEARCH_URL);
       url.searchParams.append("q", query);
       promises.push(
-        fetch(url.toString(), {
-          headers: { "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER },
-          signal: AbortSignal.timeout(10000),
-        })
-          .then(r => (r.ok ? r.json() : []))
+        BetterLyrics.Utils.fetchJSON(
+          url.toString(),
+          { headers: { "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER } },
+          10000
+        )
           .then(results => {
             if (!Array.isArray(results)) return [];
             results.forEach(result => {
@@ -63,8 +64,7 @@ BetterLyrics.ChangeLyrics = {
         url.searchParams.append("d", BetterLyrics.ChangeLyrics.currentDuration);
       }
       promises.push(
-        fetch(url.toString(), { signal: AbortSignal.timeout(10000) })
-          .then(r => (r.ok ? r.json() : null))
+        BetterLyrics.Utils.fetchJSON(url.toString(), {}, 10000)
           .then(data => {
             if (!data || !(data.lyrics || data.syncedLyrics)) return [];
             const result = {
@@ -101,8 +101,7 @@ BetterLyrics.ChangeLyrics = {
       url.searchParams.append("enhanced", "true");
       url.searchParams.append("useLrcLib", "false");
       promises.push(
-        fetch(url.toString(), { signal: AbortSignal.timeout(10000) })
-          .then(r => (r.ok ? r.json() : null))
+        BetterLyrics.Utils.fetchJSON(url.toString(), {}, 10000)
           .then(data => {
             if (!data || !(data.musixmatchWordByWordLyrics || data.musixmatchSyncedLyrics)) return [];
             const result = {
@@ -139,7 +138,10 @@ BetterLyrics.ChangeLyrics = {
 
       if (typeof lyricsData === "string") {
         if (lyricsData.includes("[") && lyricsData.includes("]")) {
-          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(lyricsData, BetterLyrics.ChangeLyrics.currentDuration);
+          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(
+            lyricsData,
+            BetterLyrics.Utils.toMs(BetterLyrics.ChangeLyrics.currentDuration)
+          );
         } else {
           parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(lyricsData);
         }
@@ -147,10 +149,13 @@ BetterLyrics.ChangeLyrics = {
         if (meta.richSyncLyrics) {
           parsedLyrics = BetterLyrics.LyricProviders.parseLRC(
             meta.richSyncLyrics,
-            meta.duration || BetterLyrics.ChangeLyrics.currentDuration
+            BetterLyrics.Utils.toMs(meta.duration || BetterLyrics.ChangeLyrics.currentDuration)
           );
         } else if (meta.syncedLyrics) {
-          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(meta.syncedLyrics, meta.duration || BetterLyrics.ChangeLyrics.currentDuration);
+          parsedLyrics = BetterLyrics.LyricProviders.parseLRC(
+            meta.syncedLyrics,
+            BetterLyrics.Utils.toMs(meta.duration || BetterLyrics.ChangeLyrics.currentDuration)
+          );
         } else {
           parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(meta.plainLyrics);
         }
@@ -169,16 +174,15 @@ BetterLyrics.ChangeLyrics = {
         if (meta.albumName) url.searchParams.append("album_name", meta.albumName);
         if (meta.duration || BetterLyrics.ChangeLyrics.currentDuration)
           url.searchParams.append("duration", meta.duration || BetterLyrics.ChangeLyrics.currentDuration);
-        const response = await fetch(url.toString(), {
-          headers: { "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER },
-          signal: AbortSignal.timeout(10000),
-        });
-        if (!response.ok) throw new Error("Invalid lyrics data format");
-        const data = await response.json();
+        const data = await BetterLyrics.Utils.fetchJSON(
+          url.toString(),
+          { headers: { "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER } },
+          10000
+        );
         if (data && data.syncedLyrics) {
           parsedLyrics = BetterLyrics.LyricProviders.parseLRC(
             data.syncedLyrics,
-            data.duration || meta.duration || BetterLyrics.ChangeLyrics.currentDuration
+            BetterLyrics.Utils.toMs(data.duration || meta.duration || BetterLyrics.ChangeLyrics.currentDuration)
           );
         } else if (data && data.plainLyrics) {
           parsedLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(data.plainLyrics);
@@ -187,6 +191,41 @@ BetterLyrics.ChangeLyrics = {
         }
       } else {
         throw new Error("Invalid lyrics data format");
+      }
+
+      // Attempt to resync lyrics for music videos using segment maps (if available)
+      if (Array.isArray(parsedLyrics)) {
+        try {
+          const match = await BetterLyrics.RequestSniffing.getMatchingSong(
+            BetterLyrics.ChangeLyrics.currentVideoId
+          );
+          const allZero = parsedLyrics.every(item => item.startTimeMs === "0" || item.startTimeMs === 0);
+          if (match && match.segmentMap && !allZero) {
+            for (let lyric of parsedLyrics) {
+              let lastTimeChange = 0;
+              for (let segment of match.segmentMap.segment) {
+                if (lyric.startTimeMs >= segment.counterpartVideoStartTimeMilliseconds) {
+                  lastTimeChange =
+                    segment.primaryVideoStartTimeMilliseconds - segment.counterpartVideoStartTimeMilliseconds;
+                  if (
+                    lyric.startTimeMs <=
+                    segment.counterpartVideoStartTimeMilliseconds + segment.durationMilliseconds
+                  ) {
+                    break;
+                  }
+                }
+              }
+              lyric.startTimeMs = Number(lyric.startTimeMs) + lastTimeChange;
+              if (lyric.parts) {
+                lyric.parts.forEach(part => {
+                  part.startTimeMs = Number(part.startTimeMs) + lastTimeChange;
+                });
+              }
+            }
+          }
+        } catch (e) {
+          BetterLyrics.Utils.log(e);
+        }
       }
 
       const resultData = {
@@ -244,10 +283,12 @@ BetterLyrics.ChangeLyrics = {
     titleContainer.className = "blyrics-modal-title-container";
 
     const title = document.createElement("h3");
+    title.id = "blyrics-change-modal-title";
     title.textContent = "Change Lyrics";
 
     const closeBtn = document.createElement("button");
     closeBtn.className = "blyrics-modal-close";
+    closeBtn.setAttribute("aria-label", "Close");
     closeBtn.textContent = "×";
 
     titleContainer.appendChild(logo);
@@ -392,23 +433,38 @@ BetterLyrics.ChangeLyrics = {
 
     const tabs = document.createElement("div");
     tabs.className = "blyrics-tabs";
+    tabs.setAttribute("role", "tablist");
 
     const searchTabBtn = document.createElement("button");
     searchTabBtn.className = "blyrics-tab-btn active";
     searchTabBtn.dataset.tab = "search";
+    searchTabBtn.id = "blyrics-tab-search";
+    searchTabBtn.setAttribute("role", "tab");
+    searchTabBtn.setAttribute("aria-selected", "true");
     searchTabBtn.textContent = "Search";
 
     const manualTabBtn = document.createElement("button");
     manualTabBtn.className = "blyrics-tab-btn";
     manualTabBtn.dataset.tab = "manual";
+    manualTabBtn.id = "blyrics-tab-manual";
+    manualTabBtn.setAttribute("role", "tab");
+    manualTabBtn.setAttribute("aria-selected", "false");
     manualTabBtn.textContent = "Manual Input";
 
     tabs.appendChild(searchTabBtn);
     tabs.appendChild(manualTabBtn);
 
     body.appendChild(tabs);
-    body.appendChild(BetterLyrics.ChangeLyrics.createSearchTab());
-    body.appendChild(BetterLyrics.ChangeLyrics.createManualTab());
+
+    const searchTab = BetterLyrics.ChangeLyrics.createSearchTab();
+    searchTab.setAttribute("role", "tabpanel");
+    searchTab.setAttribute("aria-labelledby", "blyrics-tab-search");
+    const manualTab = BetterLyrics.ChangeLyrics.createManualTab();
+    manualTab.setAttribute("role", "tabpanel");
+    manualTab.setAttribute("aria-labelledby", "blyrics-tab-manual");
+
+    body.appendChild(searchTab);
+    body.appendChild(manualTab);
 
     return body;
   },
@@ -416,6 +472,9 @@ BetterLyrics.ChangeLyrics = {
   createModal: function () {
     const modal = document.createElement("div");
     modal.id = "blyrics-change-modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-labelledby", "blyrics-change-modal-title");
 
     const backdrop = document.createElement("div");
     backdrop.className = "blyrics-modal-backdrop";
@@ -447,6 +506,7 @@ BetterLyrics.ChangeLyrics = {
       BetterLyrics.ChangeLyrics.closeModal();
     }
   },
+  _resizeHandler: null,
 
   attachModalEvents: function (modal) {
     const closeBtn = modal.querySelector(".blyrics-modal-close");
@@ -460,10 +520,41 @@ BetterLyrics.ChangeLyrics = {
 
     closeBtn.addEventListener("click", () => BetterLyrics.ChangeLyrics.closeModal());
 
-    backdrop.addEventListener("click", e => {
-      if (e.target === backdrop) BetterLyrics.ChangeLyrics.closeModal();
-    });
+    // Close only if the press starts AND ends on the backdrop (avoid closing after drag-selection leaving modal)
+    const onMouseDownBackdrop = e => {
+      if (e.button === 0 && e.target === backdrop) {
+        backdrop.__pressOnBackdrop = true;
+      } else {
+        backdrop.__pressOnBackdrop = false;
+      }
+    };
+    const onMouseUpBackdrop = e => {
+      if (e.button === 0 && e.target === backdrop && backdrop.__pressOnBackdrop) {
+        BetterLyrics.ChangeLyrics.closeModal();
+      }
+      backdrop.__pressOnBackdrop = false;
+    };
+    backdrop.addEventListener("mousedown", onMouseDownBackdrop);
+    backdrop.addEventListener("mouseup", onMouseUpBackdrop);
 
+    // Also support pointer events where available
+    if (window.PointerEvent) {
+      backdrop.addEventListener("pointerdown", e => {
+        if (e.button === 0 && e.target === backdrop) {
+          backdrop.__pressOnBackdrop = true;
+        } else {
+          backdrop.__pressOnBackdrop = false;
+        }
+      });
+      backdrop.addEventListener("pointerup", e => {
+        if (e.button === 0 && e.target === backdrop && backdrop.__pressOnBackdrop) {
+          BetterLyrics.ChangeLyrics.closeModal();
+        }
+        backdrop.__pressOnBackdrop = false;
+      });
+    }
+
+    // Tabs and their ARIA state
     tabBtns.forEach(btn => {
       btn.addEventListener("click", () => BetterLyrics.ChangeLyrics.switchTab(btn.dataset.tab));
     });
@@ -486,6 +577,29 @@ BetterLyrics.ChangeLyrics = {
       }
     });
 
+    // Focus trap inside modal
+    const focusableSelectors = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+    const focusables = Array.from(modal.querySelectorAll(focusableSelectors));
+    const firstEl = focusables[0];
+    const lastEl = focusables[focusables.length - 1];
+    BetterLyrics.ChangeLyrics._focusTrapHandler = function (e) {
+      if (e.key === 'Tab') {
+        if (focusables.length === 0) return;
+        if (e.shiftKey) {
+          if (document.activeElement === firstEl || !modal.contains(document.activeElement)) {
+            e.preventDefault();
+            lastEl.focus();
+          }
+        } else {
+          if (document.activeElement === lastEl || !modal.contains(document.activeElement)) {
+            e.preventDefault();
+            firstEl.focus();
+          }
+        }
+      }
+    };
+    modal.addEventListener('keydown', BetterLyrics.ChangeLyrics._focusTrapHandler, true);
+
     document.addEventListener("keydown", BetterLyrics.ChangeLyrics._escapeHandler, true);
   },
 
@@ -494,11 +608,14 @@ BetterLyrics.ChangeLyrics = {
     const tabContents = document.querySelectorAll(".blyrics-tab-content");
 
     tabBtns.forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.tab === tabName);
+      const isActive = btn.dataset.tab === tabName;
+      btn.classList.toggle("active", isActive);
+      btn.setAttribute("aria-selected", isActive ? "true" : "false");
     });
 
     tabContents.forEach(content => {
-      content.style.display = content.id === `${tabName}-tab` ? "block" : "none";
+      const isActive = content.id === `${tabName}-tab`;
+      content.style.display = isActive ? "block" : "none";
     });
 
     if (tabName === "manual") {
@@ -516,6 +633,7 @@ BetterLyrics.ChangeLyrics = {
 
     const song = songInput.value.trim();
     const artist = artistInput.value.trim();
+    const album = _albumInput.value.trim();
 
     if (!song || !artist) {
       BetterLyrics.ChangeLyrics.showError("Enter both song title and artist");
@@ -533,7 +651,7 @@ BetterLyrics.ChangeLyrics = {
       return;
     }
 
-    const query = `${song} ${artist}`;
+    const query = album ? `${song} ${artist} ${album}` : `${song} ${artist}`;
 
     searchBtn.disabled = true;
     searchBtn.textContent = "Searching...";
@@ -598,6 +716,31 @@ BetterLyrics.ChangeLyrics = {
         BetterLyrics.ChangeLyrics.prefillManualEditor();
       });
     });
+
+    // Keyboard navigation for results
+    resultsContainer.tabIndex = 0;
+    const useButtons = Array.from(resultsContainer.querySelectorAll('.blyrics-use-result'));
+    if (useButtons.length) {
+      useButtons.forEach(btn => btn.setAttribute('tabindex', '0'));
+      resultsContainer.addEventListener('keydown', e => {
+        const active = document.activeElement;
+        const idx = useButtons.indexOf(active);
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          const next = useButtons[Math.min((idx + 1 + useButtons.length) % useButtons.length, useButtons.length - 1)] || useButtons[0];
+          next.focus();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          const prev = useButtons[(idx - 1 + useButtons.length) % useButtons.length] || useButtons[useButtons.length - 1];
+          prev.focus();
+        } else if (e.key === 'Enter' && idx >= 0) {
+          e.preventDefault();
+          active.click();
+        }
+      });
+      // Focus first result for convenience
+      useButtons[0].focus();
+    }
   },
 
   createLoadingElement: function () {
@@ -653,8 +796,13 @@ BetterLyrics.ChangeLyrics = {
     const footer = document.createElement("div");
     footer.className = "blyrics-result-footer";
 
-    const providerTag = document.createElement("span");
+    const providerTag = document.createElement(result.__providerHref ? "a" : "span");
     providerTag.className = "blyrics-provider-tag";
+    if (result.__providerHref) {
+      providerTag.href = result.__providerHref;
+      providerTag.target = "_blank";
+      providerTag.rel = "noreferrer noopener";
+    }
     providerTag.textContent = result.__provider || "LRCLib";
 
     const typeTag = document.createElement("span");
@@ -689,21 +837,38 @@ BetterLyrics.ChangeLyrics = {
   },
 
   showModal: function () {
-    let modal = document.getElementById("blyrics-change-modal");
-    if (modal) {
-      modal.remove();
+    try {
+      BetterLyrics.Utils.log("[BetterLyrics] showModal invoked");
+      let modal = document.getElementById("blyrics-change-modal");
+      if (modal) {
+        modal.remove();
+      }
+      modal = BetterLyrics.ChangeLyrics.createModal();
+      BetterLyrics.Utils.log("[BetterLyrics] modal created and appended");
+      modal.style.display = "block";
+      document.body.style.overflow = "hidden";
+
+      // Calculate and set initial top position
+      BetterLyrics.ChangeLyrics.calculateAndSetModalPosition(modal);
+      // Recalculate on window resize
+      BetterLyrics.ChangeLyrics._resizeHandler = () =>
+        BetterLyrics.ChangeLyrics.calculateAndSetModalPosition(modal);
+      window.addEventListener("resize", BetterLyrics.ChangeLyrics._resizeHandler);
+
+      // Trigger animation after a frame to ensure display is set
+      requestAnimationFrame(() => {
+        BetterLyrics.Utils.log("[BetterLyrics] modal show class added");
+        modal.classList.add("show");
+        // Focus the first input (song) for better UX
+        const firstInput = document.getElementById("blyrics-song-input");
+        if (firstInput) {
+          firstInput.focus({ preventScroll: true });
+          try { firstInput.select(); } catch (_e) {}
+        }
+      });
+    } catch (err) {
+      BetterLyrics.Utils.log("[BetterLyrics] showModal error:", err);
     }
-    modal = BetterLyrics.ChangeLyrics.createModal();
-    modal.style.display = "block";
-    document.body.style.overflow = "hidden";
-
-    // Calculate and set initial top position
-    BetterLyrics.ChangeLyrics.calculateAndSetModalPosition(modal);
-
-    // Trigger animation after a frame to ensure display is set
-    requestAnimationFrame(() => {
-      modal.classList.add("show");
-    });
   },
 
   calculateAndSetModalPosition: function (modal) {
@@ -770,9 +935,13 @@ BetterLyrics.ChangeLyrics = {
       }, 300); // Match the CSS transition duration
     }
 
+    if (BetterLyrics.ChangeLyrics._resizeHandler) {
+      window.removeEventListener("resize", BetterLyrics.ChangeLyrics._resizeHandler);
+      BetterLyrics.ChangeLyrics._resizeHandler = null;
+    }
+
     if (BetterLyrics.ChangeLyrics._escapeHandler) {
       document.removeEventListener("keydown", BetterLyrics.ChangeLyrics._escapeHandler, true);
-      BetterLyrics.ChangeLyrics._escapeHandler = null;
     }
     document.body.style.overflow = "";
     BetterLyrics.ChangeLyrics.hideError();
@@ -822,25 +991,67 @@ BetterLyrics.ChangeLyrics = {
     try {
       const textarea = document.getElementById("blyrics-manual-input");
       if (!textarea) return;
-      console.log("[ChangeLyrics] prefillManualEditor - currentVideoId:", BetterLyrics.ChangeLyrics.currentVideoId);
+      BetterLyrics.Utils.log(
+        "[ChangeLyrics] prefillManualEditor - currentVideoId:",
+        BetterLyrics.ChangeLyrics.currentVideoId
+      );
       if (!BetterLyrics.ChangeLyrics.currentVideoId) {
-        console.log("[ChangeLyrics] No currentVideoId - cannot prefill");
+        BetterLyrics.Utils.log("[ChangeLyrics] No currentVideoId - cannot prefill");
         return;
       }
       const cacheKey = `blyrics_${BetterLyrics.ChangeLyrics.currentVideoId}`;
-      console.log("[ChangeLyrics] Looking for cache key:", cacheKey);
+      BetterLyrics.Utils.log("[ChangeLyrics] Looking for cache key:", cacheKey);
       const cached = await BetterLyrics.Storage.getTransientStorage(cacheKey);
-      console.log("[ChangeLyrics] Cache result:", cached ? "found" : "not found");
+      BetterLyrics.Utils.log("[ChangeLyrics] Cache result:", cached ? "found" : "not found");
       if (!cached) return;
       let data;
       try {
         data = JSON.parse(cached);
-      } catch (_e) { return; }
+      } catch (_e) {
+        return;
+      }
       const fromCache = BetterLyrics.ChangeLyrics._serializeToManualText(data);
-      console.log("[ChangeLyrics] Serialized lyrics length:", fromCache.length);
+      BetterLyrics.Utils.log("[ChangeLyrics] Serialized lyrics length:", fromCache.length);
       if (fromCache && fromCache.length) textarea.value = fromCache;
     } catch (_err) {
-      console.log("[ChangeLyrics] Error in prefillManualEditor:", _err);
+      BetterLyrics.Utils.log("[ChangeLyrics] Error in prefillManualEditor:", _err);
     }
+  },
+
+  _persistProviderPrefs: function () {
+    try {
+      const state = {
+        lrclib: !!document.querySelector('#provider-lrclib')?.checked,
+        musixmatch: !!document.querySelector('#provider-musixmatch')?.checked,
+        blyrics: !!document.querySelector('#provider-blyrics')?.checked,
+      };
+      const browserAPI = typeof browser !== 'undefined' ? browser : (typeof chrome !== 'undefined' ? chrome : null);
+      if (browserAPI?.storage?.sync) {
+        browserAPI.storage.sync.set({ changeLyricsProviders: state });
+      } else {
+        localStorage.setItem('blyrics_changeProviders', JSON.stringify(state));
+      }
+    } catch (_e) {}
+  },
+
+  _loadProviderPrefs: function (root) {
+    try {
+      const apply = (state) => {
+        if (!state) return;
+        const set = (id, val) => { const cb = root.querySelector(id); if (cb) cb.checked = !!val; };
+        set('#provider-lrclib', state.lrclib);
+        set('#provider-musixmatch', state.musixmatch);
+        set('#provider-blyrics', state.blyrics);
+      };
+      const browserAPI = typeof browser !== 'undefined' ? browser : (typeof chrome !== 'undefined' ? chrome : null);
+      if (browserAPI?.storage?.sync) {
+        browserAPI.storage.sync.get({ changeLyricsProviders: { lrclib: true, musixmatch: true, blyrics: true } }, items => {
+          apply(items.changeLyricsProviders);
+        });
+      } else {
+        const raw = localStorage.getItem('blyrics_changeProviders');
+        if (raw) apply(JSON.parse(raw));
+      }
+    } catch (_e) {}
   },
 };

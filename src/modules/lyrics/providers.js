@@ -101,7 +101,10 @@ BetterLyrics.LyricProviders = {
     url.searchParams.append("enhanced", "true");
     url.searchParams.append("useLrcLib", "true");
 
-    let response = await fetch(url, { signal: AbortSignal.timeout(10000) }).then(r => r.json());
+    let response = await BetterLyrics.Utils.fetchJSON(url.toString(), {}, 10000);
+    if (!response) {
+      response = {};
+    }
     if (response.album) {
       BetterLyrics.Utils.log("Found Album: " + response.album);
     }
@@ -109,7 +112,7 @@ BetterLyrics.LyricProviders = {
     if (response.musixmatchWordByWordLyrics) {
       let musixmatchWordByWordLyrics = BetterLyrics.LyricProviders.parseLRC(
         response.musixmatchWordByWordLyrics,
-        Number(providerParameters.duration)
+        BetterLyrics.Utils.toMs(providerParameters.duration)
       );
       BetterLyrics.LyricProviders.lrcFixers(musixmatchWordByWordLyrics);
 
@@ -139,7 +142,7 @@ BetterLyrics.LyricProviders = {
     if (response.musixmatchSyncedLyrics) {
       let musixmatchSyncedLyrics = BetterLyrics.LyricProviders.parseLRC(
         response.musixmatchSyncedLyrics,
-        Number(providerParameters.duration)
+        BetterLyrics.Utils.toMs(providerParameters.duration)
       );
       providerParameters.sourceMap.get("musixmatch-synced").lyricSourceResult = {
         lyrics: musixmatchSyncedLyrics,
@@ -152,7 +155,7 @@ BetterLyrics.LyricProviders = {
     if (response.lrclibSyncedLyrics) {
       let lrclibSyncedLyrics = BetterLyrics.LyricProviders.parseLRC(
         response.lrclibSyncedLyrics,
-        Number(providerParameters.duration)
+        BetterLyrics.Utils.toMs(providerParameters.duration)
       );
       providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = {
         lyrics: lrclibSyncedLyrics,
@@ -182,24 +185,19 @@ BetterLyrics.LyricProviders = {
    * @param {ProviderParameters} providerParameters
    */
   bLyrics: async function (providerParameters) {
-    debugger;
     // Fetch from the primary API if cache is empty or invalid
     const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
     url.searchParams.append("s", providerParameters.song);
     url.searchParams.append("a", providerParameters.artist);
     url.searchParams.append("d", providerParameters.duration);
 
-    const response = await fetch(url.toString(), { signal: AbortSignal.timeout(10000) });
+    const data = await BetterLyrics.Utils.fetchJSON(url.toString(), {}, 10000);
 
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
     // Validate API response structure
     if (!data || (!Array.isArray(data.lyrics) && !data.syncedLyrics)) {
       providerParameters.sourceMap.get("bLyrics").filled = true;
       providerParameters.sourceMap.get("bLyrics").lyricSourceResult = null;
+      return;
     }
 
     data.source = "boidu.dev";
@@ -221,15 +219,14 @@ BetterLyrics.LyricProviders = {
     }
     url.searchParams.append("duration", providerParameters.duration);
 
-    const response = await fetch(url.toString(), {
+    const response = await BetterLyrics.Utils.fetchWithTimeout(url.toString(), {
       headers: {
         "Lrclib-Client": BetterLyrics.Constants.LRCLIB_CLIENT_HEADER,
       },
-      signal: AbortSignal.timeout(10000),
-    });
+    }, 10000);
 
-    if (!response.ok) {
-      throw new Error(BetterLyrics.Constants.HTTP_ERROR_LOG + response.status);
+    if (!response || !response.ok) {
+      throw new Error(BetterLyrics.Constants.HTTP_ERROR_LOG + (response ? response.status : ""));
     }
 
     const data = await response.json();
@@ -239,7 +236,7 @@ BetterLyrics.LyricProviders = {
 
       if (data.syncedLyrics) {
         providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = {
-          lyrics: BetterLyrics.LyricProviders.parseLRC(data.syncedLyrics, data.duration),
+          lyrics: BetterLyrics.LyricProviders.parseLRC(data.syncedLyrics, BetterLyrics.Utils.toMs(data.duration)),
           source: "LRCLib",
           sourceHref: "https://lrclib.net",
           musicVideoSynced: false,
@@ -485,13 +482,17 @@ BetterLyrics.LyricProviders = {
     const idTags = {};
     const possibleIdTags = ["ti", "ar", "al", "au", "lr", "length", "by", "offset", "re", "tool", "ve", "#"];
 
-    // Parse time in [mm:ss.xx] or <mm:ss.xx> format to milliseconds
+    // Parse time in [mm:ss[.xx|,xx]?] or <mm:ss[.xx|,xx]?> format to milliseconds
     function parseTime(timeStr) {
-      const match = timeStr.match(/(\d+):(\d+\.\d+)/);
-      if (!match) return null;
-      const minutes = parseInt(match[1], 10);
-      const seconds = parseFloat(match[2]);
-      return Math.round((minutes * 60 + seconds) * 1000);
+      // Normalize decimal separator
+      const normalized = String(timeStr).replace(",", ".");
+      const m = normalized.match(/^(\d+):(\d+)(?:\.(\d+))?$/);
+      if (!m) return null;
+      const minutes = parseInt(m[1], 10);
+      const seconds = parseInt(m[2], 10);
+      const fraction = m[3] ? parseFloat("0." + m[3]) : 0;
+      const totalSeconds = minutes * 60 + seconds + fraction;
+      return Math.round(totalSeconds * 1000);
     }
 
     // Process each line
@@ -505,14 +506,15 @@ BetterLyrics.LyricProviders = {
         return;
       }
 
-      // Match time tags with lyrics
-      const timeTagRegex = /\[(\d+:\d+\.\d+)]/g;
-      const enhancedWordRegex = /<(\d+:\d+\.\d+)>/g;
+      // Match time tags with lyrics — support [mm:ss], [mm:ss.xx], [mm:ss,xx]
+      const timeTagRegex = /\[(\d+:\d+(?:[.,]\d+)?)\]/g;
+      const enhancedWordRegex = /<(\d+:\d+(?:[.,]\d+)?)>/g;
 
       const timeTags = [];
       let match;
       while ((match = timeTagRegex.exec(line)) !== null) {
-        timeTags.push(parseTime(match[1]));
+        const t = parseTime(match[1]);
+        if (t !== null) timeTags.push(t);
       }
 
       if (timeTags.length === 0) return; // Skip lines without time tags
@@ -540,6 +542,7 @@ BetterLyrics.LyricProviders = {
         } else {
           // This is a timestamp
           const startTime = parseTime(fragment);
+          if (startTime === null) return;
           if (lastTime !== null && parts.length > 0) {
             parts[parts.length - 1].durationMs = startTime - lastTime;
           }
@@ -586,12 +589,14 @@ BetterLyrics.LyricProviders = {
     });
 
     if (idTags["offset"]) {
-      let offset = idTags["offset"];
+      let offset = Number(idTags["offset"]) || 0;
       result.forEach(lyric => {
         lyric.startTimeMs -= offset;
-        lyric.parts.forEach(part => {
-          part.startTimeMs -= offset;
-        });
+        if (lyric.parts) {
+          lyric.parts.forEach(part => {
+            part.startTimeMs -= offset;
+          });
+        }
       });
     }
 
