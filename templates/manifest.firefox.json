@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "version": "1.10.3",
+  "version": "2.0.3",
   "name": "Better Lyrics (Lyrics for Youtube Music)",
   "description": "Enhance YouTube Music with beautiful time-synced lyrics, multilingual support, real-time translations and more",
   "homepage_url": "https://better-lyrics.boidu.dev",
@@ -11,7 +11,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "better-lyrics@boidu.dev",
+      "id": "betterlyrics@boidu.dev",
       "strict_min_version": "100.0"
     }
   },
@@ -34,7 +34,11 @@
         "*://music.youtube.com/*"
       ],
       "resources": [
-        "src/script.js"
+        "src/script.js",
+        "src/css/ytmusic.css",
+        "src/css/blyrics.css",
+        "src/css/disablestylizedanimations.css",
+        "src/css/themesong.css"
       ]
     }
   ],
@@ -60,11 +64,6 @@
         "src/modules/ui/observer.js",
         "src/modules/settings/settings.js",
         "src/index.js"
-      ],
-      "css": [
-        "src/css/ytmusic.css",
-        "src/css/blyrics.css",
-        "src/css/themesong.css"
       ],
       "run_at": "document_start"
     },

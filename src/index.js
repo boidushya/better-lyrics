@@ -21,11 +21,9 @@
  * @namespace BetterLyrics.App
  */
 BetterLyrics.App = {
-  /** @type {string} Current language setting */
-  lang: "en",
   /** @type {boolean} Whether lyrics are currently syncing with playback */
   areLyricsTicking: false,
-  /** @type {LineData[]|null} Current lyric data object */
+  /** @type {LyricsData|null} Current lyric data object */
   lyricData: null,
   /** @type {boolean} Whether lyrics have been successfully loaded */
   areLyricsLoaded: false,
@@ -37,6 +35,8 @@ BetterLyrics.App = {
   lastVideoDetails: null,
   /** @type {Promise|null} Promise for ongoing lyric injection process */
   lyricInjectionPromise: null,
+  /** @type {AbortController|null} Abort controller for lyric fetching */
+  lyricAbortController: null,
   /** @type {boolean} Whether lyric injection is queued */
   queueLyricInjection: false,
   /** @type {boolean} Whether album art injection is queued */
@@ -55,9 +55,9 @@ BetterLyrics.App = {
    * This method orchestrates the setup of logging, DOM injection, observers, settings,
    * storage, and lyric providers.
    */
-  modify: function () {
+  modify: async function () {
     BetterLyrics.Utils.setUpLog();
-    BetterLyrics.DOM.injectHeadTags();
+    await BetterLyrics.DOM.injectHeadTags();
     BetterLyrics.Observer.enableLyricsTab();
     BetterLyrics.Settings.hideCursorOnIdle();
     BetterLyrics.Settings.handleSettings();
@@ -89,12 +89,17 @@ BetterLyrics.App = {
    */
   handleModifications: function (detail) {
     if (BetterLyrics.App.lyricInjectionPromise) {
+      BetterLyrics.App.lyricAbortController.abort("New song is being loaded");
       BetterLyrics.App.lyricInjectionPromise.then(() => {
         BetterLyrics.App.lyricInjectionPromise = null;
         BetterLyrics.App.handleModifications(detail);
       });
     } else {
-      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(detail)
+      BetterLyrics.App.lyricAbortController = new AbortController();
+      BetterLyrics.App.lyricInjectionPromise = BetterLyrics.Lyrics.createLyrics(
+        detail,
+        BetterLyrics.App.lyricAbortController.signal
+      )
         .then(() => {
           return BetterLyrics.DOM.tickLyrics(detail.currentTime, Date.now(), detail.playing);
         })

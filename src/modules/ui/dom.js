@@ -172,32 +172,14 @@ BetterLyrics.DOM = {
       BetterLyrics.Utils.log(BetterLyrics.Constants.FOOTER_NOT_VISIBLE_LOG);
     }
   },
-
-  /**
-   * Sets or removes RTL (right-to-left) attributes on layout elements.
-   *
-   * @param {boolean} isRtl - Whether to enable RTL layout
-   */
-  setRtlAttributes: isRtl => {
-    const layout = document.getElementById("layout");
-    const playerPage = document.getElementById("player-page");
-
-    if (layout && playerPage) {
-      if (isRtl) {
-        layout.setAttribute(BetterLyrics.Constants.LYRICS_RTL_ATTR, "");
-        playerPage.setAttribute(BetterLyrics.Constants.LYRICS_RTL_ATTR, "");
-      } else {
-        layout.removeAttribute(BetterLyrics.Constants.LYRICS_RTL_ATTR);
-        playerPage.removeAttribute(BetterLyrics.Constants.LYRICS_RTL_ATTR);
-      }
-    }
-  },
   loaderMayBeActive: false,
   /**
    * Renders and displays the loading spinner for lyrics fetching.
    */
-  renderLoader: () => {
-    BetterLyrics.DOM.cleanup();
+  renderLoader: (small = false) => {
+    if (!small) {
+      BetterLyrics.DOM.cleanup();
+    }
     BetterLyrics.DOM.loaderMayBeActive = true;
     try {
       clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
@@ -206,19 +188,29 @@ BetterLyrics.DOM = {
       if (!loaderWrapper) {
         loaderWrapper = document.createElement("div");
         loaderWrapper.id = BetterLyrics.Constants.LYRICS_LOADER_ID;
-      } else if (loaderWrapper.hasAttribute("active")) {
-        return;
       }
 
-      tabRenderer.prepend(loaderWrapper);
-      loaderWrapper.style.display = "inline-block !important";
+      let wasActive = loaderWrapper.hasAttribute("active");
+
       loaderWrapper.setAttribute("active", "");
-      loaderWrapper.hidden = false;
-      loaderWrapper.scrollIntoView({
-        behavior: "instant",
-        block: "start",
-        inline: "start",
-      });
+      loaderWrapper.removeAttribute("no-sync-available");
+
+      if (small) {
+        loaderWrapper.setAttribute("small-loader", "");
+      } else {
+        loaderWrapper.removeAttribute("small-loader");
+      }
+
+      if (!wasActive) {
+        tabRenderer.prepend(loaderWrapper);
+        loaderWrapper.hidden = false;
+        loaderWrapper.style.display = "inline-block !important";
+        loaderWrapper.scrollIntoView({
+          behavior: "instant",
+          block: "start",
+          inline: "start",
+        });
+      }
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
@@ -227,9 +219,15 @@ BetterLyrics.DOM = {
   /**
    * Removes the loading spinner with animation and cleanup.
    */
-  flushLoader: () => {
+  flushLoader: (showNoSyncAvailable = false) => {
     try {
       const loaderWrapper = document.getElementById(BetterLyrics.Constants.LYRICS_LOADER_ID);
+
+      if (showNoSyncAvailable) {
+        loaderWrapper.setAttribute("small-loader", "");
+        reflow(loaderWrapper);
+        loaderWrapper.setAttribute("no-sync-available", "");
+      }
       if (loaderWrapper?.hasAttribute("active")) {
         clearTimeout(BetterLyrics.App.loaderAnimationEndTimeout);
         loaderWrapper.dataset.animatingOut = true;
@@ -243,11 +241,17 @@ BetterLyrics.DOM = {
           BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_TRANSITION_ENDED);
         });
 
+        let timeout = 1000;
+        let transitionDelay = window.getComputedStyle(loaderWrapper).getPropertyValue("transition-delay");
+        if (transitionDelay) {
+          timeout += toMs(transitionDelay);
+        }
+
         BetterLyrics.App.loaderAnimationEndTimeout = setTimeout(() => {
-          loaderWrapper.dataset.animatingOut = false;
+          loaderWrapper.dataset.animatingOut = String(false);
           BetterLyrics.DOM.loaderMayBeActive = false;
           BetterLyrics.Utils.log(BetterLyrics.Constants.LOADER_ANIMATION_END_FAILED);
-        }, 1000);
+        }, timeout);
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
@@ -388,7 +392,7 @@ BetterLyrics.DOM = {
   /**
    * Injects required head tags including font links and image preloads.
    */
-  injectHeadTags: () => {
+  injectHeadTags: async () => {
     const imgURL = "https://better-lyrics.boidu.dev/icon-512.png";
 
     const imagePreload = document.createElement("link");
@@ -402,6 +406,26 @@ BetterLyrics.DOM = {
     fontLink.href = BetterLyrics.Constants.FONT_LINK;
     fontLink.rel = "stylesheet";
     document.head.appendChild(fontLink);
+
+    const cssFiles = ["src/css/ytmusic.css", "src/css/blyrics.css", "src/css/themesong.css"];
+
+    let css = "";
+    const responses = await Promise.all(
+      cssFiles.map(file =>
+        fetch(chrome.runtime.getURL(file), {
+          cache: "no-store",
+        })
+      )
+    );
+
+    for (let i = 0; i < cssFiles.length; i++) {
+      css += "/* " + cssFiles[i] + " */\n";
+      css += await responses[i].text();
+    }
+
+    const style = document.createElement("style");
+    style.textContent = css;
+    document.head.appendChild(style);
   },
 
   /**
@@ -458,27 +482,31 @@ BetterLyrics.DOM = {
   scrollPos: 0,
   selectedElementIndex: 0,
   nextScrollAllowedTime: 0,
-  /**
-   * Time in seconds to offset lyric highlighting by
-   */
-  lyricTimeOffset: 0.015,
-  /**
-   * Time in seconds before lyric highlight to begin scroll to the next lyric
-   */
-  lyricScrollTimeOffset: 0.5,
   wasUserScrolling: false,
   lastTime: 0,
   lastPlayState: false,
   lastEventCreationTime: 0,
-  cachedTransitionDuration: -1,
-  getTransitionDurationInMs(lyricsElement) {
-    if (BetterLyrics.DOM.cachedTransitionDuration === -1) {
-      BetterLyrics.DOM.cachedTransitionDuration = toMs(
-        window.getComputedStyle(lyricsElement).getPropertyValue("transition-duration")
-      );
+  /**
+   * @type {Map<string, number>}
+   */
+  cachedDurations: new Map(),
+  /**
+   * Gets and caches a css duration.
+   * Note this function does not key its cache on the element provided --
+   * it assumes that it isn't relevant to the calling code
+   *
+   * @param lyricsElement - the element to look up against
+   * @param property - the css property to look up
+   * @return {number} - in ms
+   */
+  getCSSDurationInMs(lyricsElement, property) {
+    let duration = BetterLyrics.DOM.cachedDurations.get(lyricsElement);
+    if (duration === undefined) {
+      duration = toMs(window.getComputedStyle(lyricsElement).getPropertyValue(property));
+      BetterLyrics.DOM.cachedDurations.set(property, duration);
     }
 
-    return BetterLyrics.DOM.cachedTransitionDuration;
+    return duration;
   },
   /**
    * Main lyrics synchronization function that handles timing, highlighting, and scrolling.
@@ -515,8 +543,6 @@ BetterLyrics.DOM = {
       return;
     }
 
-    currentTime += BetterLyrics.DOM.lyricTimeOffset;
-    const lyricScrollTime = currentTime + BetterLyrics.DOM.lyricScrollTimeOffset;
     try {
       const lyricsElement = document.getElementsByClassName(BetterLyrics.Constants.LYRICS_CLASS)[0];
       // If lyrics element doesn't exist, clear the interval and return silently
@@ -526,29 +552,36 @@ BetterLyrics.DOM = {
         return;
       }
 
-      /**
-       * @type {LineData[]}
-       */
-      const lyricsData = BetterLyrics.App.lyricData;
-
-      if (!lyricsData) {
+      let lyricData = BetterLyrics.App.lyricData;
+      if (!lyricData) {
         BetterLyrics.App.areLyricsTicking = false;
-        BetterLyrics.Utils.log("Lyrics are ticking, but lyricsData is null!");
+        BetterLyrics.Utils.log("Lyrics are ticking, but lyricData are null!");
         return;
       }
+
+      if (lyricData.syncType === "richsync") {
+        currentTime += BetterLyrics.DOM.getCSSDurationInMs(lyricsElement, "--blyrics-richsync-timing-offset") / 1000;
+      } else {
+        currentTime += BetterLyrics.DOM.getCSSDurationInMs(lyricsElement, "--blyrics-timing-offset") / 1000;
+      }
+
+      const lyricScrollTime =
+        currentTime + BetterLyrics.DOM.getCSSDurationInMs(lyricsElement, "--blyrics-scroll-timing-offset") / 1000;
+
+      const lines = BetterLyrics.App.lyricData.lines;
 
       let selectedLyricHeight = 0;
       let targetScrollPos = 0;
       let availableScrollTime = 999;
-      lyricsData.every((lineData, index) => {
+      lines.every((lineData, index) => {
         const time = lineData.time;
         let nextTime = Infinity;
-        if (index + 1 < lyricsData.length) {
-          const nextLyric = lyricsData[index + 1];
+        if (index + 1 < lines.length) {
+          const nextLyric = lines[index + 1];
           nextTime = nextLyric.time;
         }
 
-        if (lyricScrollTime >= time && lyricScrollTime < nextTime) {
+        if (lyricScrollTime >= time && (lyricScrollTime < nextTime || lyricScrollTime < time + lineData.duration)) {
           const elemBounds = getRelativeBounds(lyricsElement, lineData.lyricElement);
           targetScrollPos = elemBounds.y;
           selectedLyricHeight = elemBounds.height;
@@ -578,7 +611,10 @@ BetterLyrics.DOM = {
         if (!isPlaying) {
           setUpAnimationEarlyTime = 0;
         }
-        if (currentTime + setUpAnimationEarlyTime >= time && currentTime < nextTime) {
+        if (
+          currentTime + setUpAnimationEarlyTime >= time &&
+          (currentTime < nextTime || currentTime < time + lineData.duration)
+        ) {
           lineData.selected = true;
 
           const timeDelta = currentTime - time;
@@ -671,7 +707,7 @@ BetterLyrics.DOM = {
             lyricsElement.style.transitionProperty = "";
             lyricsElement.style.transitionDuration = "";
 
-            let scrollTime = BetterLyrics.DOM.getTransitionDurationInMs(lyricsElement);
+            let scrollTime = BetterLyrics.DOM.getCSSDurationInMs(lyricsElement, "transition-duration");
             if (scrollTime > availableScrollTime * 1000 - 50) {
               scrollTime = availableScrollTime * 1000 - 50;
             }
@@ -679,17 +715,17 @@ BetterLyrics.DOM = {
               scrollTime = 200;
             }
 
-            lyricsElement.style.transition = "top 0s ease-in-out 0s";
-            lyricsElement.style.top = `${-(scrollTop - scrollPos)}px`;
+            lyricsElement.style.transition = "transform 0s ease-in-out 0s";
+            lyricsElement.style.transform = `translate(0px, ${-(scrollTop - scrollPos)}px)`;
             reflow(lyricsElement);
-            if (scrollTime < 700) {
-              lyricsElement.style.transitionProperty = "top";
+            if (scrollTime < 500) {
+              lyricsElement.style.transitionProperty = "transform";
               lyricsElement.style.transitionTimingFunction = "ease";
             } else {
               lyricsElement.style.transition = "";
             }
             lyricsElement.style.transitionDuration = `${scrollTime}ms`;
-            lyricsElement.style.top = "0px";
+            lyricsElement.style.transform = "translate(0px, 0px)";
 
             BetterLyrics.DOM.nextScrollAllowedTime = scrollTime + Date.now() + 20;
           }

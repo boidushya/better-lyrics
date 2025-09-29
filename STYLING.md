@@ -114,28 +114,34 @@ These custom properties allow for easy customization of colors, sizes, and other
 
 ### Typography
 
-| Variable                           | Default Value                                                                                                                            | Description                                |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| `--blyrics-font-family`            | `Satoshi, Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif` | Font family for lyrics                     |
-| `--blyrics-font-size`              | `3rem`                                                                                                                                   | Font size for lyrics                       |
-| `--blyrics-font-weight`            | `700`                                                                                                                                    | Font weight for lyrics                     |
-| `--blyrics-line-height`            | `1.333`                                                                                                                                  | Line height for lyrics                     |
-| `--blyrics-translated-font-size`   | `2rem`                                                                                                                                   | Font size of translated/romanized lyrics   |
-| `--blyrics-translated-font-weight` | `600`                                                                                                                                    | Font weight of translated/romanized lyrics |
-| `--blyrics-translated-font-family` | Inherits `--blyrics-font-family`                                                                                                         | Font family of translated/romanized lyrics |
-| `--blyrics-translated-color`       | `color(display-p3 1 1 1 / var(--blyrics-translated-opacity, 0.6))`                                                                       | Color of translated/romanized lyrics       |
-| `--blyrics-footer-font-family`     | `Roboto, Noto Naskh Arabic UI, Arial, sans-serif`                                                                                        | Font family of footer                      |
-| `--blyrics-footer-font-size`       | `14px`                                                                                                                                   | Font size of footer                        |
-| `--blyrics-footer-font-weight`     | `400`                                                                                                                                    | Font weight of footer                      |
+| Variable                          | Default Value                                                                                                                                                        | Description                                                             |
+|-----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
+| `--blyrics-font-family`           | `Satoshi, var(--noto-sans-universal), Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif` | Font family for lyrics                                                  |
+| `--blyrics-font-size`             | `3rem`                                                                                                                                                               | Font size for lyrics                                                    |
+| `--blyrics-font-weight`           | `700`                                                                                                                                                                | Font weight for lyrics                                                  |
+| `--blyrics-line-height`           | `1.333`                                                                                                                                                              | Line height for lyrics                                                  |
+| `--blyrics-translated-font-size`  | `2rem`                                                                                                                                                               | Font size of translated/romanized lyrics                                |
+| `--blyrics-translated-font-weight` | `600`                                                                                                                                                                | Font weight of translated/romanized lyrics                              |
+| `--blyrics-translated-font-family` | Inherits `--blyrics-font-family`                                                                                                                                     | Font family of translated/romanized lyrics                              |
+| `--blyrics-translated-color`      | `color(display-p3 1 1 1 / var(--blyrics-translated-opacity, 0.6))`                                                                                                   | Color of translated/romanized lyrics                                    |
+| `--blyrics-footer-font-family`    | `Roboto, Noto Naskh Arabic UI, Arial, sans-serif`                                                                                                                    | Font family of footer                                                   |
+| `--blyrics-footer-font-size`      | `14px`                                                                                                                                                               | Font size of footer                                                     |
+| `--blyrics-footer-font-weight`    | `400`                                                                                                                                                                | Font weight of footer                                                   |
+| `--noto-sans-universal)`          | Omitted                                                                                                                                                              | A family of NotoSans fonts covering a large majority of langauges used.¹ |
+
+¹You don't want to override this. You should use this in your own font families as a fallback.
 
 ### Animations
 
-| Variable                                      | Default Value | Description                              |
-| --------------------------------------------- | ------------- | ---------------------------------------- |
-| `--blyrics-scale-transition-duration`         | `0.166s`      | Transition duration of scale effect      |
-| `--blyrics-lyric-highlight-fade-in-duration`  | `0.33s`       | Controls duration of fade in transition  |
-| `--blyrics-lyric-highlight-fade-out-duration` | `0.5s`        | Controls duration of fade out transition |
-| `--blyrics-wobble-duration`                   | `1s`          | Controls duration of wobble animation    |
+| Variable                                      | Default Value | Description                                                                                     |
+|-----------------------------------------------|---------------|-------------------------------------------------------------------------------------------------|
+| `--blyrics-scale-transition-duration`         | `0.166s`      | Transition duration of scale effect                                                             |
+| `--blyrics-lyric-highlight-fade-in-duration`  | `0.33s`       | Controls duration of fade in transition                                                         |
+| `--blyrics-lyric-highlight-fade-out-duration` | `0.5s`        | Controls duration of fade out transition                                                        |
+| `--blyrics-wobble-duration`                   | `1s`          | Controls duration of wobble animation                                                           |
+| `--blyrics-timing-offset`                     | `0.115s`      | Offsets lyrics highlighting for synced lyrics (positive values = lyrics highlighted earlier)    |
+| `--blyrics-richsync-timing-offset`            | `0.020s`      | Offsets highlighting for richsynced lyrics (positive values = lyrics highlighted earlier)       |
+| `--blyrics-scroll-timing-offset`              | `0.5s`        | Offsets the scroll time (positive values = scroll earlier). Applied after other timing offsets. |
 
 ### Layout
 

@@ -1,4 +1,67 @@
 /**
+ * Handles the Turnstile challenge by creating an iframe and returning a Promise.
+ * The visibility of the iframe can be controlled for testing purposes.
+ * @returns {Promise<string>} A promise that resolves with the Turnstile token.
+ */
+function handleTurnstile() {
+  return new Promise((resolve, reject) => {
+    const iframe = document.createElement("iframe");
+    iframe.src = CUBEY_LYRICS_API_URL + "challenge";
+
+    iframe.style.position = "fixed";
+    iframe.style.bottom = "calc(20px + var(--ytmusic-player-bar-height))";
+    iframe.style.right = "20px";
+    iframe.style.width = "0px";
+    iframe.style.height = "0px";
+    iframe.style.border = "none";
+    iframe.style.zIndex = "999999";
+    document.body.appendChild(iframe);
+
+    const messageListener = event => {
+      if (event.source !== iframe.contentWindow) {
+        return;
+      }
+
+      switch (event.data.type) {
+        case "turnstile-token":
+          BetterLyrics.Utils.log("[BetterLyrics] ✅ Received Success Token:", event.data.token);
+          cleanup();
+          resolve(event.data.token);
+          break;
+
+        case "turnstile-error":
+          console.error("[BetterLyrics] ❌ Received Challenge Error:", event.data.error);
+          cleanup();
+          reject(new Error(`[BetterLyrics] Turnstile challenge error: ${event.data.error}`));
+          break;
+
+        case "turnstile-expired":
+          console.warn("⚠️ Token expired. Resetting challenge.");
+          iframe.contentWindow.postMessage({ type: "reset-turnstile" }, "*");
+          break;
+
+        case "turnstile-timeout":
+          console.warn("[BetterLyrics] ⏳ Challenge timed out.");
+          cleanup();
+          reject(new Error("[BetterLyrics] Turnstile challenge timed out."));
+          break;
+      }
+    };
+
+    const cleanup = () => {
+      window.removeEventListener("message", messageListener);
+      if (document.body.contains(iframe)) {
+        document.body.removeChild(iframe);
+      }
+    };
+
+    window.addEventListener("message", messageListener);
+  });
+}
+
+const CUBEY_LYRICS_API_URL = "https://lyrics.api.dacubeking.com/";
+
+/**
  * Lyrics provider management for the BetterLyrics extension.
  * Handles multiple lyrics sources and provider orchestration.
  *
@@ -85,16 +148,17 @@ BetterLyrics.LyricProviders = {
    * @property {AudioTrackData} audioTrackData
    * @property {string | null} album
    * @property {Map<string, LyricSource>} sourceMap
+   * @property {boolean} alwaysFetchMetadata
+   * @property {AbortSignal} signal
    */
 
   /**
    *
    * @param {ProviderParameters} providerParameters
-   * @return {Promise<{lyrics: null, source: string, album: string, song: (string), duration, artist: string, cacheAllowed: boolean, sourceHref: string}>}
    */
   cubey: async function (providerParameters) {
+    const browserAPI = typeof browser !== "undefined" ? browser : chrome;
     const LEGACY_BASE = "https://lyrics.api.dacubeking.com/";
-    const CUBEY_LYRICS_API_URL = "https://lyrics.api.dacubeking.com/";
 
     async function legacyFetch() {
       const url = new URL(LEGACY_BASE);
@@ -107,7 +171,7 @@ BetterLyrics.LyricProviders = {
       return await BetterLyrics.Utils.fetchJSON(url.toString(), {}, 10000);
     }
 
-    function fillSourceMapFromResponse(response) {
+    function fillFromResponse(response) {
       if (!response || typeof response !== "object") response = {};
       if (response.album) {
         BetterLyrics.Utils.log("Found Album: " + response.album);
@@ -175,6 +239,7 @@ BetterLyrics.LyricProviders = {
           source: "LRCLib",
           sourceHref: "https://lrclib.net",
           musicVideoSynced: false,
+          cacheAllowed: false,
         };
       }
 
@@ -183,12 +248,49 @@ BetterLyrics.LyricProviders = {
       });
     }
 
-    async function authenticateAndGetJwt() {
+    async function getAuthenticationToken(forceNew = false) {
+      function isJwtExpired(token) {
+        try {
+          const payloadBase64Url = token.split(".")[1];
+          if (!payloadBase64Url) return true;
+          const payloadBase64 = payloadBase64Url.replace(/-/g, "+").replace(/_/g, "/");
+          const decodedPayload = atob(payloadBase64);
+          const payload = JSON.parse(decodedPayload);
+          const exp = payload.exp;
+          if (!exp) return true;
+          const now = Date.now() / 1000;
+          return now > exp;
+        } catch (_e) {
+          return true;
+        }
+      }
+
+      if (forceNew) {
+        await browserAPI.storage.local.remove("jwtToken");
+      } else {
+        const stored = await browserAPI.storage.local.get("jwtToken");
+        if (stored.jwtToken && !isJwtExpired(stored.jwtToken)) {
+          return stored.jwtToken;
+        }
+        if (stored.jwtToken) {
+          await browserAPI.storage.local.remove("jwtToken");
+        }
+      }
+
       try {
-        const browserAPI = typeof browser !== "undefined" ? browser : chrome;
-        const { jwtToken } = await browserAPI.storage.local.get("jwtToken");
-        if (jwtToken) return jwtToken;
-        return null;
+        const turnstileToken = await handleTurnstile();
+        const res = await fetch(CUBEY_LYRICS_API_URL + "verify-turnstile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: turnstileToken }),
+          credentials: "include",
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        const newJwt = data.jwt;
+        if (!newJwt) return null;
+        await browserAPI.storage.local.set({ jwtToken: newJwt });
+        return newJwt;
       } catch (_e) {
         return null;
       }
@@ -224,32 +326,251 @@ BetterLyrics.LyricProviders = {
       });
     }
 
-    let responseObj = null;
     try {
-      const jwt = await authenticateAndGetJwt();
-      if (jwt) {
-        let res = await makeApiCall(jwt);
-        if (res && res.status === 401) {
-          // JWT invalid; try legacy as fallback
-          res = null;
+      let jwt = await getAuthenticationToken();
+      if (!jwt) {
+        const legacy = await legacyFetch();
+        fillFromResponse(legacy || {});
+        return;
+      }
+
+      let response = await makeApiCall(jwt);
+      if (response && response.status === 403) {
+        jwt = await getAuthenticationToken(true);
+        if (!jwt) {
+          ["musixmatch-synced", "musixmatch-richsync", "lrclib-synced", "lrclib-plain"].forEach(s => {
+            providerParameters.sourceMap.get(s).filled = true;
+          });
+          return;
         }
-        if (res && res.ok) {
-          try {
-            const text = await res.text();
-            responseObj = text ? JSON.parse(text) : {};
-          } catch (_e) {
-            responseObj = {};
+        response = await makeApiCall(jwt);
+      }
+
+      if (!response || !response.ok) {
+        ["musixmatch-synced", "musixmatch-richsync", "lrclib-synced", "lrclib-plain"].forEach(s => {
+          providerParameters.sourceMap.get(s).filled = true;
+        });
+        return;
+      }
+
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (_e) {
+        data = {};
+      }
+      fillFromResponse(data);
+    } catch (_e) {
+      const legacy = await legacyFetch();
+      fillFromResponse(legacy || {});
+    }
+  },
+
+    /**
+     * Gets a valid JWT, either from storage or by forcing a new Turnstile challenge.
+     * @param {boolean} [forceNew=false] - If true, ignores and overwrites any stored token.
+     * @returns {Promise<string|null>} A promise that resolves with the JWT.
+     */
+    async function getAuthenticationToken(forceNew = false) {
+      function isJwtExpired(token) {
+        try {
+          const payloadBase64Url = token.split(".")[1];
+          if (!payloadBase64Url) return true;
+          const payloadBase64 = payloadBase64Url.replace(/-/g, "+").replace(/_/g, "/");
+          const decodedPayload = atob(payloadBase64);
+          const payload = JSON.parse(decodedPayload);
+          const expirationTimeInSeconds = payload.exp;
+          if (!expirationTimeInSeconds) return true;
+          const nowInSeconds = Date.now() / 1000;
+          return nowInSeconds > expirationTimeInSeconds;
+        } catch (e) {
+          console.error("[BetterLyrics] Error decoding JWT on client-side:", e);
+          return true;
+        }
+      }
+
+      if (forceNew) {
+        BetterLyrics.Utils.log("[BetterLyrics] Forcing new token, removing any existing one.");
+        await browserAPI.storage.local.remove("jwtToken");
+      } else {
+        const storedData = await browserAPI.storage.local.get("jwtToken");
+        if (storedData.jwtToken) {
+          if (isJwtExpired(storedData.jwtToken)) {
+            BetterLyrics.Utils.log("[BetterLyrics]Local JWT has expired. Removing and requesting a new one.");
+            await browserAPI.storage.local.remove("jwtToken");
+          } else {
+            BetterLyrics.Utils.log("[BetterLyrics] 🔑 Using valid, non-expired JWT for bypass.");
+            return storedData.jwtToken;
           }
         }
       }
 
-      if (!responseObj) {
-        responseObj = await legacyFetch();
-        if (!responseObj) responseObj = {};
+      try {
+        BetterLyrics.Utils.log("[BetterLyrics] No valid JWT found, initiating Turnstile challenge...");
+        const turnstileToken = await handleTurnstile({ visible: false });
+
+        const response = await fetch(CUBEY_LYRICS_API_URL + "verify-turnstile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: turnstileToken }),
+          credentials: "include",
+        });
+
+        if (!response.ok) throw new Error(`API verification failed: ${response.statusText}`);
+
+        const data = await response.json();
+        const newJwt = data.jwt;
+
+        if (!newJwt) throw new Error("No JWT returned from API after verification.");
+
+        await browserAPI.storage.local.set({ jwtToken: newJwt });
+        BetterLyrics.Utils.log("[BetterLyrics] ✅ New JWT received and stored.");
+        return newJwt;
+      } catch (error) {
+        console.error("[BetterLyrics] Authentication process failed:", error);
+        return null;
       }
-    } catch (_e) {
-      responseObj = await legacyFetch();
-      if (!responseObj) responseObj = {};
+    }
+
+    /**
+     * Helper to construct and send the API request.
+     * @param {string} jwt - The JSON Web Token for authorization.
+     * @returns {Promise<Response>} The fetch Response object.
+     */
+    async function makeApiCall(jwt) {
+      const url = new URL(CUBEY_LYRICS_API_URL + "lyrics");
+      url.searchParams.append("song", providerParameters.song);
+      url.searchParams.append("artist", providerParameters.artist);
+      url.searchParams.append("duration", providerParameters.duration);
+      url.searchParams.append("videoId", providerParameters.videoId);
+      if (providerParameters.album) {
+        url.searchParams.append("album", providerParameters.album);
+      }
+      url.searchParams.append("alwaysFetchMetadata", String(providerParameters.alwaysFetchMetadata));
+
+      return await fetch(url, {
+        signal: AbortSignal.any([providerParameters.signal, AbortSignal.timeout(10000)]),
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+        credentials: "include",
+      });
+    }
+
+    let jwt = await getAuthenticationToken();
+    if (!jwt) {
+      console.error("[BetterLyrics] Could not obtain an initial authentication token. Aborting lyrics fetch.");
+      // Mark sources as filled to prevent retries
+      ["musixmatch-synced", "musixmatch-richsync", "lrclib-synced", "lrclib-plain"].forEach(source => {
+        providerParameters.sourceMap.get(source).filled = true;
+      });
+      return;
+    }
+
+    let response = await makeApiCall(jwt);
+
+    // If the request is forbidden (403), it's likely a WAF block.
+    // Invalidate the current JWT and try one more time with a fresh one.
+    if (response.status === 403) {
+      console.warn(
+        "[BetterLyrics] Request was blocked (403 Forbidden), possibly by WAF. Forcing new Turnstile challenge."
+      );
+      jwt = await getAuthenticationToken(true); // `true` forces a new token
+
+      if (!jwt) {
+        console.error("[BetterLyrics] Could not obtain a new token after WAF block. Aborting.");
+        ["musixmatch-synced", "musixmatch-richsync", "lrclib-synced", "lrclib-plain"].forEach(source => {
+          providerParameters.sourceMap.get(source).filled = true;
+        });
+        return;
+      }
+
+      BetterLyrics.Utils.log("[BetterLyrics] Retrying API call with new token...");
+      response = await makeApiCall(jwt);
+    }
+
+    if (!response.ok) {
+      console.error(`[BetterLyrics] API request failed with status: ${response.status}`);
+      ["musixmatch-synced", "musixmatch-richsync", "lrclib-synced", "lrclib-plain"].forEach(source => {
+        providerParameters.sourceMap.get(source).filled = true;
+      });
+      return;
+    }
+
+    const responseData = await response.json();
+
+    if (responseData.album) {
+      BetterLyrics.Utils.log("[BetterLyrics] Found Album: " + responseData.album);
+    }
+
+    if (responseData.musixmatchWordByWordLyrics) {
+      let musixmatchWordByWordLyrics = BetterLyrics.LyricProviders.parseLRC(
+        responseData.musixmatchWordByWordLyrics,
+        Number(providerParameters.duration)
+      );
+      BetterLyrics.LyricProviders.lrcFixers(musixmatchWordByWordLyrics);
+
+      providerParameters.sourceMap.get("musixmatch-richsync").lyricSourceResult = {
+        lyrics: musixmatchWordByWordLyrics,
+        source: "Musixmatch",
+        sourceHref: "https://www.musixmatch.com",
+        musicVideoSynced: false,
+        album: responseData.album,
+        artist: responseData.artist,
+        song: responseData.song,
+        duration: responseData.duration,
+      };
+    } else {
+      providerParameters.sourceMap.get("musixmatch-richsync").lyricSourceResult = {
+        lyrics: null,
+        source: "Musixmatch",
+        sourceHref: "https://www.musixmatch.com",
+        musicVideoSynced: false,
+        album: responseData.album,
+        artist: responseData.artist,
+        song: responseData.song,
+        duration: responseData.duration,
+      };
+    }
+
+    if (responseData.musixmatchSyncedLyrics) {
+      let musixmatchSyncedLyrics = BetterLyrics.LyricProviders.parseLRC(
+        responseData.musixmatchSyncedLyrics,
+        Number(providerParameters.duration)
+      );
+      providerParameters.sourceMap.get("musixmatch-synced").lyricSourceResult = {
+        lyrics: musixmatchSyncedLyrics,
+        source: "Musixmatch",
+        sourceHref: "https://www.musixmatch.com",
+        musicVideoSynced: false,
+      };
+    }
+
+    if (responseData.lrclibSyncedLyrics) {
+      let lrclibSyncedLyrics = BetterLyrics.LyricProviders.parseLRC(
+        responseData.lrclibSyncedLyrics,
+        Number(providerParameters.duration)
+      );
+      providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = {
+        lyrics: lrclibSyncedLyrics,
+        source: "LRCLib",
+        sourceHref: "https://lrclib.net",
+        musicVideoSynced: false,
+      };
+    }
+
+    if (responseData.lrclibPlainLyrics) {
+      let lrclibPlainLyrics = BetterLyrics.LyricProviders.parsePlainLyrics(responseData.lrclibPlainLyrics);
+
+      providerParameters.sourceMap.get("lrclib-plain").lyricSourceResult = {
+        lyrics: lrclibPlainLyrics,
+        source: "LRCLib",
+        sourceHref: "https://lrclib.net",
+        musicVideoSynced: false,
+        cacheAllowed: false,
+      };
+>>>>>>> origin/master
     }
 
     fillSourceMapFromResponse(responseObj);
@@ -259,7 +580,6 @@ BetterLyrics.LyricProviders = {
    * @param {ProviderParameters} providerParameters
    */
   bLyrics: async function (providerParameters) {
-    // Fetch from the primary API if cache is empty or invalid
     const url = new URL(BetterLyrics.Constants.LYRICS_API_URL);
     url.searchParams.append("s", providerParameters.song);
     url.searchParams.append("a", providerParameters.artist);
@@ -267,7 +587,6 @@ BetterLyrics.LyricProviders = {
 
     const data = await BetterLyrics.Utils.fetchJSON(url.toString(), {}, 10000);
 
-    // Validate API response structure
     if (!data || (!Array.isArray(data.lyrics) && !data.syncedLyrics)) {
       providerParameters.sourceMap.get("bLyrics").filled = true;
       providerParameters.sourceMap.get("bLyrics").lyricSourceResult = null;
@@ -300,7 +619,10 @@ BetterLyrics.LyricProviders = {
     }, 10000);
 
     if (!response || !response.ok) {
-      throw new Error(BetterLyrics.Constants.HTTP_ERROR_LOG + (response ? response.status : ""));
+      providerParameters.sourceMap.get("lrclib-synced").filled = true;
+      providerParameters.sourceMap.get("lrclib-plain").filled = true;
+      providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = null;
+      providerParameters.sourceMap.get("lrclib-plain").lyricSourceResult = null;
     }
 
     const data = await response.json();
@@ -322,6 +644,7 @@ BetterLyrics.LyricProviders = {
           source: "LRCLib",
           sourceHref: "https://lrclib.net",
           musicVideoSynced: false,
+          cacheAllowed: false,
         };
       }
     }
@@ -346,6 +669,7 @@ BetterLyrics.LyricProviders = {
         source: sourceText,
         sourceHref: "",
         musicVideoSynced: false,
+        cacheAllowed: false,
       };
     }
 
@@ -382,8 +706,9 @@ BetterLyrics.LyricProviders = {
     }
 
     if (!langCode) {
-      BetterLyrics.Utils.log(audioTrackData);
-      throw new Error("Found Caption Tracks, but couldn't determine the default");
+      BetterLyrics.Utils.log("Found Caption Tracks, but couldn't determine the default", audioTrackData);
+      providerParameters.sourceMap.get("yt-captions").filled = true;
+      providerParameters.sourceMap.get("yt-captions").lyricSourceResult = null;
     }
 
     let captionsUrl;
@@ -396,8 +721,10 @@ BetterLyrics.LyricProviders = {
     }
 
     if (!captionsUrl) {
-      BetterLyrics.Utils.log(audioTrackData);
-      throw new Error("Only found auto generated lyrics, not using");
+      BetterLyrics.Utils.log("Only found auto generated lyrics for youtube captions, not using", audioTrackData);
+      providerParameters.sourceMap.get("yt-captions").filled = true;
+      providerParameters.sourceMap.get("yt-captions").lyricSourceResult = null;
+      return;
     }
 
     captionsUrl = new URL(captionsUrl);
@@ -405,6 +732,7 @@ BetterLyrics.LyricProviders = {
 
     let captionData = await fetch(captionsUrl, {
       method: "GET",
+      signal: AbortSignal.any([providerParameters.signal, AbortSignal.timeout(10000)]),
     }).then(response => response.json());
 
     /**
@@ -434,6 +762,17 @@ BetterLyrics.LyricProviders = {
         durationMs: event.dDurationMs,
       });
     });
+
+    let allCaps = lyricsArray.every(lyric => {
+      return lyric.words.toUpperCase() === lyric.words;
+    });
+
+    if (allCaps) {
+      lyricsArray.every(lyric => {
+        lyric.words = lyric.words.substring(0, 1).toUpperCase() + lyric.words.substring(1).toLowerCase();
+        return true;
+      });
+    }
 
     providerParameters.sourceMap.get("yt-captions").filled = true;
     providerParameters.sourceMap.get("yt-captions").lyricSourceResult = {
@@ -506,7 +845,7 @@ BetterLyrics.LyricProviders = {
   },
 
   /**
-   * @return {Map<string: LyricSource>} sources
+   * @return {Map<string, LyricSource>} sources
    */
   newSourceMap: function () {
     let sources = new Map();

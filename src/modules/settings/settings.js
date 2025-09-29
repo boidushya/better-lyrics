@@ -33,25 +33,21 @@ BetterLyrics.Settings = {
 
     BetterLyrics.Settings.onStylizedAnimationsEnabled(
       () => {
-        const layout = document.getElementById("layout");
-        const playerPage = document.getElementById("player-page");
-        const appBase = document.getElementsByTagName("ytmusic-app")[0];
-
-        if (layout && playerPage) {
-          layout.setAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR, "");
-          playerPage.setAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR, "");
-          appBase.setAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR, "");
+        let styleElm = document.getElementById("blyrics-disable-effects");
+        if (styleElm) {
+          styleElm.remove();
         }
       },
-      () => {
-        const layout = document.getElementById("layout");
-        const playerPage = document.getElementById("player-page");
-        const appBase = document.getElementsByTagName("ytmusic-app")[0];
+      async () => {
+        let styleElem = document.getElementById("blyrics-disable-effects");
+        if (!styleElem) {
+          styleElem = document.createElement("style");
+          styleElem.id = "blyrics-disable-effects";
 
-        if (layout && playerPage) {
-          layout.removeAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR);
-          playerPage.removeAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR);
-          appBase.removeAttribute(BetterLyrics.Constants.LYRICS_STYLIZED_ATTR);
+          styleElem.textContent = await fetch(chrome.runtime.getURL("src/css/disablestylizedanimations.css")).then(
+            res => res.text()
+          );
+          document.head.appendChild(styleElem);
         }
       }
     );
@@ -169,6 +165,7 @@ BetterLyrics.Settings = {
             });
         }
       } else if (request.action === "updateSettings") {
+        BetterLyrics.Translation.clearCache();
         BetterLyrics.Utils.setUpLog();
         BetterLyrics.Settings.hideCursorOnIdle();
         BetterLyrics.Settings.handleSettings();
@@ -184,6 +181,8 @@ BetterLyrics.Settings = {
       } else if (request.action === "clearCache") {
         try {
           BetterLyrics.Storage.clearCache();
+          BetterLyrics.App.reloadLyrics();
+
           sendResponse({ success: true });
         } catch {
           sendResponse({ success: false });

@@ -5,7 +5,7 @@
 
 <p align="center">
  <a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
- <img src="https://img.shields.io/badge/version-1.10.3-blue.svg" alt=""/>
+ <img src="https://img.shields.io/badge/version-2.0.3-blue.svg" alt=""/>
 
  <img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt=""/>
  <a aria-label="Volkswagen CI" href="https://github.com/boidushya/better-lyrics"><img src="https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1" alt=""/></a>
@@ -298,7 +298,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://vinay-portfolioo.netlify.app/"><img src="https://avatars.githubusercontent.com/u/92705023?v=4?s=100" width="100px;" alt="VINAY CHAURASIYA"/><br /><sub><b>VINAY CHAURASIYA</b></sub></a><br /><a href="https://github.com/boidushya/better-lyrics/commits?author=VinayChaurasiyaA" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Myse1f"><img src="https://avatars.githubusercontent.com/u/28757057?v=4?s=100" width="100px;" alt="Yvon"/><br /><sub><b>Yvon</b></sub></a><br /><a href="https://github.com/boidushya/better-lyrics/commits?author=Myse1f" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/nitinmano"><img src="https://avatars.githubusercontent.com/u/55648552?v=4?s=100" width="100px;" alt="NMPro"/><br /><sub><b>NMPro</b></sub></a><br /><a href="https://github.com/boidushya/better-lyrics/commits?author=nitinmano" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/varun7654"><img src="https://avatars.githubusercontent.com/u/59785640?v=4?s=100" width="100px;" alt="Varun Ahuja"/><br /><sub><b>Varun Ahuja</b></sub></a><br /><a href="https://github.com/boidushya/better-lyrics/commits?author=varun7654" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/adaliea"><img src="https://avatars.githubusercontent.com/u/59785640?v=4?s=100" width="100px;" alt="Adalie Ahuja"/><br /><sub><b>Adalie Ahuja</b></sub></a><br /><a href="https://github.com/boidushya/better-lyrics/commits?author=adaliea" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://gustavostz.com/"><img src="https://avatars.githubusercontent.com/u/48111506?v=4?s=100" width="100px;" alt="Gustavo Steinmetz"/><br /><sub><b>Gustavo Steinmetz</b></sub></a><br /><a href="https://github.com/boidushya/better-lyrics/commits?author=gustavostz" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Kiroolos"><img src="https://avatars.githubusercontent.com/u/43939903?v=4?s=100" width="100px;" alt="Kirolos ☃️"/><br /><sub><b>Kirolos ☃️</b></sub></a><br /><a href="https://github.com/boidushya/better-lyrics/commits?author=Kiroolos" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/cschot"><img src="https://avatars.githubusercontent.com/u/40297097?v=4?s=100" width="100px;" alt="cschot"/><br /><sub><b>cschot</b></sub></a><br /><a href="https://github.com/boidushya/better-lyrics/commits?author=cschot" title="Code">💻</a></td>

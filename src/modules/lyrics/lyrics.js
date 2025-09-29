@@ -4,7 +4,7 @@
  */
 
 /** Current version of the lyrics cache format */
-const LYRIC_CACHE_VERSION = "1.1.1";
+const LYRIC_CACHE_VERSION = "1.2.0";
 
 /**
  * Core lyrics functionality for the BetterLyrics extension.
@@ -20,8 +20,9 @@ BetterLyrics.Lyrics = {
    * Handles caching, API requests, and fallback mechanisms.
    *
    * @param {PlayerDetails} detail - Song and player details
+   * @param signal {AbortSignal}
    */
-  createLyrics: async function (detail) {
+  createLyrics: async function (detail, signal) {
     let song = detail.song;
     let artist = detail.artist;
     let videoId = detail.videoId;
@@ -65,6 +66,7 @@ BetterLyrics.Lyrics = {
      */
     let segmentMap = null;
     let matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId, 1);
+    let swappedVideoId = false;
     if (
       (!matchingSong ||
         !matchingSong.counterpartVideoId ||
@@ -72,12 +74,14 @@ BetterLyrics.Lyrics = {
       BetterLyrics.App.lastLoadedVideoId !== videoId
     ) {
       BetterLyrics.DOM.renderLoader(); // Only render the loader after we've checked the cache & we're not switching between audio and video
+      BetterLyrics.Translation.clearCache();
       matchingSong = await BetterLyrics.RequestSniffing.getMatchingSong(videoId);
     } else {
       BetterLyrics.Utils.log("Switching between audio/video: Skipping Loader");
     }
     if (isMusicVideo && matchingSong && matchingSong.counterpartVideoId && matchingSong.segmentMap) {
       BetterLyrics.Utils.log("Switching VideoId to Audio Id");
+      swappedVideoId = true;
       videoId = matchingSong.counterpartVideoId;
       segmentMap = matchingSong.segmentMap;
     }
@@ -98,6 +102,10 @@ BetterLyrics.Lyrics = {
     song = song.trim();
     artist = artist.trim();
     artist = artist.replace(", & ", ", ");
+    let album = await BetterLyrics.RequestSniffing.getSongAlbum(videoId);
+    if (!album) {
+      album = "";
+    }
 
     // Check for empty strings after trimming
     if (!song || !artist) {
@@ -119,12 +127,25 @@ BetterLyrics.Lyrics = {
       duration,
       videoId,
       audioTrackData,
-      album: null,
+      album,
       sourceMap,
+      alwaysFetchMetadata: swappedVideoId,
+      signal,
     };
+
+    let ytLyricsPromise = BetterLyrics.LyricProviders.getLyrics(providerParameters, "yt-lyrics").then(lyrics => {
+      if (!BetterLyrics.App.areLyricsLoaded && lyrics) {
+        BetterLyrics.Utils.log(
+          "[BetterLyrics] Temporarily Using YT Music Lyrics while we wait for synced lyrics to load"
+        );
+        BetterLyrics.Lyrics.processLyrics(lyrics, true);
+      }
+      return lyrics;
+    });
+
     try {
       let cubyLyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, "musixmatch-richsync");
-      if (cubyLyrics && cubyLyrics.album) {
+      if (cubyLyrics && cubyLyrics.album && cubyLyrics.album.length > 0 && album !== cubyLyrics.album) {
         providerParameters.album = cubyLyrics.album;
       }
       if (cubyLyrics && cubyLyrics.song && cubyLyrics.song.length > 0 && song !== cubyLyrics.song) {
@@ -137,20 +158,33 @@ BetterLyrics.Lyrics = {
         providerParameters.artist = cubyLyrics.artist;
       }
 
-      if (cubyLyrics && cubyLyrics.duration && cubyLyrics.duration.length > 0 && duration !== cubyLyrics.duration) {
+      if (
+        cubyLyrics &&
+        cubyLyrics.duration &&
+        cubyLyrics.duration.length > 0 &&
+        String(duration) !== String(cubyLyrics.duration)
+      ) {
         BetterLyrics.Utils.log("Using '" + cubyLyrics.duration + "' for duration instead of '" + duration + "'");
-        providerParameters.duration = Number(cubyLyrics.duration);
+        providerParameters.duration = String(cubyLyrics.duration);
       }
     } catch (err) {
       BetterLyrics.Utils.log(err);
     }
 
     for (let provider of BetterLyrics.LyricProviders.providerPriority) {
+      if (provider.startsWith("d_")) {
+        // Provider is disabled
+        continue;
+      }
+      if (signal.aborted) {
+        return;
+      }
+
       try {
         lyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, provider);
 
         if (lyrics && lyrics.lyrics && Array.isArray(lyrics.lyrics) && lyrics.lyrics.length > 0) {
-          let ytLyrics = await BetterLyrics.LyricProviders.getLyrics(providerParameters, "yt-lyrics");
+          let ytLyrics = await ytLyricsPromise;
 
           if (ytLyrics !== null) {
             let lyricText = "";
@@ -220,16 +254,6 @@ BetterLyrics.Lyrics = {
       }
     }
 
-    if (lyrics.isRtlLanguage === undefined) {
-      // Arabic Characters: U+0600..U+06FF (Urdu, Arabic, Kurdish)
-      // Arabic Presentation Forms-A: U+FB50..U+FDFF (For Persian, Urdu, Sindhi)
-      // Hebrew Characters: U+0590..U+05FF (Yiddish)
-      // Thaana Characters: U+0780..U+07BF
-
-      const testRtl = text => /[\u0600-\u06FF]|[\ufb50-\ufdff]|[\u0590-\u05ff]|[\u0780-\u07bf]/.test(text);
-      lyrics.isRtlLanguage = lyrics.lyrics.some(({ words }) => testRtl(words));
-    }
-
     BetterLyrics.Utils.log("Got Lyrics from " + lyrics.source);
 
     // Preserve song and artist information in the lyrics data for the "Add Lyrics" button
@@ -240,6 +264,9 @@ BetterLyrics.Lyrics = {
     lyrics.videoId = providerParameters.videoId;
 
     BetterLyrics.App.lastLoadedVideoId = detail.videoId;
+    if (signal.aborted) {
+      return;
+    }
     this.cacheAndProcessLyrics(cacheKey, lyrics);
   },
 
@@ -263,14 +290,11 @@ BetterLyrics.Lyrics = {
    * Sets language settings, validates data, and initiates DOM injection.
    *
    * @param {Object} data - Processed lyrics data
+   * @param keepLoaderVisible {boolean}
    * @param {string} data.language - Language code for the lyrics
-   * @param {boolean} data.isRtlLanguage - Whether lyrics are in RTL language
    * @param {Array} data.lyrics - Array of lyric lines
    */
-  processLyrics: function (data) {
-    BetterLyrics.App.lang = data.language;
-    BetterLyrics.DOM.setRtlAttributes(data.isRtlLanguage);
-
+  processLyrics: function (data, keepLoaderVisible = false) {
     const lyrics = data.lyrics;
     if (!lyrics || lyrics.length === 0) {
       throw new Error(BetterLyrics.Constants.NO_LYRICS_FOUND_LOG);
@@ -290,7 +314,7 @@ BetterLyrics.Lyrics = {
       BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_TAB_NOT_DISABLED_LOG);
     }
 
-    BetterLyrics.Lyrics.injectLyrics(data);
+    BetterLyrics.Lyrics.injectLyrics(data, keepLoaderVisible);
   },
 
   /**
@@ -298,11 +322,12 @@ BetterLyrics.Lyrics = {
    * Creates the complete lyrics interface including synchronization support.
    *
    * @param {Object} data - Complete lyrics data object
+   * @param keepLoaderVisible {boolean}
    * @param {Array} data.lyrics - Array of lyric lines with timing
    * @param {string} [data.source] - Source attribution for lyrics
    * @param {string} [data.sourceHref] - URL for source link
    */
-  injectLyrics: function (data) {
+  injectLyrics: function (data, keepLoaderVisible = false) {
     const lyrics = data.lyrics;
     BetterLyrics.DOM.cleanup();
     let lyricsWrapper = BetterLyrics.DOM.createLyricsWrapper();
@@ -313,7 +338,6 @@ BetterLyrics.Lyrics = {
     try {
       lyricsContainer.className = BetterLyrics.Constants.LYRICS_CLASS;
       lyricsWrapper.appendChild(lyricsContainer);
-      BetterLyrics.DOM.flushLoader();
 
       lyricsWrapper.removeAttribute("is-empty");
 
@@ -332,14 +356,14 @@ BetterLyrics.Lyrics = {
 
     const allZero = lyrics.every(item => item.startTimeMs === "0" || item.startTimeMs === 0);
 
-    // Disabled since we want to show the last line even if it's nothing as that ends syncing for the second last line
-    //
-    // if (lyrics[lyrics.length - 1].words === "") {
-    //   lyrics.pop();
-    // }
+    if (keepLoaderVisible) {
+      BetterLyrics.DOM.renderLoader(true);
+    } else {
+      BetterLyrics.DOM.flushLoader(allZero && lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT);
+    }
 
     const langPromise = new Promise(async resolve => {
-      if (!BetterLyrics.App.lang || BetterLyrics.App.lang === "") {
+      if (!data.language) {
         let text = "";
         let lineCount = 0;
         for (let item of lyrics) {
@@ -350,12 +374,12 @@ BetterLyrics.Lyrics = {
           }
         }
         const translationResult = await BetterLyrics.Translation.translateText(text, "en");
-        BetterLyrics.App.lang = translationResult.originalLanguage;
-        BetterLyrics.Utils.log(
-          "[BetterLyrics] Lang was missing. Determined it is: " + translationResult.originalLanguage
-        );
+        const lang = translationResult?.originalLanguage || "";
+        BetterLyrics.Utils.log("[BetterLyrics] Lang was missing. Determined it is: " + lang);
+        return resolve(lang);
+      } else {
+        resolve();
       }
-      return resolve(BetterLyrics.App.lang);
     });
     /**
      *
@@ -381,9 +405,23 @@ BetterLyrics.Lyrics = {
      */
 
     /**
+     * @typedef {object} LyricsData
+     * @property {LineData[]} lines
+     * @property {SyncType} syncType
+     */
+
+    /**
+     * @typedef {"richsync"|"synced"|"none"} SyncType
+     */
+
+    /**
      * @type {LineData[]}
      */
-    let lyricsData = [];
+    let lines = [];
+    /**
+     * @type {SyncType}
+     */
+    let syncType = "synced";
 
     lyrics.forEach((item, lineIndex) => {
       if (!item.parts || item.parts.length === 0) {
@@ -400,15 +438,19 @@ BetterLyrics.Lyrics = {
         });
       }
 
-      let line = document.createElement("div");
-      line.classList.add("blyrics--line");
+      if (!item.parts.every(part => part.durationMs === 0)) {
+        syncType = "richsync";
+      }
+
+      let lyricElement = document.createElement("div");
+      lyricElement.classList.add("blyrics--line");
 
       /**
        *
        * @type LineData
        */
-      let lineData = {
-        lyricElement: line,
+      let line = {
+        lyricElement: lyricElement,
         time: parseFloat(item.startTimeMs) / 1000,
         duration: parseFloat(item.durationMs) / 1000,
         parts: [],
@@ -420,10 +462,29 @@ BetterLyrics.Lyrics = {
         isSelected: false,
       };
 
+      // To add rtl elements in reverse to the dom
+      /**
+       * @type {HTMLSpanElement[]}
+       */
+      let rtlBuffer = [];
+      let isAllRtl = true;
+
       item.parts.forEach(part => {
+        let isRtl = testRtl(part.words);
+        if (!isRtl && part.words.trim().length > 0) {
+          isAllRtl = false;
+          rtlBuffer.reverse().forEach(part => {
+            lyricElement.appendChild(part);
+          });
+          rtlBuffer = [];
+        }
+
         let span = document.createElement("span");
         if (Number(part.durationMs) === 0) {
           span.classList.add(BetterLyrics.Constants.ZERO_DURATION_ANIMATION_CLASS);
+        }
+        if (isRtl) {
+          span.classList.add(BetterLyrics.Constants.RTL_CLASS);
         }
 
         /**
@@ -438,78 +499,145 @@ BetterLyrics.Lyrics = {
         };
 
         span.textContent = part.words;
-        span.dataset.time = partData.time;
-        span.dataset.duration = partData.duration;
+        span.dataset.time = String(partData.time);
+        span.dataset.duration = String(partData.duration);
         span.dataset.content = part.words;
         span.style.setProperty("--blyrics-duration", part.durationMs + "ms");
         if (part.words.trim().length === 0) {
           span.style.display = "inline";
         }
 
-        lineData.parts.push(partData);
-        line.appendChild(span);
+        line.parts.push(partData);
+        if (isRtl) {
+          rtlBuffer.push(span);
+        } else {
+          lyricElement.appendChild(span);
+        }
       });
 
-      line.dataset.time = lineData.time;
-      line.dataset.duration = lineData.duration;
-      line.dataset.lineNumber = lineIndex;
-      line.style.setProperty("--blyrics-duration", item.durationMs + "ms");
+      //Add remaining rtl elements
+
+      if (isAllRtl) {
+        lyricElement.classList.add(BetterLyrics.Constants.RTL_CLASS);
+        rtlBuffer.forEach(part => {
+          lyricElement.appendChild(part);
+        });
+      } else {
+        rtlBuffer.reverse().forEach(part => {
+          lyricElement.appendChild(part);
+        });
+      }
+
+      lyricElement.dataset.time = String(line.time);
+      lyricElement.dataset.duration = String(line.duration);
+      lyricElement.dataset.lineNumber = String(lineIndex);
+      lyricElement.style.setProperty("--blyrics-duration", item.durationMs + "ms");
 
       if (!allZero) {
-        line.setAttribute(
+        lyricElement.setAttribute(
           "onClick",
           `const player = document.getElementById("movie_player"); player.seekTo(${
             item.startTimeMs / 1000
           }, true);player.playVideo();`
         );
-        line.addEventListener("click", _e => {
+        lyricElement.addEventListener("click", _e => {
           BetterLyrics.DOM.scrollResumeTime = 0;
         });
+      } else {
+        lyricElement.style.cursor = "unset";
+      }
+
+      // Synchronously check cache and inject if found
+      const romanizedResult = BetterLyrics.Translation.getRomanizationFromCache(item.words);
+      if (romanizedResult) {
+        let romanizedLine = document.createElement("div");
+        romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
+        romanizedLine.textContent = "\n" + romanizedResult;
+        lyricElement.appendChild(romanizedLine);
+        lyricElement.dataset.romanized = "true";
+      }
+
+      const translatedResult = BetterLyrics.Translation.getTranslationFromCache(
+        item.words,
+        BetterLyrics.Translation.currentTranslationLanguage
+      );
+      if (translatedResult) {
+        let translatedLine = document.createElement("div");
+        translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
+        translatedLine.textContent = "\n" + translatedResult.translatedText;
+        lyricElement.appendChild(translatedLine);
+        lyricElement.dataset.translated = "true";
       }
 
       langPromise.then(source_language => {
-        BetterLyrics.Translation.onRomanizationEnabled(
-          async () => {
-            let romanizedLine = document.createElement("div");
-            romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
+        BetterLyrics.Translation.onRomanizationEnabled(async () => {
+          if (lyricElement.dataset.romanized === "true") return;
 
-            if (BetterLyrics.Constants.romanizationLanguages.includes(source_language)) {
-              if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-                const result = await BetterLyrics.Translation.translateTextIntoRomaji(source_language, item.words);
-                if (result && result.trim() !== "") {
-                  romanizedLine.textContent = result ? "\n" + result : "\n";
-                  line.appendChild(romanizedLine);
-                  BetterLyrics.DOM.lyricsElementAdded();
+          let romanizedLine = document.createElement("div");
+          romanizedLine.classList.add(BetterLyrics.Constants.ROMANIZED_LYRICS_CLASS);
+
+          let isNonLatin = containsNonLatin(item.words);
+          if (BetterLyrics.Constants.romanizationLanguages.includes(source_language) || containsNonLatin(item.words)) {
+            let usableLang = source_language;
+            if (isNonLatin && !BetterLyrics.Constants.romanizationLanguages.includes(source_language)) {
+              usableLang = "auto";
+            }
+            if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+              const result = await BetterLyrics.Translation.translateTextIntoRomaji(usableLang, item.words);
+              if (result) {
+                romanizedLine.textContent = result ? "\n" + result : "\n";
+
+                let translatedLine = Array.from(lyricElement.children).filter(part =>
+                  part.classList.contains(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS)
+                );
+
+                if (translatedLine.length > 0) {
+                  lyricElement.insertBefore(romanizedLine, translatedLine[0]);
+                } else {
+                  lyricElement.appendChild(romanizedLine);
                 }
+                BetterLyrics.DOM.lyricsElementAdded();
               }
             }
-          },
-          async () => {
-            BetterLyrics.Translation.onTranslationEnabled(async items => {
-              let translatedLine = document.createElement("div");
-              translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
-
-              let target_language = items.translationLanguage || "en";
-
-              if (source_language !== target_language) {
-                if (item.words.trim() !== "♪" && item.words.trim() !== "") {
-                  const result = await BetterLyrics.Translation.translateText(item.words, target_language);
-
-                  if (result && result.originalLanguage !== target_language) {
-                    translatedLine.textContent = "\n" + result.translatedText;
-                    line.appendChild(translatedLine);
-                    BetterLyrics.DOM.lyricsElementAdded();
-                  }
-                }
-              }
-            });
           }
-        );
+        });
+        BetterLyrics.Translation.onTranslationEnabled(async items => {
+          if (
+            lyricElement.dataset.translated === "true" &&
+            (items.translationLanguage || "en") === BetterLyrics.Translation.currentTranslationLanguage
+          )
+            return;
+
+          let translatedLine = document.createElement("div");
+          translatedLine.classList.add(BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS);
+
+          let target_language = items.translationLanguage || "en";
+
+          if (source_language !== target_language || containsNonLatin(item.words)) {
+            if (item.words.trim() !== "♪" && item.words.trim() !== "") {
+              const result = await BetterLyrics.Translation.translateText(item.words, target_language);
+
+              if (result) {
+                // Remove existing translated line if language changed
+                const existingTranslatedLine = lyricElement.querySelector(
+                  "." + BetterLyrics.Constants.TRANSLATED_LYRICS_CLASS
+                );
+                if (existingTranslatedLine) {
+                  existingTranslatedLine.remove();
+                }
+
+                translatedLine.textContent = "\n" + result.translatedText;
+                lyricElement.appendChild(translatedLine);
+                BetterLyrics.DOM.lyricsElementAdded();
+              }
+            }
+          }
+        });
       });
 
       try {
-        lyricsData.push(lineData);
-        lyricsContainer.appendChild(line);
+        lines.push(line);
+        lyricsContainer.appendChild(lyricElement);
       } catch (_err) {
         BetterLyrics.Utils.log(BetterLyrics.Constants.LYRICS_WRAPPER_NOT_VISIBLE_LOG);
       }
@@ -546,11 +674,17 @@ BetterLyrics.Lyrics = {
     lyricsContainer.appendChild(spacingElement);
 
     if (!allZero) {
-      BetterLyrics.App.lyricData = lyricsData;
       BetterLyrics.App.areLyricsTicking = true;
     } else {
       BetterLyrics.Utils.log(BetterLyrics.Constants.SYNC_DISABLED_LOG);
+      syncType = "none";
     }
+
+    BetterLyrics.App.lyricData = {
+      lines: lines,
+      syncType: syncType,
+    };
+
     BetterLyrics.App.areLyricsLoaded = true;
   },
 };
@@ -593,3 +727,29 @@ var stringSimilarity = function (str1, str2, substringLength, caseSensitive) {
   }
   return (match * 2) / (str1.length + str2.length - (substringLength - 1) * 2);
 };
+
+const testRtl = text => /[\u0600-\u06FF]|[\ufb50-\ufdff]|[\u0590-\u05ff]|[\u0780-\u07bf]/.test(text);
+
+/**
+ * This regex is designed to detect any characters that are outside of the
+ * standard "Basic Latin" and "Latin-1 Supplement" Unicode blocks, as well
+ * as common "smart" punctuation like curved quotes.
+ *
+ * How it works:
+ * [^...]     - This is a negated set, which matches any character NOT inside the brackets.
+ * \x00-\xFF  - This range covers both the "Basic Latin" (ASCII) and "Latin-1 Supplement"
+ * blocks. This includes English letters, numbers, common punctuation, and
+ * most accented characters used in Western European languages (e.g., á, ö, ñ).
+ * \u2018-\u201D - This range covers common "smart" or curly punctuation, including single
+ * and double quotation marks/apostrophes (‘, ’, “, ”).
+ */
+const nonLatinRegex = /[^\x00-\xFF\u2018-\u201D]/;
+
+/**
+ * Checks if a given string contains any non-Latin characters.
+ * @param {string} text The string to check.
+ * @returns {boolean} True if a non-Latin character is found, otherwise false.
+ */
+function containsNonLatin(text) {
+  return nonLatinRegex.test(text);
+}
