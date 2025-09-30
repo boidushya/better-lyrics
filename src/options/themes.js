@@ -518,4 +518,288 @@ animation:
 }
 `,
   },
+  {
+    name: "Minimal",
+    author: "Semicolonhope",
+    link: "",
+    css: `/* 2025-09-29T19-41-22 v1.1.0 */
+/* think about changing all the colors to oklch if you can */
+/* use oklch(from rgb(value value value) L C H / A) */
+/* changed bg, font, albm-art shdw, no animations */
+
+:root {
+  /* FONT BABY! */
+  --blyrics-font-family:
+    system-ui, sans-serif, var(--noto-sans-universal);
+  --blyrics-footer-font-family: var(--blyrics-font-family);
+
+  /* Smooth scroll timing */
+  --blyrics-lyric-scroll-duration: 0.5s !important;
+  --blyrics-lyric-scroll-timing-function: cubic-bezier(
+    0.645,
+    0.045,
+    0.355,
+    1
+  ) !important;
+
+  /* Fade-in instead of whatever the hell was that? 
+--blyrics-lyric-highlight-fade-in-duration: 3s !important;
+--blyrics-lyric-highlight-fade-out-duration: 3s !important; */
+
+  /* Remove unnecessary delays */
+  --blyrics-anim-delay: 0s !important;
+  --blyrics-swipe-delay: 0s !important;
+
+  /* no thank you */
+  --blyrics-gradient-stops: none !important;
+
+  /* someone said oklach is modern so here ya go */
+  --blyrics-lyric-inactive-color: oklch(
+    from white l c h / 0.3
+  ) !important;
+  --blyrics-lyric-active-color: oklch(
+    from white l c h / 1
+  ) !important;
+  --blyrics-error-color: oklch(from rgb(99.2% 88.2% 88.2%) l c h);
+  --blyrics-ui-text-color: var(--blyrics-lyric-active-color);
+  --blyrics-translated-color: oklch(from white / l c h 0.6);
+
+  /* blur and saturatiom changes */
+  --blyrics-background-blur: 70px;
+  --blyrics-background-saturate: 1;
+}
+
+/* default inactive opacity to remove letter join artifacts */
+.blyrics-container > div {
+  transform: none !important;
+  transition: opacity 0.5s ease !important;
+  opacity: 0.3;
+}
+
+/* active vs inactive color changes. */
+/* for reomving visible letter opacity artifacts */
+.blyrics-container > div > span {
+  color: var(--blyrics-lyric-active-color) !important;
+  transition: color 0.5s ease !important;
+}
+
+/* you can't rely on previous color setting opacity */
+.blyrics-container > div.blyrics--active {
+  opacity: 1;
+}
+
+/* bye bye animations and swipy */
+.blyrics-container > div > span::after {
+  display: none !important;
+  content: none !important;
+  animation: none !important;
+}
+
+.blyrics-container > div > span.blyrics--animating {
+  animation: none !important;
+}
+
+/* Inactive state translated/roman color, and color fade-in */
+.blyrics--translated,
+.blyrics--romanized {
+  opacity: 0.6 !important;
+  color: oklch(
+    from white l c h / var(--blyrics-translated-opacity)
+  ) !important;
+  transition: opacity 0.5s ease !important;
+}
+
+/* active translation / romanization */
+.blyrics-container > div.blyrics--active .blyrics--translated,
+.blyrics-container > div.blyrics--active .blyrics--romanized {
+  opacity: 0.6 !important;
+  transition: opacity 0.5s ease !important;
+}
+
+/* think about changing all the colors to oklch if i can */
+/* full screen shadow, i hate you */
+ytmusic-player-page:not(
+    [is-video-truncation-fix-enabled]
+  )[player-fullscreened]:not([blyrics-dfs])
+  #player.ytmusic-player-page {
+  box-shadow: oklch(from rgb(0 0 0) l c h / 0.1) 0 4px 12px;
+}
+
+/* upped the brightness, saturate and blur already changed in root */
+ytmusic-player-page:before {
+  filter: saturate(var(--blyrics-background-saturate)) brightness(0.3)
+    blur(var(--blyrics-background-blur));
+}`,
+  },
+  {
+    name: "Luxurious Glass",
+    author: "SKMJi",
+    link: "",
+    css: `/* ============================================== */
+/* Global Theme Custom Properties */
+/* ============================================== */
+:root {
+  /* -- [ Layout & Spacing ] -- */
+  --blyrics-padding: 3rem;
+  --yt-cover-size: 650px;
+  --side-panel-width: 55%;
+  --main-lyrics-align: center; /* center left right */
+  --translated-romanized-margin: 0 auto; /* (center= 0 auto), (left= 0 auto 0 0 ), (right= 0 0 0 auto )*/
+  --underline-horizontal-position: 50%; /* center= 50% , left= 25% , right= 75%*/
+
+
+  /* -- [ Typography ] -- */
+  --blyrics-font-size: 6.5rem;
+  --blyrics-font-weight: 500;
+  --blyrics-translated-font-size: 2.5rem;
+  --blyrics-translated-font-weight: 450;
+
+  /* -- [ Glassmorphism & Effects ] -- */
+  --blyrics-bg-color: rgba(0, 0, 0, 0.25);
+  --blyrics-border-radius: 18px;
+  --blyrics-box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 25px rgba(255, 255, 255, 0.12) inset;
+  --blyrics-blur-amount: 20px;
+  --blyrics-background-filter: blur(70px) saturate(3) brightness(70%);
+}
+
+/* ============================================== */
+/* YouTube Music Interface Styling */
+/* ============================================== */
+
+/* Player Bar & Navigation Bar - Glass Effect */
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #player-bar-background,
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #mini-guide-background,
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #nav-bar-background,
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #guide-wrapper {
+  backdrop-filter: blur(var(--blyrics-blur-amount)) !important;
+  border: none !important;
+  border-radius: 0px !important;
+}
+
+/* Remove default player bar styles */
+ytmusic-player-bar,
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] ytmusic-player-bar {
+  backdrop-filter: transparent !important;
+  background-color: transparent !important;
+  border: transparent !important;
+  border-radius: 0px !important;
+}
+
+/* Side Panel & Menus - Glass Effect */
+#side-panel {
+  backdrop-filter: blur(var(--blyrics-blur-amount)) !important;
+  background-color: var(--blyrics-bg-color) !important;
+  border: none !important;
+  border-radius: var(--blyrics-border-radius) !important;
+  box-shadow: var(--blyrics-box-shadow) !important;
+  min-width: var(--side-panel-width) !important;
+}
+tp-yt-paper-listbox, .ytmusicMultiPageMenuRendererHost {
+  backdrop-filter: blur(var(--blyrics-blur-amount)) !important;
+  background-color: var(--blyrics-bg-color) !important;
+  border-radius: var(--blyrics-border-radius) !important;
+}
+ytmusic-search-box[is-bauhaus-sidenav-enabled] #suggestion-list.ytmusic-search-box, ytmusic-search-box[is-bauhaus-sidenav-enabled][opened] .search-box.ytmusic-search-box {
+  --ytmusic-search-background: transparent !important;
+  background: rgb(33 33 33 / 95%) !important;
+  box-shadow: var(--blyrics-box-shadow);
+}
+ytmusic-search-suggestion {
+  color: rgb(255 255 255 / 90%);
+}
+
+/* Stylized Album Cover */
+ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-dfs]):not([player-ui-state="MINIPLAYER"]) #player.ytmusic-player-page, ytmusic-player[player-ui-state=FULLSCREEN], ytmusic-player, ytmusic-player[player-ui-state=FULLSCREEN] {
+  max-width: var(--yt-cover-size) !important;
+  overflow: hidden;
+  border-radius: var(--blyrics-border-radius) !important;
+  box-shadow: var(--blyrics-box-shadow) !important;
+}
+
+/* Background Effect & Animations */
+ytmusic-player-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  filter: var(--blyrics-background-filter);
+  transform: scale(1.3);
+  animation: slowRotate 15s linear infinite, scalePulse 8s ease-in-out infinite;
+  animation-composition: add;
+  will-change: transform;
+}
+
+/* Animated Background Effect - Keyframes */
+@keyframes slowRotate {
+  from { transform: scale(1.7) rotate(0deg); }
+  to { transform: scale(1.7) rotate(360deg); }
+}
+@keyframes scalePulse {
+  0% { transform: scale(1.2); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1.2); }
+}
+
+/* ============================================== */
+/* Lyrics Display and Interaction */
+/* ============================================== */
+
+/* Main Lyrics Container */
+.blyrics-container {
+  text-align: var(--main-lyrics-align);
+  overflow: hidden;
+  padding: var(--blyrics-padding);
+  padding-bottom: 0;
+}
+
+/* Fix Translated & Romanized Lyrics Position */
+.blyrics--romanized, .blyrics-container > div > span.blyrics--translated {
+  margin: var(--translated-romanized-margin) !important;
+}
+.blyrics--translated {
+  margin-top: 30px !important;
+}
+
+/* Underline effect for active lyrics */
+.blyrics-container > div::after {
+  content: '';
+  position: absolute;
+  left: var(--underline-horizontal-position);
+  bottom: 10px;
+  height: 2px;
+  width: 50%;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: var(--main-lyrics-align);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsla(0, 0%, 100%, 0.2),
+    hsla(0, 0%, 100%, 0.4),
+    hsla(0, 0%, 100%, 0.2),
+    transparent
+  );
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.05), 0 0 10px rgba(255, 255, 255, 0.02);
+  transition: transform 0.5s cubic-bezier(0.86, 0, 0.07, 1);
+}
+.blyrics-container > div.blyrics--active::after {
+  transform: translateX(-50%) scaleX(1);
+  backdrop-filter: blur(2px);
+}
+
+/* Hover effect for lyrics */
+.blyrics-container > div {
+  transform-origin: var(--main-lyrics-align);
+  opacity: 1 !important;
+  filter: blur(0px) !important;
+  transform: scale(1.007);
+  transition: all 0.3s ease;
+}
+
+/* Footer Edit */
+.blyrics-footer, .blyrics-no-lyrics-button-container {
+  justify-content: var(--main-lyrics-align) !important;
+}`,
+  },
 ];
