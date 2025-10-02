@@ -321,17 +321,16 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
     name: "Big Blurry Slow Lyrics for TV",
     author: "zobiron",
     link: "",
-    css: `/* Big Blurry Slow Lyrics for TV, a theme for BetterLyrics by zobiron  */
-:root {
+    css: `:root {
   --blyrics-lyric-active-color: white;
   --blyrics-lyric-inactive-color: rgb(255 255 255 / 40%);
+  --blyrics-font-family: "Verdana", var(--noto-sans-universal), thick;
+  --blyrics-font-size: 7rem;
+  --blyrics-font-weight: 700;
+  --blyrics-line-height: 1.5;
 }
 
 .blyrics-container {
-  font-family: "Verdana", var(--noto-sans-universal), thick;
-  font-size: 7rem;
-  font-weight: 700;
-  line-height: 1.5;
   background: transparent 0%, rgba(0, 0, 0, 0.013) 5%,
     rgba(255, 235, 205, 0.5) 15%, rgba(0, 0, 0, 0.987) 85%, #000 100%;
   padding: 10px;
@@ -342,49 +341,37 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
 }
 
 .blyrics-container > div > span {
-  display: out-block;
-  opacity: 0.2;
-  transition: opacity 0.7s;
+  display: inline-block;
   filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
-
 }
 
-/* Fix for translated and romanized text */
+.blyrics-container > div {
+  opacity: 0.2;
+  filter: blur(6px);
+  /* transition for when we're unhighlighting */
+  transition: opacity 0.7s ease-out, 
+    filter 0.7s ease-out,
+    transform 1.66s ease-out;
+}
+
+.blyrics-container > div.blyrics--animating:not(:empty):not(.blyrics--translated):not(.blyrics--romanized) {
+  opacity: 1;
+  filter: blur(0px);
+  transition: opacity 0.7s ease calc(var(--blyrics-anim-delay) - 0.3s), 
+    filter 0.7s ease calc(var(--blyrics-anim-delay) - 0.3s),
+    transform 1.666s ease calc(var(--blyrics-anim-delay) - 0.3s);
+}
+
 .blyrics-container > div > span.blyrics--translated,
 .blyrics-container > div > span.blyrics--romanized {
   display: block;
   margin-top: 10px;
   font-size: 1.8rem;
-
 }
 
 .blyrics-container > div > span.blyrics--romanized {
   font-size: 1.5rem;
   font-style: italic;
-}
-
-.blyrics-container > div.blyrics--active > span:not(:empty):not(.blyrics--translated):not(.blyrics--romanized) {
-  opacity: 1;
-  animation: jump-and-color 5s sine-out;
-}
-
-@keyframes jump-and-color {
-  0% {
-    transform: translateY(0);
-    color: #8e44ad;
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
-  }
-  50% {
-    transform: translateY(-60px);
-    color: #e75480;
-    filter: blur(2px);
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
-  }
-  100% {
-    transform: translateY(0);
-    color: #e79c3c;
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
-  }
 }
 
 @media (max-width: 615px) {
@@ -401,32 +388,16 @@ ytmusic-player-page:not([video-mode]):not([player-fullscreened]):not([blyrics-df
   }
 }
 
-.blyrics-container:has(.blyrics--active) > div:not(.blyrics--active):not(.blyrics--active ~ div) {
-  opacity: 0.825;
-  filter: blur(6px);
-  transition: filter calc(var(--blyrics-duration) / 3) 0.4s,
-    opacity calc(var(--blyrics-duration) / 2) 0.4s, transform 1.166s var(--blyrics-anim-delay, 0s) !important;
-}
-
-.blyrics-user-scrolling >  div:not(.blyrics--active) {
+/* Disable blur and opacity effects when manually scrolling */
+.blyrics-user-scrolling >  div:not(.blyrics--animating) {
   opacity: 1 !important;
   filter: blur(0px) !important; 
-
+  transition: opacity 0.4s ease, filter 0.4s ease, transform 0.5s ease calc(var(--blyrics-anim-delay, 0s) - 0.1s);
 }
 
-.blyrics-container > div.blyrics--active {
+.blyrics-container:not(:has(.blyrics--active)) > div {
   opacity: 1;
-  filter: blur(0px);
-}
-
-.blyrics-container > div.blyrics--active ~ div {
-  opacity: 0.825;
-  filter: blur(4px);
-}
-
-.blyrics-container > div {
-  transition: filter calc(var(--blyrics-duration) / 3) 0s,
-    opacity calc(var(--blyrics-duration) / 2) 0s, transform 1.166s var(--blyrics-anim-delay, 0s) !important;
+  filter: none;
 }`,
   },
   {
