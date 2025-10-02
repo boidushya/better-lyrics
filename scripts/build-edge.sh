@@ -70,7 +70,7 @@ jq '.content_scripts[0].js = [
 	"src/css/blyrics.min.css",
 	"src/css/disablestylizedanimations.min.css",
 	"src/css/themesong.min.css"
-] | del(.update_url)' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
+] | del(.update_url, .key)' manifest.json >manifest.json.tmp && mv manifest.json.tmp manifest.json
 
 # Create zip file
 zip -r better-lyrics.zip ./* -x "./dist/*" "LICENSE" "README.md" "./templates/*" "*.DS_Store" "${SCRIPT_DIR}/*"
