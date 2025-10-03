@@ -30,20 +30,20 @@
         "*://music.youtube.com/*"
       ],
       "resources": [
-        "script.js",
-        "scripts/css/ytmusic.css",
-        "scripts/css/blyrics.css",
-        "scripts/css/disablestylizedanimations.css",
-        "scripts/css/themesong.css"
+        "scripts/script.js",
+        "css/ytmusic.css",
+        "css/blyrics.css",
+        "css/disablestylizedanimations.css",
+        "css/themesong.css"
       ]
     }
   ],
   "chromium:background": {
-    "service_worker": "src/background.js"
+    "service_worker": "scripts/background.js"
   },
   "gecko:background": {
     "scripts": [
-      "src/background.js"
+      "scripts/background.js"
     ]
   },
   "gecko:browser_specific_settings": {
@@ -60,19 +60,10 @@
         "*://music.youtube.com/*"
       ],
       "js": [
-        "src/core/constants.js",
-        "src/core/utils.js",
-        "src/core/storage.js",
-        "src/modules/lyrics/translation.js",
-        "src/modules/lyrics/lyrics.js",
-        "src/modules/lyrics/providers.js",
-        "src/modules/lyrics/requestSniffer.js",
-        "src/modules/ui/dom.js",
-        "src/modules/ui/observer.js",
-        "src/modules/settings/settings.js",
         "src/index.js"
       ],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "world": "ISOLATED"
     },
     {
       "matches": [

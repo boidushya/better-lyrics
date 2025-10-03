@@ -1,7 +1,6 @@
 import * as Utils from "./utils";
 import * as Dom from "../modules/ui/dom";
 import * as Constants from "./constants";
-import {browser} from "../../extension.config";
 
 /**
  * Cross-browser storage getter that works with both Chrome and Firefox.
@@ -10,19 +9,7 @@ import {browser} from "../../extension.config";
  * @param {Function} callback - Callback function to handle the retrieved data
  */
 export function getStorage(key, callback) {
-  const inChrome = typeof chrome !== "undefined" && typeof browser === "undefined";
-  const inFirefox = typeof browser !== "undefined";
-  if (inChrome) {
-    if (chrome.runtime?.id) {
-      chrome.storage.sync.get(key, callback);
-    } else {
-      callback(key);
-    }
-  } else if (inFirefox) {
-    browser.storage.sync.get(key, callback);
-  } else {
-    callback(key);
-  }
+  chrome.storage.sync.get(key, callback);
 }
 
 /**
@@ -44,11 +31,11 @@ export function subscribeToCustomCSS() {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "sync" && changes.customCSS) {
       Utils.applyCustomCSS(changes.customCSS.newValue);
-      Dom.cachedDurations = new Map();
+      Dom.cachedDurations.clear();
     }
   });
-  Storage.getAndApplyCustomCSS();
-  Dom.cachedDurations = new Map();
+  this.getAndApplyCustomCSS();
+  Dom.cachedDurations.clear();
 }
 
 /**
@@ -95,7 +82,7 @@ export async function setTransientStorage(key, value, ttl) {
       }
     });
     Utils.log(Constants.STORAGE_TRANSIENT_SET_LOG, key);
-    await Storage.saveCacheInfo();
+    await this.saveCacheInfo();
   } catch (error) {
     Utils.log(Constants.GENERAL_ERROR_LOG, error);
   }
@@ -128,7 +115,7 @@ export async function getUpdatedCacheInfo() {
  * Updates and saves current cache information to sync storage.
  */
 export async function saveCacheInfo() {
-  const cacheInfo = await Storage.getUpdatedCacheInfo();
+  const cacheInfo = await this.getUpdatedCacheInfo();
   await chrome.storage.sync.set({cacheInfo: cacheInfo});
 }
 
@@ -140,7 +127,7 @@ export async function clearCache() {
     const result = await chrome.storage.local.get(null);
     const lyricsKeys = Object.keys(result).filter(key => key.startsWith("blyrics_"));
     await chrome.storage.local.remove(lyricsKeys);
-    await Storage.saveCacheInfo();
+    await this.saveCacheInfo();
   } catch (error) {
     Utils.log(Constants.GENERAL_ERROR_LOG, error);
   }

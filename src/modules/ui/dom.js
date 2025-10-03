@@ -372,7 +372,7 @@ export async function injectHeadTags() {
   fontLink.rel = "stylesheet";
   document.head.appendChild(fontLink);
 
-  const cssFiles = ["scripts/css/ytmusic.css", "scripts/css/blyrics.css", "scripts/css/themesong.css"];
+  const cssFiles = ["css/ytmusic.css", "css/blyrics.css", "css/themesong.css"];
 
   let css = "";
   const responses = await Promise.all(
@@ -430,7 +430,7 @@ export function cleanup() {
  */
 export function injectGetSongInfo() {
   const s = document.createElement("script");
-  s.src = chrome.runtime.getURL("src/script.js");
+  s.src = chrome.runtime.getURL("scripts/script.js");
   s.id = "blyrics-script";
   s.onload = function () {
     this.remove();
@@ -438,16 +438,20 @@ export function injectGetSongInfo() {
   (document.head || document.documentElement).appendChild(s);
 }
 
-export let skipScrolls = 0;
-export let skipScrollsDecayTimes = [];
-export let scrollResumeTime = 0;
-export let scrollPos = 0;
-export let selectedElementIndex = 0;
-export let nextScrollAllowedTime = 0;
-export let wasUserScrolling = false;
-export let lastTime = 0;
-export let lastPlayState = false;
-export let lastEventCreationTime = 0;
+
+export let animEngineState = {
+  skipScrolls: 0,
+  skipScrollsDecayTimes: [],
+  scrollResumeTime: 0,
+  scrollPos: 0,
+  selectedElementIndex: 0,
+  nextScrollAllowedTime: 0,
+  wasUserScrolling: false,
+  lastTime: 0,
+  lastPlayState: false,
+  lastEventCreationTime: 0,
+}
+
 /**
  * @type {Map<string, number>}
  */
@@ -485,9 +489,9 @@ export function tickLyrics(currentTime, eventCreationTime, isPlaying = true, smo
   if (this.isLoaderActive() || !BetterLyrics.areLyricsTicking || (currentTime === 0 && !isPlaying)) {
     return;
   }
-  this.lastTime = currentTime;
-  this.lastPlayState = isPlaying;
-  this.lastEventCreationTime = eventCreationTime;
+  animEngineState.lastTime = currentTime;
+  animEngineState.lastPlayState = isPlaying;
+  animEngineState.lastEventCreationTime = eventCreationTime;
 
   let timeOffset = now - eventCreationTime;
   if (!isPlaying) {
@@ -551,10 +555,10 @@ export function tickLyrics(currentTime, eventCreationTime, isPlaying = true, smo
         selectedLyricHeight = elemBounds.height;
         availableScrollTime = nextTime - lyricScrollTime;
         const timeDelta = lyricScrollTime - time;
-        if (this.selectedElementIndex !== index && timeDelta > 0.05 && index > 0) {
+        if (animEngineState.selectedElementIndex !== index && timeDelta > 0.05 && index > 0) {
           Utils.log(`[BetterLyrics] Scrolling to new lyric was late, dt: ${timeDelta.toFixed(5)}s`);
         }
-        this.selectedElementIndex = index;
+        animEngineState.selectedElementIndex = index;
         if (!lineData.isScrolled) {
           lineData.lyricElement.classList.add(Constants.CURRENT_LYRICS_CLASS);
           lineData.isScrolled = true;
@@ -654,18 +658,18 @@ export function tickLyrics(currentTime, eventCreationTime, isPlaying = true, smo
 
     const topOffsetMultiplier = 0.37; // 0.5 means the selected lyric will be in the middle of the screen, 0 means top, 1 means bottom
 
-    if (this.scrollResumeTime < Date.now() || this.scrollPos === -1) {
-      if (this.wasUserScrolling) {
-        this.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
+    if (animEngineState.scrollResumeTime < Date.now() || animEngineState.scrollPos === -1) {
+      if (animEngineState.wasUserScrolling) {
+        animEngineState.getResumeScrollElement().setAttribute("autoscroll-hidden", "true");
         lyricsElement.classList.remove(Constants.USER_SCROLLING_CLASS);
-        this.wasUserScrolling = false;
+        animEngineState.wasUserScrolling = false;
       }
 
       const scrollPosOffset = Math.max(0, tabRendererHeight * topOffsetMultiplier - selectedLyricHeight / 2);
       let scrollPos = Math.max(0, targetScrollPos - scrollPosOffset);
       scrollPos = Math.max(Math.min(lyricsHeight - tabRendererHeight, scrollPos), 0);
 
-      if (Math.abs(scrollTop - scrollPos) > 2 && Date.now() > this.nextScrollAllowedTime) {
+      if (Math.abs(scrollTop - scrollPos) > 2 && Date.now() > animEngineState.nextScrollAllowedTime) {
         if (smoothScroll) {
           lyricsElement.style.transitionTimingFunction = "";
           lyricsElement.style.transitionProperty = "";
@@ -691,39 +695,39 @@ export function tickLyrics(currentTime, eventCreationTime, isPlaying = true, smo
           lyricsElement.style.transitionDuration = `${scrollTime}ms`;
           lyricsElement.style.transform = "translate(0px, 0px)";
 
-          this.nextScrollAllowedTime = scrollTime + Date.now() + 20;
+          animEngineState.nextScrollAllowedTime = scrollTime + Date.now() + 20;
         }
         let extraHeight = Math.max(tabRendererHeight * (1 - topOffsetMultiplier), tabRendererHeight - lyricsHeight);
 
         document.getElementById(Constants.LYRICS_SPACING_ELEMENT_ID).style.height =
           `${extraHeight.toFixed(0)}px`;
         scrollTop = scrollPos;
-        this.scrollPos = scrollPos;
+        animEngineState.scrollPos = scrollPos;
       }
     } else {
-      if (!this.wasUserScrolling) {
+      if (!animEngineState.wasUserScrolling) {
         this.getResumeScrollElement().removeAttribute("autoscroll-hidden");
         lyricsElement.classList.add(Constants.USER_SCROLLING_CLASS);
-        this.wasUserScrolling = true;
+        animEngineState.wasUserScrolling = true;
       }
     }
 
     if (Math.abs(scrollTop - tabRenderer.scrollTop) > 1) {
       tabRenderer.scrollTop = scrollTop;
-      this.skipScrolls += 1;
-      this.skipScrollsDecayTimes.push(Date.now() + 2000);
+      animEngineState.skipScrolls += 1;
+      animEngineState.skipScrollsDecayTimes.push(Date.now() + 2000);
     }
 
     let j = 0;
-    for (; j < this.skipScrollsDecayTimes.length; j++) {
-      if (this.skipScrollsDecayTimes[j] > now) {
+    for (; j < animEngineState.skipScrollsDecayTimes.length; j++) {
+      if (animEngineState.skipScrollsDecayTimes[j] > now) {
         break;
       }
     }
-    this.skipScrollsDecayTimes = this.skipScrollsDecayTimes.slice(j);
-    this.skipScrolls -= j;
-    if (this.skipScrolls < 1) {
-      this.skipScrolls = 1; // Always leave at least one for when the window is refocused.
+    animEngineState.skipScrollsDecayTimes = animEngineState.skipScrollsDecayTimes.slice(j);
+    animEngineState.skipScrolls -= j;
+    if (animEngineState.skipScrolls < 1) {
+      animEngineState.skipScrolls = 1; // Always leave at least one for when the window is refocused.
     }
   } catch (err) {
     if (!err.message?.includes("undefined")) {
@@ -741,9 +745,9 @@ export function lyricsElementAdded() {
     return;
   }
   this.tickLyrics(
-    this.lastTime,
-    this.lastEventCreationTime,
-    this.lastPlayState,
+    animEngineState.lastTime,
+    animEngineState.lastEventCreationTime,
+    animEngineState.lastPlayState,
     false
   );
 }
@@ -795,7 +799,7 @@ export function getResumeScrollElement() {
     elem.classList.add("autoscroll-resume-button");
     elem.setAttribute("autoscroll-hidden", "true");
     elem.addEventListener("click", () => {
-      this.scrollResumeTime = 0;
+      animEngineState.scrollResumeTime = 0;
       elem.setAttribute("autoscroll-hidden", "true");
     });
 

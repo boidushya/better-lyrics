@@ -199,17 +199,17 @@ export function scrollEventHandler() {
     return;
   }
 
-  if (DOM.skipScrolls > 0) {
-    DOM.skipScrolls--;
-    DOM.skipScrollsDecayTimes.shift();
+  if (DOM.animEngineState.skipScrolls > 0) {
+    DOM.animEngineState.skipScrolls--;
+    DOM.animEngineState.skipScrollsDecayTimes.shift();
     // Utils.log("[BetterLyrics] Skipping Lyrics Scroll");
     return;
   }
   if (!DOM.isLoaderActive()) {
-    if (DOM.scrollResumeTime < Date.now()) {
+    if (DOM.animEngineState.scrollResumeTime < Date.now()) {
       Utils.log(Constants.PAUSING_LYRICS_SCROLL_LOG);
     }
-    DOM.scrollResumeTime = Date.now() + 25000;
+    DOM.animEngineState.scrollResumeTime = Date.now() + 25000;
   }
 }
 

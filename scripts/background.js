@@ -8,7 +8,7 @@
  * @param {Object} [request.settings] - Settings object for updateSettings action
  * @returns {boolean} Returns true to indicate asynchronous response
  */
-import {handleSettings} from "./modules/settings/settings";
+import {handleSettings} from "../src/modules/settings/settings";
 
 chrome.runtime.onMessage.addListener(request => {
   if (request.action === "updateCSS") {

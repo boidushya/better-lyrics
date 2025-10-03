@@ -2,7 +2,6 @@
 
 import {browser} from "../../extension.config";
 
-const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
 const saveOptions = () => {
   const options = getOptionsFromForm();
@@ -13,7 +12,7 @@ const saveOptions = () => {
     );
   }
 
-  browserAPI.storage.sync.get({preferredProviderList: null}, currentOptions => {
+  chrome.storage.sync.get({preferredProviderList: null}, currentOptions => {
     if (!arrayEqual(currentOptions.preferredProviderList, options.preferredProviderList)) {
       clearTransientLyrics(() => {
         saveOptionsToStorage(options);
@@ -52,10 +51,10 @@ const getOptionsFromForm = () => {
 
 // Function to save options to Chrome storage
 const saveOptionsToStorage = options => {
-  browserAPI.storage.sync.set(options, () => {
-    browserAPI.tabs.query({url: "https://music.youtube.com/*"}, tabs => {
+  chrome.storage.sync.set(options, () => {
+    chrome.tabs.query({url: "https://music.youtube.com/*"}, tabs => {
       tabs.forEach(tab => {
-        browserAPI.tabs.sendMessage(tab.id, {action: "updateSettings", settings: options});
+        chrome.tabs.sendMessage(tab.id, {action: "updateSettings", settings: options});
       });
     });
   });
@@ -94,7 +93,7 @@ const showAlert = message => {
 
 // Function to clear transient lyrics
 const clearTransientLyrics = callback => {
-  browserAPI.tabs.query({url: "https://music.youtube.com/*"}, tabs => {
+  chrome.tabs.query({url: "https://music.youtube.com/*"}, tabs => {
     if (tabs.length === 0) {
       updateCacheInfo();
       showAlert("Cache cleared successfully!");
@@ -104,7 +103,7 @@ const clearTransientLyrics = callback => {
 
     let completedTabs = 0;
     tabs.forEach(tab => {
-      browserAPI.tabs.sendMessage(tab.id, {action: "clearCache"}, response => {
+      chrome.tabs.sendMessage(tab.id, {action: "clearCache"}, response => {
         completedTabs++;
         if (completedTabs === tabs.length) {
           if (response?.success) {
@@ -134,11 +133,11 @@ const _formatBytes = (bytes, decimals = 2) => {
 
 // Function to subscribe to cache info updates
 const subscribeToCacheInfo = () => {
-  browserAPI.storage.sync.get("cacheInfo", items => {
+  chrome.storage.sync.get("cacheInfo", items => {
     updateCacheInfo(items);
   });
 
-  browserAPI.storage.onChanged.addListener((changes, area) => {
+  chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "sync" && changes.cacheInfo) {
       updateCacheInfo({cacheInfo: changes.cacheInfo.newValue});
     }
@@ -184,7 +183,7 @@ const restoreOptions = () => {
     ],
   };
 
-  browserAPI.storage.sync.get(defaultOptions, setOptionsInForm);
+  chrome.storage.sync.get(defaultOptions, setOptionsInForm);
 
   document.getElementById("clear-cache").addEventListener("click", clearTransientLyrics);
 };

@@ -15,6 +15,7 @@ import * as BetterLyrics from "../../index";
 import * as Translation from "./translation";
 import * as LyricProviders from "./providers";
 import * as RequestSniffing from "./requestSniffer";
+import * as Storage from "../../core/storage"
 
 /** Current version of the lyrics cache format */
 const LYRIC_CACHE_VERSION = "1.2.0";

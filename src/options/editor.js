@@ -15,8 +15,6 @@ import THEMES from "./themes.js";
 
 const invalidKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Shift", "Enter", "Tab"];
 
-const browserAPI = typeof browser !== "undefined" ? browser : chrome;
-
 const showAlert = message => {
   const status = document.getElementById("status-css");
   status.innerText = message;
@@ -86,21 +84,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (strategy === "local") {
         // Use local storage for large content
-        await browserAPI.storage.local.set({customCSS: css});
+        await chrome.storage.local.set({customCSS: css});
         // Clear any sync storage CSS to avoid conflicts
-        await browserAPI.storage.sync.remove("customCSS");
+        await chrome.storage.sync.remove("customCSS");
         // Store a flag indicating we're using local storage
-        await browserAPI.storage.sync.set({cssStorageType: "local"});
+        await chrome.storage.sync.set({cssStorageType: "local"});
       } else {
         // Use sync storage for smaller content
-        await browserAPI.storage.sync.set({customCSS: css, cssStorageType: "sync"});
+        await chrome.storage.sync.set({customCSS: css, cssStorageType: "sync"});
         // Clear any local storage CSS to avoid conflicts
-        await browserAPI.storage.local.remove("customCSS");
+        await chrome.storage.local.remove("customCSS");
       }
 
       // Always handle theme name in sync storage (small data)
       if (!isTheme && isUserTyping) {
-        await browserAPI.storage.sync.remove("themeName");
+        await chrome.storage.sync.remove("themeName");
         themeSelector.value = "";
         currentThemeName = null;
       }
@@ -112,9 +110,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (error.message?.includes("quota") && retryCount < MAX_RETRY_ATTEMPTS) {
         // Quota exceeded, try with local storage
         try {
-          await browserAPI.storage.local.set({customCSS: css});
-          await browserAPI.storage.sync.remove("customCSS");
-          await browserAPI.storage.sync.set({cssStorageType: "local"});
+          await chrome.storage.local.set({customCSS: css});
+          await chrome.storage.sync.remove("customCSS");
+          await chrome.storage.sync.set({cssStorageType: "local"});
           return {success: true, strategy: "local", wasRetry: true};
         } catch (localError) {
           console.error("Local storage fallback failed:", localError);
@@ -131,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!isTheme && isUserTyping) {
       // Only remove theme selection if it's not a theme save and the user is typing
-      browserAPI.storage.sync.remove("themeName");
+      chrome.storage.sync.remove("themeName");
       themeSelector.value = "";
       currentThemeName = null;
     }
@@ -151,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // Send message to all tabs to update CSS
           try {
-            browserAPI.runtime
+            chrome.runtime
               .sendMessage({
                 action: "updateCSS",
                 css: css,
@@ -200,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (currentThemeName !== null) {
         themeSelector.value = "";
         currentThemeName = null;
-        browserAPI.storage.sync.remove("themeName");
+        chrome.storage.sync.remove("themeName");
       }
       debounceSave(); //should be inside VALID_CHANGE_ORIGINS, or it would be called by editor.setText()
     }
@@ -210,11 +208,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const loadCustomCSS = async () => {
     try {
       // First check which storage type was used
-      const syncData = await browserAPI.storage.sync.get(["cssStorageType", "customCSS"]);
+      const syncData = await chrome.storage.sync.get(["cssStorageType", "customCSS"]);
 
       if (syncData.cssStorageType === "local") {
         // Load from local storage
-        const localData = await browserAPI.storage.local.get("customCSS");
+        const localData = await chrome.storage.local.get("customCSS");
         return localData.customCSS || "";
       } else {
         // Load from sync storage or fallback to sync if no type is set
@@ -224,10 +222,10 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error loading CSS:", error);
       // Fallback: try both storages
       try {
-        const localData = await browserAPI.storage.local.get("customCSS");
+        const localData = await chrome.storage.local.get("customCSS");
         if (localData.customCSS) return localData.customCSS;
 
-        const syncData = await browserAPI.storage.sync.get("customCSS");
+        const syncData = await chrome.storage.sync.get("customCSS");
         return syncData.customCSS || "";
       } catch (fallbackError) {
         console.error("Fallback loading failed:", fallbackError);
@@ -259,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Enhanced theme and CSS loading
-  Promise.all([browserAPI.storage.sync.get(["themeName"]), loadCustomCSS()]).then(([syncData, css]) => {
+  Promise.all([chrome.storage.sync.get(["themeName"]), loadCustomCSS()]).then(([syncData, css]) => {
     if (syncData.themeName) {
       const themeIndex = THEMES.findIndex(theme => theme.name === syncData.themeName);
       if (themeIndex !== -1) {
@@ -278,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (this.value === "") {
       editor.setValue("");
       saveToStorage();
-      browserAPI.storage.sync.remove("themeName");
+      chrome.storage.sync.remove("themeName");
       currentThemeName = null;
       showAlert("Cleared theme");
       return;
@@ -291,7 +289,7 @@ ${selectedTheme.css}
 `;
       editor.setValue(themeContent); //fires editor.on("change");
 
-      browserAPI.storage.sync.set({themeName: selectedTheme.name});
+      chrome.storage.sync.set({themeName: selectedTheme.name});
       currentThemeName = selectedTheme.name;
       isUserTyping = false;
       saveToStorage(true);
@@ -309,11 +307,11 @@ const generateDefaultFilename = () => {
 };
 
 const saveCSSToFile = (css, defaultFilename) => {
-  browserAPI.permissions.contains({permissions: ["downloads"]}, hasPermission => {
+  chrome.permissions.contains({permissions: ["downloads"]}, hasPermission => {
     if (hasPermission) {
       downloadFile(css, defaultFilename);
     } else {
-      browserAPI.permissions.request({permissions: ["downloads"]}, granted => {
+      chrome.permissions.request({permissions: ["downloads"]}, granted => {
         if (granted) {
           downloadFile(css, defaultFilename);
         } else {
@@ -328,8 +326,8 @@ const downloadFile = (css, defaultFilename) => {
   const blob = new Blob([css], {type: "text/css"});
   const url = URL.createObjectURL(blob);
 
-  if (browserAPI.downloads) {
-    browserAPI.downloads
+  if (chrome.downloads) {
+    chrome.downloads
       .download({
         url: url,
         filename: defaultFilename,

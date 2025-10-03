@@ -170,7 +170,6 @@ import * as RequestSniffing from "./requestSniffer";
    * @param {ProviderParameters} providerParameters
    */
   async function cubey(providerParameters) {
-    const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
     /**
      * Gets a valid JWT, either from storage or by forcing a new Turnstile challenge.
@@ -197,13 +196,13 @@ import * as RequestSniffing from "./requestSniffer";
 
       if (forceNew) {
         Utils.log("[BetterLyrics] Forcing new token, removing any existing one.");
-        await browserAPI.storage.local.remove("jwtToken");
+        await chrome.storage.local.remove("jwtToken");
       } else {
-        const storedData = await browserAPI.storage.local.get("jwtToken");
+        const storedData = await chrome.storage.local.get("jwtToken");
         if (storedData.jwtToken) {
           if (isJwtExpired(storedData.jwtToken)) {
             Utils.log("[BetterLyrics]Local JWT has expired. Removing and requesting a new one.");
-            await browserAPI.storage.local.remove("jwtToken");
+            await chrome.storage.local.remove("jwtToken");
           } else {
             Utils.log("[BetterLyrics] 🔑 Using valid, non-expired JWT for bypass.");
             return storedData.jwtToken;
@@ -229,7 +228,7 @@ import * as RequestSniffing from "./requestSniffer";
 
         if (!newJwt) throw new Error("No JWT returned from API after verification.");
 
-        await browserAPI.storage.local.set({ jwtToken: newJwt });
+        await chrome.storage.local.set({jwtToken: newJwt});
         Utils.log("[BetterLyrics] ✅ New JWT received and stored.");
         return newJwt;
       } catch (error) {
@@ -602,8 +601,6 @@ async function ytCaptions(providerParameters) {
 export let providerPriority = [];
 
 export function initProviders() {
-  const browserAPI = typeof browser !== "undefined" ? browser : chrome;
-
   /**
    *
    * @param {string[]} preferredProviderList
@@ -645,13 +642,13 @@ export function initProviders() {
     providerPriority = preferredProviderList;
   };
 
-  browserAPI.storage.onChanged.addListener((changes, area) => {
+  chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "sync" && changes.preferredProviderList) {
       updateProvidersList(changes.preferredProviderList.newValue);
     }
   });
 
-  browserAPI.storage.sync.get({preferredProviderList: null}, function (items) {
+  chrome.storage.sync.get({preferredProviderList: null}, function (items) {
     updateProvidersList(items.preferredProviderList);
   });
 }

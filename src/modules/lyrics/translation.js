@@ -1,5 +1,6 @@
 import * as Constants from "../../core/constants";
 import * as Utils from "../../core/utils";
+import * as Storage from "../../core/storage";
 
 let cache = {
     romanization: new Map(),

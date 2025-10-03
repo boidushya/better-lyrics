@@ -22,6 +22,7 @@ import * as Constants from "./core/constants";
 import * as RequestSniffing from "./modules/lyrics/requestSniffer";
 import * as Providers from "./modules/lyrics/providers";
 import * as Lyrics from "./modules/lyrics/lyrics";
+import * as Storage from "./core/storage";
 
 /** @type {boolean} Whether lyrics are currently syncing with playback */
 export let areLyricsTicking = false;
@@ -64,8 +65,8 @@ export async function modify() {
   Settings.hideCursorOnIdle();
   Settings.handleSettings();
   Storage.subscribeToCustomCSS();
-  Storage.purgeExpiredKeys();
-  Storage.saveCacheInfo();
+  await Storage.purgeExpiredKeys();
+  await Storage.saveCacheInfo();
   Settings.listenForPopupMessages();
   Observer.lyricReloader();
   Observer.initializeLyrics();

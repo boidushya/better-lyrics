@@ -1,8 +1,9 @@
 import * as DOM from "../ui/dom";
 import * as Constants from "../../core/constants";
 import * as Utils from "../../core/utils";
-import * as BetterLyrics from "../../index"
 import * as Translation from "../lyrics/translation";
+import * as Storage from "../../core/storage"
+import * as BetterLyrics from "../../index"
 
 /**
  * Handles settings initialization and applies user preferences.
@@ -154,15 +155,7 @@ export function listenForPopupMessages() {
         Utils.applyCustomCSS(request.css);
       } else {
         // Load CSS from storage (hybrid storage support)
-        Storage.loadCustomCSS()
-          .then(css => {
-            if (css) {
-              Utils.applyCustomCSS(css);
-            }
-          })
-          .catch(error => {
-            console.error("[ Error loading CSS:", error);
-          });
+        Storage.getAndApplyCustomCSS();
       }
     } else if (request.action === "updateSettings") {
       Translation.clearCache();
