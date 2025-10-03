@@ -8,6 +8,8 @@
  * @property {Segment[]} segment
  */
 
+import * as Utils from "../../core/utils";
+
 /**
  * @type {Map<string, string>}
  */
@@ -62,7 +64,7 @@ export async function getLyrics(videoId, maxRetries = 250) {
         }
         if (checkCount > maxRetries) {
           clearInterval(checkInterval);
-          BetterLyrics.Utils.log("Failed to sniff lyrics");
+          Utils.log("Failed to sniff lyrics");
           resolve({hasLyrics: false, lyrics: "", sourceText: ""});
         }
         checkCount += 1;
@@ -91,7 +93,7 @@ export async function getMatchingSong(videoId, maxCheckCount = 250) {
         }
         if (checkCount > maxCheckCount) {
           clearInterval(checkInterval);
-          BetterLyrics.Utils.log("Failed to find Segment Map for video");
+          Utils.log("Failed to find Segment Map for video");
           resolve(null);
         }
         checkCount += 1;
@@ -111,7 +113,7 @@ export async function getSongAlbum(videoId) {
     }
     await delay(20);
   }
-  BetterLyrics.Utils.log("Song album information didn't come in time for: ", videoId);
+  Utils.log("Song album information didn't come in time for: ", videoId);
 }
 
 export function setupRequestSniffer() {
@@ -226,7 +228,7 @@ export function setupRequestSniffer() {
       let videoId = browseIdToVideoIdMap.get(browseId);
 
       if (browseId !== undefined && videoId === undefined && firstRequestMissedVideoId !== null) {
-        // it is possible that we missed the first request, so lets just try it with this id
+        // it is possible that we missed the first request, so let's just try it with this id
         videoId = firstRequestMissedVideoId;
       }
 

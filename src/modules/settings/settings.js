@@ -1,7 +1,7 @@
-import * as App from "../../index";
 import * as DOM from "../ui/dom";
 import * as Constants from "../../core/constants";
 import * as Utils from "../../core/utils";
+import * as BetterLyrics from "../../index"
 import * as Translation from "../lyrics/translation";
 
 /**
@@ -169,19 +169,19 @@ export function listenForPopupMessages() {
       Utils.setUpLog();
       this.hideCursorOnIdle();
       this.handleSettings();
-      App.shouldInjectAlbumArt = "Unknown";
+      BetterLyrics.shouldInjectAlbumArt = "Unknown";
       this.onAlbumArtEnabled(
-        () => (App.shouldInjectAlbumArt = true),
+        () => (BetterLyrics.shouldInjectAlbumArt = true),
         () => {
-          App.shouldInjectAlbumArt = false;
+          BetterLyrics.shouldInjectAlbumArt = false;
           DOM.removeAlbumArtFromLayout();
         }
       );
-      App.reloadLyrics();
+      BetterLyrics.reloadLyrics();
     } else if (request.action === "clearCache") {
       try {
         Storage.clearCache();
-        App.reloadLyrics();
+        BetterLyrics.reloadLyrics();
 
         sendResponse({success: true});
       } catch {

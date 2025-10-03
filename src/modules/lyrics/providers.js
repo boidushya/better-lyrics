@@ -24,7 +24,7 @@ function handleTurnstile() {
 
       switch (event.data.type) {
         case "turnstile-token":
-          BetterLyrics.Utils.log("[BetterLyrics] ✅ Received Success Token:", event.data.token);
+          Utils.log("[BetterLyrics] ✅ Received Success Token:", event.data.token);
           cleanup();
           resolve(event.data.token);
           break;
@@ -121,7 +121,7 @@ const CUBEY_LYRICS_API_URL = "https://lyrics.api.dacubeking.com/";
 
 /**
  * @typedef {Object} LyricSourceResult
- * @property {LyricsArray} lyrics
+ * @property {Lyric[]} lyrics
  * @property {string | null | undefined} language
  * @property {string} source
  * @property {string} sourceHref
@@ -129,14 +129,22 @@ const CUBEY_LYRICS_API_URL = "https://lyrics.api.dacubeking.com/";
  */
 
 /**
- * @typedef {
- *   {
- *     startTimeMs: number,
- *     words: string,
- *     durationMs: number,
- *     parts: ({startTimeMs: number, words: string, durationMs: number}[] | null | undefined),
- *   }[]
- * } LyricsArray
+ * @typedef {Lyric[]} LyricsArray
+ */
+
+/**
+ * @typedef {Object} Lyric
+ * @property {number} startTimeMs
+ * @property {string} words
+ * @property {number} durationMs
+ * @property {LyricPart[] | null | undefined} parts
+ */
+
+/**
+ * @typedef {Object} LyricPart
+ * @property {number} startTimeMs
+ * @property {string} words
+ * @property {number} durationMs
  */
 
 /**
@@ -188,23 +196,23 @@ import * as RequestSniffing from "./requestSniffer";
       }
 
       if (forceNew) {
-        BetterLyrics.Utils.log("[BetterLyrics] Forcing new token, removing any existing one.");
+        Utils.log("[BetterLyrics] Forcing new token, removing any existing one.");
         await browserAPI.storage.local.remove("jwtToken");
       } else {
         const storedData = await browserAPI.storage.local.get("jwtToken");
         if (storedData.jwtToken) {
           if (isJwtExpired(storedData.jwtToken)) {
-            BetterLyrics.Utils.log("[BetterLyrics]Local JWT has expired. Removing and requesting a new one.");
+            Utils.log("[BetterLyrics]Local JWT has expired. Removing and requesting a new one.");
             await browserAPI.storage.local.remove("jwtToken");
           } else {
-            BetterLyrics.Utils.log("[BetterLyrics] 🔑 Using valid, non-expired JWT for bypass.");
+            Utils.log("[BetterLyrics] 🔑 Using valid, non-expired JWT for bypass.");
             return storedData.jwtToken;
           }
         }
       }
 
       try {
-        BetterLyrics.Utils.log("[BetterLyrics] No valid JWT found, initiating Turnstile challenge...");
+        Utils.log("[BetterLyrics] No valid JWT found, initiating Turnstile challenge...");
         const turnstileToken = await handleTurnstile({ visible: false });
 
         const response = await fetch(CUBEY_LYRICS_API_URL + "verify-turnstile", {
@@ -222,7 +230,7 @@ import * as RequestSniffing from "./requestSniffer";
         if (!newJwt) throw new Error("No JWT returned from API after verification.");
 
         await browserAPI.storage.local.set({ jwtToken: newJwt });
-        BetterLyrics.Utils.log("[BetterLyrics] ✅ New JWT received and stored.");
+        Utils.log("[BetterLyrics] ✅ New JWT received and stored.");
         return newJwt;
       } catch (error) {
         console.error("[BetterLyrics] Authentication process failed:", error);
@@ -283,7 +291,7 @@ import * as RequestSniffing from "./requestSniffer";
         return;
       }
 
-      BetterLyrics.Utils.log("[BetterLyrics] Retrying API call with new token...");
+      Utils.log("[BetterLyrics] Retrying API call with new token...");
       response = await makeApiCall(jwt);
     }
 
@@ -298,7 +306,7 @@ import * as RequestSniffing from "./requestSniffer";
     const responseData = await response.json();
 
     if (responseData.album) {
-      BetterLyrics.Utils.log("[BetterLyrics] Found Album: " + responseData.album);
+      Utils.log("[BetterLyrics] Found Album: " + responseData.album);
     }
 
     if (responseData.musixmatchWordByWordLyrics) {
@@ -805,7 +813,7 @@ function parseLRC(lrcText, songDuration) {
     let offset = Number(idTags["offset"]);
     if (isNaN(offset)) {
       offset = 0;
-      BetterLyrics.Utils.log("[BetterLyrics] Invalid offset in lyrics: " + idTags["offset"]);
+      Utils.log("[BetterLyrics] Invalid offset in lyrics: " + idTags["offset"]);
     }
     offset = offset * 1000;
     result.forEach(lyric => {
@@ -920,6 +928,7 @@ function parsePlainLyrics(lyricsText) {
       startTimeMs: 0,
       words: words,
       durationMs: 0,
+      parts: null,
     });
   });
   return lyricsArray;

@@ -2,6 +2,9 @@ import * as Observer from "./observer";
 import * as Settings from "../settings/settings";
 import * as Dom from "./dom";
 import * as Constants from "../../core/constants"
+import * as BetterLyrics from "../../index"
+import * as Utils from "../../core/utils";
+import * as DOM from "./dom";
 
 /**
  * Enables the lyrics tab and prevents it from being disabled by YouTube Music.
@@ -119,17 +122,17 @@ export function initializeLyrics() {
       const currentVideoDetails = detail.song + " " + detail.artist;
 
       if (
-        currentVideoId !== App.lastVideoId ||
-        currentVideoDetails !== App.lastVideoDetails
+        currentVideoId !== BetterLyrics.lastVideoId ||
+        currentVideoDetails !== BetterLyrics.lastVideoDetails
       ) {
         try {
-          if (currentVideoId === App.lastVideoId && App.areLyricsLoaded) {
+          if (currentVideoId === BetterLyrics.lastVideoId && BetterLyrics.areLyricsLoaded) {
             console.log(Constants.SKIPPING_LOAD_WITH_META);
             return; // We already loaded this video
           }
         } finally {
-          App.lastVideoId = currentVideoId;
-          App.lastVideoDetails = currentVideoDetails;
+          BetterLyrics.lastVideoId = currentVideoId;
+          BetterLyrics.lastVideoDetails = currentVideoDetails;
         }
 
         if (!detail.song || !detail.artist) {
@@ -137,48 +140,48 @@ export function initializeLyrics() {
         }
 
         Utils.log(Constants.SONG_SWITCHED_LOG, detail.videoId);
-        App.areLyricsTicking = false;
-        App.areLyricsLoaded = false;
+        BetterLyrics.areLyricsTicking = false;
+        BetterLyrics.areLyricsLoaded = false;
 
-        App.queueLyricInjection = true;
-        App.queueAlbumArtInjection = true;
-        App.queueSongDetailsInjection = true;
+        BetterLyrics.queueLyricInjection = true;
+        BetterLyrics.queueAlbumArtInjection = true;
+        BetterLyrics.queueSongDetailsInjection = true;
       }
 
       if (
-        App.queueSongDetailsInjection &&
+        BetterLyrics.queueSongDetailsInjection &&
         detail.song &&
         detail.artist &&
         document.getElementById("main-panel")
       ) {
-        App.queueSongDetailsInjection = false;
+        BetterLyrics.queueSongDetailsInjection = false;
         DOM.injectSongAttributes(detail.song, detail.artist);
       }
 
-      if (App.queueAlbumArtInjection === true && App.shouldInjectAlbumArt === true) {
-        App.queueAlbumArtInjection = false;
+      if (BetterLyrics.queueAlbumArtInjection === true && BetterLyrics.shouldInjectAlbumArt === true) {
+        BetterLyrics.queueAlbumArtInjection = false;
         DOM.addAlbumArtToLayout(currentVideoId);
       }
 
-      if (App.lyricInjectionFailed) {
+      if (BetterLyrics.lyricInjectionFailed) {
         const tabSelector = document.getElementsByClassName(Constants.TAB_HEADER_CLASS)[1];
         if (tabSelector && tabSelector.getAttribute("aria-selected") !== "true") {
-          App.lyricInjectionFailed = false; //ignore failure b/c the tab isn't visible
+          BetterLyrics.lyricInjectionFailed = false; //ignore failure b/c the tab isn't visible
         }
       }
 
-      if (App.queueLyricInjection || App.lyricInjectionFailed) {
+      if (BetterLyrics.queueLyricInjection || BetterLyrics.lyricInjectionFailed) {
         const tabSelector = document.getElementsByClassName(Constants.TAB_HEADER_CLASS)[1];
         if (tabSelector) {
-          App.queueLyricInjection = false;
-          App.lyricInjectionFailed = false;
+          BetterLyrics.queueLyricInjection = false;
+          BetterLyrics.lyricInjectionFailed = false;
           if (tabSelector.getAttribute("aria-selected") !== "true") {
             Settings.onAutoSwitchEnabled(() => {
               tabSelector.click();
               Utils.log(Constants.AUTO_SWITCH_ENABLED_LOG);
             });
           }
-          App.handleModifications(detail);
+          BetterLyrics.handleModifications(detail);
         }
       }
       DOM.tickLyrics(detail.currentTime, detail.browserTime, detail.playing);
@@ -192,7 +195,7 @@ export function initializeLyrics() {
  */
 export function scrollEventHandler() {
   const tabSelector = document.getElementsByClassName(Constants.TAB_HEADER_CLASS)[1];
-  if (tabSelector.getAttribute("aria-selected") !== "true" || !App.areLyricsTicking) {
+  if (tabSelector.getAttribute("aria-selected") !== "true" || !BetterLyrics.areLyricsTicking) {
     return;
   }
 

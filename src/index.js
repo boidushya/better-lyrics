@@ -35,7 +35,7 @@ export let lyricInjectionFailed = false;
 export let lastVideoId = null;
 /** @type {Lyrics|null} Details of the last processed video */
 export let lastVideoDetails = null;
-/** @type {Promise|null} Promise for ongoing lyric injection process */
+/** @type {Promise|null} Promise for the ongoing lyric injection process */
 export let lyricInjectionPromise = null;
 /** @type {boolean} Whether lyric injection is queued */
 export let queueLyricInjection = false;

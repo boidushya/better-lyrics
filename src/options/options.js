@@ -1,5 +1,7 @@
 // Function to save user options
 
+import {browser} from "../../extension.config";
+
 const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
 const saveOptions = () => {

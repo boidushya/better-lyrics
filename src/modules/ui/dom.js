@@ -1,6 +1,7 @@
 import * as Utils from "../../core/utils";
 import * as Constants from "../../core/constants";
 import * as BetterLyrics from "../../index";
+import * as Observer from "./observer";
 
 /**
  * Creates or reuses the lyrics wrapper element and sets up scroll event handling.
@@ -81,8 +82,8 @@ export function createFooter(song, artist, album, duration) {
     const footerImage = document.createElement("img");
     footerImage.src = "https://better-lyrics.boidu.dev/icon-512.png";
     footerImage.alt = "Better Lyrics Logo";
-    footerImage.width = "20";
-    footerImage.height = "20";
+    footerImage.width = 20;
+    footerImage.height = 20;
 
     footerContainer.appendChild(footerImage);
     footerContainer.appendChild(document.createTextNode("Source: "));
@@ -96,8 +97,8 @@ export function createFooter(song, artist, album, duration) {
     const discordImage = document.createElement("img");
     discordImage.src = Constants.DISCORD_LOGO_SRC;
     discordImage.alt = "Better Lyrics Discord";
-    discordImage.width = "20";
-    discordImage.height = "20";
+    discordImage.width = 20;
+    discordImage.height = 20;
 
     const discordLink = document.createElement("a");
     discordLink.className = `${Constants.FOOTER_CLASS}__discord`;
@@ -227,7 +228,7 @@ export function flushLoader(showNoSyncAvailable = false) {
  */
 export function isLoaderActive() {
   try {
-    if (!this.loaderMayBeActive) {
+    if (!loaderMayBeActive) {
       return false;
     }
     const loaderWrapper = document.getElementById(Constants.LYRICS_LOADER_ID);
@@ -398,9 +399,9 @@ export async function injectHeadTags() {
 export function cleanup() {
   this.scrollPos = -1;
 
-  if (BetterLyrics.lyricsObserver) {
-    BetterLyrics.lyricsObserver.disconnect();
-    BetterLyrics.lyricsObserver = null;
+  if (this.lyricsObserver) {
+    this.lyricsObserver.disconnect();
+    this.lyricsObserver = null;
   }
 
   const ytMusicLyrics = document.querySelector(Constants.NO_LYRICS_TEXT_SELECTOR)?.parentElement;
@@ -437,16 +438,16 @@ export function injectGetSongInfo() {
   (document.head || document.documentElement).appendChild(s);
 }
 
-let skipScrolls = 0;
-let skipScrollsDecayTimes = [];
-let scrollResumeTime = 0;
-let scrollPos = 0;
-let selectedElementIndex = 0;
-let nextScrollAllowedTime = 0;
-let wasUserScrolling = false;
-let lastTime = 0;
-let lastPlayState = false;
-let lastEventCreationTime = 0;
+export let skipScrolls = 0;
+export let skipScrollsDecayTimes = [];
+export let scrollResumeTime = 0;
+export let scrollPos = 0;
+export let selectedElementIndex = 0;
+export let nextScrollAllowedTime = 0;
+export let wasUserScrolling = false;
+export let lastTime = 0;
+export let lastPlayState = false;
+export let lastEventCreationTime = 0;
 /**
  * @type {Map<string, number>}
  */
@@ -461,7 +462,7 @@ export let cachedDurations = new Map();
  * @param property - the css property to look up
  * @return {number} - in ms
  */
-function getCSSDurationInMs(lyricsElement, property) {
+export function getCSSDurationInMs(lyricsElement, property) {
   let duration = this.cachedDurations.get(lyricsElement);
   if (duration === undefined) {
     duration = toMs(window.getComputedStyle(lyricsElement).getPropertyValue(property));
@@ -735,7 +736,7 @@ export function tickLyrics(currentTime, eventCreationTime, isPlaying = true, smo
 /**
  * Called when a new lyrics element is added to trigger re-sync.
  */
-function lyricsElementAdded() {
+export function lyricsElementAdded() {
   if (!BetterLyrics.areLyricsTicking) {
     return;
   }
@@ -753,7 +754,7 @@ function lyricsElementAdded() {
  * @param {string} title - Song title
  * @param {string} artist - Artist name
  */
-function injectSongAttributes(title, artist) {
+export function injectSongAttributes(title, artist) {
   const mainPanel = document.getElementById("main-panel");
   console.assert(mainPanel != null);
   const existingSongInfo = document.getElementById("blyrics-song-info");
@@ -782,7 +783,7 @@ function injectSongAttributes(title, artist) {
  *
  * @returns {HTMLElement} The resume scroll button element
  */
-function getResumeScrollElement() {
+export function getResumeScrollElement() {
   let elem = document.getElementById("autoscroll-resume-button");
   if (!elem) {
     const wrapper = document.createElement("div");

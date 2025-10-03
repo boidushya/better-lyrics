@@ -10,8 +10,8 @@ export async function translateText(text, targetLanguage) {
   let url = Constants.TRANSLATE_IN_ROMAJI(targetLanguage, text);
 
   const cacheKey = `${targetLanguage}_${text}`;
-  if (this.cache.translation.has(cacheKey)) {
-    return this.cache.translation.get(cacheKey);
+  if (cache.translation.has(cacheKey)) {
+    return cache.translation.get(cacheKey);
   }
   return fetch(url, {
     cache: "force-cache",
@@ -26,7 +26,7 @@ export async function translateText(text, targetLanguage) {
           return null;
         } else {
         const result = {originalLanguage, translatedText};
-        this.cache.translation.set(cacheKey, result);
+        cache.translation.set(cacheKey, result);
           return result;
         }
     })
@@ -38,8 +38,8 @@ export async function translateText(text, targetLanguage) {
 
 export async function translateTextIntoRomaji(lang, text) {
   const cacheKey = text;
-    if (this.cache.romanization.has(cacheKey)) {
-      return this.cache.romanization.get(cacheKey);
+  if (cache.romanization.has(cacheKey)) {
+    return cache.romanization.get(cacheKey);
     }
 
   let url = Constants.TRANSLATE_IN_ROMAJI(lang, text);
@@ -55,7 +55,7 @@ export async function translateTextIntoRomaji(lang, text) {
       if (text.trim().toLowerCase() === romanizedText.trim().toLowerCase() && text.trim() !== "") {
         return null;
       } else {
-        this.cache.romanization.set(cacheKey, romanizedText);
+        cache.romanization.set(cacheKey, romanizedText);
         return romanizedText;
       }
     })
@@ -83,19 +83,19 @@ export function onTranslationEnabled(callback) {
 }
 
 export function clearCache() {
-  this.cache.romanization.clear();
-  this.cache.translation.clear();
+  cache.romanization.clear();
+  cache.translation.clear();
 }
 
 export function getTranslationFromCache(text, targetLanguage) {
   const cacheKey = `${targetLanguage}_${text}`;
-  return this.cache.translation.get(cacheKey) || null;
+  return cache.translation.get(cacheKey) || null;
 }
 
 export function getRomanizationFromCache(text) {
     const cacheKey = text;
-    return this.cache.romanization.get(cacheKey) || null;
+  return cache.romanization.get(cacheKey) || null;
 }
 
-let currentTranslationLanguage = "en";
+export let currentTranslationLanguage = "en";
 
