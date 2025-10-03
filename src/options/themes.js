@@ -493,16 +493,33 @@ animation:
     name: "Minimal",
     author: "Semicolonhope",
     link: "",
-    css: `/* 2025-09-29T19-41-22 v1.1.0 */
+    css: `/* 2025-10-02T19-22-33 v1.2.1 */
 /* think about changing all the colors to oklch if you can */
 /* use oklch(from rgb(value value value) L C H / A) */
 /* changed bg, font, albm-art shdw, no animations */
 
 :root {
   /* FONT BABY! */
-  --blyrics-font-family:
-    system-ui, sans-serif, var(--noto-sans-universal);
+  --blyrics-font-family: system-ui, sans-serif, var(--noto-sans-universal);
   --blyrics-footer-font-family: var(--blyrics-font-family);
+
+  /* someone said oklach is modern so here ya go */
+  --blyrics-lyric-inactive-color: oklch(from white l c h / 0.3) !important;
+  --blyrics-lyric-active-color: oklch(from white l c h / 1) !important;
+  --blyrics-error-color: oklch(from rgb(99.2% 88.2% 88.2%) l c h);
+  --blyrics-ui-text-color: var(--blyrics-lyric-active-color);
+  --blyrics-translated-color: oklch(from white l c h / 0.6);
+
+  /* blur and saturatiom changes */
+  --blyrics-background-blur: 50px;
+  --blyrics-background-saturate: 1.3;
+
+  /* Remove unnecessary delays */
+  --blyrics-anim-delay: 0s !important;
+  --blyrics-swipe-delay: 0s !important;
+
+  /* no thank you */
+  --blyrics-gradient-stops: none !important;
 
   /* Smooth scroll timing */
   --blyrics-lyric-scroll-duration: 0.5s !important;
@@ -512,51 +529,6 @@ animation:
     0.355,
     1
   ) !important;
-
-  /* Fade-in instead of whatever the hell was that? 
---blyrics-lyric-highlight-fade-in-duration: 3s !important;
---blyrics-lyric-highlight-fade-out-duration: 3s !important; */
-
-  /* Remove unnecessary delays */
-  --blyrics-anim-delay: 0s !important;
-  --blyrics-swipe-delay: 0s !important;
-
-  /* no thank you */
-  --blyrics-gradient-stops: none !important;
-
-  /* someone said oklach is modern so here ya go */
-  --blyrics-lyric-inactive-color: oklch(
-    from white l c h / 0.3
-  ) !important;
-  --blyrics-lyric-active-color: oklch(
-    from white l c h / 1
-  ) !important;
-  --blyrics-error-color: oklch(from rgb(99.2% 88.2% 88.2%) l c h);
-  --blyrics-ui-text-color: var(--blyrics-lyric-active-color);
-  --blyrics-translated-color: oklch(from white / l c h 0.6);
-
-  /* blur and saturatiom changes */
-  --blyrics-background-blur: 70px;
-  --blyrics-background-saturate: 1;
-}
-
-/* default inactive opacity to remove letter join artifacts */
-.blyrics-container > div {
-  transform: none !important;
-  transition: opacity 0.5s ease !important;
-  opacity: 0.3;
-}
-
-/* active vs inactive color changes. */
-/* for reomving visible letter opacity artifacts */
-.blyrics-container > div > span {
-  color: var(--blyrics-lyric-active-color) !important;
-  transition: color 0.5s ease !important;
-}
-
-/* you can't rely on previous color setting opacity */
-.blyrics-container > div.blyrics--active {
-  opacity: 1;
 }
 
 /* bye bye animations and swipy */
@@ -570,13 +542,32 @@ animation:
   animation: none !important;
 }
 
+/* fade in instead of whatever the hell was that */
+/* transition to reomve low opacity letter joint artifacts */
+.blyrics-container > div {
+  transform: none !important;
+  transition: opacity 0.5s ease !important;
+  opacity: 0.3;
+}
+
+/* active vs inactive color changes. */
+/* transition to reomve low opacity letter joint artifacts */
+.blyrics-container > div > span {
+  color: var(--blyrics-lyric-active-color) !important;
+  transition: color 0.5s ease !important;
+}
+
+/* you can't rely on previous color setting opacity */
+.blyrics-container > div.blyrics--active {
+  opacity: 1;
+}
+
 /* Inactive state translated/roman color, and color fade-in */
+/* don't treat letters, treat em as whole */
 .blyrics--translated,
 .blyrics--romanized {
   opacity: 0.6 !important;
-  color: oklch(
-    from white l c h / var(--blyrics-translated-opacity)
-  ) !important;
+  color: oklch(from white l c h / var(--blyrics-translated-opacity)) !important;
   transition: opacity 0.5s ease !important;
 }
 
@@ -587,19 +578,23 @@ animation:
   transition: opacity 0.5s ease !important;
 }
 
-/* think about changing all the colors to oklch if i can */
-/* full screen shadow, i hate you */
-ytmusic-player-page:not(
-    [is-video-truncation-fix-enabled]
-  )[player-fullscreened]:not([blyrics-dfs])
-  #player.ytmusic-player-page {
-  box-shadow: oklch(from rgb(0 0 0) l c h / 0.1) 0 4px 12px;
+/* album shadow, SIMMER DOWN */
+#player.ytmusic-player-page {
+  box-shadow: oklch(from rgb(1% 1% 1%) l c h / 0.1) 0 4px 12px !important;
 }
 
-/* upped the brightness, saturate and blur already changed in root */
+/* black blur from background go away */
 ytmusic-player-page:before {
-  filter: saturate(var(--blyrics-background-saturate)) brightness(0.3)
-    blur(var(--blyrics-background-blur));
+  position: fixed !important;
+  top: -18% !important;
+  left: -5% !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+/* a lil something */
+#side-panel.ytmusic-player-page {
+  transition: all 0.3s ease !important;
 }`,
   },
   {
