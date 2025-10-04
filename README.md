@@ -6,7 +6,7 @@
 
 Better Lyrics for YouTube Music upgrades your YouTube Music experience by providing beautiful time-synced lyrics for your favorite songs.
 
-<p align="center">
+<p align="left">
  <a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
  <img src="https://img.shields.io/badge/version-2.0.4-blue.svg" alt=""/>
 
@@ -19,22 +19,22 @@ Better Lyrics for YouTube Music upgrades your YouTube Music experience by provid
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 </p>
 
-<p align="center">
+<p align="left">
   <a aria-label="Chrome Web Store" href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg"><img src="https://img.shields.io/chrome-web-store/v/effdbpeggelllpfkjppbokhmmiinhlmg?color=darkgreen" alt="Chrome Extension Version"/></a>
   <a aria-label="Chrome Web Store" href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg"><img src="https://img.shields.io/chrome-web-store/rating/effdbpeggelllpfkjppbokhmmiinhlmg?color=darkgreen" alt="Chrome Extension Rating"/></a>
   <a aria-label="Chrome Web Store" href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg"><img src="https://img.shields.io/chrome-web-store/users/effdbpeggelllpfkjppbokhmmiinhlmg?color=darkgreen&label=users" alt="Chrome Extension Users"/></a>
 </p>
-<p align="center">
+<p align="left">
   <a aria-label="Firefox Add-on" href="https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/"><img src="https://img.shields.io/amo/v/betterlyrics%40boidu.dev.svg?color=orange" alt="Firefox Add-on Version"/></a>
   <a aria-label="Firefox Add-on" href="https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/"><img src="https://img.shields.io/amo/rating/betterlyrics%40boidu.dev.svg?color=orange" alt="Firefox Add-on Rating"/></a>
   <a aria-label="Firefox Add-on" href="https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/"><img src="https://img.shields.io/amo/users/betterlyrics%40boidu.dev?color=orange&label=users" alt="Firefox Add-on Users"/></a>
 </p>
-<p align="center">
+<p align="left">
   <a aria-label="Edge Add-on" href="https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd"><img src="https://img.shields.io/badge/dynamic/json?label=edge%20add-on&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fmjfeaklppoegooljmjicjdbiccgjdlhd&color=212749" alt="Edge Add-on Version"/></a>
   <a aria-label="Edge Add-on" href="https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd"><img src="https://img.shields.io/badge/dynamic/json?label=rating&suffix=/5&query=%24.averageRating&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fmjfeaklppoegooljmjicjdbiccgjdlhd&color=212749" alt="Edge Add-on Rating"/></a>
   <a aria-label="Edge Add-on" href="https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd"><img src="https://img.shields.io/badge/dynamic/json?label=users&query=%24.activeInstallCount&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fmjfeaklppoegooljmjicjdbiccgjdlhd&color=212749" alt="Edge Add-on Users"/></a>
 </p>
-<p align="center">
+<p align="left">
   <a aria-label="Discord" href="https://discord.gg/UsHE3d5fWF"><img alt="Discord" src="https://img.shields.io/discord/1268184963266908220?label=Discord&logo=discord"></a>
 </p>
 
