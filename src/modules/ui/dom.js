@@ -46,8 +46,10 @@ BetterLyrics.DOM = {
    * @param {string} artist - Artist name
    * @param {string} album - Album name
    * @param {number} duration - Song duration in seconds
+   * @param {string} videoId - YouTube video ID
+   * @param {boolean} showAddLyricsLink - Whether to show the "Add Lyrics to LRCLib" link
    */
-  addFooter: (source, sourceHref, song, artist, album, duration) => {
+  addFooter: (source, sourceHref, song, artist, album, duration, videoId, showAddLyricsLink = false) => {
     if (document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS).length !== 0) {
       document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0].remove();
     }
@@ -56,26 +58,8 @@ BetterLyrics.DOM = {
     const footer = document.createElement("div");
     footer.classList.add(BetterLyrics.Constants.FOOTER_CLASS);
     lyricsElement.appendChild(footer);
-    BetterLyrics.DOM.createFooter(song, artist, album, duration);
 
-    const footerLink = document.getElementById("betterLyricsFooterLink");
-    source = source || "boidu.dev";
-    sourceHref = sourceHref || "https://better-lyrics.boidu.dev/";
-    footerLink.textContent = source;
-    footerLink.href = sourceHref;
-  },
-
-  /**
-   * Creates the footer elements including source link, Discord link, and add lyrics button.
-   *
-   * @param {string} song - Song title
-   * @param {string} artist - Artist name
-   * @param {string} album - Album name
-   * @param {number} duration - Song duration in seconds
-   */
-  createFooter: (song, artist, album, duration) => {
     try {
-      const footer = document.getElementsByClassName(BetterLyrics.Constants.FOOTER_CLASS)[0];
       footer.innerHTML = "";
 
       const footerContainer = document.createElement("div");
@@ -93,6 +77,10 @@ BetterLyrics.DOM = {
       const footerLink = document.createElement("a");
       footerLink.target = "_blank";
       footerLink.id = "betterLyricsFooterLink";
+      source = source || "boidu.dev";
+      sourceHref = sourceHref || "https://better-lyrics.boidu.dev/";
+      footerLink.textContent = source;
+      footerLink.href = sourceHref;
 
       footerContainer.appendChild(footerLink);
 
@@ -109,26 +97,74 @@ BetterLyrics.DOM = {
 
       discordLink.appendChild(discordImage);
 
-      const addLyricsContainer = document.createElement("div");
-      addLyricsContainer.className = `${BetterLyrics.Constants.FOOTER_CLASS}__container`;
+      // Only show "Add Lyrics to LRCLib" link when no lyrics are found
+      let addLyricsContainer = null;
+      if (showAddLyricsLink) {
+        addLyricsContainer = document.createElement("div");
+        addLyricsContainer.className = `${BetterLyrics.Constants.FOOTER_CLASS}__container`;
 
-      const addLyricsLink = document.createElement("a");
-      const url = new URL(BetterLyrics.Constants.LRCLIB_UPLOAD_URL);
-      if (song) url.searchParams.append("title", song);
-      if (artist) url.searchParams.append("artist", artist);
-      if (album) url.searchParams.append("album", album);
-      if (duration) url.searchParams.append("duration", duration);
-      footerLink.target = "_blank";
-      addLyricsLink.href = url.toString();
-      addLyricsLink.textContent = "Add Lyrics to LRCLib";
-      addLyricsLink.target = "_blank";
-      addLyricsLink.rel = "noreferrer noopener";
-      addLyricsLink.style.height = "100%";
+        const addLyricsLink = document.createElement("a");
+        const url = new URL(BetterLyrics.Constants.LRCLIB_UPLOAD_URL);
+        if (song) url.searchParams.append("title", song);
+        if (artist) url.searchParams.append("artist", artist);
+        if (album) url.searchParams.append("album", album);
+        if (duration) url.searchParams.append("duration", duration);
+        addLyricsLink.href = url.toString();
+        addLyricsLink.textContent = "Add Lyrics to LRCLib";
+        addLyricsLink.target = "_blank";
+        addLyricsLink.rel = "noreferrer noopener";
+        addLyricsLink.style.height = "100%";
 
-      addLyricsContainer.appendChild(addLyricsLink);
+        addLyricsContainer.appendChild(addLyricsLink);
+      }
+
+      const changeLyricsContainer = document.createElement("div");
+      changeLyricsContainer.className = `${BetterLyrics.Constants.FOOTER_CLASS}__container`;
+
+      const changeLyricsLink = document.createElement("a");
+      try {
+        const man = chrome?.runtime?.getManifest?.();
+        const listed = Array.isArray(man?.content_scripts?.[0]?.js) && man.content_scripts[0].js.includes("src/modules/lyrics/changeLyrics.js");
+        BetterLyrics.Utils.log("[BetterLyrics] manifest lists changeLyrics:", listed);
+        BetterLyrics.Utils.log("[BetterLyrics] typeof BetterLyrics.ChangeLyrics:", typeof BetterLyrics?.ChangeLyrics);
+      } catch (_e) {}
+      changeLyricsLink.href = "#";
+      changeLyricsLink.textContent = "Change Lyrics";
+      changeLyricsLink.style.height = "100%";
+      const tryOpenChangeLyrics = (attempt = 0) => {
+        if (BetterLyrics?.ChangeLyrics && typeof BetterLyrics.ChangeLyrics.showModal === 'function') {
+          BetterLyrics.ChangeLyrics.init(song, artist, album, duration, videoId);
+          BetterLyrics.ChangeLyrics.showModal();
+          return true;
+        }
+        if (attempt < 10) {
+          setTimeout(() => tryOpenChangeLyrics(attempt + 1), 50);
+          return false;
+        }
+        BetterLyrics.Utils.log("[BetterLyrics] ChangeLyrics not available after retries");
+        return false;
+      };
+
+      changeLyricsLink.addEventListener("click", e => {
+        try {
+          e.preventDefault();
+          e.stopPropagation();
+          BetterLyrics.Utils.log("[BetterLyrics] Change Lyrics clicked");
+          if (!tryOpenChangeLyrics()) {
+            BetterLyrics.Utils.log("[BetterLyrics] ChangeLyrics is not available yet");
+          }
+        } catch (err) {
+          BetterLyrics.Utils.log("[BetterLyrics] Error handling Change Lyrics click:", err);
+        }
+      });
+
+      changeLyricsContainer.appendChild(changeLyricsLink);
 
       footer.appendChild(footerContainer);
-      footer.appendChild(addLyricsContainer);
+      if (addLyricsContainer) {
+        footer.appendChild(addLyricsContainer);
+      }
+      footer.appendChild(changeLyricsContainer);
       footer.appendChild(discordLink);
 
       footer.removeAttribute("is-empty");
@@ -419,6 +455,11 @@ BetterLyrics.DOM = {
     const buttonContainer = document.querySelector(".blyrics-no-lyrics-button-container");
     if (buttonContainer) {
       buttonContainer.remove();
+    }
+
+    const changeLyricsModal = document.getElementById("blyrics-change-modal");
+    if (changeLyricsModal && BetterLyrics.ChangeLyrics) {
+      BetterLyrics.ChangeLyrics.closeModal();
     }
 
     BetterLyrics.DOM.clearLyrics();

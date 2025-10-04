@@ -71,4 +71,50 @@ BetterLyrics.Utils = {
       document.head.appendChild(styleTag);
     }
   },
+
+  /**
+   * Convert duration to milliseconds. If value looks like seconds (< 1000), multiply by 1000.
+   * Returns 0 if value is invalid.
+   */
+  toMs: function (value) {
+    const n = Number(value);
+    if (!isFinite(n) || isNaN(n)) return 0;
+    return n < 1000 ? Math.round(n * 1000) : Math.round(n);
+  },
+
+  /**
+   * Fetch with timeout using AbortController. Works across browsers without AbortSignal.timeout.
+   *
+   * @param {string|URL} url
+   * @param {Object} [options]
+   * @param {number} [timeoutMs=10000]
+   * @returns {Promise<Response>}
+   */
+  fetchWithTimeout: function (url, options = {}, timeoutMs = 10000) {
+    const controller = new AbortController();
+    const id = setTimeout(() => {
+      try { controller.abort(); } catch (_e) {}
+    }, timeoutMs);
+    const opts = Object.assign({}, options, { signal: controller.signal });
+    return fetch(url, opts)
+      .finally(() => clearTimeout(id));
+  },
+
+  /**
+   * Fetch JSON helper with timeout. Returns null on network/parse error or non-ok response.
+   *
+   * @param {string|URL} url
+   * @param {Object} [options]
+   * @param {number} [timeoutMs=10000]
+   * @returns {Promise<any|null>}
+   */
+  fetchJSON: async function (url, options = {}, timeoutMs = 10000) {
+    try {
+      const res = await BetterLyrics.Utils.fetchWithTimeout(url, options, timeoutMs);
+      if (!res || !res.ok) return null;
+      return await res.json();
+    } catch (_e) {
+      return null;
+    }
+  },
 };
