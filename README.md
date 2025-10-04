@@ -2,7 +2,7 @@
 
 # Better Lyrics
 
-Better Lyrics for YouTube Music upgrades your YouTube Music experience by providing beautiful time-synced lyrics for your favorite songs.
+Better Lyrics upgrades your YouTube Music experience by providing beautiful time-synced lyrics for your favorite songs.
 
 ## Stats
 
