@@ -299,7 +299,7 @@ BetterLyrics.LyricProviders = {
     if (responseData.musixmatchWordByWordLyrics) {
       let musixmatchWordByWordLyrics = BetterLyrics.LyricProviders.parseLRC(
         responseData.musixmatchWordByWordLyrics,
-        Number(providerParameters.duration)
+        BetterLyrics.Utils.toMs(providerParameters.duration)
       );
       BetterLyrics.LyricProviders.lrcFixers(musixmatchWordByWordLyrics);
 
@@ -329,7 +329,7 @@ BetterLyrics.LyricProviders = {
     if (responseData.musixmatchSyncedLyrics) {
       let musixmatchSyncedLyrics = BetterLyrics.LyricProviders.parseLRC(
         responseData.musixmatchSyncedLyrics,
-        Number(providerParameters.duration)
+        BetterLyrics.Utils.toMs(providerParameters.duration)
       );
       providerParameters.sourceMap.get("musixmatch-synced").lyricSourceResult = {
         lyrics: musixmatchSyncedLyrics,
@@ -342,7 +342,7 @@ BetterLyrics.LyricProviders = {
     if (responseData.lrclibSyncedLyrics) {
       let lrclibSyncedLyrics = BetterLyrics.LyricProviders.parseLRC(
         responseData.lrclibSyncedLyrics,
-        Number(providerParameters.duration)
+        BetterLyrics.Utils.toMs(providerParameters.duration)
       );
       providerParameters.sourceMap.get("lrclib-synced").lyricSourceResult = {
         lyrics: lrclibSyncedLyrics,

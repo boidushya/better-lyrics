@@ -13,6 +13,8 @@ const LYRIC_CACHE_VERSION = "1.2.0";
  * @namespace BetterLyrics.Lyrics
  */
 BetterLyrics.Lyrics = {
+  /** Current version of the lyrics cache format */
+  LYRIC_CACHE_VERSION: LYRIC_CACHE_VERSION,
   /**
    * Main function to create and inject lyrics for the current song.
    * Handles caching, API requests, and fallback mechanisms.
@@ -21,6 +23,10 @@ BetterLyrics.Lyrics = {
    * @param signal {AbortSignal}
    */
   createLyrics: async function (detail, signal) {
+    if (!BetterLyrics.LyricProviders || typeof BetterLyrics.LyricProviders.newSourceMap !== "function") {
+      try { setTimeout(() => BetterLyrics.Lyrics.createLyrics(detail, signal), 50); } catch (_e) {}
+      return;
+    }
     let song = detail.song;
     let artist = detail.artist;
     let videoId = detail.videoId;
@@ -648,11 +654,20 @@ BetterLyrics.Lyrics = {
     }
     BetterLyrics.DOM.scrollResumeTime = 0;
 
-    if (lyrics[0].words !== BetterLyrics.Constants.NO_LYRICS_TEXT) {
-      BetterLyrics.DOM.addFooter(data.source, data.sourceHref, data.song, data.artist, data.album, data.duration);
-    } else {
-      BetterLyrics.DOM.addNoLyricsButton(data.song, data.artist, data.album, data.duration);
-    }
+    // Check if this is the "no lyrics found" case
+    const isNoLyricsFound =
+      data.lyrics && data.lyrics.length === 1 && data.lyrics[0].words === BetterLyrics.Constants.NO_LYRICS_TEXT;
+
+    BetterLyrics.DOM.addFooter(
+      data.source,
+      data.sourceHref,
+      data.song,
+      data.artist,
+      data.album,
+      data.duration,
+      data.videoId,
+      isNoLyricsFound
+    );
 
     let spacingElement = document.createElement("div");
     spacingElement.id = BetterLyrics.Constants.LYRICS_SPACING_ELEMENT_ID;
