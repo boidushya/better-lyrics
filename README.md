@@ -1,10 +1,10 @@
-<p align="center">
- <img src="https://res.cloudinary.com/boidu/image/upload/t_banner/v1759536833/bl/banner.png" alt="Banner">
-</p>
+![Banner](https://res.cloudinary.com/boidu/image/upload/t_banner/v1759536833/bl/banner.png)
 
-<h1>Better Lyrics</h1>
+# Better Lyrics
 
 Better Lyrics for YouTube Music upgrades your YouTube Music experience by providing beautiful time-synced lyrics for your favorite songs.
+
+## Stats
 
 <p align="left">
  <a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
