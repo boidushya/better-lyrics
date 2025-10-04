@@ -60,12 +60,13 @@ Better Lyrics upgrades your YouTube Music experience by providing beautiful time
 
 ## Features
 
-🎵 Beautiful time-synced lyrics on YouTube Music\
-📦 No external dependencies or API key\
-⏩ Seek to a specific part of the song by clicking on the lyrics\
-🌏 Supports multiple languages\
-🪶 Lightweight and easy to use\
-🖥️ Support for full-screen mode
+🎵 Displays beautiful time-synced lyrics on YouTube Music
+📦 Requires no external dependencies or configurations
+⏩ Lets you seek by clicking on any line
+🌏 Supports multiple languages
+🪶 Runs lightweight and fast
+🖥️ Includes full-screen mode
+✨ And much more!
 
 ## Download
 
@@ -78,7 +79,7 @@ Better Lyrics upgrades your YouTube Music experience by providing beautiful time
 ## Usage
 
 1. Open [YouTube Music](https://music.youtube.com) and start playing a song.
-2. Click on the lyrics tab to view the time-synced lyrics. (This might take a few seconds to load)
+2. Click on lyrics tab to view time-synced lyrics. (This might take a few seconds to load)
 3. Click on a specific line to seek to that part of the song.
 
 ## Options
@@ -97,11 +98,11 @@ Better Lyrics upgrades your YouTube Music experience by providing beautiful time
 
 > [!TIP]
 >
-> To change settings, click on the Better Lyrics icon in the extensions toolbar. Changes are applied immediately and don't require a page refresh. However, in some cases—for example, after updating the extension—you might need to refresh the page for settings or CSS updates to take effect.
+> To change settings, click the Better Lyrics icon in your extensions toolbar. Changes apply immediately without needing to refresh the page. However, in some cases, for example, after updating the extension - you might need to refresh for settings or CSS updates to take effect.
 
 ## Styling
 
-Custom styling for lyrics is available in Better Lyrics v1.7.0 and later versions. This feature allows you to personalize the appearance of both the lyrics and the entire YouTube Music interface. For detailed instructions on customizing styles, importing/exporting themes, and using pre-made themes, please consult our [Styling Guide](./STYLING.md).
+Custom styling for lyrics is available from Better Lyrics v1.7.0 onwards. This allows you to personalize the appearance of both lyrics and the entire YouTube Music interface. For detailed instructions on customizing styles, importing/exporting themes, and using pre-made themes, please consult our [Styling Guide](./STYLING.md).
 
 ## Extension Permissions
 
@@ -115,19 +116,19 @@ Better Lyrics **does not** collect any personal data or track your browsing acti
 
 ### Chrome
 
-1. Clone this repository or download the ZIP file from the [releases](https://github.com/boidushya/better-lyrics/releases) page.
+1. Clone this repository or download ZIP file from [releases](https://github.com/boidushya/better-lyrics/releases) page.
 2. Open Google Chrome and go to `chrome://extensions`.
-3. Enable "Developer mode" by toggling the switch in the top right corner.
+3. Enable "Developer mode" by toggling the switch in top right corner.
 4. Click on "Load unpacked" and select the folder where you cloned/downloaded this repository.
-5. The Better Lyrics extension should now be installed and ready to use!
+5. Better Lyrics should now be installed and ready to use!
 
 ### Firefox
 
-1. Clone this repository or download the ZIP file from the [releases](https://github.com/boidushya/better-lyrics/releases) page.
+1. Clone this repository or download ZIP file from [releases](https://github.com/boidushya/better-lyrics/releases) page.
 2. Open Firefox and go to `about:debugging#/runtime/this-firefox`.
 3. Copy the contents of `manifest.firefox.json` and paste it in `manifest.json`.
-4. Click on "Load Temporary Add-on" and select the `manifest.json` file inside the cloned/downloaded folder.
-5. The Better Lyrics extension should now be installed and ready to use!
+4. Click on "Load Temporary Add-on" and select the `manifest.json` file in the cloned/downloaded folder.
+5. Better Lyrics should now be installed and ready to use!
 
 ## FAQ
 
