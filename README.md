@@ -1,5 +1,5 @@
 <p align="center">
- <img src="./images/icons/icon-512.png" height="128" alt="Logo">
+ <img src="https://res.cloudinary.com/boidu/image/upload/t_banner/v1759536833/bl/banner.png" alt="Banner">
  <h1 align="center">Better Lyrics</h1>
 </p>
 
@@ -34,8 +34,6 @@
 <p align="center">
   <a aria-label="Discord" href="https://discord.gg/UsHE3d5fWF"><img alt="Discord" src="https://img.shields.io/discord/1268184963266908220?label=Discord&logo=discord"></a>
 </p>
-
-![Banner](https://res.cloudinary.com/boidu/image/upload/t_banner/v1759536833/bl/banner.png)
 
 ## Table of Contents
 
