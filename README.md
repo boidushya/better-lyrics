@@ -35,7 +35,7 @@
   <a aria-label="Discord" href="https://discord.gg/UsHE3d5fWF"><img alt="Discord" src="https://img.shields.io/discord/1268184963266908220?label=Discord&logo=discord"></a>
 </p>
 
-![Banner](https://i.ibb.co/QFHpVfy/Screenshot-2024-06-04-at-22-33-35.png)
+![Banner](https://res.cloudinary.com/boidu/image/upload/t_banner/v1759536833/bl/banner.png)
 
 ## Table of Contents
 
