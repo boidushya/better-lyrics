@@ -721,4 +721,14 @@
 		top: -2rem;
 		transform: translateX(0) translateY(0) !important;
 	}
+	#blyrics-wrapper{
+		margin-top: 0;
+	}
+	#blyrics-spacing-element{
+		height: 48px !important;
+	}
+	.blyrics-footer {
+		flex-wrap: wrap;
+		row-gap: 1.25rem;
+	}
 }
