@@ -493,108 +493,145 @@ animation:
     name: "Minimal",
     author: "Semicolonhope",
     link: "",
-    css: `/* 2025-10-02T19-22-33 v1.2.1 */
-/* think about changing all the colors to oklch if you can */
-/* use oklch(from rgb(value value value) L C H / A) */
+    css: `/* 2025-10-04T13-07-00 v1.3.0 */
 /* changed bg, font, albm-art shdw, no animations */
+/* cuztomized the portrait-mode lyrics tab thing */
 
 :root {
-  /* FONT BABY! */
-  --blyrics-font-family: system-ui, sans-serif, var(--noto-sans-universal);
-  --blyrics-footer-font-family: var(--blyrics-font-family);
+   /* FONT BABY! */
+   --blyrics-font-family: system-ui, sans-serif, var(--noto-sans-universal);
+   --blyrics-footer-font-family: var(--blyrics-font-family);
 
-  /* someone said oklach is modern so here ya go */
-  --blyrics-lyric-inactive-color: oklch(from white l c h / 0.3) !important;
-  --blyrics-lyric-active-color: oklch(from white l c h / 1) !important;
-  --blyrics-error-color: oklch(from rgb(99.2% 88.2% 88.2%) l c h);
-  --blyrics-ui-text-color: var(--blyrics-lyric-active-color);
-  --blyrics-translated-color: oklch(from white l c h / 0.6);
+   /* someone said oklach is modern so here ya go */
+   --blyrics-lyric-inactive-color: oklch(1 0 0 / 0.3) !important;
+   --blyrics-lyric-active-color: oklch(1 0 0 / 1) !important;
+   --blyrics-error-color: oklch(from rgb(99.2% 88.2% 88.2%) l c h);
+   --blyrics-ui-text-color: var(--blyrics-lyric-active-color);
+   --blyrics-translated-color: oklch(1 0 0 / 0.6);
 
-  /* blur and saturatiom changes */
-  --blyrics-background-blur: 50px;
-  --blyrics-background-saturate: 1.3;
+   /* blur and saturatiom changes */
+   --blyrics-background-blur: 50px;
+   --blyrics-background-saturate: 1.3;
 
-  /* Remove unnecessary delays */
-  --blyrics-anim-delay: 0s !important;
-  --blyrics-swipe-delay: 0s !important;
+   /* Remove unnecessary delays */
+   --blyrics-anim-delay: 0s !important;
+   --blyrics-swipe-delay: 0s !important;
 
-  /* no thank you */
-  --blyrics-gradient-stops: none !important;
+   /* no thank you */
+   --blyrics-gradient-stops: none !important;
 
-  /* Smooth scroll timing */
-  --blyrics-lyric-scroll-duration: 0.5s !important;
-  --blyrics-lyric-scroll-timing-function: cubic-bezier(
-    0.645,
-    0.045,
-    0.355,
-    1
-  ) !important;
+   /* Smooth scroll timing */
+   --blyrics-lyric-scroll-duration: 0.5s !important;
+   --blyrics-lyric-scroll-timing-function: cubic-bezier(
+      0.645,
+      0.045,
+      0.355,
+      1
+   ) !important;
 }
 
 /* bye bye animations and swipy */
 .blyrics-container > div > span::after {
-  display: none !important;
-  content: none !important;
-  animation: none !important;
+   display: none !important;
+   content: none !important;
+   animation: none !important;
 }
 
 .blyrics-container > div > span.blyrics--animating {
-  animation: none !important;
+   animation: none !important;
 }
 
 /* fade in instead of whatever the hell was that */
 /* transition to reomve low opacity letter joint artifacts */
 .blyrics-container > div {
-  transform: none !important;
-  transition: opacity 0.5s ease !important;
-  opacity: 0.3;
+   transform: none !important;
+   transition: opacity 0.5s ease !important;
+   opacity: 0.3;
 }
 
 /* active vs inactive color changes. */
 /* transition to reomve low opacity letter joint artifacts */
 .blyrics-container > div > span {
-  color: var(--blyrics-lyric-active-color) !important;
-  transition: color 0.5s ease !important;
+   color: var(--blyrics-lyric-active-color) !important;
+   transition: color 0.5s ease !important;
 }
 
 /* you can't rely on previous color setting opacity */
 .blyrics-container > div.blyrics--active {
-  opacity: 1;
+   opacity: 1;
 }
 
 /* Inactive state translated/roman color, and color fade-in */
 /* don't treat letters, treat em as whole */
 .blyrics--translated,
 .blyrics--romanized {
-  opacity: 0.6 !important;
-  color: oklch(from white l c h / var(--blyrics-translated-opacity)) !important;
-  transition: opacity 0.5s ease !important;
+   opacity: 0.6 !important;
+   color: oklch(1 0 0 / var(--blyrics-translated-opacity)) !important;
+   transition: opacity 0.5s ease !important;
 }
 
 /* active translation / romanization */
 .blyrics-container > div.blyrics--active .blyrics--translated,
 .blyrics-container > div.blyrics--active .blyrics--romanized {
-  opacity: 0.6 !important;
-  transition: opacity 0.5s ease !important;
-}
-
-/* album shadow, SIMMER DOWN */
-#player.ytmusic-player-page {
-  box-shadow: oklch(from rgb(1% 1% 1%) l c h / 0.1) 0 4px 12px !important;
+   opacity: 0.6 !important;
+   transition: opacity 0.5s ease !important;
 }
 
 /* black blur from background go away */
 ytmusic-player-page:before {
-  position: fixed !important;
-  top: -18% !important;
-  left: -5% !important;
-  width: 100vw !important;
-  height: 100vh !important;
+   position: fixed !important;
+   top: -18% !important;
+   left: -5% !important;
+   width: 100vw !important;
+   height: 100vh !important;
+   filter: saturate(var(--blyrics-background-saturate)) brightness(0.3)
+      blur(var(--blyrics-background-blur));
 }
 
-/* a lil something */
-#side-panel.ytmusic-player-page {
-  transition: all 0.3s ease !important;
+/* album shadow, SIMMER DOWN */
+#player.ytmusic-player-page {
+   box-shadow: oklch(0.18 0 0 / 0.1) 0 4px 12px !important;
+   border-radius: 8px !important;
+}
+
+ytmusic-player-page[player-fullscreened] .song-media-controls.ytmusic-player {
+   background-image: none !important;
+}
+
+@media (max-width: 615px) {
+   ytmusic-player-page:before {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      filter: saturate(var(--blyrics-background-saturate)) brightness(0.7)
+         blur(var(--blyrics-background-blur));
+   }
+
+   [page-type="MUSIC_PAGE_TYPE_TRACK_LYRICS"],
+   .blyrics-container:before,
+   .blyrics-container,
+   .blyrics-container:after {
+      background: none !important;
+      filter: none !important;
+   }
+
+   #tab-renderer::before {
+      content: "";
+      position: fixed;
+      z-index: -100;
+      background: var(--blyrics-background-img) !important;
+      background-position: center !important;
+      top: 0;
+      top: 0;
+      left: -6%;
+      /*  background-attachment: fixed !important; */
+      width: 110% !important;
+      height: 100% !important;
+      background-repeat: no-repeat !important;
+      background-size: cover !important;
+      filter: saturate(var(--blyrics-background-saturate)) brightness(0.3)
+         blur(var(--blyrics-background-blur)) !important;
+   }
 }`,
   },
   {
