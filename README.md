@@ -1,9 +1,12 @@
-<p align="center">
- <img src="./images/icons/icon-512.png" height="128" alt="Logo">
- <h1 align="center">Better Lyrics</h1>
-</p>
+![Banner](https://res.cloudinary.com/boidu/image/upload/t_banner/v1759536833/bl/banner.png)
 
-<p align="center">
+# Better Lyrics
+
+Better Lyrics upgrades your YouTube Music experience by providing beautiful time-synced lyrics for your favorite songs.
+
+## Stats
+
+<p align="left">
  <a aria-label="License" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg" alt=""/></a>
  <img src="https://img.shields.io/badge/version-2.0.4-blue.svg" alt=""/>
 
@@ -16,74 +19,54 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 </p>
 
-<p align="center">
+<p align="left">
   <a aria-label="Chrome Web Store" href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg"><img src="https://img.shields.io/chrome-web-store/v/effdbpeggelllpfkjppbokhmmiinhlmg?color=darkgreen" alt="Chrome Extension Version"/></a>
   <a aria-label="Chrome Web Store" href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg"><img src="https://img.shields.io/chrome-web-store/rating/effdbpeggelllpfkjppbokhmmiinhlmg?color=darkgreen" alt="Chrome Extension Rating"/></a>
   <a aria-label="Chrome Web Store" href="https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg"><img src="https://img.shields.io/chrome-web-store/users/effdbpeggelllpfkjppbokhmmiinhlmg?color=darkgreen&label=users" alt="Chrome Extension Users"/></a>
 </p>
-<p align="center">
+<p align="left">
   <a aria-label="Firefox Add-on" href="https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/"><img src="https://img.shields.io/amo/v/betterlyrics%40boidu.dev.svg?color=orange" alt="Firefox Add-on Version"/></a>
   <a aria-label="Firefox Add-on" href="https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/"><img src="https://img.shields.io/amo/rating/betterlyrics%40boidu.dev.svg?color=orange" alt="Firefox Add-on Rating"/></a>
   <a aria-label="Firefox Add-on" href="https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/"><img src="https://img.shields.io/amo/users/betterlyrics%40boidu.dev?color=orange&label=users" alt="Firefox Add-on Users"/></a>
 </p>
-<p align="center">
+<p align="left">
   <a aria-label="Edge Add-on" href="https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd"><img src="https://img.shields.io/badge/dynamic/json?label=edge%20add-on&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fmjfeaklppoegooljmjicjdbiccgjdlhd&color=212749" alt="Edge Add-on Version"/></a>
   <a aria-label="Edge Add-on" href="https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd"><img src="https://img.shields.io/badge/dynamic/json?label=rating&suffix=/5&query=%24.averageRating&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fmjfeaklppoegooljmjicjdbiccgjdlhd&color=212749" alt="Edge Add-on Rating"/></a>
   <a aria-label="Edge Add-on" href="https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd"><img src="https://img.shields.io/badge/dynamic/json?label=users&query=%24.activeInstallCount&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fmjfeaklppoegooljmjicjdbiccgjdlhd&color=212749" alt="Edge Add-on Users"/></a>
 </p>
-<p align="center">
+<p align="left">
   <a aria-label="Discord" href="https://discord.gg/UsHE3d5fWF"><img alt="Discord" src="https://img.shields.io/discord/1268184963266908220?label=Discord&logo=discord"></a>
 </p>
 
-![Banner](https://res.cloudinary.com/boidu/image/upload/t_banner/v1759536833/bl/banner.png)
-
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Description](#description)
-- [Download](#download)
 - [Features](#features)
-- [Extension Permissions](#extension-permissions)
-- [Manual Installation](#manual-installation)
-	- [Chrome](#chrome)
-	- [Firefox](#firefox)
+- [Download](#download)
 - [Usage](#usage)
 - [Options](#options)
 - [Styling](#styling)
+- [Extension Permissions](#extension-permissions)
+- [Manual Installation](#manual-installation)
+- [FAQ](#faq)
 - [Funding](#funding)
 - [Discord Community](#discord-community)
-- [FAQ](#faq)
-	- [Why are the lyrics not showing up?](#why-are-the-lyrics-not-showing-up)
-	- [How do I change settings?](#how-do-i-change-settings)
-	- [My CSS changes are not showing up. What do I do?](#my-css-changes-are-not-showing-up-what-do-i-do)
-	- [How do I turn on full-screen mode?](#how-do-i-turn-on-full-screen-mode)
-	- [How do I translate lyrics?](#how-do-i-translate-lyrics)
-	- [Can I contribute to Better Lyrics?](#can-i-contribute-to-better-lyrics)
-	- [Some lyrics are out of sync/missing/incorrect. What can I do?](#some-lyrics-are-out-of-syncmissingincorrect-what-can-i-do)
-	- [How do I contribute lyrics?](#how-do-i-contribute-lyrics)
-	- [How do I report a bug?](#how-do-i-report-a-bug)
-	- [I don't like the new update. Can I revert to the old version?](#i-dont-like-the-new-update-can-i-revert-to-the-old-version)
-	- [How do I support the project?](#how-do-i-support-the-project)
-	- [Do you plan on pay-walling the extension in the future?](#do-you-plan-on-pay-walling-the-extension-in-the-future)
-	- [I want to use Better Lyrics along with another extension. Is that possible?](#i-want-to-use-better-lyrics-along-with-another-extension-is-that-possible)
-	- [Can I use Better Lyrics on mobile?](#can-i-use-better-lyrics-on-mobile)
-	- [Can I use a different lyrics provider?](#can-i-use-a-different-lyrics-provider)
-	- [Can I use Better Lyrics on other browsers?](#can-i-use-better-lyrics-on-other-browsers)
-	- [Lyrics have stopped showing up completely for all songs. What do I do?](#lyrics-have-stopped-showing-up-completely-for-all-songs-what-do-i-do)
-	- [Can I use Better Lyrics on other music streaming services?](#can-i-use-better-lyrics-on-other-music-streaming-services)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contributors ✨](#contributors-)
 
-## Description
-
-Better Lyrics for Youtube Music upgrades your Youtube Music experience
-by providing beautiful time synced lyrics for the currently playing
-song.
-
 > [!TIP]
 >
 > [Dive deeper: Explore the story behind Better Lyrics](https://blog.boidu.dev/better-lyrics)
+
+## Features
+
+🎵 Displays beautiful time-synced lyrics on YouTube Music
+📦 Requires no external dependencies or configurations
+⏩ Lets you seek by clicking on any line
+🌏 Supports multiple languages
+🪶 Runs lightweight and fast
+🖥️ Includes full-screen mode
+✨ And much more!
 
 ## Download
 
@@ -93,45 +76,10 @@ song.
 <a href="https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Microsoft_Edge_logo_%282019%29.png" alt="Edge Add-ons" height="60"/></a>
 </p>
 
-## Features
-
-🎵 Beautiful time-synced lyrics on Youtube Music\
-📦 No external dependencies or API key\
-⏩ Seek to a specific part of the song by clicking on the lyrics\
-🌏 Supports multiple languages\
-🪶 Lightweight and easy to use\
-🖥️ Support for full-screen mode
-
-## Extension Permissions
-
-| Permission                                                            | Reason                                                                                                                                                                                       | Data Usage                                         |
-| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| **Download files and read and modify the browser's download history** | [Firefox specific - Required to download styles and themes as CSS file](https://github.com/boidushya/better-lyrics/blob/b9d5f888703f1b786e48a4fe66bfec08a1553739/src/options/editor.js#L159) | Does not read or modify browser's download history |
-
-Better Lyrics **does not** collect any personal data or track your browsing activity. The extension is open-source and thoroughly reviewed by the community to ensure that your privacy is protected.
-
-## Manual Installation
-
-### Chrome
-
-1. Clone this repository or download the ZIP file from the [releases](https://github.com/boidushya/better-lyrics/releases) page.
-2. Open Google Chrome and go to `chrome://extensions`.
-3. Enable "Developer mode" by toggling the switch in the top right corner.
-4. Click on "Load unpacked" and select the folder where you cloned/downloaded this repository.
-5. The Better Lyrics extension should now be installed and ready to use!
-
-### Firefox
-
-1. Clone this repository or download the ZIP file from the [releases](https://github.com/boidushya/better-lyrics/releases) page.
-2. Open Firefox and go to `about:debugging#/runtime/this-firefox`.
-3. Copy the contents of `manifest.firefox.json` and paste it in `manifest.json`.
-4. Click on "Load Temporary Add-on" and select the `manifest.json` file inside the cloned/downloaded folder.
-5. The Better Lyrics extension should now be installed and ready to use!
-
 ## Usage
 
 1. Open [YouTube Music](https://music.youtube.com) and start playing a song.
-2. Click on the lyrics tab to view the time-synced lyrics. (This might take a few seconds to load)
+2. Click on the lyrics tab to view time-synced lyrics. (This might take a few seconds to load)
 3. Click on a specific line to seek to that part of the song.
 
 ## Options
@@ -150,17 +98,134 @@ Better Lyrics **does not** collect any personal data or track your browsing acti
 
 > [!TIP]
 >
-> To change defaults, click on the Better Lyrics icon in the extensions toolbar. The changes are applied immediately and don't require a page refresh. However in some cases, for example, updating the extension, you might need to refresh the page to toggle settings/ add or update css.
+> To change settings, click the Better Lyrics icon in your extensions toolbar. Changes apply immediately without needing to refresh the page. However, in some cases, for example, after updating the extension, you might need to refresh for settings or CSS updates to take effect.
 
 ## Styling
 
-Custom styling for lyrics is available in Better Lyrics v1.7.0 and later versions. This feature allows you to personalize the appearance of both the lyrics and the entire YouTube Music interface. For detailed instructions on customizing styles, importing/exporting themes, and using pre-made themes, please consult our [Styling Guide](./STYLING.md).
+Custom styling for lyrics is available from Better Lyrics v1.7.0 onwards. This allows you to personalize the appearance of both lyrics and the entire YouTube Music interface. For detailed instructions on customizing styles, importing/exporting themes, and using pre-made themes, please consult our [Styling Guide](./STYLING.md).
+
+## Extension Permissions
+
+| Permission                                                            | Reason                                                                                                                                                                                       | Data Usage                                         |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| **Download files and read and modify the browser's download history** | [Firefox specific - Required to download styles and themes as CSS file](https://github.com/boidushya/better-lyrics/blob/b9d5f888703f1b786e48a4fe66bfec08a1553739/src/options/editor.js#L159) | Does not read or modify browser's download history |
+
+Better Lyrics **does not** collect any personal data or track your browsing activity. The extension is open-source and thoroughly reviewed by the community to ensure that your privacy is protected.
+
+## Manual Installation
+
+### Chrome
+
+1. Clone this repository or download the ZIP file from [releases](https://github.com/boidushya/better-lyrics/releases) page.
+2. Open Google Chrome and go to `chrome://extensions`.
+3. Enable "Developer mode" by toggling the switch in top right corner.
+4. Click on "Load unpacked" and select the folder where you cloned/downloaded this repository.
+5. Better Lyrics should now be installed and ready to use!
+
+### Firefox
+
+1. Clone this repository or download the ZIP file from [releases](https://github.com/boidushya/better-lyrics/releases) page.
+2. Open Firefox and go to `about:debugging#/runtime/this-firefox`.
+3. Copy the contents of `manifest.firefox.json` and paste it in `manifest.json`.
+4. Click on "Load Temporary Add-on" and select the `manifest.json` file in the cloned/downloaded folder.
+5. Better Lyrics should now be installed and ready to use!
+
+## FAQ
+
+### Why can't I see the lyrics?
+
+Make sure the extension is enabled and you're on <https://music.youtube.com>. The extension won't work on <https://youtube.com>.
+
+### How do I change settings?
+
+Click the Better Lyrics icon in your extensions toolbar to access settings. Changes apply immediately without needing to refresh the page. However, in some cases, for example, after updating the extension, you might need to refresh for settings or CSS updates to take effect.
+
+### My CSS changes aren't showing up. What should I do?
+
+Try refreshing the page, especially if you recently updated the extension. Your CSS changes are saved either way. If that doesn't work, try disabling and re-enabling the extension.
+
+### How do I enable full-screen mode?
+
+Press F on your keyboard (with the window in focus) or hover over the player bar and click the full-screen icon (⛶). Make sure "Disable fullscreen mode" option isn't checked in extension settings.
+
+### How do I translate lyrics?
+
+Enable the "Translations" option in extension settings and select your desired language from the dropdown.
+
+### Can I contribute to Better Lyrics?
+
+Yes you can! Please follow the contributing guidelines below.
+
+### Some lyrics are out of sync, missing, or incorrect. What can I do?
+
+If you find any issues with lyrics, you now have two options:
+
+1. Toggle or reorder providers in extension settings
+2. Contribute your own lyrics using [LRCLIBup](https://lrclibup.boidu.dev)
+
+LRCLIBup allows you to submit correct, properly synchronized lyrics that will be available to all users who use the LRCLib provider. This is a community-driven approach to improving and adding lyrics, so please be mindful of quality.
+
+### How do I contribute lyrics?
+
+You can contribute lyrics using LRCLIBup, our LRCLib upload tool:
+
+1. Visit [https://lrclibup.boidu.dev](https://lrclibup.boidu.dev)
+2. Follow the tool's interface to upload lyrics
+3. Submit your contribution
+
+This helps improve the lyrics database for all Better Lyrics users who use the LRCLib provider.
+
+### How do I report a bug?
+
+[Open an issue here](https://github.com/boidushya/better-lyrics/issues/new/choose) with as much detail as possible. Alternatively, join our [Discord community](https://discord.gg/UsHE3d5fWF) and report it under `#bug-reports`.
+
+### I don't like the new update. Can I revert to an old version?
+
+Yes! Follow the manual installation instructions above to install an older version of the extension. Keep in mind that older versions probably won't be maintained or get new features.
+
+### How do I support the project?
+
+Better Lyrics is free and open-source. The easiest way to support it is by leaving positive feedback on the [Chrome Web Store](https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg), [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/), or [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd) so more people can discover it.
+
+If you want to support the project further, consider making a donation to help cover hosting and development costs. You can donate via [GitHub Sponsors](https://github.com/sponsors/boidushya).
+
+### Will this extension ever be paywalled?
+
+No. Better Lyrics will always be free and open-source for everyone.
+
+### Can I use Better Lyrics with other extensions?
+
+Yes, Better Lyrics should work with most extensions. If you encounter issues, report them under `#bug-reports` in our [Discord Server](https://discord.gg/UsHE3d5fWF) or [open an issue here](https://github.com/boidushya/better-lyrics/issues/new/choose).
+
+### Can I use Better Lyrics on mobile?
+
+Better Lyrics is currently only available for desktop browsers. However, if you use a browser that supports extensions on mobile (such as Kiwi Browser on Android), you should be able to use it since the extension is responsive and has feature parity across platforms.
+
+### Can I use a different lyrics provider?
+
+Yes! Better Lyrics supports switching between different providers. You can reorder or toggle providers via extension settings:
+
+1. Click the Better Lyrics icon in the extensions toolbar
+2. Go to "Sources" tab
+3. Reorder or toggle providers as per your needs
+
+Adding custom providers isn't currently supported.
+
+### Can I use Better Lyrics on other browsers?
+
+Right now, Better Lyrics is available for Chrome, Firefox, and Edge (and other Chromium-based browsers like Brave, Opera, Arc, etc.). If there's enough demand, I might consider porting it to other browsers.
+
+### Can I use Better Lyrics on other music streaming services?
+
+No, Better Lyrics is specifically designed for YouTube Music. If you want something similar for other streaming services, check out these extensions. If you have suggestions for others, open a PR to add them to this list:
+
+- [Beautiful Lyrics](https://github.com/surfbryce/beautiful-lyrics) - Spotify
 
 ## Funding
 
 > [!IMPORTANT]
 >
-> The author is self-hosting the backend for Better Lyrics to ensure a smooth and reliable experience for all users. This involves maintaining servers, handling updates, and ensuring uptime. If you find Better Lyrics useful and would like to support the project, please consider making a donation.
+> Contributors currently self-host multiple backends for Better Lyrics to ensure a smooth and reliable experience for all users. This involves maintaining servers, handling updates, and ensuring uptime.
 >
 > Your support helps cover the costs of hosting and development, and ensures continued improvements and stability.
 
@@ -170,111 +235,9 @@ Custom styling for lyrics is available in Better Lyrics v1.7.0 and later version
 
 ## Discord Community
 
-Join our Discord community to discuss Better Lyrics and get support from the developer and other users:
+Join our Discord community to discuss Better Lyrics and get support from developers and other users:
 
-https://discord.gg/UsHE3d5fWF
-
-## FAQ
-
-### Why are the lyrics not showing up?
-
-Make sure that the extension is enabled and that you are on <https://music.youtube.com>. The extension won't work on the regular YouTube website.
-
-### How do I change settings?
-
-Click on the Better Lyrics icon in the extensions toolbar to access the settings. The changes are applied immediately and don't require a page refresh. However, in some cases, for example, updating the extension, you might need to refresh the page to toggle settings/add or update CSS.
-
-### My CSS changes are not showing up. What do I do?
-
-If you've made changes to the CSS and they're not showing up, try refreshing the page, especially after updating the extension. Your CSS changes will be saved regardless. If that doesn't work, try disabling and re-enabling the extension.
-
-### How do I turn on full-screen mode?
-
-Press F on your keyboard (with the window in focus) or hover over the album art and press the full-screen icon (⛶). Make sure that the "Disable fullscreen mode" option is not checked in the extension settings.
-
-### How do I translate lyrics?
-
-Enable the "Translations" option in the extension settings and select the desired language from the dropdown.
-
-### Can I contribute to Better Lyrics?
-
-Yes you can! Please follow the contributing guidelines below.
-
-### Some lyrics are out of sync/missing/incorrect. What can I do?
-
-If you find any issues with lyrics, you now have two options:
-
-1. Switch to a different lyrics provider in the extension settings to see if the lyrics are better there
-2. Contribute your own lyrics using our new LRCLib upload tool at [https://lrclibup.boidu.dev](https://lrclibup.boidu.dev)
-
-The LRCLib upload tool allows you to submit correct, properly synchronized lyrics that will be available to all users who use the LRCLib provider. This is a community-driven approach to improving lyrics quality.
-
-### How do I contribute lyrics?
-
-You can now contribute lyrics using our new LRCLib upload tool:
-
-1. Visit [https://lrclibup.boidu.dev](https://lrclibup.boidu.dev)
-2. Follow the tool's interface to upload and synchronize lyrics
-3. Submit your contribution
-
-This helps improve the lyrics database for all Better Lyrics users who use the LRCLib provider.
-
-### How do I report a bug?
-
-Please open an issue on the [GitHub repository](https://github.com/boidushya/better-lyrics/issues/new/choose) with as much detail as possible. Alternatively, you can join our [Discord community](https://discord.gg/UsHE3d5fWF) and report it there under the `#bug-reports` channel.
-
-### I don't like the new update. Can I revert to the old version?
-
-Yes, you can! Please follow the manual installation instructions above to install the old version of the extension. However, please note that the old version will most likely not be maintained or have the latest features.
-
-### How do I support the project?
-
-Better Lyrics is a free and open-source project. The easiest way to support the project is by leaving a positive feedback on the [Chrome Web Store](https://chromewebstore.google.com/detail/better-lyrics/effdbpeggelllpfkjppbokhmmiinhlmg), [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/better-lyrics/), or [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/better-lyrics-lyrics-for/mjfeaklppoegooljmjicjdbiccgjdlhd) so that more people can discover it.
-If you want to support the project further, please consider making a donation to help cover the costs of hosting and development. You can donate via [Github Sponsors](https://github.com/sponsors/boidushya).
-
-### Do you plan on pay-walling the extension in the future?
-
-No, I have no plans to pay-wall the extension. Better Lyrics will always be free and open-source for everyone to use.
-
-### I want to use Better Lyrics along with another extension. Is that possible?
-
-Yes, Better Lyrics should work with most extensions. However, if you encounter any issues, please report them under the `#bug-reports` channel in our [Discord community](https://discord.gg/UsHE3d5fWF) or open an issue on the [GitHub repository](https://github.com/boidushya/better-lyrics/issues/new/choose).
-
-### Can I use Better Lyrics on mobile?
-
-Better Lyrics is currently only available for desktop browsers. However, if you use a browser that supports extensions on mobile (such as Kiwi Browser on Android), you might be able to use it on mobile as well since the extension is responsive.
-
-### Can I use a different lyrics provider?
-
-Yes! Better Lyrics now supports switching between different lyrics providers. You can change your provider in the extension settings:
-
-1. Click on the Better Lyrics icon in the extensions toolbar
-2. Go to "General" settings
-3. Under "Default Lyrics Provider", you can choose between:
-   - Better Lyrics (default)
-   - LRCLib
-
-However, right now, adding a custom lyrics provider is not supported.
-
-### Can I use Better Lyrics on other browsers?
-
-Right now, Better Lyrics is only available for Chrome, Firefox, and Edge (and other Chromium-based browsers like Brave, Opera, Arc, etc.). If there is enough demand, I might consider porting it to other browsers as well.
-
-### Lyrics have stopped showing up completely for all songs. What do I do?
-
-First, make sure that this issue is not caused by the backend server being down. You can check the status of the backend server [here](https://better-lyrics-status.boidu.dev). This page will show you the current status of the server and any incidents that might be affecting the service by checking every 30 minutes. While it's rare, there might be times when the server is down for maintenance or due to an incident and this page hasn't updated yet. In that case
-
-- Check the extension logs/networks tab for any errors.
-- Check [Railway's status page](https://status.railway.app/) for any incidents that might be affecting the service hosting the backend.
-- If you're unsure, reaching out to me (@boidu) on [our Discord server](https://discord.gg/UsHE3d5fWF) is the fastest way to get help. I'm usually active and can help you figure out if the issue is on your end or mine.
-
-If the server is up and you're still facing issues, try refreshing the page. If that doesn't work, try disabling and re-enabling the extension/updating the extension to the latest version. If everything fails, report the issue under the `#bug-reports` channel in our [Discord community](https://discord.gg/UsHE3d5fWF) or open an issue on the [GitHub repository](https://github.com/boidushya/better-lyrics/issues/new/choose).
-
-### Can I use Better Lyrics on other music streaming services?
-
-No, Better Lyrics is specifically designed for YouTube Music. If you want something similar for other music streaming services, consider using other extensions - some of which are mentioned below. If you have suggestions for similar extensions for other services, please open a PR to add them to this list.
-
-- [Beautiful Lyrics](https://github.com/surfbryce/beautiful-lyrics) - Spotify
+<https://discord.gg/UsHE3d5fWF>
 
 ## Contributing
 
@@ -282,7 +245,7 @@ Contributions are welcome! If you have any ideas, suggestions, or bug reports, p
 
 ## License
 
-This project is licensed under the [GNU GPLv3 License](LICENSE). As long as you attribute me or [Better Lyrics](https://better-lyrics.boidu.dev) as the original creator and you comply with the rest of the license terms, you can use this project for personal or commercial purposes.
+This project is licensed under the [GNU GPLv3 License](LICENSE). As long as you attribute me or [Better Lyrics](https://better-lyrics.boidu.dev) as the original creator and comply with the rest of the license terms, you can use this project for personal or commercial purposes.
 
 ## Contributors ✨
 
