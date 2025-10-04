@@ -12,4 +12,5 @@
     "editor.defaultFormatter": "yzhang.markdown-all-in-one",
     "editor.formatOnSave": true
   },
+	"markdown.extension.toc.levels": "1..3"
 }
