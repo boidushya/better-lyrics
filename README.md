@@ -79,7 +79,7 @@ Better Lyrics upgrades your YouTube Music experience by providing beautiful time
 ## Usage
 
 1. Open [YouTube Music](https://music.youtube.com) and start playing a song.
-2. Click on lyrics tab to view time-synced lyrics. (This might take a few seconds to load)
+2. Click on the lyrics tab to view time-synced lyrics. (This might take a few seconds to load)
 3. Click on a specific line to seek to that part of the song.
 
 ## Options
@@ -98,7 +98,7 @@ Better Lyrics upgrades your YouTube Music experience by providing beautiful time
 
 > [!TIP]
 >
-> To change settings, click the Better Lyrics icon in your extensions toolbar. Changes apply immediately without needing to refresh the page. However, in some cases, for example, after updating the extension - you might need to refresh for settings or CSS updates to take effect.
+> To change settings, click the Better Lyrics icon in your extensions toolbar. Changes apply immediately without needing to refresh the page. However, in some cases, for example, after updating the extension, you might need to refresh for settings or CSS updates to take effect.
 
 ## Styling
 
@@ -116,7 +116,7 @@ Better Lyrics **does not** collect any personal data or track your browsing acti
 
 ### Chrome
 
-1. Clone this repository or download ZIP file from [releases](https://github.com/boidushya/better-lyrics/releases) page.
+1. Clone this repository or download the ZIP file from [releases](https://github.com/boidushya/better-lyrics/releases) page.
 2. Open Google Chrome and go to `chrome://extensions`.
 3. Enable "Developer mode" by toggling the switch in top right corner.
 4. Click on "Load unpacked" and select the folder where you cloned/downloaded this repository.
@@ -124,7 +124,7 @@ Better Lyrics **does not** collect any personal data or track your browsing acti
 
 ### Firefox
 
-1. Clone this repository or download ZIP file from [releases](https://github.com/boidushya/better-lyrics/releases) page.
+1. Clone this repository or download the ZIP file from [releases](https://github.com/boidushya/better-lyrics/releases) page.
 2. Open Firefox and go to `about:debugging#/runtime/this-firefox`.
 3. Copy the contents of `manifest.firefox.json` and paste it in `manifest.json`.
 4. Click on "Load Temporary Add-on" and select the `manifest.json` file in the cloned/downloaded folder.
