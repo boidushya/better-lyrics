@@ -202,16 +202,6 @@
 	display: none !important;
 }
 
-:has(ytmusic-player-bar[is-advertisement]) #blyrics-wrapper,
-:has(ytmusic-player-bar[is-advertisement]) #blyrics-loader {
-	display: none !important;
-}
-
-:has(ytmusic-player-bar[is-advertisement]) #blyrics-ad-overlay {
-    opacity: 1;
-    visibility: visible;
-}
-
 #tab-renderer[page-type="MUSIC_PAGE_TYPE_TRACK_LYRICS"]
 	tp-yt-paper-spinner-lite {
 	display: none !important;
