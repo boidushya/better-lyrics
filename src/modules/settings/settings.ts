@@ -249,6 +249,7 @@ export function listenForPopupMessages(): void {
           reloadAlbumArt();
         }
       );
+      getAndApplyCustomStyles();
       reloadLyrics();
     } else if (request.action === "clearCache") {
       try {

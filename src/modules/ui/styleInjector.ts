@@ -12,6 +12,11 @@ import { publishPictureInPictureLyrics } from "./pictureInPicture/lyricsPublishe
 import { logCore, logError } from "@core/logger";
 
 let hasSubscribedToStyles = false;
+let isLetterWaveEnabled = false;
+
+function withLetterWaveSetting(css: string): string {
+  return `/* blyrics-letter-wave = ${isLetterWaveEnabled}; */\n${css}`;
+}
 
 /**
  * Hands a compiled theme to the side panel's view, which parses the `blyrics-*` config out of it,
@@ -20,7 +25,7 @@ let hasSubscribedToStyles = false;
  * compressed, and compiling the RICS source it is written in.
  */
 export function applyCustomStyles(css: string): void {
-  const needsLyricReload = mainView.setTheme(css);
+  const needsLyricReload = mainView.setTheme(withLetterWaveSetting(css));
   publishPictureInPictureLyrics();
 
   if (needsLyricReload) {
@@ -39,6 +44,11 @@ function decompressStyles(css: string): string {
 }
 
 export async function getAndApplyCustomStyles(): Promise<void> {
+  const { isLetterWaveEnabled: letterWavePref } = await getSyncStorage<{ isLetterWaveEnabled?: boolean }>([
+    "isLetterWaveEnabled",
+  ]);
+  isLetterWaveEnabled = letterWavePref ?? false;
+
   try {
     const syncData = await getSyncStorage<CSSStorageData>(["cssStorageType", "customCSS", "cssCompressed"]);
 
@@ -62,6 +72,8 @@ export async function getAndApplyCustomStyles(): Promise<void> {
         css = decompressStyles(css);
       }
       applyCustomStyles(compileRicsToStyles(css));
+    } else {
+      applyCustomStyles("");
     }
   } catch (error) {
     logError(error);
