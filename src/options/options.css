@@ -129,6 +129,19 @@ body {
     gap: 0.4rem;
 }
 
+.setting-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.5rem;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #fcd34d;
+    background: rgba(252, 211, 77, 0.15);
+}
+
 .setting-help {
     position: relative;
     display: inline-grid;
