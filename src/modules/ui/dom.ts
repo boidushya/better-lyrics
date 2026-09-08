@@ -16,6 +16,7 @@ import {
   LYRICS_AD_OVERLAY_ID,
   LYRICS_CLASS,
   LYRICS_LOADER_ID,
+  LYRICS_PAGE_TYPE,
   LYRICS_WRAPPER_CREATED_LOG,
   LYRICS_WRAPPER_ID,
   NO_LYRICS_TEXT_SELECTOR,
@@ -432,8 +433,33 @@ function hidePlayerBarOnDockLeave(): void {
   document.getElementById("layout")?.removeAttribute("show-fullscreen-controls");
 }
 
-type DockSuppressionReason = "ad" | "loading" | "noLyrics";
+type DockSuppressionReason = "ad" | "loading" | "noLyrics" | "notLyricsPage";
 const dockSuppressionReasons = new Set<DockSuppressionReason>();
+
+const DOCK_HOST_CLASS = "blyrics-has-dock";
+
+let lyricsPageTypeObserver: MutationObserver | null = null;
+
+function syncNotLyricsPageSuppression(tabRenderer: Element): void {
+  setDockSuppression("notLyricsPage", tabRenderer.getAttribute("page-type") !== LYRICS_PAGE_TYPE);
+}
+
+export function observeLyricsPageType(): void {
+  const tabRenderer = document.querySelector(TAB_RENDERER_SELECTOR);
+  if (!tabRenderer) {
+    setTimeout(observeLyricsPageType, 1000);
+    return;
+  }
+
+  lyricsPageTypeObserver?.disconnect();
+  syncNotLyricsPageSuppression(tabRenderer);
+  lyricsPageTypeObserver = new MutationObserver(() => syncNotLyricsPageSuppression(tabRenderer));
+  lyricsPageTypeObserver.observe(tabRenderer, { attributes: true, attributeFilter: ["page-type"] });
+}
+
+export function setFullscreenNoLyricsState(noLyrics: boolean): void {
+  document.querySelector("#player-page")?.toggleAttribute("blyrics-no-lyrics", noLyrics);
+}
 
 function setVotingSegmentHidden(hidden: boolean): void {
   document.querySelector(`.${DOCK_CLASS}__voting`)?.classList.toggle(`${DOCK_CLASS}__voting--hidden`, hidden);
@@ -453,6 +479,7 @@ function applyDockSuppression(): void {
   if (!dock) return;
   dock.classList.toggle(`${DOCK_CLASS}--hidden`, dockSuppressionReasons.size > 0);
   dock.classList.toggle(`${DOCK_CLASS}--loading`, dockSuppressionReasons.has("loading"));
+  dock.classList.toggle(`${DOCK_CLASS}--off-page`, dockSuppressionReasons.has("notLyricsPage"));
 }
 
 function setDockSuppression(reason: DockSuppressionReason, suppressed: boolean): void {
@@ -823,6 +850,7 @@ export function mountDock(position: string): void {
 
     dock.appendChild(inner);
     sidePanel.appendChild(dock);
+    sidePanel.classList.add(DOCK_HOST_CLASS);
   }
 
   dock.dataset.position = position;
@@ -918,6 +946,7 @@ export function unmountDock(): void {
   removeDockProximityListener();
   const dock = document.getElementsByClassName(DOCK_CLASS)[0];
   if (dock) dock.remove();
+  document.querySelector("#side-panel")?.classList.remove(DOCK_HOST_CLASS);
 }
 
 export function updateDockPosition(position: string): void {
@@ -1547,6 +1576,7 @@ export function cleanup(): void {
   // built standing in the floating document. It drops the song off the publish this function ends
   // with instead.
   mainView.clear();
+  setFullscreenNoLyricsState(false);
 
   if (lyricsObserver) {
     lyricsObserver.disconnect();

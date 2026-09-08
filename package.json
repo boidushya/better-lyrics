@@ -1,7 +1,7 @@
 {
     "type": "module",
     "name": "better-lyrics",
-    "version": "2.4.0.5",
+    "version": "2.4.0.6",
     "description": "Enhance YouTube Music with beautiful time-synced lyrics, multilingual support, real-time translations and more",
     "scripts": {
         "generate:locales": "tsx tooling/generate-locales.ts",
@@ -42,7 +42,7 @@
         "node": ">=22.12"
     },
     "dependencies": {
-        "@braccato/core": "1.6.0",
+        "@braccato/core": "1.6.1",
         "@braccato/parsers": "0.2.1",
         "@codemirror/autocomplete": "^6.20.3",
         "@codemirror/commands": "^6.11.0",
