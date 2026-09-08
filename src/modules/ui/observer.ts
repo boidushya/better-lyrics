@@ -625,15 +625,8 @@ export function setUpAvButtonListener(): void {
   }
 
   let handleAVSwitch = (isVideo: boolean) => {
-    let playerPage = document.querySelector("#player-page");
-
-    if (playerPage) {
-      if (isVideo) {
-        playerPage.setAttribute("blyrics-video-mode", "");
-      } else {
-        playerPage.removeAttribute("blyrics-video-mode");
-      }
-    }
+    document.querySelector("#player-page")?.toggleAttribute("blyrics-video-mode", isVideo);
+    document.querySelector("ytmusic-app-layout")?.toggleAttribute("blyrics-video-mode", isVideo);
   };
   const observerCallback = (mutationsList: MutationRecord[]) => {
     for (const mutation of mutationsList) {
