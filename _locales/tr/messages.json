@@ -87,6 +87,18 @@
     "message": "Stilize animasyonları göster",
     "description": "Show stylized animations setting label"
   },
+  "options_display_letterWave": {
+    "message": "Letter wave",
+    "description": "Label for the per-letter wave lyric animation toggle"
+  },
+  "options_display_letterWaveBadge": {
+    "message": "Experimental",
+    "description": "Badge shown next to the letter wave setting marking it as experimental"
+  },
+  "options_display_letterWaveTooltip": {
+    "message": "Lyrics feel more alive with a gentle rolling motion across each letter as they're sung. Turn it off if lyrics scroll feels choppy on your device.",
+    "description": "Tooltip explaining the letter wave animation and its performance impact"
+  },
   "options_display_passiveScroll": {
     "message": "Asenkron sözleri otomatik kaydır",
     "description": "Auto-scroll unsynced lyrics setting label"
