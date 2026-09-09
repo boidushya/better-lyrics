@@ -88,19 +88,19 @@
     "description": "Show stylized animations setting label"
   },
   "options_display_letterWave": {
-    "message": "Letter wave",
+    "message": "Хвилювання літер",
     "description": "Label for the per-letter wave lyric animation toggle"
   },
   "options_display_letterWaveBadge": {
-    "message": "Experimental",
+    "message": "Експеримент",
     "description": "Badge shown next to the letter wave setting marking it as experimental"
   },
   "options_display_letterWaveTooltip": {
-    "message": "Lyrics feel more alive with a gentle rolling motion across each letter as they're sung. Turn it off if lyrics scroll feels choppy on your device.",
+    "message": "Текст стає живішим завдяки плавному руху кожної літери під час співу. Вимкніть це, якщо прокручування тексту на вашому пристрої виглядає рваною.",
     "description": "Tooltip explaining the letter wave animation and its performance impact"
   },
   "options_display_passiveScroll": {
-    "message": "Автопрокрутка текстів пісень",
+    "message": "Прокручування несинхронізованих текстів",
     "description": "Auto-scroll unsynced lyrics setting label"
   },
   "picture_in_picture_open": {
@@ -248,7 +248,7 @@
     "description": "Accessible label for the lyrics dock button that opens the source provider dropdown"
   },
   "lyricsDock_refresh": {
-    "message": "Refresh lyrics",
+    "message": "Перезавантажити текст",
     "description": "Accessible label for the lyrics dock button that re-fetches lyrics for the current song, bypassing the cache"
   },
   "lyricsDock_previousSource": {
