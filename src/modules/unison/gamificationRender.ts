@@ -180,8 +180,12 @@ function buildFeaturedStrip(catalogue: BadgeCatalogue, user: UserGamification): 
     strip.appendChild(slot);
     void inlineSvg(assetUrl(badgeImagePath(def, earnedTier.get(key), "color")), `${GAM}__featured-gem`, def.name).then(
       gem => {
-        if (gem) slot.replaceWith(gem);
-        else slot.remove();
+        if (gem) {
+          slot.replaceWith(gem);
+        } else {
+          slot.remove();
+          if (!strip.childElementCount) strip.remove();
+        }
       }
     );
   }
