@@ -8,7 +8,14 @@ import {
 } from "@constants";
 import { attachHoldRepeat } from "@core/holdRepeat";
 import { getLanguageDisplayName, initI18n, loadLocaleOverride, SUPPORTED_LOCALES, t } from "@core/i18n";
-import { exportIdentity, getDisplayName, importIdentity, invalidateDisplayName, signPayload } from "@core/keyIdentity";
+import {
+  exportIdentity,
+  getDisplayName,
+  getResolvedDisplayName,
+  importIdentity,
+  invalidateDisplayName,
+  signPayload,
+} from "@core/keyIdentity";
 import { clearAllOffsets, getOffsetInfo } from "@core/storage";
 import { parseSvgString, syncTypeColors } from "@modules/ui/lyricsDock/icons";
 import { fetchOwnGamification, renderIdentityStats } from "@modules/unison/gamificationRender";
@@ -755,7 +762,7 @@ async function initIdentityUI(): Promise<void> {
     const statsEl = document.getElementById("identity-stats");
     const statsWrap = document.getElementById("identity-stats-container");
     if (!user || !statsEl || !statsWrap) return;
-    const handle = await getDisplayName().catch(() => undefined);
+    const handle = (await getResolvedDisplayName().catch(() => null)) ?? undefined;
     await renderIdentityStats(statsEl, user, handle);
     statsWrap.hidden = false;
   });
