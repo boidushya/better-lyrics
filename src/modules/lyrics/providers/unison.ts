@@ -4,11 +4,14 @@ import { parseLRC, PlainParser } from "@braccato/parsers";
 import type { LyricSourceResult, ProviderParameters } from "./shared";
 import { fillTtml } from "@modules/lyrics/providers/ttmlSource";
 import { warnUnison } from "@core/logger";
+import type { Mark } from "@modules/unison/types";
 
 interface SubmitterInfo {
   keyId: string;
   reputation: number;
   displayName?: string;
+  tier?: string | null;
+  level?: number;
 }
 
 interface UnisonResponse {
@@ -22,6 +25,7 @@ interface UnisonResponse {
   effectiveScore: number;
   voteCount: number;
   submitter?: SubmitterInfo;
+  marks?: Mark[];
   /** A property only passed if `x-api-key` header is also passed */
   userVote: 1 | -1 | null;
 }
@@ -40,6 +44,7 @@ export interface UnisonData {
   effectiveScore: number;
   lyricsId: number;
   submitter?: SubmitterInfo;
+  marks?: Mark[];
 }
 
 export async function vote(lyricsId: number, upvote: boolean) {
@@ -153,6 +158,7 @@ export default async function unison(providerParameters: ProviderParameters): Pr
     effectiveScore: responseData.effectiveScore,
     lyricsId: responseData.id,
     submitter: responseData.submitter,
+    marks: responseData.marks,
   };
 
   const result = {

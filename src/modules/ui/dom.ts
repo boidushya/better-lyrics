@@ -40,7 +40,8 @@ import { lyricsElementAdded, mainView } from "@modules/ui/mainLyricsView";
 import { publishPictureInPictureLyrics } from "@modules/ui/pictureInPicture/lyricsPublisher";
 import { getResumeScrollElement } from "@modules/ui/resumeScrollButton";
 import { getRequest, setRequest } from "@modules/unison/lyricsRequestTracker";
-import { getTrustTier } from "@modules/unison/trustTier";
+import { sealMarks } from "@modules/unison/gamification";
+import { appendInlineProfile, buildSeal } from "@modules/unison/gamificationRender";
 import type { UnisonLyricsRequest } from "@modules/unison/types";
 import { requestLyrics } from "@modules/unison/unisonApi";
 import { reflow, toMs } from "@braccato/core/util";
@@ -574,7 +575,7 @@ function createUnisonFooterCard(unisonData: UnisonData): HTMLElement {
   unisonCard.className = `${FOOTER_CLASS}__container ${FOOTER_CLASS}__unison-card`;
 
   if (unisonData.submitter) {
-    unisonCard.appendChild(createSubmitterBlock(unisonData.submitter));
+    unisonCard.appendChild(createSubmitterBlock(unisonData.submitter, unisonData.marks));
     const divider = document.createElement("div");
     divider.className = `${FOOTER_CLASS}__unison-divider`;
     unisonCard.appendChild(divider);
@@ -954,7 +955,10 @@ export function updateDockPosition(position: string): void {
   if (dock) dock.dataset.position = position;
 }
 
-function createSubmitterBlock(submitter: NonNullable<UnisonData["submitter"]>): HTMLElement {
+function createSubmitterBlock(
+  submitter: NonNullable<UnisonData["submitter"]>,
+  marks: UnisonData["marks"]
+): HTMLElement {
   const authorBlock = document.createElement("div");
   authorBlock.className = `${FOOTER_CLASS}__unison-author`;
 
@@ -965,21 +969,18 @@ function createSubmitterBlock(submitter: NonNullable<UnisonData["submitter"]>): 
   handleEl.className = `${FOOTER_CLASS}__author-name`;
   handleEl.textContent = submitter.displayName ?? generatePetName(submitter.keyId);
 
-  const tier = getTrustTier(submitter.reputation);
-  const tierEl = document.createElement("span");
-  tierEl.className = `${FOOTER_CLASS}__trust-tier`;
-  tierEl.dataset.tier = tier;
-  tierEl.textContent = t(`unison_tier_${tier}`);
-
-  authorRow.appendChild(handleEl);
-  authorRow.appendChild(tierEl);
-
-  const subLabel = document.createElement("div");
-  subLabel.className = `${FOOTER_CLASS}__unison-author-label`;
-  subLabel.textContent = t("unison_submitted_this");
-
+  appendInlineProfile(authorRow, handleEl, submitter);
   authorBlock.appendChild(authorRow);
-  authorBlock.appendChild(subLabel);
+
+  const seals = sealMarks(marks);
+  if (seals.length) {
+    for (const mark of seals) authorBlock.appendChild(buildSeal(mark));
+  } else {
+    const subLabel = document.createElement("div");
+    subLabel.className = `${FOOTER_CLASS}__unison-author-label`;
+    subLabel.textContent = t("unison_submitted_this");
+    authorBlock.appendChild(subLabel);
+  }
   return authorBlock;
 }
 
