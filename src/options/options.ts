@@ -11,6 +11,7 @@ import { getLanguageDisplayName, initI18n, loadLocaleOverride, SUPPORTED_LOCALES
 import { exportIdentity, getDisplayName, importIdentity, invalidateDisplayName, signPayload } from "@core/keyIdentity";
 import { clearAllOffsets, getOffsetInfo } from "@core/storage";
 import { parseSvgString, syncTypeColors } from "@modules/ui/lyricsDock/icons";
+import { fetchOwnGamification, renderIdentityStats } from "@modules/unison/gamificationRender";
 import Sortable from "sortablejs";
 import { showModal } from "./editor/ui/feedback";
 import { initStoreUI, setupYourThemesButton } from "./store/store";
@@ -749,6 +750,15 @@ async function initIdentityUI(): Promise<void> {
     errorCore("Failed to load identity:", error);
     displayNameEl.textContent = t("options_alert_identityLoadError");
   }
+
+  void fetchOwnGamification().then(async user => {
+    const statsEl = document.getElementById("identity-stats");
+    const statsWrap = document.getElementById("identity-stats-container");
+    if (!user || !statsEl || !statsWrap) return;
+    const handle = await getDisplayName().catch(() => undefined);
+    await renderIdentityStats(statsEl, user, handle);
+    statsWrap.hidden = false;
+  });
 
   document.getElementById("export-identity-btn")?.addEventListener("click", handleExportIdentity);
   document.getElementById("import-identity-btn")?.addEventListener("click", handleImportIdentity);
