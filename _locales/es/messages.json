@@ -1732,7 +1732,7 @@
     }
   },
   "unison_xpToNext": {
-    "message": "$xp$ XP to Level $level$",
+    "message": "$xp$ XP hasta el Nivel $level$",
     "description": "Explains how much experience remains before the next Unison level. $xp$ is a positive integer, $level$ is the next level number",
     "placeholders": {
       "xp": {
@@ -1750,7 +1750,7 @@
     "description": "Shown in place of the XP-to-next text when a Unison contributor is at the highest level"
   },
   "unison_rank": {
-    "message": "Rank #$rank$",
+    "message": "Posición #$rank$",
     "description": "Shows a Unison contributor's leaderboard rank within their tier. $rank$ is a positive integer",
     "placeholders": {
       "rank": {
