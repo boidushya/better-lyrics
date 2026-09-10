@@ -87,6 +87,18 @@
     "message": "Stilisierte Animationen anzeigen",
     "description": "Show stylized animations setting label"
   },
+  "options_display_letterWave": {
+    "message": "Buchstaben-Welle",
+    "description": "Label for the per-letter wave lyric animation toggle"
+  },
+  "options_display_letterWaveBadge": {
+    "message": "Experimentell",
+    "description": "Badge shown next to the letter wave setting marking it as experimental"
+  },
+  "options_display_letterWaveTooltip": {
+    "message": "Songtexte sehen mit einer leichten Wellenbewegung bei jedem gesungenen Wort lebendiger aus. Deaktiviere es, wenn das Scrollen der Songtexte abgehackt aussieht.",
+    "description": "Tooltip explaining the letter wave animation and its performance impact"
+  },
   "options_display_passiveScroll": {
     "message": "Automatisch nicht synchronisierte Songtexte scrollen",
     "description": "Auto-scroll unsynced lyrics setting label"
@@ -112,7 +124,7 @@
     "description": "Accessible label for the next track button in the Picture-in-Picture lyrics window, used when the YouTube Music player bar exposes no label of its own"
   },
   "options_display_pipEnabled": {
-    "message": "Enable floating window",
+    "message": "Schwebendes Fenster aktivieren",
     "description": "Master toggle for the floating lyrics window feature, which turns it off everywhere including the YouTube Music minimize button"
   },
   "options_display_pipAutoRestore": {
@@ -176,7 +188,7 @@
     "description": "Toggle label inside the lyrics controls dock modal for showing the floating dock"
   },
   "options_unisonModal_showPinned_hint": {
-    "message": "Ein schwebendes Dock um die Quellen, Übersetzungen, Romanisierung, Sync-push und Unison Text Abstimmungen zu bearbeiten",
+    "message": "Ein schwebendes Dock um die Quellen, Übersetzungen, Romanisierung, Sync-push und Unison-Songtext-Abstimmungen zu bearbeiten",
     "description": "Hint text under the Show controls dock toggle"
   },
   "options_unisonModal_autoHide": {
@@ -184,7 +196,7 @@
     "description": "Toggle label inside the Unison Actions modal for auto-hiding the dock when idle in fullscreen"
   },
   "options_unisonModal_autoHide_hint": {
-    "message": "Verstecke schwebende Steuerung, wenn sie inaktiv im Vollbildmodus sind",
+    "message": "Verstecke schwebende Steuerung, wenn Du inaktiv im Vollbildmodus bist",
     "description": "Hint text under the Auto-hide in fullscreen toggle"
   },
   "options_unisonModal_position": {
@@ -236,7 +248,7 @@
     "description": "Accessible label for the lyrics dock button that opens the source provider dropdown"
   },
   "lyricsDock_refresh": {
-    "message": "Refresh lyrics",
+    "message": "Songtexte neu laden",
     "description": "Accessible label for the lyrics dock button that re-fetches lyrics for the current song, bypassing the cache"
   },
   "lyricsDock_previousSource": {
@@ -348,7 +360,7 @@
     "description": "Button to open the style editor if there are no styles"
   },
   "options_themes_edit": {
-    "message": "Edit",
+    "message": "Bearbeiten",
     "description": "Button to open the style editor"
   },
   "options_themes_marketplace": {
@@ -374,6 +386,10 @@
   "options_identity_yourIdentity": {
     "message": "Deine Identität",
     "description": "Your identity label"
+  },
+  "options_identity_unisonStats": {
+    "message": "Unison-Statistiken",
+    "description": "Section title above the user's own Unison level, tier, rank and badges on the Identity tab"
   },
   "options_identity_loading": {
     "message": "Laden...",
@@ -1705,21 +1721,47 @@
     "message": "Diese Meldung ist fehlgeschlagen, würden sie es erneut versuchen?",
     "description": "Shown when a lyrics report fails to submit"
   },
-  "unison_tier_new": {
-    "message": "Neu",
-    "description": "Trust tier badge for low-reputation Unison submitters"
+  "unison_level": {
+    "message": "Level $level$",
+    "description": "Shows a Unison contributor's numeric level. $level$ is a positive integer",
+    "placeholders": {
+      "level": {
+        "content": "$1",
+        "example": "6"
+      }
+    }
   },
-  "unison_tier_trusted": {
-    "message": "Vertrauenswürdig",
-    "description": "Trust tier badge for mid-reputation Unison submitters"
+  "unison_xpToNext": {
+    "message": "$xp$ XP bis Level $level$",
+    "description": "Explains how much experience remains before the next Unison level. $xp$ is a positive integer, $level$ is the next level number",
+    "placeholders": {
+      "xp": {
+        "content": "$1",
+        "example": "436"
+      },
+      "level": {
+        "content": "$2",
+        "example": "7"
+      }
+    }
   },
-  "unison_tier_veteran": {
-    "message": "Veteran",
-    "description": "Trust tier badge for high-reputation Unison submitters"
+  "unison_maxLevel": {
+    "message": "Höchstes Level",
+    "description": "Shown in place of the XP-to-next text when a Unison contributor is at the highest level"
   },
-  "unison_tier_expert": {
-    "message": "Experte",
-    "description": "Trust tier badge for top-reputation Unison submitters"
+  "unison_rank": {
+    "message": "Rang #$rank$",
+    "description": "Shows a Unison contributor's leaderboard rank within their tier. $rank$ is a positive integer",
+    "placeholders": {
+      "rank": {
+        "content": "$1",
+        "example": "1"
+      }
+    }
+  },
+  "unison_viewProfile": {
+    "message": "Zeige vollständiges Profil",
+    "description": "Link on the Identity tab that opens the user's full Unison profile in a new tab"
   },
   "unison_submitted_this": {
     "message": "diesen Songtext eingereicht",
