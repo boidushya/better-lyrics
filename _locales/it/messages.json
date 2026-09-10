@@ -87,6 +87,18 @@
     "message": "Mostra animazioni stilizzate",
     "description": "Show stylized animations setting label"
   },
+  "options_display_letterWave": {
+    "message": "Lettere ad onda",
+    "description": "Label for the per-letter wave lyric animation toggle"
+  },
+  "options_display_letterWaveBadge": {
+    "message": "Sperimentale",
+    "description": "Badge shown next to the letter wave setting marking it as experimental"
+  },
+  "options_display_letterWaveTooltip": {
+    "message": "I testi appaiono più vivaci con un gentile movimento roteante attraverso ogni lettera mentre vengono cantate. Spegnilo se lo scorrimento dei testi appare a scatti sul tuo dispositivo.",
+    "description": "Tooltip explaining the letter wave animation and its performance impact"
+  },
   "options_display_passiveScroll": {
     "message": "Scorri in automatico testi non sincronizzati",
     "description": "Auto-scroll unsynced lyrics setting label"
@@ -374,6 +386,10 @@
   "options_identity_yourIdentity": {
     "message": "La tua identità",
     "description": "Your identity label"
+  },
+  "options_identity_unisonStats": {
+    "message": "Unison Stats",
+    "description": "Section title above the user's own Unison level, tier, rank and badges on the Identity tab"
   },
   "options_identity_loading": {
     "message": "Caricamento...",
@@ -1705,21 +1721,47 @@
     "message": "La segnalazione non è stata inviata. Ti dispiace riprovare di nuovo?",
     "description": "Shown when a lyrics report fails to submit"
   },
-  "unison_tier_new": {
-    "message": "nuovo",
-    "description": "Trust tier badge for low-reputation Unison submitters"
+  "unison_level": {
+    "message": "Level $level$",
+    "description": "Shows a Unison contributor's numeric level. $level$ is a positive integer",
+    "placeholders": {
+      "level": {
+        "content": "$1",
+        "example": "6"
+      }
+    }
   },
-  "unison_tier_trusted": {
-    "message": "affidabile",
-    "description": "Trust tier badge for mid-reputation Unison submitters"
+  "unison_xpToNext": {
+    "message": "$xp$ XP to Level $level$",
+    "description": "Explains how much experience remains before the next Unison level. $xp$ is a positive integer, $level$ is the next level number",
+    "placeholders": {
+      "xp": {
+        "content": "$1",
+        "example": "436"
+      },
+      "level": {
+        "content": "$2",
+        "example": "7"
+      }
+    }
   },
-  "unison_tier_veteran": {
-    "message": "veterano",
-    "description": "Trust tier badge for high-reputation Unison submitters"
+  "unison_maxLevel": {
+    "message": "Max level",
+    "description": "Shown in place of the XP-to-next text when a Unison contributor is at the highest level"
   },
-  "unison_tier_expert": {
-    "message": "esperto",
-    "description": "Trust tier badge for top-reputation Unison submitters"
+  "unison_rank": {
+    "message": "Rank #$rank$",
+    "description": "Shows a Unison contributor's leaderboard rank within their tier. $rank$ is a positive integer",
+    "placeholders": {
+      "rank": {
+        "content": "$1",
+        "example": "1"
+      }
+    }
+  },
+  "unison_viewProfile": {
+    "message": "View full profile",
+    "description": "Link on the Identity tab that opens the user's full Unison profile in a new tab"
   },
   "unison_submitted_this": {
     "message": "ha inviato questo testo",
